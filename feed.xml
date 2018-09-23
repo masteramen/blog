@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.8.3">Jekyll</generator><link href="http://www.jfox.info/blog/feed.xml" rel="self" type="application/atom+xml" /><link href="http://www.jfox.info/blog/" rel="alternate" type="text/html" /><updated>2018-09-23T18:12:03+08:00</updated><id>http://www.jfox.info/blog/feed.xml</id><title type="html">收藏馆</title><entry><title type="html">Visual Studio 代码扩展：编辑文档</title><link href="http://www.jfox.info/blog/2018/visual-studio-dai-ma-kuo-zhan-bian-ji-wen-dang.html" rel="alternate" type="text/html" title="Visual Studio 代码扩展：编辑文档" /><published>2018-08-23T09:13:35+08:00</published><updated>2018-08-23T09:13:35+08:00</updated><id>http://www.jfox.info/blog/2018/visual-studio-dai-ma-kuo-zhan-bian-ji-wen-dang</id><content type="html" xml:base="http://www.jfox.info/blog/2018/visual-studio-dai-ma-kuo-zhan-bian-ji-wen-dang.html">{% raw %}
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.8.3">Jekyll</generator><link href="http://www.jfox.info/blog/feed.xml" rel="self" type="application/atom+xml" /><link href="http://www.jfox.info/blog/" rel="alternate" type="text/html" /><updated>2018-09-23T19:07:35+08:00</updated><id>http://www.jfox.info/blog/feed.xml</id><title type="html">收藏馆</title><entry><title type="html">Visual Studio 代码扩展：编辑文档</title><link href="http://www.jfox.info/blog/2018/visual-studio-dai-ma-kuo-zhan-bian-ji-wen-dang.html" rel="alternate" type="text/html" title="Visual Studio 代码扩展：编辑文档" /><published>2018-08-23T09:13:35+08:00</published><updated>2018-08-23T09:13:35+08:00</updated><id>http://www.jfox.info/blog/2018/visual-studio-dai-ma-kuo-zhan-bian-ji-wen-dang</id><content type="html" xml:base="http://www.jfox.info/blog/2018/visual-studio-dai-ma-kuo-zhan-bian-ji-wen-dang.html">{% raw %}
 我一直支持 Visual Studio Code 的扩展大约一个月了。在那段时间里，我学到了很多关于构建编辑器扩展和 Javascript 静态分析的知识。今天更多的是前者而不是后者。不过，我发现创建片段，修改状态栏和显示消息是微不足道的，但是当你不知道如何开始时修改当前文档很难。
 
 关于为 VS Code 编写扩展，我注意到的另一个重要的事情是，虽然文档存在并且是一个看似详尽的扩展 API 目录，但它在示例和指令中却相当缺乏。到本文结束时，我希望揭开目前为止我发现的文档管理中最具挑战性的部分之一。
@@ -25,15 +25,10 @@ var vscode = require('vscode');
 },
 
 &quot;devDependencies&quot;:{
-
     &quot;chai&quot;:&quot;^3.4.1&quot;,
-
     &quot;mocha&quot;:&quot;^2.3.4&quot;,
-
     &quot;mockery&quot;:&quot;^1.4.0&quot;,
-
     &quot;sinon&quot;:&quot;^1.17.2&quot;,
-
     &quot;vscode&quot;:&quot;^0.11.x&quot;
 
 },
