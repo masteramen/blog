@@ -196,6 +196,8 @@ functioneditFactory(coords,content){
 }
 </code></pre></div></div>
 
+<p>tupian</p>
+
 <p>如您所见，我们正在组装所有部件并将它们堆叠在一起以构建我们的文档编辑。完全构造的编辑将包含 VS Code 修改所选文档所需的所有指令。当我们构造下一个要与之交互的对象时，这将非常有用。</p>
 
 <p>是的，还有更多。</p>
@@ -271,6 +273,8 @@ functionsetEditFactory（URI，COORDS，内容）{
 <div class="PageNavigation">
   
   
+  <a class="next" href="/2018/java-8-xie-ru-wen-jian-shi-li.html">Java 8 写入文件示例 &raquo;</a>
+  
 </div>
 <div class="sfix"><!-- 240x600 -->
 <div class="fixedme">
@@ -302,7 +306,7 @@ functionsetEditFactory（URI，COORDS，内容）{
 
         window.onscroll = function (event) {
             var e = document.getElementsByClassName('sfix')[0];
-            if (window.scrollY && e.offset && window.scrollY > e.offset.top) {
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
                 e.style.position = 'fixed';
                 e.style.left = e.offset.left + 'px';
                 e.style.right = 'auto';
