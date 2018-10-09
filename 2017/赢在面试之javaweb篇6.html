@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>赢在面试之JavaWeb篇（6） | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="赢在面试之JavaWeb篇（6）" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="51、说一说Servlet的生命周期?" />
+<meta property="og:description" content="51、说一说Servlet的生命周期?" />
+<link rel="canonical" href="http://www.jfox.info/2017/%E8%B5%A2%E5%9C%A8%E9%9D%A2%E8%AF%95%E4%B9%8Bjavaweb%E7%AF%876.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/%E8%B5%A2%E5%9C%A8%E9%9D%A2%E8%AF%95%E4%B9%8Bjavaweb%E7%AF%876.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:59:05+00:00" />
+<script type="application/ld+json">
+{"description":"51、说一说Servlet的生命周期?","@type":"BlogPosting","url":"http://www.jfox.info/2017/%E8%B5%A2%E5%9C%A8%E9%9D%A2%E8%AF%95%E4%B9%8Bjavaweb%E7%AF%876.html","headline":"赢在面试之JavaWeb篇（6）","dateModified":"2017-01-01T15:59:05+00:00","datePublished":"2017-01-01T15:59:05+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/%E8%B5%A2%E5%9C%A8%E9%9D%A2%E8%AF%95%E4%B9%8Bjavaweb%E7%AF%876.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">赢在面试之JavaWeb篇（6）</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:59:05+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<h4 id="51说一说servlet的生命周期">51、说一说Servlet的生命周期?</h4>
+
+<p>Servlet有良好的生存期的定义，包括加载和实例化、初始化、处理请求以及服务结束。这个生存期由javax.servlet.Servlet接口的init(),service()和destroy方法表达。</p>
+
+<p>Servlet被服务器实例化后，容器运行其init方法，请求到达时运行其service方法，service方法自动派遣运行与请求对应的doXXX方法（doGet，doPost）等，当服务器决定将实例销毁的时候调用其destroy方法。</p>
+
+<p>web容器加载servlet，生命周期开始。通过调用servlet的init()方法进行servlet的初始化。通过调用service()方法实现，根据请求的不同调用不同的do***()方法。结束服务，web容器调用servlet的destroy()方法。</p>
+
+<h4 id="52servlet-api中forward与redirect的区别">52、Servlet API中forward()与redirect()的区别？</h4>
+
+<p>1.从地址栏显示来说</p>
+
+<p>forward是服务器请求资源,服务器直接访问目标地址的URL,把那个URL的响应内容读取过来,然后把这些内容再发给浏览器.浏览器根本不知道服务器发送的内容从哪里来的,所以它的地址栏还是原来的地址.</p>
+
+<p>redirect是服务端根据逻辑,发送一个状态码,告诉浏览器重新去请求那个地址.所以地址栏显示的是新的URL.所以redirect等于客户端向服务器端发出两次request，同时也接受两次response。</p>
+
+<p>2.从数据共享来说</p>
+
+<p>forward:转发页面和转发到的页面可以共享request里面的数据.</p>
+
+<p>redirect:不能共享数据.</p>
+
+<p>redirect不仅可以重定向到当前应用程序的其他资源,还可以重定向到同一个站点上的其他应用程序中的资源,甚至是使用绝对URL重定向到其他站点的资源.</p>
+
+<p>forward方法只能在同一个Web应用程序内的资源之间转发请求.forward 是服务器内部的一种操作.</p>
+
+<p>redirect 是服务器通知客户端,让客户端重新发起请求.</p>
+
+<p>所以,你可以说 redirect 是一种间接的请求, 但是你不能说”一个请求是属于forward还是redirect “</p>
+
+<p>3.从运用地方来说</p>
+
+<p>forward:一般用于用户登陆的时候,根据角色转发到相应的模块.</p>
+
+<p>redirect:一般用于用户注销登陆时返回主页面和跳转到其它的网站等.</p>
+
+<p>4.从效率来说</p>
+
+<p>forward:高.</p>
+
+<p>redirect:低.</p>
+
+<h4 id="53requestgetattribute和-requestgetparameter有何区别">53、request.getAttribute()和 request.getParameter()有何区别?</h4>
+
+<p>1，request.getParameter()取得是通过容器的实现来取得通过类似post，get等方式传入的数据。</p>
+
+<p>request.setAttribute()和getAttribute()只是在web容器内部流转，仅仅是请求处理阶段。</p>
+
+<p>2，getAttribute是返回对象,getParameter返回字符串</p>
+
+<p>3，getAttribute()一向是和setAttribute()一起使用的，只有先用setAttribute()设置之后，才能够通过getAttribute()来获得值，它们传递的是Object类型的数据。而且必须在同一个request对象中使用才有效。,而getParameter()是接收表单的get或者post提交过来的参数</p>
+
+<h4 id="54jsp静态包含和动态包含的区别">54，jsp静态包含和动态包含的区别</h4>
+
+<p>1、&lt;%@include file=”xxx.jsp”%&gt;为jsp中的编译指令，其文件的包含是发生在jsp向servlet转换的时期，而&lt;jsp:include page=”xxx.jsp”&gt;是jsp中的动作指令，其文件的包含是发生在编译时期，也就是将java文件编译为class文件的时期</p>
+
+<p>2、使用静态包含只会产生一个class文件，而使用动态包含会产生多个class文件</p>
+
+<p>3、使用静态包含，包含页面和被包含页面的request对象为同一对象，因为静态包含只是将被包含的页面的内容复制到包含的页面中去；而动态包含包含页面和被包含页面不是同一个页面，被包含的页面的request对象可以取到的参数范围要相对大些，不仅可以取到传递到包含页面的参数，同样也能取得在包含页面向下传递的参数</p>
+
+<h4 id="55mvc的各个部分都有那些技术来实现如何实现">55，MVC的各个部分都有那些技术来实现?如何实现?</h4>
+
+<p>MVC是Model－View－Controller的简写。Model代表的是应用的业务逻辑（通过JavaBean，EJB组件实现），View是应用的表示面（由JSP页面产生），Controller是提供应用的处理过程控制（一般是一个Servlet），通过这种设计模型把应用逻辑，处理过程和显示逻辑分成不同的组件实现。这些组件可以进行交互和重用。</p>
+
+<h4 id="56jsp有哪些内置对象作用分别是什么">56，jsp有哪些内置对象?作用分别是什么?</h4>
+
+<p>JSP共有以下9个内置的对象：</p>
+
+<p>1，request 用户端请求，此请求会包含来自GET/POST请求的参数</p>
+
+<p>2，response 网页传回用户端的回应</p>
+
+<p>3，pageContext 网页的属性是在这里管理</p>
+
+<p>4，session 与请求有关的会话期</p>
+
+<p>5，application servlet 正在执行的内容</p>
+
+<p>6，out 用来传送回应的输出</p>
+
+<p>7，config  servlet的构架部件</p>
+
+<p>8，page JSP网页本身</p>
+
+<p>9，exception 针对错误网页，未捕捉的例外</p>
+
+<h4 id="57http中get和post方法的区别">57，Http中，get和post方法的区别</h4>
+
+<p>1，Get是向服务器发索取数据的一种请求，而Post是向服务器提交数据的一种请求</p>
+
+<p>2，Get是获取信息，而不是修改信息，类似数据库查询功能一样，数据不会被修改</p>
+
+<p>3，Get请求的参数会跟在url后进行传递，请求的数据会附在URL之后，以?分割URL和传输数据，参数之间以&amp;相连,％XX中的XX为该符号以16进制表示的ASCII，如果数据是英文字母/数字，原样发送，如果是空格，转换为+，如果是中文/其他字符，则直接把字符串用BASE64加密。</p>
+
+<p>4，Get传输的数据有大小限制，因为GET是通过URL提交数据，那么GET可提交的数据量就跟URL的长度有直接关系了，不同的浏览器对URL的长度的限制是不同的。</p>
+
+<p>5，GET请求的数据会被浏览器缓存起来，用户名和密码将明文出现在URL上，其他人可以查到历史浏览记录，数据不太安全。</p>
+
+<p>在服务器端，用Request.QueryString来获取Get方式提交来的数据</p>
+
+<p>Post请求则作为http消息的实际内容发送给web服务器，数据放置在HTML Header内提交，Post没有限制提交的数据。Post比Get安全，当数据是中文或者不敏感的数据，则用get，因为使用get，参数会显示在地址，对于敏感数据和不是中文字符的数据，则用post。</p>
+
+<p>6，POST表示可能修改变服务器上的资源的请求，在服务器端，用Post方式提交的数据只能用Request.Form来获取。</p>
+
+<p>（仅供参考，如果有更好的回答，欢迎探讨）</p>
+
+<h4 id="58什么是cookiesession和cookie有什么区别">58，什么是cookie？Session和cookie有什么区别？</h4>
+
+<p>Cookie是会话技术,将用户的信息保存到浏览器的对象.</p>
+
+<p>区别：</p>
+
+<p>(1)cookie数据存放在客户的浏览器上，session数据放在服务器上</p>
+
+<p>(2)cookie不是很安全，别人可以分析存放在本地的COOKIE并进行COOKIE欺骗,如果主要考虑到安全应当使用session</p>
+
+<p>(3)session会在一定时间内保存在服务器上。当访问增多，会比较占用你服务器的性能，如果主要考虑到减轻服务器性能方面，应当使用COOKIE</p>
+
+<p>(4)单个cookie在客户端的限制是3K，就是说一个站点在客户端存放的COOKIE不能3K。</p>
+
+<p>结论：</p>
+
+<p>将登陆信息等重要信息存放为SESSION;其他信息如果需要保留，可以放在COOKIE中。</p>
+
+<h4 id="59jsp和servlet的区别共同点各自应用的范围">59，jsp和servlet的区别、共同点、各自应用的范围？</h4>
+
+<p>JSP是Servlet技术的扩展，本质上就是Servlet的简易方式。JSP编译后是“类servlet”。</p>
+
+<p>Servlet和JSP最主要的不同点在于：Servlet的应用逻辑是在Java文件中，并且完全从表示层中的HTML里分离开来。而JSP的情况是Java和HTML可以组合成一个扩展名为.jsp的文件。</p>
+
+<p>JSP侧重于视图，Servlet主要用于控制逻辑。在struts框架中,JSP位于MVC设计模式的视图层,而Servlet位于控制层.</p>
+
+<p>60，tomcat容器是如何创建servlet类实例？用到了什么原理？
+ 当容器启动时，会读取在webapps目录下所有的web应用中的web.xml文件，然后对xml文件进行解析，并读取servlet注册信息。然后，将每个应用中注册的servlet类都进行加载，并通过反射的方式实例化。（有时候也是在第一次请求时实例化）</p>
+
+<p>在servlet注册时加上<load-on-startup>1</load-on-startup>如果为正数，则在一开始就实例化，如果不写或为负数，则第一次请求实例化。</p>
+
+<p>Java知音公众号整理一些各大公司常用的面试笔试题，供大家在每天闲暇之余学习其中几道题目，日积月累，等到出去面试时，一切都水到渠成，面试时就自然会游刃有余了。</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/%E8%B5%A2%E5%9C%A8%E9%9D%A2%E8%AF%95%E4%B9%8Bjavaweb%E7%AF%876.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E7%AE%97%E6%B3%95%E4%B8%8Ejvm%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E5%99%A8%E7%BB%BC%E8%BF%B0.html">&laquo; 垃圾回收算法与 JVM 垃圾回收器综述</a>
+  
+  
+  <a class="next" href="/2017/springmvcmybatis%E4%BA%8B%E5%8A%A1%E7%AE%A1%E7%90%86%E4%B8%80.html">SpringMVC+MyBatis 事务管理一 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

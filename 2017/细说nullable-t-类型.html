@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>细说Nullable类型 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="细说Nullable类型" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="众所周知，值类型变量不能null，这也是为什么它们被称为值类型。但是，在实际的开发过程中，也需要值为null的一些场景。例如以下场景：" />
+<meta property="og:description" content="众所周知，值类型变量不能null，这也是为什么它们被称为值类型。但是，在实际的开发过程中，也需要值为null的一些场景。例如以下场景：" />
+<link rel="canonical" href="http://www.jfox.info/2017/%E7%BB%86%E8%AF%B4nullable-t-%E7%B1%BB%E5%9E%8B.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/%E7%BB%86%E8%AF%B4nullable-t-%E7%B1%BB%E5%9E%8B.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:50:57+00:00" />
+<script type="application/ld+json">
+{"description":"众所周知，值类型变量不能null，这也是为什么它们被称为值类型。但是，在实际的开发过程中，也需要值为null的一些场景。例如以下场景：","@type":"BlogPosting","url":"http://www.jfox.info/2017/%E7%BB%86%E8%AF%B4nullable-t-%E7%B1%BB%E5%9E%8B.html","headline":"细说Nullable类型","dateModified":"2017-01-01T15:50:57+00:00","datePublished":"2017-01-01T15:50:57+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/%E7%BB%86%E8%AF%B4nullable-t-%E7%B1%BB%E5%9E%8B.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">细说Nullable类型</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:50:57+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>众所周知，值类型变量不能null，这也是为什么它们被称为值类型。但是，在实际的开发过程中，也需要值为<code class="highlighter-rouge">null</code>的一些场景。例如以下场景：</p>
+
+<p>　　场景1：您从数据库表中检索可空的整数数据列，数据库中的<code class="highlighter-rouge">null</code>值没有办法将此值分配给C#中Int32类型；</p>
+
+<p>　　场景2：您在UI绑定属性，但是某些值类型的字段不是必须录入的（例如在人员管理中的死亡日期）；</p>
+
+<p>　　场景3：在Java中，<code class="highlighter-rouge">java.Util.Date</code>是一个引用类型，因此可以将此类型的字段设置为<code class="highlighter-rouge">null</code>。但是，在CLR中，<code class="highlighter-rouge">System.DateTime</code>是一个值类型，DateTime 变量不能<code class="highlighter-rouge">null</code>。如果使用Java编写的应用程序要将日期/时间传达给在CLR上运行的Web服务，如果Java应用程序发送是<code class="highlighter-rouge">null</code>， CLR中没有供对应的类型；</p>
+
+<p>　　场景4：在函数中传递值类型时，如果参数的值无法提供并且不想传递，可以使用默认值。但有时默认值并不是最佳的选择，因为默认值实际也传递了一个默认的参数值，逻辑需要特殊的处理；</p>
+
+<p>　　场景5：当从xml或json反序列化数据时，数据源中缺少某个值类型属性的值，这种情况很不方便处理。</p>
+
+<p>　　当然，我们日常工作中还有很多类似的情况。</p>
+
+<p>　　为了摆脱这些情况，Microsoft在CLR中增加了可为空值类型的概念。为了更清楚理解这一点，我们看一下<code class="highlighter-rouge">System.Nullable&lt;T&gt;</code>类型的逻辑定义：
+<img src="4757bda.gif" alt="" /><img src="/wp-content/uploads/2017/06/ExpandedBlockStart4.gif" alt="" />
+     1namespace System
+     2{
+     3    [Serializable]
+     4publicstruct Nullable<T> where T : struct 5    {
+     6privatebool hasValue;
+     7internal T value;
+     8 9public Nullable(T value) {
+    10this.value = value; 
+    11this.hasValue = true;
+    12        }
+    1314publicbool HasValue { 
+    15get {
+    16return hasValue; 
+    17            } 
+    18        }
+    1920public T Value { 
+    21get {
+    22if (!HasValue) { 
+    23                    ThrowHelper.ThrowInvalidOperationException(ExceptionResource.InvalidOperation_NoValue); 
+    24                }
+    25return value; 
+    26            }
+    27        }
+    2829public T GetValueOrDefault() { 
+    30return value;
+    31        } 
+    3233public T GetValueOrDefault(T defaultValue) {
+    34return HasValue ? value : defaultValue;
+    35        } 
+    3637publicoverridebool Equals(object other) { 
+    38if (!HasValue) return other == null; 
+    39if (other == null) returnfalse;
+    40return value.Equals(other); 
+    41        }
+    4243publicoverrideint GetHashCode() {
+    44return HasValue ? value.GetHashCode() : 0; 
+    45        }
+    4647publicoverridestring ToString() { 
+    48return HasValue ? value.ToString() : "";
+    49        } 
+    5051publicstaticimplicitoperator Nullable<T>(T value) {
+    52returnnew Nullable<T>(value);
+    53        } 
+    5455publicstaticexplicitoperator T(Nullable<T> value) { 
+    56return value.Value; 
+    57        }
+    58    }
+    59 }</T></T></T></T></p>
+
+<p>查看Nullable的定义
+　　从上面的定义可以总结如下几点：</p>
+
+<ul>
+  <li>Nullable<T> 类型也是一个值类型；</T></li>
+  <li>Nullable<T> 类型包含一个Value属性用于表示基础值，还包括一个`Boolean`类型的HasValue属性用于表示该值是否为`null` ；</T></li>
+  <li>Nullable<T> 是一个轻量级的值类型。Nullable<T>类型的实例占用内存的大小等于一个值类型与一个`Boolean`类型占用内存大小之和；</T></T></li>
+  <li>Nullable<T> 的泛型参数T必须是值类型。您只能将Nullable<T>类型与值类型结合使用，您也可以使用用户定义的值类型。</T></T></li>
+</ul>
+
+<h2 id="二语法和用法">二、语法和用法</h2>
+
+<p>　　使用Nullable<T>类型，只需指定一个其它值类型的泛型参数T。</T></p>
+
+<p>　　示例：　</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1     Nullable&lt;int&gt; i = 1;
+2     Nullable&lt;int&gt; j = null;
+3     Nullable&lt;Nullable&lt;int&gt;&gt; k; //这是一个错误语法，编译会报错。
+</code></pre></div></div>
+
+<p>　　CLR还提供了一种简写的方式。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1int? i = 1;
+2int? j = null;
+</code></pre></div></div>
+
+<p>　　可以通过 Value 属性来获取基础类型的值。如下所示，如果不为<code class="highlighter-rouge">null</code>，则将返回实际的值，否则将抛出<code class="highlighter-rouge">InvalidOperationException</code>异常；您可以在调用Value属性的时，需要检查是否为<code class="highlighter-rouge">null</code>。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> 1     Nullable&lt;int&gt; i = 1;
+ 2     Nullable&lt;int&gt; j = null;
+ 3 4    Console.WriteLine(i.HasValue);
+ 5//输出结果：True 6 7    Console.WriteLine(i.Value);
+ 8//输出结果：1 910    Console.WriteLine(j.HasValue);
+11//输出结果：False1213    Console.WriteLine(j.Value);
+14//抛异常： System.InvalidOperationException    
+</code></pre></div></div>
+
+<h2 id="三类型的转换和运算">三、类型的转换和运算</h2>
+
+<p>　　C#还支持简单的语法来使用Nullable<T>类型。它还支持Nullable<T>实例的隐式转换和转换。如下示例演示：</T></T></p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> 1// 从System.Int32隐式转换为Nullable&lt;Int32&gt;  2int? i = 5;
+ 3 4// 从'null'隐式转换为Nullable&lt;Int32&gt;  5int? j = null;
+ 6 7// 从Nullable&lt;Int32&gt;到Int32的显式转换 8int k = (int)i;
+ 910// 基础类型之间的转换11     Double? x = 5; // 从Int到Nullable&lt;Double&gt; 的隐式转换12     Double? y = j; // 从Nullable&lt;Int32&gt; 隐式转换Nullable&lt;Double&gt;
+</code></pre></div></div>
+
+<p>　　对Nullable<T> 类型使用操作符，与包含的基础类型使用方法相同。</T></p>
+
+<ul>
+  <li>一元运算符（++、–、 – 等），如果Nullable<T>类型值是`null`时，返回`null`；</T></li>
+  <li>二元运算符（+、-、*、/、％、^等）任何操作数是<code class="highlighter-rouge">null</code>，返回<code class="highlighter-rouge">null</code>；</li>
+  <li>对于==运算符，如果两个操作数都是<code class="highlighter-rouge">null</code>，则表达式计算结果为<code class="highlighter-rouge">true</code>，如果任何一个操作数是<code class="highlighter-rouge">null</code>，则表达式计算结果为false；如果两者都不为<code class="highlighter-rouge">null</code>，它照常比较。</li>
+  <li>对于关系运算符（&gt;、&lt;、&gt;=、&lt;=），如果任何一个操作数是<code class="highlighter-rouge">null</code>，则运算结果是<code class="highlighter-rouge">false</code>，如果操作数都不为<code class="highlighter-rouge">null</code>，则比较该值。</li>
+</ul>
+
+<p>　　见下面的例子：　　</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> 1int? i = 5;
+ 2int? j = null;
+ 3 4// 一元运算符 5     i++; // i = 6  6     j = -j; // j = null
+ 7 8// 二元运算符 9     i = i + 3; // i = 9 10     j = j * 3; // j = null;
+1112// 等号运算符（==、!=）13var r = i == null; //r = false14     r = j == null; //r = true15     r = i != j; //r = true
+1617// 比较运算符（&lt;、&gt;、&lt;=、&gt;=）18     r = i &gt; j; //r = false1920     i = null;
+21     r = i &gt;= j; //r = false，注意，i=null、j=null，但是&gt;=返回的结果是false
+</code></pre></div></div>
+
+<p>　　Nullable<T>也可以像引用类型一样，支持三元操作符。</T></p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1// 如果雇员的年龄返回null（出生日期可能未输入），请设置值0. 2int age = employee.Age ?? 0;
+34// 在聚合函数中使用三元操作符。5int?[] numbers = {};
+6int total = numbers.Sum() ?? 0;
+</code></pre></div></div>
+
+<h2 id="四装箱与拆箱">四、装箱与拆箱</h2>
+
+<p>　　我们已经知道了Nullable<T>是一个值类型，现在我们再来聊一聊它的装箱与拆箱。
+CLR采用一个特殊的规则来处理Nullable<T>类型的装箱与拆箱。当一个Nullable<T>类型的实例装箱时，CLR会检查实例的HasValue属性：如果是`true`，则将实例Value属性的值进行装箱后返回结果；如果返回`false`，则直接返回`null`，不做任何的处理。
+在拆箱处理时，与装箱处反。CLR会检查拆箱的对象是否为`null`，如果是直接创建一个新的实例 new Nullable<T>()，如果不为`null`，则将对象拆箱为类型T，然后创建一个新实例 new Nullable<T>(t)。</T></T></T></T></T></p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> 1int? n = null;
+ 2object o = n; //不会进行装箱操作，直接返回null值 3 4     Console.WriteLine("o is null = {0}", object.ReferenceEquals(o, null));
+ 5//输出结果：o is null = True 6 7 8     n = 5;
+ 9     o = n; //o引用一个已装箱的Int321011     Console.WriteLine("o's type = {0}", o.GetType());
+12//输出结果：o's type = System.Int321314     o = 5;
+1516//将Int32类型拆箱为Nullable&lt;Int32&gt;类型17int? a = (Int32?)o; // a = 5 
+18//将Int32类型拆箱为Int32类型19int b = (Int32)o; // b = 5
+2021// 创建一个初始化为null22     o = null;
+23// 将null变为Nullable&lt;Int32&gt;类型24     a = (Int32?)o; // a = null 25     b = (Int32)o; // 抛出异常：NullReferenceException
+</code></pre></div></div>
+
+<h2 id="五gettype方法">五、GetType()方法</h2>
+
+<p>　　当调用Nullable<T>类型的`GetType()`方法时，CLR实际返回类型的是泛型参数的类型。因此，您可能无法区分Nullable<Int32>实例上是一个Int32类型还是Nullable<Int32>。见下面的例子：</Int32></Int32></T></p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1int? i = 10;
+2    Console.WriteLine(i.GetType());
+3//输出结果是：System.Int3245     i = null;
+6     Console.WriteLine(i.GetType()); //NullReferenceException
+</code></pre></div></div>
+
+<p>　　原因分析：</p>
+
+<p>　　这是因为调用<code class="highlighter-rouge">GetType()</code>方法时，已经将当前实例进行了装箱，根据上一部分装箱与拆箱的内容，这里实际上调用的是Int32类型的<code class="highlighter-rouge">GetType()</code>方法。</p>
+
+<p>　　调用值类型的<code class="highlighter-rouge">GetType()</code>方法时，均会产生装箱，关于这一点大家可以自己去验证。</p>
+
+<h2 id="六tostring方法">六、ToString()方法</h2>
+
+<p>　　当调用Nullable<T>类型的`ToString()`方法时，如果HasValue属性的值为`false`，则返回`String.Empty`，如果该属性的值为`true`，则调用的逻辑是`Value.ToString()`。 见下面的例子：</T></p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1int? i = 10;
+2    Console.WriteLine(i.ToString());
+3//输出结果：1045     i = null;
+6     Console.WriteLine(i.ToString() == string.Empty);
+7//输出结果：True
+</code></pre></div></div>
+
+<h2 id="七systemnullable帮助类">七、System.Nullable帮助类</h2>
+
+<p>　　微软还提供一个同名<code class="highlighter-rouge">System.Nullable</code>的静态类，包括三个方法：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> 1publicstaticclass Nullable
+ 2{
+ 3//返回指定的可空类型的基础类型参数。 4publicstatic Type GetUnderlyingType(Type nullableType);
+ 5 6//比较两个相对值 System.Nullable&lt;T&gt; 对象。 7publicstaticint Compare&lt;T&gt;(T? n1, T? n2) where T : struct 8 9//指示两个指定 System.Nullable&lt;T&gt; 对象是否相等。10publicstaticbool Equals&lt;T&gt;(T? n1, T? n2) where T : struct11 }
+</code></pre></div></div>
+
+<p>　　在这里面我们重点说明一下<code class="highlighter-rouge">GetUnderlyingType(Type nullableType)</code>方法，另外两个方法是用来比较值的，大家可以自己研究。</p>
+
+<p><code class="highlighter-rouge">GetUnderlyingType(Type nullableType)</code>方法是用来返回一个可为空类型的基础类型，如果 <code class="highlighter-rouge">nullableType</code> 参数不是一个封闭的Nullable<T>泛型，则反回`null`。</T></p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> 1     Console.WriteLine(Nullable.GetUnderlyingType(typeof(Nullable&lt;int&gt;)));
+ 2//输出结果：System.Int32 3 4     Console.WriteLine(Nullable.GetUnderlyingType(typeof(Nullable&lt;&gt;)) == null);
+ 5//输出结果：True 6 7     Console.WriteLine(Nullable.GetUnderlyingType(typeof(int)) == null);
+ 8//输出结果：True 910     Console.WriteLine(Nullable.GetUnderlyingType(typeof(string)) == null);
+11//输出结果：True
+</code></pre></div></div>
+
+<h2 id="八语法糖">八、语法糖</h2>
+
+<p>　　微软对Nullable<T>提供了丰富的语法糖来减少开发员的工作量，下面是我想到供您参考。
+**简写****编译后的语句**
+     1int? i = 5;
+     2 3int? j = null;
+     4 5var r = i != null;
+     6 7var v = (int) i;
+     8 9     i++;
+    1011     i = i + 3;
+    1213     r = i != j;
+    1415     r = i &gt;= j;
+    1617var k = i + j;
+    1819double? x = 5;
+    2021double? y = j;</T></p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> 1int? i = newint?(5);
+ 2 3int? j = newint?();
+ 4 5var r = i.HasValue;
+ 6 7var v = i.Value;
+ 8 9     i = i.HasValue ? newint?(i.GetValueOrDefault() + 1) : newint?();
+1011     i = i.HasValue ? newint?(i.GetValueOrDefault() + 3) : newint?();
+1213     r = i.GetValueOrDefault() != j.GetValueOrDefault() || i.HasValue != j.HasValue;
+1415     r = i.GetValueOrDefault() &gt;= j.GetValueOrDefault() &amp;&amp; i.HasValue &amp; j.HasValue;
+1617int? k = i.HasValue &amp; j.HasValue ? newint?(i.GetValueOrDefault() + j.GetValueOrDefault()) : newint?();
+1819double? x = newdouble?((double) 5);
+2021double? y = j.HasValue ? newdouble?((double) j.GetValueOrDefault()) : newdouble?();
+</code></pre></div></div>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/%E7%BB%86%E8%AF%B4nullable-t-%E7%B1%BB%E5%9E%8B.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/%E4%BB%8E%E4%B8%80%E9%81%93%E4%BE%8B%E9%A2%98%E8%B0%88arrays-tostring-%E4%B8%8E%E5%85%B6%E4%BB%96string%E7%9A%84%E8%BD%AC%E6%8D%A2%E6%96%B9%E6%B3%95.html">&laquo; 从一道例题谈Arrays.toString()与其他String的转换方法</a>
+  
+  
+  <a class="next" href="/2017/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E7%BC%96%E7%A8%8B%E6%80%9D%E6%83%B3-%E7%BB%84%E5%90%88%E6%A8%A1%E5%BC%8F.html">面向对象编程思想-组合模式 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

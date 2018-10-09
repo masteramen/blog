@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>【译】Spring Framework 5.0 中引入 Kotlin 支持 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="【译】Spring Framework 5.0 中引入 Kotlin 支持" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="用 Kotlin 进行函数式 bean 注册" />
+<meta property="og:description" content="用 Kotlin 进行函数式 bean 注册" />
+<link rel="canonical" href="http://www.jfox.info/2017/%E8%AF%91-spring-framework-5-0-%E4%B8%AD%E5%BC%95%E5%85%A5-kotlin-%E6%94%AF%E6%8C%81.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/%E8%AF%91-spring-framework-5-0-%E4%B8%AD%E5%BC%95%E5%85%A5-kotlin-%E6%94%AF%E6%8C%81.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:50:22+00:00" />
+<script type="application/ld+json">
+{"description":"用 Kotlin 进行函数式 bean 注册","@type":"BlogPosting","url":"http://www.jfox.info/2017/%E8%AF%91-spring-framework-5-0-%E4%B8%AD%E5%BC%95%E5%85%A5-kotlin-%E6%94%AF%E6%8C%81.html","headline":"【译】Spring Framework 5.0 中引入 Kotlin 支持","dateModified":"2017-01-01T15:50:22+00:00","datePublished":"2017-01-01T15:50:22+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/%E8%AF%91-spring-framework-5-0-%E4%B8%AD%E5%BC%95%E5%85%A5-kotlin-%E6%94%AF%E6%8C%81.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">【译】Spring Framework 5.0 中引入 Kotlin 支持</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:50:22+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<h2 id="用-kotlin-进行函数式-bean-注册">用 Kotlin 进行函数式 bean 注册</h2>
+
+<p>Spring Framework 5.0 引入了一种新的方式来注册 bean：使用 lambda 表达式作为 XML 方式或者用 <code class="highlighter-rouge">@Configuration</code> 与 <code class="highlighter-rouge">@Bean</code> 的 JavaConfig 方式的替代。 简而言之，它能够用 <code class="highlighter-rouge">Supplier</code> lambda 表达式充当 <code class="highlighter-rouge">FactoryBean</code> 来注册 Bean。</p>
+
+<p>例如在 Java 中你这么写：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>GenericApplicationContextcontext=newGenericApplicationContext();context.registerBean(Foo.class);context.registerBean(Bar.class,()-&gt;newBar(context.getBean(Foo.class)));
+</code></pre></div></div>
+
+<p>而在 Kotlin 中，具体化的类型参数可以让我们简写为：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>valcontext=GenericApplicationContext{registerBean&lt;Foo&gt;()registerBean{Bar(it.getBean&lt;Foo&gt;())}}
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">ApplicationContext</code> 相关的 Kotlin 扩展有 <a href="https://www.jfox.info/go.php?url=https://github.com/spring-projects/spring-framework/blob/master/spring-beans/src/main/kotlin/org/springframework/beans/factory/BeanFactoryExtensions.kt">BeanFactoryExtensions</a>、 <a href="https://www.jfox.info/go.php?url=https://github.com/spring-projects/spring-framework/blob/master/spring-beans/src/main/kotlin/org/springframework/beans/factory/ListableBeanFactoryExtensions.kt">ListableBeanFactoryExtensions</a>、 <a href="https://www.jfox.info/go.php?url=https://github.com/spring-projects/spring-framework/blob/master/spring-context/src/main/kotlin/org/springframework/context/support/GenericApplicationContextExtensions.kt">GenericApplicationContextExtensions</a> 以及 <a href="https://www.jfox.info/go.php?url=https://github.com/spring-projects/spring-framework/blob/master/spring-context/src/main/kotlin/org/springframework/context/annotation/AnnotationConfigApplicationContextExtensions.kt">AnnotationConfigApplicationContextExtensions</a>。</p>
+
+<h2 id="spring-web-函数式-apikotlin-的方式">Spring Web 函数式 API，Kotlin 的方式</h2>
+
+<p>Spring Framework 5.0 附带了一个 Kotlin 路由 DSL，允许你以干净、惯用的 Kotlin 代码来利用最近宣布的 <a href="https://www.jfox.info/go.php?url=https://spring.io/blog/2016/09/22/new-in-spring-5-functional-web-framework">Spring 函数式 Web API</a>：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>{("/blog"andaccept(TEXT_HTML)).route{GET("/",this@BlogController::findAllView)GET("/{slug}",this@BlogController::findOneView)}("/api/blog"andaccept(APPLICATION_JSON)).route{GET("/",this@BlogController::findAll)GET("/{id}",this@BlogController::findOne)}}
+</code></pre></div></div>
+
+<p>感谢 Yevhenii Melnyk 的早期原型与帮助！你可以参见一个使用 <a href="https://www.jfox.info/go.php?url=https://github.com/mix-it/mixit/blob/master/src/main/kotlin/mixit/controller/BlogController.kt">函数式 web API</a> 的 Spring Boot 应用程序的具体示例，该示例在 <a href="https://www.jfox.info/go.php?url=https://github.com/mix-it/mixit/">https://github.com/mix-it/mixit/</a>。</p>
+
+<h2 id="利用-kotlin-的可空性信息">利用 Kotlin 的可空性信息</h2>
+
+<p>原本基于 <a href="https://www.jfox.info/go.php?url=https://github.com/rocketraman">Raman Gupta</a> 的社区贡献，Spring 现在利用 <a href="https://www.jfox.info/go.php?url=https://www.kotlincn.net/docs/reference/null-safety.html">Kotlin 空安全支持</a>来确定某个 HTTP 参数是否必需，而无需明确定义 <code class="highlighter-rouge">required</code> 属性。 这意味着 <code class="highlighter-rouge">@RequestParam name: String?</code> 会被视为非必需而 <code class="highlighter-rouge">@RequestParam name: String</code> 视为必需。 Spring Messaging 的 <code class="highlighter-rouge">@Header</code> 注解也支持这点。</p>
+
+<p>类似地，以 <code class="highlighter-rouge">@Autowired</code> 或者 <code class="highlighter-rouge">@Inject</code> 注入的 Spring bean 使用这一信息来获悉一个 bean 是必需还是非必需。 <code class="highlighter-rouge">@Autowired lateinit var foo: Foo</code> 意味着在应用程序上下文中必须注册一个类型为 <code class="highlighter-rouge">Foo</code> 的 bean，而对于 <code class="highlighter-rouge">@Autowired lateinit var foo: Foo?</code> 则在这样的 bean 不存在时并不会引发错误。</p>
+
+<h2 id="用于-resttemplate-与函数式-web-api-的扩展">用于 RestTemplate 与函数式 Web API 的扩展</h2>
+
+<p>例如，<a href="https://www.jfox.info/go.php?url=https://www.kotlincn.net/docs/reference/inline-functions.html#%E5%85%B7%E4%BD%93%E5%8C%96%E7%9A%84%E7%B1%BB%E5%9E%8B%E5%8F%82%E6%95%B0">Kotlin 具体化的类型参数</a>为 JVM <a href="https://www.jfox.info/go.php?url=https://docs.oracle.com/javase/tutorial/java/generics/erasure.html">泛型类型擦除</a>提供了一种解决方法，因此我们引入了一些扩展来利用这一优势尽可能提供更好的 API。</p>
+
+<p>这允许为 <code class="highlighter-rouge">RestTemplate</code> 提供便利的 API（感谢 Netflix 的 <a href="https://www.jfox.info/go.php?url=https://github.com/jkschneider">Jon Schneider</a> 对此贡献）。 例如，要在 Java 中检索 <code class="highlighter-rouge">Foo</code> 对象的列表，你不得不这样写：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>List&lt;Foo&gt;result=restTemplate.exchange(url,HttpMethod.GET,null,newParameterizedTypeReference&lt;List&lt;Foo&gt;&gt;(){}).getBody();
+</code></pre></div></div>
+
+<p>或者，如果你使用一个中间的数组：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>List&lt;Foo&gt;result=Arrays.asList(restTemplate.getForObject(url,Foo[].class));
+</code></pre></div></div>
+
+<p>而用 Spring Framework 5 扩展，在 Kotlin 中，你可以这样够写：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>valresult:List&lt;Foo&gt;=restTemplate.getForObject(url)
+</code></pre></div></div>
+
+<p>Spring Framework 5.0 中提供的 Web API 的 Kotlin 扩展有 <a href="https://www.jfox.info/go.php?url=https://github.com/spring-projects/spring-framework/blob/master/spring-web/src/main/kotlin/org/springframework/web/client/RestOperationsExtensions.kt">RestOperationsExtensions</a>、<a href="https://www.jfox.info/go.php?url=https://github.com/spring-projects/spring-framework/blob/master/spring-web-reactive/src/main/kotlin/org/springframework/web/reactive/function/server/ServerRequestExtensions.kt">ServerRequestExtensions</a>、 <a href="https://www.jfox.info/go.php?url=https://github.com/spring-projects/spring-framework/blob/master/spring-web-reactive/src/main/kotlin/org/springframework/web/reactive/function/BodyInsertersExtensions.kt">BodyInsertersExtensions</a>、 <a href="https://www.jfox.info/go.php?url=https://github.com/spring-projects/spring-framework/blob/master/spring-web-reactive/src/main/kotlin/org/springframework/web/reactive/function/BodyExtractorsExtensions.kt">BodyExtractorsExtensions</a>、<a href="https://www.jfox.info/go.php?url=https://github.com/spring-projects/spring-framework/blob/master/spring-web-reactive/src/main/kotlin/org/springframework/web/reactive/function/client/ClientResponseExtensions.kt">ClientResponseExtensions</a>、 <a href="https://www.jfox.info/go.php?url=https://github.com/spring-projects/spring-framework/blob/master/spring-context/src/main/kotlin/org/springframework/ui/ModelExtensions.kt">ModelExtensions</a> 以及 <a href="https://www.jfox.info/go.php?url=https://github.com/spring-projects/spring-framework/blob/master/spring-context/src/main/kotlin/org/springframework/ui/ModelMapExtensions.kt">ModelMapExtensions</a>。</p>
+
+<p>这些扩展还提供了支持 Kotlin 原生 <code class="highlighter-rouge">KClass</code> 的成员函数，允许你指定 <code class="highlighter-rouge">Foo::class</code> 参数而不是 <code class="highlighter-rouge">Foo::class.java</code>。</p>
+
+<h2 id="reactor-kotlin-扩展">Reactor Kotlin 扩展</h2>
+
+<p><a href="https://www.jfox.info/go.php?url=https://projectreactor.io/">Reactor</a> 是 Spring Framework 5.0 所基于的响应式基础，而在开发响应式 web 应用程序时，你会有很好的机会去使用其 <a href="https://www.jfox.info/go.php?url=https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html">Mono</a>、 <a href="https://www.jfox.info/go.php?url=https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html">Flux</a> 以及 <a href="https://www.jfox.info/go.php?url=https://projectreactor.io/docs/test/release/api/reactor/test/StepVerifier.html">StepVerifier</a> API。</p>
+
+<p>所以如今我们还通过新的 <a href="https://www.jfox.info/go.php?url=https://github.com/reactor/reactor-kotlin-extensions">reactor-kotlin 扩展</a> 项目在 Reactor 中引入 Kotlin 支持！ 它提供了能够通过任何类实例这样写 <code class="highlighter-rouge">foo.toMono()</code> 来创建 <code class="highlighter-rouge">Mono</code> 实例的扩展，当然很多人倾向于使用 <code class="highlighter-rouge">Mono.just(foo)</code>。 它也支持例如通过 <code class="highlighter-rouge">stream.toFlux()</code> 从 Java 8 <code class="highlighter-rouge">Stream</code> 实例创建 <code class="highlighter-rouge">Flux</code>。 还提供了 <code class="highlighter-rouge">Iterable</code>、 <code class="highlighter-rouge">CompletableFuture</code> 与 <code class="highlighter-rouge">Throwable</code> 扩展以及 <code class="highlighter-rouge">KClass</code> 基于 Reactor API 的变体。</p>
+
+<p>目前该项目还在早期阶段，所以如果你发现缺了点什么，不妨<a href="https://www.jfox.info/go.php?url=https://github.com/reactor/reactor-kotlin-extensions/pulls">贡献</a>自己的扩展。</p>
+
+<h2 id="不再需要将你的-bean-类声明为-open">不再需要将你的 bean 类声明为 open</h2>
+
+<p>当目前为止，当你使用 Kotlin 构建 Spring Boot 应用程序时遇到的少数痛点之一就是，需要为每个由 CGLIB 如 <code class="highlighter-rouge">@Configuration</code> 类代理的 Spring bean 类及其成员函数添加 <code class="highlighter-rouge">open</code> 关键字。 这一要求的根本原因源于 Kotlin 中<a href="https://www.jfox.info/go.php?url=https://discuss.kotlinlang.org/t/classes-final-by-default/166">类是默认 final</a> 的事实。</p>
+
+<p>幸运的是，Kotlin 1.0.6 现在提供了一个 <code class="highlighter-rouge">kotlin-spring</code> 插件，对于由以下注解之一标注或元标注（meta-annotated）的类，会默认打开该类及其成员函数：</p>
+
+<ul>
+  <li><code class="highlighter-rouge">@Component</code></li>
+  <li><code class="highlighter-rouge">@Async</code></li>
+  <li><code class="highlighter-rouge">@Transactional</code></li>
+  <li><code class="highlighter-rouge">@Cacheable</code></li>
+</ul>
+
+<p>元注解支持意味着用 <code class="highlighter-rouge">@Configuration</code>、 <code class="highlighter-rouge">@Controller</code>、 <code class="highlighter-rouge">@RestController</code>、 <code class="highlighter-rouge">@Service</code> 或者 <code class="highlighter-rouge">@Repository</code> 标注的类会自动打开，鉴于这些注解都已被 <code class="highlighter-rouge">@Component</code> 注解元标注。</p>
+
+<p>我们已经更新了 <a href="https://www.jfox.info/go.php?url=http://start.spring.io/#!language=kotlin">start.spring.io</a> 默认启用了该插件。 你可以看下<a href="https://www.jfox.info/go.php?url=https://blog.jetbrains.com/kotlin/2016/12/kotlin-1-0-6-is-here/">这篇 Kotlin 1.0.6 的博文</a>了解更多详情，其中包括对 Spring Data 实体非常有用的新的 <code class="highlighter-rouge">kotlin-jpa</code> 与 <code class="highlighter-rouge">kotlin-noarg</code> 插件。</p>
+
+<h2 id="基于-kotlin-的-gradle-构建配置">基于 Kotlin 的 Gradle 构建配置</h2>
+
+<p>去年 5 月份，Gradle <a href="https://www.jfox.info/go.php?url=https://blog.gradle.org/kotlin-meets-gradle">宣布</a> 除了支持 Groovy 外，他们还将支持用 Kotlin 编写构建及配置文件。 这使在 IDE 中完整的自动补齐与验证成为可能，因为这些文件都是普通的静态类型的 Kotlin 脚本文件。 这可能会成为基于 Kotlin 的项目的自然选择，但这对 Java 项目也同样有价值。</p>
+
+<p>自去年 5 月以来，<a href="https://www.jfox.info/go.php?url=https://github.com/gradle/gradle-script-kotlin">gradle-script-kotlin</a> 项目不断演进，现在已经可用，请记住以下两条警告：</p>
+
+<ul>
+  <li>你需要 Kotlin 1.1-EAP IDEA 插件来获取自动补齐功能（但是如果你要用 <code class="highlighter-rouge">kotlin-spring</code> 插件就要等到 Kotlin <code class="highlighter-rouge">1.1-M05</code> 因为 <code class="highlighter-rouge">1.1-M04</code> 不能与该插件一起可靠运转）</li>
+</ul>
+
+<p>【译注】：目前 1.1 已发布，该问题已不存在。</p>
+
+<ul>
+  <li>其文档不够完整，但是 Gradle 团队对 Kotlin Slack 的 #gradle 频道帮助很大。</li>
+</ul>
+
+<p><a href="https://www.jfox.info/go.php?url=https://github.com/sdeleuze/spring-boot-kotlin-demo">spring-boot-kotlin-demo</a> 以及 <a href="https://www.jfox.info/go.php?url=https://github.com/mix-it/mixit/">mixit</a> 项目都使用这种基于 Kotlin 的 Gradle 构建，所以不妨看看。 我们在<a href="https://www.jfox.info/go.php?url=https://github.com/spring-io/initializr/issues/334">讨论</a>在 start.spring.io 上添加了这项支持。</p>
+
+<h2 id="基于模版的-kotlin-脚本">基于模版的 Kotlin 脚本</h2>
+
+<p>从 4.3 版开始，Spring 框架提供了一个 <a href="https://www.jfox.info/go.php?url=http://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/view/script/ScriptTemplateView.html">ScriptTemplateView</a>，它使用支持 <a href="https://www.jfox.info/go.php?url=https://www.jcp.org/en/jsr/detail?id=223">JSR-223</a> 的脚本引擎来渲染模版，而 Spring Framework 5.0 会更进一步支持 <a href="https://www.jfox.info/go.php?url=https://jira.spring.io/browse/SPR-15064">i18n 以及模版嵌套</a>。 Kotlin 1.1 提供了这样的支持，并允许渲染基于 Kotlin 的模板，详见<a href="https://www.jfox.info/go.php?url=https://github.com/spring-projects/spring-framework/commit/badde3a479a53e1dd0777dd1bd5b55cb1021cf9e">这次提交</a>。</p>
+
+<p>这带来了一些有趣的使用场景，例如使用 <a href="https://www.jfox.info/go.php?url=https://github.com/Kotlin/kotlinx.html">kotlinx.html</a> DSL 或者简单使用带有内插的 Kotlin 多行 <code class="highlighter-rouge">String</code>来编写类型安全的模版，如这个 <a href="https://www.jfox.info/go.php?url=https://github.com/sdeleuze/kotlin-script-templating">kotlin-script-templating</a> 项目所示。 这可以让你在 IDE 中用完整的自动补齐与重构支持来编写这种模板：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>importio.spring.demo.*""" ${include("header")} &lt;h1&gt;${i18n("title")}&lt;/h1&gt; &lt;ul&gt; ${users.joinToLine{ "&lt;li&gt;${i18n("user")} ${it.firstname} ${it.lastname}&lt;/li&gt;" }} &lt;/ul&gt; ${include("footer")} """
+</code></pre></div></div>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/%E8%AF%91-spring-framework-5-0-%E4%B8%AD%E5%BC%95%E5%85%A5-kotlin-%E6%94%AF%E6%8C%81.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/%E4%B8%80%E6%9D%A1%E9%80%9A%E7%94%A8sql%E5%9B%A0%E4%B8%BAsq.html">&laquo; 【一条通用sql因为sq</a>
+  
+  
+  <a class="next" href="/2017/arduino%E5%A4%9A%E4%BB%BB%E5%8A%A1%E5%BA%93processschedule%E5%9C%A8%E7%BA%BF%E7%A8%8B%E4%B8%AD%E8%AE%BE%E7%BD%AE%E5%BB%B6%E8%BF%9F%E7%9A%84%E6%96%B9%E6%B3%95.html">arduino多任务库processSchedule在线程中设置延迟的方法 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

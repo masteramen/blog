@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>Web设计:HTML5和CSS3新交互特性 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="Web设计:HTML5和CSS3新交互特性" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="By Lee - Last updated: 星期二, 二月 18, 2014" />
+<meta property="og:description" content="By Lee - Last updated: 星期二, 二月 18, 2014" />
+<link rel="canonical" href="http://www.jfox.info/2017/web-she-ji-html5-he-css3-xin-jiao-hu-te-xing.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/web-she-ji-html5-he-css3-xin-jiao-hu-te-xing.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:44:26+00:00" />
+<script type="application/ld+json">
+{"description":"By Lee - Last updated: 星期二, 二月 18, 2014","@type":"BlogPosting","url":"http://www.jfox.info/2017/web-she-ji-html5-he-css3-xin-jiao-hu-te-xing.html","headline":"Web设计:HTML5和CSS3新交互特性","dateModified":"2017-01-01T15:44:26+00:00","datePublished":"2017-01-01T15:44:26+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/web-she-ji-html5-he-css3-xin-jiao-hu-te-xing.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Web设计:HTML5和CSS3新交互特性</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:44:26+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>By Lee - Last updated: 星期二, 二月 18, 2014</p>
+
+<p>作为一名网页设计师，我们应当了解HTML5和CSS3它们是什么东西，有什么特性，从而进一步思考通过HTML5和CSS3我们能做些什么。</p>
+
+<h4 id="什么是html5和css3"><strong>什么是HTML5和CSS3</strong></h4>
+
+<p>HTML和CSS并不难理解。HTML为构成网页的主要语言。通过这种语言，我们可以向计算机说明网页格式、内容、显示效果等等。而CSS则是专门用来控制网页显示效果的语言。这时候问题出来了，为什么我们要单独使用CSS呢，HTML不是一样可以控制Web页面的显示效果么？为了回答这个问题，我举个简单的例子：</p>
+
+<p><a href="https://www.jfox.info/go.php?url=http://www.jfox.info/wp-content/uploads/2014/02/2.jpg"><img src="7ad5e41.jpg" alt="2" /></a></p>
+
+<p>有没有发现如果一旦形容的事情过多，想要把事情描述清楚的时候，我们不得不重复大量的信息？页面语言也是一样，在这种情况下显得杂乱无章，非常难以理出头绪。通过将控制显示效果的语言集成到CSS里，我们不但可以保证页面语言主体部分的简洁，而且可以非常方便的复用各种语言集合。</p>
+
+<p>HTML5和CSS3是HTML和CSS的最新版本，它们目前均未确定标准，但是已经公布的新特征已经让我们心动不已。</p>
+
+<h4 id="html-5的新特新"><strong>HTML 5的新特新</strong></h4>
+
+<h4 id="1-新的内容标签"><strong>1. 新的内容标签</strong></h4>
+
+<p><a href="https://www.jfox.info/go.php?url=http://www.jfox.info/wp-content/uploads/2014/02/3.jpg"><img src="31b45a5.jpg" alt="3" /></a></p>
+
+<p>HTML4中的内容标签级别相同，无法区分各部分内容。而HTML5中的内容标签互相独立，级别不同，搜索引擎以及统计软件等均可快速识别各部分内容。</p>
+
+<h4 id="2-更好的表格体系"><strong>2. 更好的表格体系</strong></h4>
+
+<p><a href="https://www.jfox.info/go.php?url=http://www.jfox.info/wp-content/uploads/2014/02/4.jpg"><img src="9bd371e.jpg" alt="4" /></a></p>
+
+<p>现在，你可以抛弃JavaScript或者是PHP，只通过HTML5来定义表格。你可以定义每个表格单元的输入格式，也可以定义这个单元是否是必填的等等。</p>
+
+<h4 id="3-音频视频api"><strong>3. 音频、视频API</strong></h4>
+
+<p><a href="https://www.jfox.info/go.php?url=http://www.jfox.info/wp-content/uploads/2014/02/5.jpg"><img src="8db71c9.jpg" alt="5" /></a></p>
+
+<p><a href="https://www.jfox.info/go.php?url=http://www.jfox.info/wp-content/uploads/2014/02/6.jpg"><img src="7b896fe.jpg" alt="6" /></a></p>
+
+<p>HTML5不但允许你在网页中直接整合视频、音频，同时更提供了一套功能丰富的API用来控制媒体播放，而这些用来控制媒体播放的元素也都是可以被编辑的。因此，HTML5在视频以及音频层面上实际已经可以替代常用的flash插件了。</p>
+
+<h4 id="4-画布canvas-api"><strong>4. 画布(Canvas) API</strong></h4>
+
+<p><a href="https://www.jfox.info/go.php?url=http://www.jfox.info/wp-content/uploads/2014/02/7.jpg"><img src="2926a3a.jpg" alt="7" /></a></p>
+
+<p>在网页中绘制图形一直是个大难题，我们不得不借助flash、silverlight等插件。然而HTML5允许你直接在网页上进行绘图，甚至允许你与网页生成更多的交互，例如绘制图形、放大缩小，等等。图例是一个用HTML5制作的小游戏。</p>
+
+<h4 id="5-地理geolocation-api"><strong>5. 地理(Geolocation) API</strong></h4>
+
+<p><a href="https://www.jfox.info/go.php?url=http://www.jfox.info/wp-content/uploads/2014/02/8.jpg"><img src="3c69703.jpg" alt="8" /></a></p>
+
+<p>HTML5提供了地理信息的应用接口Geolocation API。通过这个API，网页可以通过IP，GPS等方式来获得用户的地理信息；同时用户也可以选择是否关闭这个功能。</p>
+
+<h4 id="6-网页存储web-storage-api"><strong>6. 网页存储(Web storage) API</strong></h4>
+
+<p><a href="https://www.jfox.info/go.php?url=http://www.jfox.info/wp-content/uploads/2014/02/9.jpg"><img src="8b43373.jpg" alt="9" /></a></p>
+
+<p>HTML5提供了网页存储的API，方便Web应用的离线使用。除此之外，新的API相对于cookie也有着高安全性，高效率，更大空间等优点。</p>
+
+<h4 id="7-拖拽释放drag-and-drop-api"><strong>7. 拖拽释放(Drag and drop) API</strong></h4>
+
+<p><a href="https://www.jfox.info/go.php?url=http://www.jfox.info/wp-content/uploads/2014/02/10.jpg"><img src="4249299.jpg" alt="10" /></a></p>
+
+<p>我们可以通过HTML5的Drag and drop API来完成网页中的拖拽释放效果，避免了以往的网页在拖拽释放过程中需要不停修改元素的位置，代码繁多的弊端。</p>
+
+<h4 id="css3-新特性"><strong>CSS3 新特性</strong></h4>
+
+<h4 id="1-rgba"><strong>1. RGBa</strong></h4>
+
+<p><a href="https://www.jfox.info/go.php?url=http://www.jfox.info/wp-content/uploads/2014/02/11.jpg"><img src="51ff6c6.jpg" alt="11" /></a></p>
+
+<p>CSS3的RGBa新特性允许你对每个元素进行色彩以及透明度的设置。而原来常用的opacity命令只能对元素及其子元素进行设置。</p>
+
+<h4 id="2-multi-column-layout"><strong>2. Multi-column layout</strong></h4>
+
+<p><a href="https://www.jfox.info/go.php?url=http://www.jfox.info/wp-content/uploads/2014/02/12.jpg"><img src="d4b6e1a.jpg" alt="12" /></a></p>
+
+<p>CSS3新提供的多栏布局选择器无需HTML布局标签即可生成多栏布局，同时‘栏数’、‘栏宽’以及‘栏间距’都是可以定义的。</p>
+
+<h4 id="3-round-corners"><strong>3. Round corners</strong></h4>
+
+<p><a href="https://www.jfox.info/go.php?url=http://www.jfox.info/wp-content/uploads/2014/02/13.jpg"><img src="b8b299c.jpg" alt="13" /></a></p>
+
+<p>圆角功能可能是CSS3提供的最实用的功能了。通过Border-radius，你可以没有任何难度的给指定的HTML元素添加圆角。并且你还可以定义圆角的大小，以及哪个角是圆角，哪个角不是圆角。</p>
+
+<h4 id="4-font-face"><strong>4. @font-face</strong></h4>
+
+<p><a href="https://www.jfox.info/go.php?url=http://www.jfox.info/wp-content/uploads/2014/02/14.jpg"><img src="d0e0b93.jpg" alt="14" /></a></p>
+
+<p>当网页显示某种用户没有安装的字体时，CSS3提供的@font-face功能会自动的、默默地帮用户从网络上下载相应字体。从而让设计师更加自由的发挥，而不用考虑用户的机器是否安装了相应字体。</p>
+
+<h4 id="5-其他特性"><strong>5. 其他特性</strong></h4>
+
+<p>此外，CSS3还给我们带来了渐变、防止字符串过长溢出、多重背景以及用图片来作为元素边框等功能。</p>
+
+<p>利用好CSS3，你可以更快捷的得到以往用很多插件才能得到的效果。同过使用元素本身来取代大部分图片，网页的加载速度会得到提升，这些原本是图片的内容，也可以被搜索引擎检索到。</p>
+
+<h4 id="html5和css3的兼容性"><strong>HTML5和CSS3的兼容性</strong></h4>
+
+<p>HTML5和CSS3的标准并未正式完成，各家浏览器对其支持程度也不尽相同。了解HTML5和CSS3的兼容性是十分必要的。下面的连接是一个专门跟踪HTML5和CSS3兼容性的网站，有兴趣的朋友可以点击查看：<a href="https://www.jfox.info/go.php?url=http://www.findmebyip.com/litmus">http://www.findmebyip.com/litmus</a></p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/web-she-ji-html5-he-css3-xin-jiao-hu-te-xing.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/web-she-ji-html5-he-css3-xin-jiao-hu-te-xing.html">&laquo; Web设计:HTML5和CSS3新交互特性</a>
+  
+  
+  <a class="next" href="/2017/yi-ge-i-t-ji-shu-ren-de-gan-tan-ji-shu-you-shi-me-wei-lai.html">一个IT技术人的感叹：技术有什么未来？ &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

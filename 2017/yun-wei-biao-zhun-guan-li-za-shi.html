@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>运维标准（管理杂事） » java面试题 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="运维标准（管理杂事） » java面试题" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="前言： 人蠢没办法，用不惯 iteye的编辑器。" />
+<meta property="og:description" content="前言： 人蠢没办法，用不惯 iteye的编辑器。" />
+<link rel="canonical" href="http://www.jfox.info/2017/yun-wei-biao-zhun-guan-li-za-shi.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/yun-wei-biao-zhun-guan-li-za-shi.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:49:12+00:00" />
+<script type="application/ld+json">
+{"description":"前言： 人蠢没办法，用不惯 iteye的编辑器。","@type":"BlogPosting","url":"http://www.jfox.info/2017/yun-wei-biao-zhun-guan-li-za-shi.html","headline":"运维标准（管理杂事） » java面试题","dateModified":"2017-01-01T15:49:12+00:00","datePublished":"2017-01-01T15:49:12+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/yun-wei-biao-zhun-guan-li-za-shi.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">运维标准（管理杂事） » java面试题</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:49:12+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>前言： 人蠢没办法，用不惯 iteye的编辑器。</p>
+
+<p>细节管理，才是管理。</p>
+
+<p>管理需要持久，不断完善，才能出效果。</p>
+
+<p>管理不要怕麻烦，</p>
+
+<p>方便，没时间，没什么区别，能用就好，</p>
+
+<p>自定义安装搞不定。一旦离开官方安装手册与博客，安装不成功。</p>
+
+<p>没有对技术追求的心，没有对工作负责。</p>
+
+<p>关于root用户，是团队沟通与管理有问题。</p>
+
+<p>1，yum安装，或者rmp包安装</p>
+
+<p>yum方式安装的都是yum默认软件。比如安装 java虚拟机是按照的 open-jdk。而开发用的官网的jdk，可能出现不兼容的情况。</p>
+
+<p>血案： 开发与测试环境什么问题都没有。到了正式环境就报错，就Ingeter与int不兼容（大概就是这样）等等小问题，最后发现正式环境的jdk是 open-jdk，开发与测试都是官网的jdk。造成了通宵发布。最后把正式环境的jdk替换成 官网的jdk。替换过程比较麻烦（分析现有服务资源等，在另外一台部署，调试部署成功之后，修改nginx配置，关闭第一个服务器所有资源，修改jdk版本，重新启动服务，测试是否运行正常）。浪费了3 4个小时。整体浪费了一个团队差不多2天的时间。</p>
+
+<p>血案：主从复制延迟，配置没问题，没有异常，就是延迟，最后一看尽然是 MariaDB。yum默认安装MySQL是MariaDB，MariaDB的innodb近期才提升到MySQL官方的5.7版本。以前一直是5.5.或者5.6。</p>
+
+<p>yum方式安装版本，不可控。</p>
+
+<p>血案：运维使用yum安装了redis，安装版本是2.8.0 有个复制bug（[FIX] Fixed a critical replication bug, see issue #1221.）。已经告诉运维了注意这个bug，不要yum安装，还是使用yum安装，造成正式环境，复制问题。服务紧急停止十分钟，把读写分离的代码，修改成读写master。</p>
+
+<p>yum与rpm，安装不可控，目录不可控与配置不可控。</p>
+
+<p>1，yum 与rpm安装默认都会解决依赖关系。</p>
+
+<p>血案： 安装了多个java 软件。他们之前的依赖版本区别大。解决造成一些软件运行不正常。</p>
+
+<p>无意卸载了 某个软件所有依赖，不小心删除其他软件的依赖。也是自己贱。</p>
+
+<p>2，安装流程未知，安装目录未知。有问会说 看rpm执行代码。很复杂，你真得有那么多精力看代码。你需要那么复杂吗？</p>
+
+<p>问题： MySQL rmp安装，会版本。做很多事情。同事，也会默认初始化MySQL。造成所有文件，都在默认模式，时间长了。或者 需要处理问题。造成很大的麻烦。</p>
+
+<p>2，默认安装目录和一切都放到用户目录</p>
+
+<p>直接按照官网或者博客的流程安装，usr目录下。</p>
+
+<p>容易出问题。不方便管理。有时候。找东西真的找不到。很费时间。磁盘挂载，版本替换等等十分麻烦。</p>
+
+<p>鄙人目前的软件与服务都是固定三个目录一个data，一个software，一个server。</p>
+
+<p>血案：一台MySQL实例运行缓慢，进服务一看磁盘爆满，MySQL的binlog 与 undo日志十分庞大，因为软件是安装在usr目录下，/ 的挂载量不大，运维与DBA说。直接删除 binlog 与 undo，我说：找死吗？ 应用在执行批量update操作。谁知道binlog里面的情况怎么样？。解决这个事情的流程花了一周时间。数据量相对我们来说。处理由点麻烦。</p>
+
+<p>在正式环境中，一般一台主机一般就只有一个数据库实例或者多个应用实例。软件也就两三个。真得没有必要安装到usr目录下。</p>
+
+<p>usr目录的确是用户软件与bin安装目录。注意是 user，user。这个user是使用者或者开发者。一个正式环境是没有开发者的。</p>
+
+<p>自定义目录可以有多个用户管理。这里十分方便。</p>
+
+<p>这个系统十分简洁，干净。</p>
+
+<p>管理十分简单，直接复制目录，压缩 scp，解压，安装环境变量，启动，OK。如果安装在usr目录用户用户目录，你还真的不敢这样做。</p>
+
+<p>5，不管理软件版本</p>
+
+<p>开发要什么就是什么。没有考虑，开发要这些对运维有什么影响。</p>
+
+<p>6，不了解软件</p>
+
+<p>直接安装，不也管。配置如何处理，里面的细节是什么。</p>
+
+<p>7，没有运维管理。</p>
+
+<p>完全手动安装，没有shell安装。更加没有自动化安装。</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/yun-wei-biao-zhun-guan-li-za-shi.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/shen-ru-qian-chu-spring-data-elasticsearch-zhi-elasticsearch-jia-gou-chu-tan-yi.html">&laquo; 深入浅出 spring-data-elasticsearch 之 ElasticSearch 架构初探（一）</a>
+  
+  
+  <a class="next" href="/2017/mina-bao-wen-tong-xin-jian-dan-shi-li.html">Mina 报文通信简单示例 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

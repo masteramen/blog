@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>一份不错的php面试题与答案 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="一份不错的php面试题与答案" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="一份不错的php面试题,附答案,有准备换工作的同学可以参考一下." />
+<meta property="og:description" content="一份不错的php面试题,附答案,有准备换工作的同学可以参考一下." />
+<link rel="canonical" href="http://www.jfox.info/2017/yi-fen-bu-cuo-de-php-mian-shi-ti-yu-da-an.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/yi-fen-bu-cuo-de-php-mian-shi-ti-yu-da-an.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:46:21+00:00" />
+<script type="application/ld+json">
+{"description":"一份不错的php面试题,附答案,有准备换工作的同学可以参考一下.","@type":"BlogPosting","url":"http://www.jfox.info/2017/yi-fen-bu-cuo-de-php-mian-shi-ti-yu-da-an.html","headline":"一份不错的php面试题与答案","dateModified":"2017-01-01T15:46:21+00:00","datePublished":"2017-01-01T15:46:21+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/yi-fen-bu-cuo-de-php-mian-shi-ti-yu-da-an.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">一份不错的php面试题与答案</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:46:21+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>一份不错的php面试题,附答案,有准备换工作的同学可以参考一下.</p>
+
+<p>一、基础题</p>
+
+<ol>
+  <li>写出如下程序的输出结果</li>
+</ol>
+
+<?php
+
+$str1 = null;
+
+$str2 = false;
+
+echo $str1==$str2 ? ‘相等’ : ‘不相等’;
+
+$str3 = ”;
+
+$str4 = 0;
+
+echo $str3==$str4 ? ‘相等’ : ‘不相等’;
+
+$str5 = 0;
+
+$str6 = ‘0’;
+
+echo $str5===$str6 ? ‘相等’ : ‘不相等’;
+
+?>
+
+<ol>
+  <li>写出如下程序的输出结果</li>
+</ol>
+
+<?php
+
+$a1 = null;
+
+$a2 = false;
+
+$a3 = 0;
+
+$a4 = ”;
+
+$a5 = ‘0’;
+
+$a6 = ‘null’;
+
+$a7 = array();
+
+$a8 = array(array());
+
+echo empty($a1) ? ‘true’ : ‘false’;
+
+echo empty($a2) ? ‘true’ : ‘false’;
+
+echo empty($a3) ? ‘true’ : ‘false’;
+
+echo empty($a4) ? ‘true’ : ‘false’;
+
+echo empty($a5) ? ‘true’ : ‘false’;
+
+echo empty($a6) ? ‘true’ : ‘false’;
+
+echo empty($a7) ? ‘true’ : ‘false’;
+
+echo empty($a8) ? ‘true’ : ‘false’;
+
+?>
+
+<ol>
+  <li>写出如下程序的输出结果</li>
+</ol>
+
+<?php
+
+$test = ‘aaaaaa’;
+
+$abc = & $test;
+
+unset($test);
+
+echo $abc;
+
+?>
+
+<ol>
+  <li>写出如下程序的输出结果</li>
+</ol>
+
+<?php
+
+$count = 5;
+
+function get_count(){
+
+static $count = 0;
+
+return $count++;
+
+}
+
+echo $count;
+
+++$count;
+
+echo get_count();
+
+echo get_count();
+
+?>
+
+<ol>
+  <li>写出如下程序的输出结果</li>
+</ol>
+
+<?php
+
+$GLOBALS[‘var1’] = 5;
+
+$var2 = 1;
+
+function get_value(){
+
+global $var2;
+
+$var1 = 0;
+
+return $var2++;
+
+}
+
+get_value();
+
+echo $var1;
+
+echo $var2;
+
+?>
+
+<ol>
+  <li>写出如下程序的输出结果</li>
+</ol>
+
+<?php
+
+function get_arr($arr){
+
+unset($arr[0]);
+
+}
+
+$arr1 = array(1, 2);
+
+$arr2 = array(1, 2);
+
+get_arr(&$arr1);
+
+get_arr($arr2);
+
+echo count($arr1);
+
+echo count($arr2);
+
+?>
+
+<ol>
+  <li>使用五种以上方式获取一个文件的扩展名</li>
+</ol>
+
+<p>要求：dir/upload.image.jpg，找出 .jpg 或者 jpg ，</p>
+
+<p>必须使用PHP自带的处理函数进行处理，方法不能明显重复，可以封装成函数，比如 get_ext1($file_name), get_ext2($file_name)</p>
+
+<p>二、算法题</p>
+
+<ol>
+  <li>
+    <p>使用PHP描述冒泡排序和快速排序算法，对象可以是一个数组</p>
+  </li>
+  <li>
+    <p>使用PHP描述顺序查找和二分查找（也叫做折半查找）算法，顺序查找必须考虑效率，对象可以是一个有序数组</p>
+  </li>
+  <li>
+    <p>写一个二维数组排序算法函数，能够具有通用性，可以调用php内置函数</p>
+  </li>
+</ol>
+
+<p>【答案】</p>
+
+<p>（以下答案不一定是最好的，只是一个简单的参考）</p>
+
+<p>一、基础题</p>
+
+<ol>
+  <li>
+    <p>相等 相等 不相等</p>
+  </li>
+  <li>
+    <p>true true true true true false true false</p>
+  </li>
+  <li>
+    <p>aaaaaa</p>
+  </li>
+  <li>
+    <p>5 0 1</p>
+  </li>
+  <li>
+    <p>5 2</p>
+  </li>
+  <li>
+    <p>1 2</p>
+  </li>
+  <li>
+    <p>使用五种以上方式获取一个文件的扩展名</p>
+  </li>
+</ol>
+
+<p>function get_ext1($file_name){</p>
+
+<p>return strrchr($file_name, ‘.’);</p>
+
+<p>}</p>
+
+<p>function get_ext2($file_name){</p>
+
+<p>return substr($file_name, strrpos($file_name, ‘.’));</p>
+
+<p>}</p>
+
+<p>function get_ext3($file_name){</p>
+
+<p>return array_pop(explode(‘.’, $file_name));</p>
+
+<p>}</p>
+
+<p>function get_ext4($file_name){</p>
+
+<p>$p = pathinfo($file_name);</p>
+
+<p>return $p[‘extension’];</p>
+
+<p>}</p>
+
+<p>function get_ext5($file_name){</p>
+
+<p>return strrev(substr(strrev($file_name), 0, strpos(strrev($file_name), ‘.’)));</p>
+
+<p>}</p>
+
+<p>二、算法题</p>
+
+<ol>
+  <li>使用PHP描述冒泡排序和快速排序算法，对象可以是一个数组</li>
+</ol>
+
+<p>//冒泡排序（数组排序）</p>
+
+<p>function bubble_sort($array){</p>
+
+<p>$count = count($array);</p>
+
+<p>if ($count &lt;= 0) return false;</p>
+
+<p>for($i=0; $i&lt;$count; $i++){</p>
+
+<p>for($j=$count-1; $j&gt;$i; $j–){</p>
+
+<p>if ($array[$j] &lt; $array[$j-1]){</p>
+
+<p>$tmp = $array[$j];</p>
+
+<p>$array[$j] = $array[$j-1];</p>
+
+<p>$array[$j-1] = $tmp;</p>
+
+<p>}</p>
+
+<p>}</p>
+
+<p>}</p>
+
+<p>return $array;</p>
+
+<p>}</p>
+
+<p>//快速排序（数组排序）</p>
+
+<p>function quick_sort($array) {</p>
+
+<p>if (count($array) &lt;= 1) return $array;</p>
+
+<p>$key = $array[0];</p>
+
+<p>$left_arr = array();</p>
+
+<p>$right_arr = array();</p>
+
+<p>for ($i=1; $i&lt;count($array); $i++){</p>
+
+<p>if ($array[$i] &lt;= $key)</p>
+
+<p>$left_arr[] = $array[$i];</p>
+
+<p>else</p>
+
+<p>$right_arr[] = $array[$i];</p>
+
+<p>}</p>
+
+<p>$left_arr = quick_sort($left_arr);</p>
+
+<p>$right_arr = quick_sort($right_arr);</p>
+
+<p>return array_merge($left_arr, array($key), $right_arr);</p>
+
+<p>}</p>
+
+<ol>
+  <li>使用PHP描述顺序查找和二分查找（也叫做折半查找）算法，顺序查找必须考虑效率，对象可以是一个有序数组</li>
+</ol>
+
+<p>//二分查找（数组里查找某个元素）</p>
+
+<p>function bin_sch($array, $low, $high, $k){</p>
+
+<p>if ($low &lt;= $high){</p>
+
+<p>$mid = intval(($low+$high)/2);</p>
+
+<p>if ($array[$mid] == $k){</p>
+
+<p>return $mid;</p>
+
+<p>}elseif ($k &lt; $array[$mid]){</p>
+
+<p>return bin_sch($array, $low, $mid-1, $k);</p>
+
+<p>}else{</p>
+
+<p>return bin_sch($array, $mid+1, $high, $k);</p>
+
+<p>}</p>
+
+<p>}</p>
+
+<p>return -1;</p>
+
+<p>}</p>
+
+<p>//顺序查找（数组里查找某个元素）</p>
+
+<p>function seq_sch($array, $n, $k){</p>
+
+<p>$array[$n] = $k;</p>
+
+<p>for($i=0; $i&lt;$n; $i++){</p>
+
+<p>if($array[$i]==$k){</p>
+
+<p>break;</p>
+
+<p>}</p>
+
+<p>}</p>
+
+<p>if ($i&lt;$n){</p>
+
+<p>return $i;</p>
+
+<p>}else{</p>
+
+<p>return -1;</p>
+
+<p>}</p>
+
+<p>}</p>
+
+<ol>
+  <li>写一个二维数组排序算法函数，能够具有通用性，可以调用php内置函数</li>
+</ol>
+
+<p>//二维数组排序， $arr是数据，$keys是排序的健值，$order是排序规则，1是升序，0是降序</p>
+
+<p>function array_sort($arr, $keys, $order=0) {</p>
+
+<p>if (!is_array($arr)) {</p>
+
+<p>return false;</p>
+
+<p>}</p>
+
+<p>$keysvalue = array();</p>
+
+<p>foreach($arr as $key =&gt; $val) {</p>
+
+<p>$keysvalue[$key] = $val[$keys];</p>
+
+<p>}</p>
+
+<p>if($order == 0){</p>
+
+<p>asort($keysvalue);</p>
+
+<p>}else {</p>
+
+<p>arsort($keysvalue);</p>
+
+<p>}</p>
+
+<p>reset($keysvalue);</p>
+
+<p>foreach($keysvalue as $key =&gt; $vals) {</p>
+
+<p>$keysort[$key] = $key;</p>
+
+<p>}</p>
+
+<p>$new_array = array();</p>
+
+<p>foreach($keysort as $key =&gt; $val) {</p>
+
+<p>$new_array[$key] = $arr[$val];</p>
+
+<p>}</p>
+
+<p>return $new_array;</p>
+
+<p>}</p>
+
+<p>原文地址:<a href="https://www.jfox.info/go.php?url=http://www.jfox.info/url.php?_v=v4&amp;_src=&amp;isencode=1&amp;content=dGltZT0xNDA5MDYyNDkyNzYwJnVybD1odHRwJTNBJTJGJTJGd3d3LnBocHppeHVlLmNuJTJGZGV0YWlsNTg2LnNodG1s">http://www.phpzixue.cn/detail586.shtml</a>.</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/yi-fen-bu-cuo-de-php-mian-shi-ti-yu-da-an.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/java-jie-kou-he-chou-xiang-lei-de-qu-bie-shi-shi-me.html">&laquo; JAVA接口和抽象类的区别是什么？</a>
+  
+  
+  <a class="next" href="/2017/mysql-suo-yin-yuan-li-ji-man-cha-xun-you-hua.html">MySQL索引原理及慢查询优化 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

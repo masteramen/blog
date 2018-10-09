@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>JAVA中ClassLoader的工作原理 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="JAVA中ClassLoader的工作原理" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="每个运行中的线程都有一个成员contextClassLoader，用来在运行时动态地载入其它类" />
+<meta property="og:description" content="每个运行中的线程都有一个成员contextClassLoader，用来在运行时动态地载入其它类" />
+<link rel="canonical" href="http://www.jfox.info/2017/java-classloader-de-gong-zuo-yuan-li.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/java-classloader-de-gong-zuo-yuan-li.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:44:36+00:00" />
+<script type="application/ld+json">
+{"description":"每个运行中的线程都有一个成员contextClassLoader，用来在运行时动态地载入其它类","@type":"BlogPosting","url":"http://www.jfox.info/2017/java-classloader-de-gong-zuo-yuan-li.html","headline":"JAVA中ClassLoader的工作原理","dateModified":"2017-01-01T15:44:36+00:00","datePublished":"2017-01-01T15:44:36+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/java-classloader-de-gong-zuo-yuan-li.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">JAVA中ClassLoader的工作原理</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:44:36+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>每个运行中的线程都有一个成员contextClassLoader，用来在运行时动态地载入其它类</p>
+
+<p>系统默认的contextClassLoader是systemClassLoader，所以一般而言java程序在执行时可以使用JVM自带的类、$JAVA_HOME/jre/lib/ext/中的类和$CLASSPATH/中的类</p>
+
+<p>可以使用Thread.currentThread().setContextClassLoader(…);更改当前线程的contextClassLoader，来改变其载入类的行为</p>
+
+<p>ClassLoader被组织成树形，一般的工作原理是：</p>
+
+<p>1) 线程需要用到某个类，于是contextClassLoader被请求来载入该类</p>
+
+<p>2) contextClassLoader请求它的父ClassLoader来完成该载入请求</p>
+
+<p>3) 如果父ClassLoader无法载入类，则contextClassLoader试图自己来载入</p>
+
+<p>Java中一共有四个类加载器，之所以叫类加载器，是程序要用到某个类的时候，要用类加载器载入内存。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>这四个类加载器分别为：Bootstrap ClassLoader、Extension ClassLoader、AppClassLoader 
+</code></pre></div></div>
+
+<p>和URLClassLoader，他们的作用其实从名字就可以大概推测出来了。其中AppClassLoader在很多地方被叫做System ClassLoader</p>
+
+<p>Bootstrap ClassLoader是在JVM开始运行的时候加载java的核心类，是用C++编写的，它用来加载核心类库，在JVM源代码中这样写道：</p>
+
+<p>static const char classpathFormat[] =</p>
+
+<p>“%/lib/rt.jar:”</p>
+
+<p>“%/lib/i18n.jar:”</p>
+
+<p>“%/lib/sunrsasign.jar:”</p>
+
+<p>“%/lib/jsse.jar:”</p>
+
+<p>“%/lib/jce.jar:”</p>
+
+<p>“%/lib/charsets.jar:”</p>
+
+<p>“%/classes”;</p>
+
+<p>Extension ClassLoader是用来加载扩展类，即/lib/ext中的类。</p>
+
+<p>AppClassLoader用来加载Classpath的类，是和我们关系最密切的类。</p>
+
+<p>URLClassLoader用来加载网络上远程的类</p>
+
+<p>1． 预先加载与依需求加载</p>
+
+<p>Java 运行环境为了优化系统，提高程序的执行速度，在 JRE 运行的开始会将 Java 运行所需要的基本类采用预先加载（ pre-loading ）的方法全部加载要内存当中，因为这些单元在 Java 程序运行的过程当中经常要使用的，主要包括 JRE 的 rt.jar 文件里面所有的 .class 文件。</p>
+
+<p>当 java.exe 虚拟机开始运行以后，它会找到安装在机器上的 JRE 环境，然后把控制权交给 JRE ， JRE 的类加载器会将 lib 目录下的 rt.jar 基础类别文件库加载进内存，这些文件是 Java 程序执行所必须的，所以系统在开始就将这些文件加载，避免以后的多次 IO 操作，从而提高程序执行效率。</p>
+
+<p>相对于预先加载，我们在程序中需要使用自己定义的类的时候就要使用依需求加载方法（ load-on-demand ），就是在 Java 程序需要用到的时候再加载，以减少内存的消耗，因为 Java 语言的设计初衷就是面向嵌入式领域的。</p>
+
+<p>2． 隐式加载和显示加载</p>
+
+<p>Java 的加载方式分为隐式加载（ implicit ）和显示加载（ explicit ），上面的例子中就是用的隐式加载的方式。所谓隐式加载就是我们在程序中用 new 关键字来定义一个实例变量， JRE 在执行到 new 关键字的时候就会把对应的实例类加载进入内存。隐式加载的方法很常见，用的也很多， JRE 系统在后台自动的帮助用户加载，减少了用户的工作量，也增加了系统的安全性和程序的可读性。</p>
+
+<p>Class c = Class.forName(“TestClass”);</p>
+
+<p>TestClass object = (TestClass)c.newInstance();</p>
+
+<p>object.method();</p>
+
+<p>通过 Class 类的 forName (String s) 方法把自定义类 TestClass 加载进来，并通过 newInstance （）方法把实例初始化。事实上 Class 类还很多的功能，这里就不细讲了，有兴趣的可以参考 JDK 文档。</p>
+
+<p>Class 的 forName() 方法还有另外一种形式： Class forName(String s, boolean flag, ClassLoader classloader) ， s 表示需要加载类的名称， flag 表示在调用该函数加载类的时候是否初始化静态区， classloader 表示加载该类所需的加载器。</p>
+
+<p>forName (String s) 是默认通过 ClassLoader.getCallerClassLoader() 调用类加载器的，但是该方法是私有方法，我们无法调用，如果我们想使用 Class forName(String s, boolean flag, ClassLoader classloader) 来加载类的话，就必须要指定类加载器，可以通过如下的方式来实现：</p>
+
+<p>Test test = new Test();//Test 类为自定义的一个测试类；</p>
+
+<p>ClassLoader cl = test. getClass().getClassLoader();</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>                     // 获取 test 的类装载器； 
+</code></pre></div></div>
+
+<p>Class c = Class.forName(“TestClass”, true, cl);</p>
+
+<p>因为一个类要加载就必需要有加载器，这里我们是通过获取加载 Test 类的加载器 cl 当作加载 TestClass 的类加载器来实现加载的。</p>
+
+<p>3． 自定义类加载机制</p>
+
+<p>之前我们都是调用系统的类加载器来实现加载的，其实我们是可以自己定义类加载器的。利用 Java 提供的 java.net.URLClassLoader 类就可以实现。下面我们看一段范例：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>try{ 
+
+           URL url = new URL(“file:/d:/test/lib/”); 
+
+           URLClassLoader urlCL = new URLClassLoader(new URL[]{url}); 
+
+           Class c = urlCL.loadClass(“TestClassA”); 
+
+           TestClassA object = (TestClassA)c.newInstance(); 
+
+           object.method(); 
+
+    }catch(Exception e){ 
+
+           e.printStackTrace(); 
+
+    } 
+</code></pre></div></div>
+
+<p>我们通过自定义的类加载器实现了 TestClassA 类的加载并调用 method （）方法。分析一下这个程序：首先定义 URL 指定类加载器从何处加载类， URL 可以指向网际网络上的任何位置，也可以指向我们计算机里的文件系统 ( 包含 JAR 文件 ) 。上述范例当中我们从 file:/d:/test/lib/ 处寻找类；然后定义 URLClassLoader 来加载所需的类，最后即可使用该实例了。</p>
+
+<p>4． 类加载器的阶层体系</p>
+
+<p>讨论了这么多以后，接下来我们仔细研究一下 Java 的类加载器的工作原理：</p>
+
+<p>当执行 java ***.class 的时候， java.exe 会帮助我们找到 JRE ，接着找到位于 JRE 内部的 jvm.dll ，这才是真正的 Java 虚拟机器 , 最后加载动态库，激活 Java 虚拟机器。虚拟机器激活以后，会先做一些初始化的动作，比如说读取系统参数等。一旦初始化动作完成之后，就会产生第一个类加载器―― Bootstrap Loader ， Bootstrap Loader 是由 C++ 所撰写而成，这个 Bootstrap Loader 所做的初始工作中，除了一些基本的初始化动作之外，最重要的就是加载 Launcher.java 之中的 ExtClassLoader ，并设定其 Parent 为 null ，代表其父加载器为 BootstrapLoader 。然后 Bootstrap Loader 再要求加载 Launcher.java 之中的 AppClassLoader ，并设定其 Parent 为之前产生的 ExtClassLoader 实体。这两个加载器都是以静态类的形式存在的。这里要请大家注意的是， Launcher$ExtClassLoader.class 与 Launcher$AppClassLoader.class 都是由 Bootstrap Loader 所加载，所以 Parent 和由哪个类加载器加载没有关系。</p>
+
+<p>这三个加载器就构成我们的 Java 类加载体系。他们分别从以下的路径寻找程序所需要的类：</p>
+
+<p>BootstrapLoader ： sun.boot.class.path</p>
+
+<p>ExtClassLoader:      java.ext.dirs</p>
+
+<p>AppClassLoader:      java.class.path</p>
+
+<p>这三个系统参量可以通过 System.getProperty() 函数得到具体对应的路径。</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/java-classloader-de-gong-zuo-yuan-li.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/java-classloader-de-gong-zuo-yuan-li.html">&laquo; JAVA中ClassLoader的工作原理</a>
+  
+  
+  <a class="next" href="/2017/js-window-open-li-yong-google-fangyi-jiekou-ba-wangye-fangyi-cheng-geguo-yiyan.html">js window.open利用google翻译接口把网页翻译成各国语言 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

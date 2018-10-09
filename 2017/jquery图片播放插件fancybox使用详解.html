@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>jquery图片播放插件Fancybox使用详解 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="jquery图片播放插件Fancybox使用详解" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="By Lee - Last updated: 星期五, 二月 14, 2014" />
+<meta property="og:description" content="By Lee - Last updated: 星期五, 二月 14, 2014" />
+<link rel="canonical" href="http://www.jfox.info/2017/jquery%E5%9B%BE%E7%89%87%E6%92%AD%E6%94%BE%E6%8F%92%E4%BB%B6fancybox%E4%BD%BF%E7%94%A8%E8%AF%A6%E8%A7%A3.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/jquery%E5%9B%BE%E7%89%87%E6%92%AD%E6%94%BE%E6%8F%92%E4%BB%B6fancybox%E4%BD%BF%E7%94%A8%E8%AF%A6%E8%A7%A3.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:44:16+00:00" />
+<script type="application/ld+json">
+{"description":"By Lee - Last updated: 星期五, 二月 14, 2014","@type":"BlogPosting","url":"http://www.jfox.info/2017/jquery%E5%9B%BE%E7%89%87%E6%92%AD%E6%94%BE%E6%8F%92%E4%BB%B6fancybox%E4%BD%BF%E7%94%A8%E8%AF%A6%E8%A7%A3.html","headline":"jquery图片播放插件Fancybox使用详解","dateModified":"2017-01-01T15:44:16+00:00","datePublished":"2017-01-01T15:44:16+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/jquery%E5%9B%BE%E7%89%87%E6%92%AD%E6%94%BE%E6%8F%92%E4%BB%B6fancybox%E4%BD%BF%E7%94%A8%E8%AF%A6%E8%A7%A3.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">jquery图片播放插件Fancybox使用详解</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:44:16+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>By Lee - Last updated: 星期五, 二月 14, 2014</p>
+
+<p>今天给大家介绍的jquery图片播放插件叫Fancybox，相比LightBox来说，Fancybox相对庞大点，配置也更丰富一些，相信你会喜欢的。</p>
+
+<p>Fancybox的项目主页地址：<a href="https://www.jfox.info/go.php?url=http://fancybox.net/">http://fancybox.net/</a></p>
+
+<p><a href="https://www.jfox.info/go.php?url=http://www.jfox.info/wp-content/uploads/2014/02/235S052D-0.jpg"><img src="40d4fa0.jpg" alt="235S052D-0" /></a></p>
+
+<p>Fancybox的特点如下：</p>
+
+<ol>
+  <li>可以支持图片、html文本、flash动画、iframe以及ajax的支持</li>
+  <li>可以自定义播放器的CSS样式</li>
+  <li>可以以组的形式进行播放</li>
+  <li>如果将鼠标滚动插件（mouse wheel plugin）包含进来的话Fancybox还能支持鼠标滚轮滚动来翻阅图片</li>
+  <li>Fancybox播放器支持投影，更有立体的感觉</li>
+</ol>
+
+<p>Fancybox使用方法：</p>
+
+<p>1、引入jquery核心库和Fancybox插件库</p>
+
+<p>可选 – 如果需要用到fancy transition（一些动画效果）你还需要引入以下脚本</p>
+
+<p>可选 – 如果需要支持鼠标滚轮滚动效果你还需要引入以下脚本</p>
+
+<p>2、添加样式表文件</p>
+
+<p>3、在页面上创建链接元素
+A、图片元素</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[![](5043436.jpg)](image_big.jpg)
+</code></pre></div></div>
+
+<p>B、普通文本</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[This shows content of element who has id="data"](#data)
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+</code></pre></div></div>
+
+<p>C、Iframe</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[This goes to iframe](https://www.jfox.info/go.php?url=http://www.example?iframe)
+ 
+或者
+ 
+[This goes to iframe](https://www.jfox.info/go.php?url=http://www.example)
+</code></pre></div></div>
+
+<p>D、Ajax</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[This takes content using ajax](https://www.jfox.info/go.php?url=http://www.example/data.php)
+</code></pre></div></div>
+
+<p>如果你要显示描述信息，可以在链接上加上title，将描述信息放到title中。</p>
+
+<p>4、最终的jquery初始化代码</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$(document).ready(function() {
+ 
+    /* 最基本的，使用了默认配置 */
+     
+    $("a#single_image").fancybox();
+     
+    /* 使用了自定义配置 */
+     
+    $("a#inline").fancybox({
+        'hideOnContentClick': true
+    });
+ 
+    /* 一下配置支持组播放 */
+     
+    $("a.group").fancybox({
+        'transitionIn'  :   'elastic',
+        'transitionOut' :   'elastic',
+        'speedIn'       :   600, 
+        'speedOut'      :   200, 
+        'overlayShow'   :   false
+    });
+     
+});
+</code></pre></div></div>
+
+<p>用rel标签来创建相册</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[![](fbab73c.jpg)](image_big_1.jpg)[![](image_small_2.jpg)](image_big_2.jpg)[![](image_small_3.jpg)](image_big_3.jpg)[![](image_small_4.jpg)](image_big_4.jpg) 
+ 
+$("a.grouped_elements").fancybox();
+</code></pre></div></div>
+
+<p>Fancybox的API和配置选项说明
+属性名默认值简要说明padding10浏览框内边距，和css中的padding一个意思margin20浏览框外边距，和css中的margin一个意思opacityfalse如果为true，则fancybox在动画改变的时候透明度可以跟着改变modalfalse如果为true，则’overlayShow’ 会被设成 ‘true’ ， ‘hideOnOverlayClick’, ‘hideOnContentClick’, ‘enableEscapeButton’, ‘showCloseButton’ 会被设成 ‘false’cyclicfalse如果为true，相册会循环播放scrolling‘auto’设置overflow的值来创建或隐藏滚动条，可以设置成 ‘auto’, ‘yes’, or ‘no’width560设置iframe和swf的宽度，如果 ‘autoDimensions’为 ‘false’，这也可以设置普通文本的宽度height340设置iframe和swf的高度，如果 ‘autoDimensions’为 ‘false’，这也可以设置普通文本的高度autoScaletrue如果为true，fancybox可以自适应浏览器窗口大小autoDimensionstrue在内联文本和ajax中，设置是否动态调整元素的尺寸，如果为true，请确保你已经为元素设置了尺寸大小centerOnScrollfalse如果为true，当你滚动滚动条时，fancybox将会一直停留在浏览器中心ajax{ }和jquery的ajax调用选项一样
+注意: ‘error’ and ‘success’ 这两个回调事件会被fancybox重写swf{wmode: ‘transparent’}swf的设置选项hideOnOverlayClicktrue如果为true则点击遮罩层关闭fancyboxhideOnContentClickfalse如果为true则点击播放内容关闭fancyboxoverlayShowtrue如果为true，则显示遮罩层overlayOpacity0.3遮罩层的透明度（范围0-1）overlayColor‘#666’遮罩层的背景颜色titleShowtrue如果为true，则显示标题titlePosition‘outside’设置标题显示的位置.可以设置成 ‘outside’, ‘inside’ 或 ‘over’titleFormatnull可以自定义标题的格式transitionIn, transitionOut‘fade’设置动画效果. 可以设置为 ‘elastic’, ‘fade’ 或 ‘none’speedIn, speedOut300fade 和 elastic 动画切换的时间间隔, 以毫秒为单位
+changeSpeed300切换时fancybox尺寸的变化时间间隔（即变化的速度），以毫秒为单位changeFade‘fast’切换时内容淡入淡出的时间间隔（即变化的速度）easingIn, easingOut‘swing’为 elastic 动画使用 EasingshowCloseButtontrue如果为true，则显示关闭按钮showNavArrowstrue如果为true，则显示上一张下一张导航箭头enableEscapeButtontrue如果为true，则启用ESC来关闭fancyboxonStartnull回调函数，加载内容是触发onCancelnull回调函数，取消加载内容后触发onCompletenull回调函数，加载内容完成后触发onCleanupnull回调函数，关闭fancybox前触发onClosednull回调函数，关闭fancybox后触发</p>
+
+<p>参考来源 <a href="https://www.jfox.info/go.php?url=http://www.jfox.info/url.php?url=http%3A%2F%2Fwww.kuqin.com%2Fwebpagedesign%2F20111121%2F315201.html">jquery图片播放插件Fancybox使用详解</a>.</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/jquery%E5%9B%BE%E7%89%87%E6%92%AD%E6%94%BE%E6%8F%92%E4%BB%B6fancybox%E4%BD%BF%E7%94%A8%E8%AF%A6%E8%A7%A3.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/jquery%E5%9B%BE%E7%89%87%E6%92%AD%E6%94%BE%E6%8F%92%E4%BB%B6fancybox%E4%BD%BF%E7%94%A8%E8%AF%A6%E8%A7%A3.html">&laquo; jquery图片播放插件Fancybox使用详解</a>
+  
+  
+  <a class="next" href="/2017/java%E5%9B%9B%E5%A4%A7%E5%BC%80%E6%BA%90%E8%BD%AF%E4%BB%B6%E6%B5%8B%E8%AF%95%E5%B7%A5%E5%85%B7.html">Java四大开源软件测试工具 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

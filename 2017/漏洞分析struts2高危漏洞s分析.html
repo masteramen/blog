@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>【漏洞分析】Struts2高危漏洞S分析 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="【漏洞分析】Struts2高危漏洞S分析" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="本次漏洞触发点在：" />
+<meta property="og:description" content="本次漏洞触发点在：" />
+<link rel="canonical" href="http://www.jfox.info/2017/%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90struts2%E9%AB%98%E5%8D%B1%E6%BC%8F%E6%B4%9Es%E5%88%86%E6%9E%90.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90struts2%E9%AB%98%E5%8D%B1%E6%BC%8F%E6%B4%9Es%E5%88%86%E6%9E%90.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:54:29+00:00" />
+<script type="application/ld+json">
+{"description":"本次漏洞触发点在：","@type":"BlogPosting","url":"http://www.jfox.info/2017/%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90struts2%E9%AB%98%E5%8D%B1%E6%BC%8F%E6%B4%9Es%E5%88%86%E6%9E%90.html","headline":"【漏洞分析】Struts2高危漏洞S分析","dateModified":"2017-01-01T15:54:29+00:00","datePublished":"2017-01-01T15:54:29+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90struts2%E9%AB%98%E5%8D%B1%E6%BC%8F%E6%B4%9Es%E5%88%86%E6%9E%90.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">【漏洞分析】Struts2高危漏洞S分析</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:54:29+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>本次漏洞触发点在：</p>
+
+<p>org.apache.struts2.s1.Struts1Action.execute() 方法中，如下图所示。</p>
+
+<p><img src="cc41aca.png" alt="" /></p>
+
+<p>org.apache.struts2.s1.Struts1Action 类为一个 Wrapper 类，用于将 Struts1 时代的 Action 包装成为 Struts2 中的 Action，以让它们在 struts2 框架中继续工作。</p>
+
+<p>在 Struts1Action 的 execute 方法中，会调用对应的 Struts1 Action 的 execute 方法（第一个红色箭头处）。在调用完后，会检查 request 中是否设置了 ActionMessage，如果是，则将会对 action messages 进行处理并回显给客户端。处理时使用了 getText 方法，这里就是漏洞的触发点。所以漏洞的触发条件是：在 struts1 action 中，将来自客户端的参数值设置到了 action message 中。</p>
+
+<p>在官方提供的 Showcase 中，就存在漏洞，如下图：</p>
+
+<p><img src="bf43a71.png" alt="" /></p>
+
+<p>getText 方法的主要作用就是实现网站语言的国际化，它会根据不同的 Locale 去对应的资源文件里面获取相关文字信息（这些文件信息一般保存在 .properties 文件中），这些文字信息往往会回显至客户端。</p>
+
+<p>Action messages 会通过 getText 方法最终进入 com.opensymphony.xwork2.util.LocalizedTextUtil.getDefaultMessage (String, Locale, ValueStack, Object[], String) 方法，如下：</p>
+
+<p><img src="5db5c78.png" alt="" /></p>
+
+<p>此方法会将 action message 传入 com.opensymphony.xwork2.util.TextParseUtil.translateVariables(String, ValueStack)。com.opensymphony.xwork2.util.TextParseUtil.translateVariables(String, ValueStack) 方法主要用于扩展字符串中由 ${} 或 %{} 包裹的 OGNL 表达式，这里也就是 OGNL 的入口，随后 action message 将进入 OGNL 的处理流程，漏洞被触发。</p>
+
+<p>关于 POC</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>暂不公布
+</code></pre></div></div>
+
+<h4 id="总结">总结</h4>
+
+<p>该漏洞触发需要 非默认插件 struts2-struts1-plugin</p>
+
+<p>需要手动寻找程序中将客户端参数值添加入 action message 的点</p>
+
+<p><img src="79a10bb.png" alt="" /><img src="/wp-content/uploads/2017/07/1499444728.png" alt="" /></p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90struts2%E9%AB%98%E5%8D%B1%E6%BC%8F%E6%B4%9Es%E5%88%86%E6%9E%90.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/%E5%8F%8D%E5%87%BB%E7%88%AC%E8%99%AB%E5%89%8D%E7%AB%AF%E5%B7%A5%E7%A8%8B%E5%B8%88%E7%9A%84%E8%84%91%E6%B4%9E%E5%8F%AF%E4%BB%A5%E6%9C%89%E5%A4%9A%E5%A4%A7.html">&laquo; 反击爬虫，前端工程师的脑洞可以有多大？</a>
+  
+  
+  <a class="next" href="/2017/java%E7%9A%84%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E5%92%8C%E5%8F%82%E6%95%B0%E4%BC%A0%E9%80%92.html">Java的数据类型和参数传递 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

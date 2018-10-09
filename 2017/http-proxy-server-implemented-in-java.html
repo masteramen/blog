@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>使用Java实现HTTP代理服务器 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="使用Java实现HTTP代理服务器" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="By Lee - Last updated: 星期六, 五月 17, 2014" />
+<meta property="og:description" content="By Lee - Last updated: 星期六, 五月 17, 2014" />
+<link rel="canonical" href="http://www.jfox.info/2017/http-proxy-server-implemented-in-java.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/http-proxy-server-implemented-in-java.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:45:33+00:00" />
+<script type="application/ld+json">
+{"description":"By Lee - Last updated: 星期六, 五月 17, 2014","@type":"BlogPosting","url":"http://www.jfox.info/2017/http-proxy-server-implemented-in-java.html","headline":"使用Java实现HTTP代理服务器","dateModified":"2017-01-01T15:45:33+00:00","datePublished":"2017-01-01T15:45:33+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/http-proxy-server-implemented-in-java.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">使用Java实现HTTP代理服务器</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:45:33+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>By Lee - Last updated: 星期六, 五月 17, 2014</p>
+
+<p>使用Java实现HTTP代理服务器,直接贴代码，不解释</p>
+
+<p>1 主服务，用来侦听端口</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">org</span><span class="p">.</span><span class="n">javaren</span><span class="p">.</span><span class="n">proxy</span><span class="p">;</span>
+
+<span class="n">import</span> <span class="n">java</span><span class="p">.</span><span class="n">net</span><span class="p">.</span><span class="n">ServerSocket</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">java</span><span class="p">.</span><span class="n">net</span><span class="p">.</span><span class="n">Socket</span><span class="p">;</span>
+
+<span class="k">public</span> <span class="n">class</span> <span class="n">SocketProxy</span> <span class="p">{</span>
+	<span class="p">/**</span>
+	 <span class="p">*</span> <span class="p">@</span><span class="n">param</span> <span class="n">args</span>
+	 <span class="p">*/</span>
+	<span class="k">public</span> <span class="n">static</span> <span class="n">void</span> <span class="n">main</span><span class="p">(</span><span class="k">String</span><span class="p">[]</span> <span class="n">args</span><span class="p">)</span> <span class="n">throws</span> <span class="n">Exception</span> <span class="p">{</span>
+		<span class="n">ServerSocket</span> <span class="n">serverSocket</span> <span class="p">=</span> <span class="n">new</span> <span class="n">ServerSocket</span><span class="p">(</span><span class="m">8888</span><span class="p">);</span>
+		<span class="k">while</span> <span class="p">(</span><span class="nb">true</span><span class="p">)</span> <span class="p">{</span>
+			<span class="n">Socket</span> <span class="n">socket</span> <span class="p">=</span> <span class="n">null</span><span class="p">;</span>
+			<span class="n">try</span> <span class="p">{</span>
+				<span class="n">socket</span> <span class="p">=</span> <span class="n">serverSocket</span><span class="p">.</span><span class="n">accept</span><span class="p">();</span>
+				<span class="n">new</span> <span class="n">SocketThread</span><span class="p">(</span><span class="n">socket</span><span class="p">).</span><span class="n">start</span><span class="p">();</span>
+			<span class="p">}</span> <span class="n">catch</span> <span class="p">(</span><span class="n">Exception</span> <span class="n">e</span><span class="p">)</span> <span class="p">{</span>
+				<span class="n">e</span><span class="p">.</span><span class="n">printStackTrace</span><span class="p">();</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>2 核心代码，处理链接的代理线程</p>
+
+<p>内部设计了Socket的认证，自己看吧</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">org</span><span class="p">.</span><span class="n">javaren</span><span class="p">.</span><span class="n">proxy</span><span class="p">;</span>
+
+<span class="n">import</span> <span class="n">java</span><span class="p">.</span><span class="n">io</span><span class="p">.</span><span class="n">IOException</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">java</span><span class="p">.</span><span class="n">io</span><span class="p">.</span><span class="n">InputStream</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">java</span><span class="p">.</span><span class="n">io</span><span class="p">.</span><span class="n">OutputStream</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">java</span><span class="p">.</span><span class="n">net</span><span class="p">.</span><span class="n">Socket</span><span class="p">;</span>
+
+<span class="k">public</span> <span class="n">class</span> <span class="n">SocketThread</span> <span class="n">extends</span> <span class="n">Thread</span> <span class="p">{</span>
+	<span class="n">private</span> <span class="n">Socket</span> <span class="n">socketIn</span><span class="p">;</span>
+	<span class="n">private</span> <span class="n">InputStream</span> <span class="n">isIn</span><span class="p">;</span>
+	<span class="n">private</span> <span class="n">OutputStream</span> <span class="n">osIn</span><span class="p">;</span>
+	<span class="p">//</span>
+	<span class="n">private</span> <span class="n">Socket</span> <span class="n">socketOut</span><span class="p">;</span>
+	<span class="n">private</span> <span class="n">InputStream</span> <span class="n">isOut</span><span class="p">;</span>
+	<span class="n">private</span> <span class="n">OutputStream</span> <span class="n">osOut</span><span class="p">;</span>
+
+	<span class="k">public</span> <span class="n">SocketThread</span><span class="p">(</span><span class="n">Socket</span> <span class="n">socket</span><span class="p">)</span> <span class="p">{</span>
+		<span class="n">this</span><span class="p">.</span><span class="n">socketIn</span> <span class="p">=</span> <span class="n">socket</span><span class="p">;</span>
+	<span class="p">}</span>
+
+	<span class="n">private</span> <span class="n">byte</span><span class="p">[]</span> <span class="n">buffer</span> <span class="p">=</span> <span class="n">new</span> <span class="n">byte</span><span class="p">[</span><span class="m">4096</span><span class="p">];</span>
+	<span class="n">private</span> <span class="n">static</span> <span class="n">final</span> <span class="n">byte</span><span class="p">[]</span> <span class="n">VER</span> <span class="p">=</span> <span class="p">{</span> <span class="m">0x5</span><span class="p">,</span> <span class="m">0x0</span> <span class="p">};</span>
+	<span class="n">private</span> <span class="n">static</span> <span class="n">final</span> <span class="n">byte</span><span class="p">[]</span> <span class="n">CONNECT_OK</span> <span class="p">=</span> <span class="p">{</span> <span class="m">0x5</span><span class="p">,</span> <span class="m">0x0</span><span class="p">,</span> <span class="m">0x0</span><span class="p">,</span> <span class="m">0x1</span><span class="p">,</span> <span class="m">0</span><span class="p">,</span> <span class="m">0</span><span class="p">,</span> <span class="m">0</span><span class="p">,</span> <span class="m">0</span><span class="p">,</span> <span class="m">0</span><span class="p">,</span> <span class="m">0</span> <span class="p">};</span>
+
+	<span class="k">public</span> <span class="n">void</span> <span class="nf">run</span><span class="p">()</span> <span class="p">{</span>
+		<span class="n">try</span> <span class="p">{</span>
+			<span class="nf">System</span><span class="p">.</span><span class="n">out</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="s2">"</span><span class="se">\n\n</span><span class="s2">a client connect "</span> <span class="p">+</span> <span class="n">socketIn</span><span class="p">.</span><span class="n">getInetAddress</span><span class="p">()</span> <span class="p">+</span> <span class="s2">":"</span> <span class="p">+</span> <span class="n">socketIn</span><span class="p">.</span><span class="n">getPort</span><span class="p">());</span>
+			<span class="n">isIn</span> <span class="p">=</span> <span class="n">socketIn</span><span class="p">.</span><span class="n">getInputStream</span><span class="p">();</span>
+			<span class="n">osIn</span> <span class="p">=</span> <span class="n">socketIn</span><span class="p">.</span><span class="n">getOutputStream</span><span class="p">();</span>
+			<span class="n">int</span> <span class="n">len</span> <span class="p">=</span> <span class="n">isIn</span><span class="p">.</span><span class="nb">read</span><span class="p">(</span><span class="n">buffer</span><span class="p">);</span>
+			<span class="nf">System</span><span class="p">.</span><span class="n">out</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="s2">"&lt; "</span> <span class="p">+</span> <span class="n">bytesToHexString</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span> <span class="m">0</span><span class="p">,</span> <span class="n">len</span><span class="p">));</span>
+			<span class="n">osIn</span><span class="p">.</span><span class="nb">write</span><span class="p">(</span><span class="n">VER</span><span class="p">);</span>
+			<span class="n">osIn</span><span class="p">.</span><span class="n">flush</span><span class="p">();</span>
+			<span class="nf">System</span><span class="p">.</span><span class="n">out</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="s2">"&gt; "</span> <span class="p">+</span> <span class="n">bytesToHexString</span><span class="p">(</span><span class="n">VER</span><span class="p">,</span> <span class="m">0</span><span class="p">,</span> <span class="n">VER</span><span class="p">.</span><span class="n">length</span><span class="p">));</span>
+			<span class="n">len</span> <span class="p">=</span> <span class="n">isIn</span><span class="p">.</span><span class="nb">read</span><span class="p">(</span><span class="n">buffer</span><span class="p">);</span>
+			<span class="nf">System</span><span class="p">.</span><span class="n">out</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="s2">"&lt; "</span> <span class="p">+</span> <span class="n">bytesToHexString</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span> <span class="m">0</span><span class="p">,</span> <span class="n">len</span><span class="p">));</span>
+			<span class="p">//</span> <span class="err">查找主机和端口</span>
+			<span class="k">String</span> <span class="n">host</span> <span class="p">=</span> <span class="n">findHost</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span> <span class="m">4</span><span class="p">,</span> <span class="m">7</span><span class="p">);</span>
+			<span class="n">int</span> <span class="n">port</span> <span class="p">=</span> <span class="n">findPort</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span> <span class="m">8</span><span class="p">,</span> <span class="m">9</span><span class="p">);</span>
+			<span class="nf">System</span><span class="p">.</span><span class="n">out</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="s2">"host="</span> <span class="p">+</span> <span class="n">host</span> <span class="p">+</span> <span class="s2">",port="</span> <span class="p">+</span> <span class="n">port</span><span class="p">);</span>
+			<span class="n">socketOut</span> <span class="p">=</span> <span class="n">new</span> <span class="n">Socket</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">);</span>
+			<span class="n">isOut</span> <span class="p">=</span> <span class="n">socketOut</span><span class="p">.</span><span class="n">getInputStream</span><span class="p">();</span>
+			<span class="n">osOut</span> <span class="p">=</span> <span class="n">socketOut</span><span class="p">.</span><span class="n">getOutputStream</span><span class="p">();</span>
+			<span class="p">//</span>
+			<span class="n">for</span> <span class="p">(</span><span class="n">int</span> <span class="n">i</span> <span class="p">=</span> <span class="m">4</span><span class="p">;</span> <span class="n">i</span> <span class="p">&lt;=</span> <span class="m">9</span><span class="p">;</span> <span class="n">i</span><span class="p">++)</span> <span class="p">{</span>
+				<span class="n">CONNECT_OK</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="p">=</span> <span class="n">buffer</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+			<span class="p">}</span>
+			<span class="n">osIn</span><span class="p">.</span><span class="nb">write</span><span class="p">(</span><span class="n">CONNECT_OK</span><span class="p">);</span>
+			<span class="n">osIn</span><span class="p">.</span><span class="n">flush</span><span class="p">();</span>
+			<span class="nf">System</span><span class="p">.</span><span class="n">out</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="s2">"&gt; "</span> <span class="p">+</span> <span class="n">bytesToHexString</span><span class="p">(</span><span class="n">CONNECT_OK</span><span class="p">,</span> <span class="m">0</span><span class="p">,</span> <span class="n">CONNECT_OK</span><span class="p">.</span><span class="n">length</span><span class="p">));</span>
+			<span class="n">SocketThreadOutput</span> <span class="n">out</span> <span class="p">=</span> <span class="n">new</span> <span class="n">SocketThreadOutput</span><span class="p">(</span><span class="n">isIn</span><span class="p">,</span> <span class="n">osOut</span><span class="p">);</span>
+			<span class="n">out</span><span class="p">.</span><span class="n">start</span><span class="p">();</span>
+			<span class="n">SocketThreadInput</span> <span class="k">in</span> <span class="p">=</span> <span class="n">new</span> <span class="n">SocketThreadInput</span><span class="p">(</span><span class="n">isOut</span><span class="p">,</span> <span class="n">osIn</span><span class="p">);</span>
+			<span class="k">in</span><span class="p">.</span><span class="n">start</span><span class="p">();</span>
+			<span class="n">out</span><span class="p">.</span><span class="n">join</span><span class="p">();</span>
+			<span class="k">in</span><span class="p">.</span><span class="n">join</span><span class="p">();</span>
+		<span class="p">}</span> <span class="n">catch</span> <span class="p">(</span><span class="n">Exception</span> <span class="n">e</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nf">System</span><span class="p">.</span><span class="n">out</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="s2">"a client leave"</span><span class="p">);</span>
+		<span class="p">}</span> <span class="n">finally</span> <span class="p">{</span>
+			<span class="n">try</span> <span class="p">{</span>
+				<span class="k">if</span> <span class="p">(</span><span class="n">socketIn</span> <span class="c1">!= null) {
+</span>					<span class="n">socketIn</span><span class="p">.</span><span class="n">close</span><span class="p">();</span>
+				<span class="p">}</span>
+			<span class="p">}</span> <span class="n">catch</span> <span class="p">(</span><span class="n">IOException</span> <span class="n">e</span><span class="p">)</span> <span class="p">{</span>
+				<span class="n">e</span><span class="p">.</span><span class="n">printStackTrace</span><span class="p">();</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+		<span class="nf">System</span><span class="p">.</span><span class="n">out</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="s2">"socket close"</span><span class="p">);</span>
+	<span class="p">}</span>
+
+	<span class="k">public</span> <span class="n">static</span> <span class="k">String</span> <span class="n">findHost</span><span class="p">(</span><span class="n">byte</span><span class="p">[]</span> <span class="n">bArray</span><span class="p">,</span> <span class="n">int</span> <span class="n">begin</span><span class="p">,</span> <span class="n">int</span> <span class="k">end</span><span class="p">)</span> <span class="p">{</span>
+		<span class="n">StringBuffer</span> <span class="n">sb</span> <span class="p">=</span> <span class="n">new</span> <span class="n">StringBuffer</span><span class="p">();</span>
+		<span class="n">for</span> <span class="p">(</span><span class="n">int</span> <span class="n">i</span> <span class="p">=</span> <span class="n">begin</span><span class="p">;</span> <span class="n">i</span> <span class="p">&lt;=</span> <span class="k">end</span><span class="p">;</span> <span class="n">i</span><span class="p">++)</span> <span class="p">{</span>
+			<span class="n">sb</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="k">Integer</span><span class="p">.</span><span class="n">toString</span><span class="p">(</span><span class="m">0xFF</span> <span class="p">&amp;</span> <span class="n">bArray</span><span class="p">[</span><span class="n">i</span><span class="p">]));</span>
+			<span class="n">sb</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"."</span><span class="p">);</span>
+		<span class="p">}</span>
+		<span class="n">sb</span><span class="p">.</span><span class="n">deleteCharAt</span><span class="p">(</span><span class="n">sb</span><span class="p">.</span><span class="n">length</span><span class="p">()</span> <span class="p">-</span> <span class="m">1</span><span class="p">);</span>
+		<span class="n">return</span> <span class="n">sb</span><span class="p">.</span><span class="n">toString</span><span class="p">();</span>
+	<span class="p">}</span>
+
+	<span class="k">public</span> <span class="n">static</span> <span class="n">int</span> <span class="n">findPort</span><span class="p">(</span><span class="n">byte</span><span class="p">[]</span> <span class="n">bArray</span><span class="p">,</span> <span class="n">int</span> <span class="n">begin</span><span class="p">,</span> <span class="n">int</span> <span class="k">end</span><span class="p">)</span> <span class="p">{</span>
+		<span class="n">int</span> <span class="n">port</span> <span class="p">=</span> <span class="m">0</span><span class="p">;</span>
+		<span class="n">for</span> <span class="p">(</span><span class="n">int</span> <span class="n">i</span> <span class="p">=</span> <span class="n">begin</span><span class="p">;</span> <span class="n">i</span> <span class="p">&lt;=</span> <span class="k">end</span><span class="p">;</span> <span class="n">i</span><span class="p">++)</span> <span class="p">{</span>
+			<span class="n">port</span> <span class="p">&lt;&lt;=</span> <span class="m">16</span><span class="p">;</span>
+			<span class="n">port</span> <span class="p">+=</span> <span class="n">bArray</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+		<span class="p">}</span>
+		<span class="n">return</span> <span class="n">port</span><span class="p">;</span>
+	<span class="p">}</span>
+
+	<span class="p">//</span> <span class="m">4</span><span class="n">A</span> <span class="m">7</span><span class="n">D</span> <span class="n">EB</span> <span class="m">69</span>
+	<span class="p">//</span> <span class="m">74</span> <span class="m">125</span> <span class="m">235</span> <span class="m">105</span>
+	<span class="k">public</span> <span class="n">static</span> <span class="n">final</span> <span class="k">String</span> <span class="n">bytesToHexString</span><span class="p">(</span><span class="n">byte</span><span class="p">[]</span> <span class="n">bArray</span><span class="p">,</span> <span class="n">int</span> <span class="n">begin</span><span class="p">,</span> <span class="n">int</span> <span class="k">end</span><span class="p">)</span> <span class="p">{</span>
+		<span class="n">StringBuffer</span> <span class="n">sb</span> <span class="p">=</span> <span class="n">new</span> <span class="n">StringBuffer</span><span class="p">(</span><span class="n">bArray</span><span class="p">.</span><span class="n">length</span><span class="p">);</span>
+		<span class="k">String</span> <span class="n">sTemp</span><span class="p">;</span>
+		<span class="n">for</span> <span class="p">(</span><span class="n">int</span> <span class="n">i</span> <span class="p">=</span> <span class="n">begin</span><span class="p">;</span> <span class="n">i</span> <span class="p">&lt;</span> <span class="k">end</span><span class="p">;</span> <span class="n">i</span><span class="p">++)</span> <span class="p">{</span>
+			<span class="n">sTemp</span> <span class="p">=</span> <span class="k">Integer</span><span class="p">.</span><span class="n">toHexString</span><span class="p">(</span><span class="m">0xFF</span> <span class="p">&amp;</span> <span class="n">bArray</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+			<span class="k">if</span> <span class="p">(</span><span class="n">sTemp</span><span class="p">.</span><span class="n">length</span><span class="p">()</span> <span class="p">&lt;</span> <span class="m">2</span><span class="p">)</span>
+				<span class="n">sb</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="m">0</span><span class="p">);</span>
+			<span class="n">sb</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">sTemp</span><span class="p">.</span><span class="n">toUpperCase</span><span class="p">());</span>
+			<span class="n">sb</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="s2">" "</span><span class="p">);</span>
+		<span class="p">}</span>
+		<span class="n">return</span> <span class="n">sb</span><span class="p">.</span><span class="n">toString</span><span class="p">();</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>3  读取线程，负责外面读数据，写入到请求端</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">org</span><span class="p">.</span><span class="n">javaren</span><span class="p">.</span><span class="n">proxy</span><span class="p">;</span>
+
+<span class="p">/**</span>
+ <span class="p">*</span> <span class="p">*</span> <span class="err">从外部读取，向内部发送信息</span>
+ <span class="p">*/</span>
+<span class="n">import</span> <span class="n">java</span><span class="p">.</span><span class="n">io</span><span class="p">.</span><span class="n">InputStream</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">java</span><span class="p">.</span><span class="n">io</span><span class="p">.</span><span class="n">OutputStream</span><span class="p">;</span>
+
+<span class="k">public</span> <span class="n">class</span> <span class="n">SocketThreadInput</span> <span class="n">extends</span> <span class="n">Thread</span> <span class="p">{</span>
+	<span class="n">private</span> <span class="n">InputStream</span> <span class="n">isOut</span><span class="p">;</span>
+	<span class="n">private</span> <span class="n">OutputStream</span> <span class="n">osIn</span><span class="p">;</span>
+
+	<span class="k">public</span> <span class="n">SocketThreadInput</span><span class="p">(</span><span class="n">InputStream</span> <span class="n">isOut</span><span class="p">,</span> <span class="n">OutputStream</span> <span class="n">osIn</span><span class="p">)</span> <span class="p">{</span>
+		<span class="n">this</span><span class="p">.</span><span class="n">isOut</span> <span class="p">=</span> <span class="n">isOut</span><span class="p">;</span>
+		<span class="n">this</span><span class="p">.</span><span class="n">osIn</span> <span class="p">=</span> <span class="n">osIn</span><span class="p">;</span>
+	<span class="p">}</span>
+
+	<span class="n">private</span> <span class="n">byte</span><span class="p">[]</span> <span class="n">buffer</span> <span class="p">=</span> <span class="n">new</span> <span class="n">byte</span><span class="p">[</span><span class="m">409600</span><span class="p">];</span>
+
+	<span class="k">public</span> <span class="n">void</span> <span class="nf">run</span><span class="p">()</span> <span class="p">{</span>
+		<span class="n">try</span> <span class="p">{</span>
+			<span class="n">int</span> <span class="n">len</span><span class="p">;</span>
+			<span class="k">while</span> <span class="p">((</span><span class="n">len</span> <span class="p">=</span> <span class="n">isOut</span><span class="p">.</span><span class="nb">read</span><span class="p">(</span><span class="n">buffer</span><span class="p">))</span> <span class="c1">!= -1) {
+</span>				<span class="k">if</span> <span class="p">(</span><span class="n">len</span> <span class="p">&gt;</span> <span class="m">0</span><span class="p">)</span> <span class="p">{</span>
+					<span class="nf">System</span><span class="p">.</span><span class="n">out</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="n">new</span> <span class="k">String</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span> <span class="m">0</span><span class="p">,</span> <span class="n">len</span><span class="p">));</span>
+					<span class="n">osIn</span><span class="p">.</span><span class="nb">write</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span> <span class="m">0</span><span class="p">,</span> <span class="n">len</span><span class="p">);</span>
+					<span class="n">osIn</span><span class="p">.</span><span class="n">flush</span><span class="p">();</span>
+				<span class="p">}</span>
+			<span class="p">}</span>
+		<span class="p">}</span> <span class="n">catch</span> <span class="p">(</span><span class="n">Exception</span> <span class="n">e</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nf">System</span><span class="p">.</span><span class="n">out</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="s2">"SocketThreadInput leave"</span><span class="p">);</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>4 写入线程，负责读取请求端数据，写入到目标端</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">org</span><span class="p">.</span><span class="n">javaren</span><span class="p">.</span><span class="n">proxy</span><span class="p">;</span>
+
+<span class="n">import</span> <span class="n">java</span><span class="p">.</span><span class="n">io</span><span class="p">.</span><span class="n">InputStream</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">java</span><span class="p">.</span><span class="n">io</span><span class="p">.</span><span class="n">OutputStream</span><span class="p">;</span>
+
+<span class="p">/**</span>
+ <span class="p">*</span> <span class="err">从内部读取，向外部发送信息</span>
+ <span class="p">*</span> 
+ <span class="p">*</span> <span class="p">@</span><span class="n">author</span> <span class="n">zxq</span>
+ <span class="p">*</span> 
+ <span class="p">*/</span>
+<span class="k">public</span> <span class="n">class</span> <span class="n">SocketThreadOutput</span> <span class="n">extends</span> <span class="n">Thread</span> <span class="p">{</span>
+	<span class="n">private</span> <span class="n">InputStream</span> <span class="n">isIn</span><span class="p">;</span>
+	<span class="n">private</span> <span class="n">OutputStream</span> <span class="n">osOut</span><span class="p">;</span>
+
+	<span class="k">public</span> <span class="n">SocketThreadOutput</span><span class="p">(</span><span class="n">InputStream</span> <span class="n">isIn</span><span class="p">,</span> <span class="n">OutputStream</span> <span class="n">osOut</span><span class="p">)</span> <span class="p">{</span>
+		<span class="n">this</span><span class="p">.</span><span class="n">isIn</span> <span class="p">=</span> <span class="n">isIn</span><span class="p">;</span>
+		<span class="n">this</span><span class="p">.</span><span class="n">osOut</span> <span class="p">=</span> <span class="n">osOut</span><span class="p">;</span>
+	<span class="p">}</span>
+
+	<span class="n">private</span> <span class="n">byte</span><span class="p">[]</span> <span class="n">buffer</span> <span class="p">=</span> <span class="n">new</span> <span class="n">byte</span><span class="p">[</span><span class="m">409600</span><span class="p">];</span>
+
+	<span class="k">public</span> <span class="n">void</span> <span class="nf">run</span><span class="p">()</span> <span class="p">{</span>
+		<span class="n">try</span> <span class="p">{</span>
+			<span class="n">int</span> <span class="n">len</span><span class="p">;</span>
+			<span class="k">while</span> <span class="p">((</span><span class="n">len</span> <span class="p">=</span> <span class="n">isIn</span><span class="p">.</span><span class="nb">read</span><span class="p">(</span><span class="n">buffer</span><span class="p">))</span> <span class="c1">!= -1) {
+</span>				<span class="k">if</span> <span class="p">(</span><span class="n">len</span> <span class="p">&gt;</span> <span class="m">0</span><span class="p">)</span> <span class="p">{</span>
+					<span class="nf">System</span><span class="p">.</span><span class="n">out</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="n">new</span> <span class="k">String</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span> <span class="m">0</span><span class="p">,</span> <span class="n">len</span><span class="p">));</span>
+					<span class="n">osOut</span><span class="p">.</span><span class="nb">write</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span> <span class="m">0</span><span class="p">,</span> <span class="n">len</span><span class="p">);</span>
+					<span class="n">osOut</span><span class="p">.</span><span class="n">flush</span><span class="p">();</span>
+				<span class="p">}</span>
+			<span class="p">}</span>
+		<span class="p">}</span> <span class="n">catch</span> <span class="p">(</span><span class="n">Exception</span> <span class="n">e</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nf">System</span><span class="p">.</span><span class="n">out</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="s2">"SocketThreadOutput leave"</span><span class="p">);</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>效果还不错，用firefox/ ie都测试过，可用。</p>
+
+<p>原文地址:<a href="https://www.jfox.info/go.php?url=http://www.jfox.info/url.php?url=http%3A%2F%2Fblog.csdn.net%2Fjava2000_net%2Farticle%2Fdetails%2F7826660">http://blog.csdn.net/java2000_net/article/details/7826660</a>.</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/http-proxy-server-implemented-in-java.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/java-jmeter-testing-tools-installation-summary.html">&laquo; JAVA测试工具Jmeter在Windows下的搭建安装总结</a>
+  
+  
+  <a class="next" href="/2017/a-java-engineer-old-shichiku-interview-trip-in-huawei.html">Java工程师老紫竹的华为面试之旅 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

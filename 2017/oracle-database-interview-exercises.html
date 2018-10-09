@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>Oracle数据库面试练习题 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="Oracle数据库面试练习题" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="1．列出至少有一个员工的所有部门。 分析：每个部门有多少员工 —— 根据部门编号进行分组 select deptno,count() from emp group by deptno having count() &gt;= 1;" />
+<meta property="og:description" content="1．列出至少有一个员工的所有部门。 分析：每个部门有多少员工 —— 根据部门编号进行分组 select deptno,count() from emp group by deptno having count() &gt;= 1;" />
+<link rel="canonical" href="http://www.jfox.info/2017/oracle-database-interview-exercises.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/oracle-database-interview-exercises.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:45:53+00:00" />
+<script type="application/ld+json">
+{"description":"1．列出至少有一个员工的所有部门。 分析：每个部门有多少员工 —— 根据部门编号进行分组 select deptno,count() from emp group by deptno having count() &gt;= 1;","@type":"BlogPosting","url":"http://www.jfox.info/2017/oracle-database-interview-exercises.html","headline":"Oracle数据库面试练习题","dateModified":"2017-01-01T15:45:53+00:00","datePublished":"2017-01-01T15:45:53+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/oracle-database-interview-exercises.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Oracle数据库面试练习题</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:45:53+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>1．列出至少有一个员工的所有部门。
+分析：每个部门有多少员工  —— 根据部门编号进行分组
+select deptno,count(<em>) from emp group by deptno having count(</em>) &gt;= 1;</p>
+
+<p>2．列出薪金比“SMITH”多的所有员工。
+分析：先查询出SMITH工资  ： select sal from emp where ename=’SMITH’;
+select * from emp where sal &gt; (select sal from emp where ename=’SMITH’);</p>
+
+<p>3．***** 列出所有员工的姓名及其直接上级的姓名。
+分析：表自映射，为表起别名，进行关联  t1 表模拟员工表 t2 表保存直接上级信息
+select t1.ename 员工姓名, t2.ename 直接上级 from emp t1,emp t2 where t1.MGR = t2.empno;</p>
+
+<p>4．列出受雇日期早于其直接上级的所有员工。
+分析：原理和上题类似
+select t1.*,t2.hiredate from emp t1,emp t2 where t1.MGR = t2.empno and t1.hiredate &lt; t2.hiredate;</p>
+
+<p>5．列出部门名称和这些部门的员工信息，同时列出那些没有员工的部门。
+分析：部门没员工也要显示 — 外连接。无论怎样部门信息一定要显示，通过部门去关联员工
+select * from dept left outer join emp on dept.deptno = emp.deptno ;</p>
+
+<p>6．列出所有“CLERK”（办事员）的姓名及其部门名称。
+分析：查找job为CLERK 员工姓名和部门名称 
+员工姓名 emp表
+部门名称 dept表
+select emp.ename,dept.dname,emp.job from emp,dept where emp.deptno = dept.deptno and emp.job=’CLERK’;</p>
+
+<p>7．列出最低薪金大于1500的各种工作。
+分析：工作的最低薪金 —- 按工作分组，求最低薪金
+select min(sal) from emp group by job;
+大于1500 是一个分组条件 — having 
+select job,min(sal) from emp group by job having min(sal) &gt; 1500;</p>
+
+<p>8．列出在部门“SALES”（销售部）工作的员工的姓名，假定不知道销售部的部门编号。
+分析：员工姓名位于 emp  部门名称 dept
+select emp.ename from emp,dept where emp.deptno = dept.deptno and dept.dname = ‘SALES’;</p>
+
+<p>9．列出薪金高于公司平均薪金的所有员工。
+分析：先求公司平均薪金 select avg(sal) from emp;
+select * from emp where sal &gt; (select avg(sal) from emp);</p>
+
+<p>10．列出与“SCOTT”从事相同工作的所有员工。
+分析：先查询SCOTT : select job from emp where ename =’SCOTT’;
+select * from emp where ename &lt;&gt; ‘SCOTT’ and job = (select job from emp where ename =’SCOTT’);</p>
+
+<p>11．列出薪金等于部门30中员工的薪金的所有员工的姓名和薪金。
+分析：查看部门30 中所有员工薪资列表 select sal from emp where deptno = 30;
+select * from emp where sal in (select sal from emp where deptno = 30);</p>
+
+<p>12．列出薪金高于在部门30工作的所有员工的薪金的员工姓名和薪金。
+分析：
+select * from emp where sal &gt; all(select sal from emp where deptno = 30);
+select * from emp where sal &gt; (select max(sal) from emp where deptno = 30);</p>
+
+<p>13．列出在每个部门工作的员工数量、平均工资。
+分析：按部门分组
+select deptno, count(*),avg(sal)  from emp group by deptno;</p>
+
+<p>14．列出所有员工的姓名、部门名称和工资。
+分析：
+select emp.ename,dept.dname,emp.sal from emp,dept where emp.deptno = dept.deptno;</p>
+
+<p>15．列出所有部门的详细信息和部门人数。
+分析：
+select dept.<em>,count(emp.</em>) from emp,dept where emp.deptno = dept.deptno group by deptno ; 错误！
+求各个部门编号和人数 select deptno,count(<em>) from emp group by deptno;
+再和dept表关联 select dept.</em>,temp.部门人数 from dept , (select deptno,count(*) 部门人数 from emp group by deptno) temp where dept.deptno = temp.deptno ;</p>
+
+<p>16．列出各种工作的最低工资。
+分析：各个工作 分组 ， 最低工资 min
+select job,min(sal) from emp group by job;</p>
+
+<p>17．列出各个部门的MANAGER（经理）的最低薪金。
+分析：where job=’MANAGER’ 过滤所有不是经理数据
+select deptno,min(sal) from emp where job =’MANAGER’ group by deptno;</p>
+
+<p>18．列出所有员工的年工资,按年薪从低到高排序。 
+分析： select ename, sal<em>12 from emp order by sal</em>12 asc;</p>
+
+<p>19.查出emp表中薪水在3000以上（包括3000）的所有员工的员工号、姓名、薪水。
+分析： select * from emp where sal &gt;= 3000;</p>
+
+<p>20.查询出所有薪水在’ALLEN’之上的所有人员信息。
+分析：select * from emp where sal &gt; (select sal from emp where ename =’ALLEN’);</p>
+
+<p>21.查询出emp表中部门编号为20，薪水在2000以上（不包括2000）的所有员工，显示他们的员工号，姓名以及薪水，以如下列名显示：员工编号 员工名字 薪水
+分析： select empno 员工编号,ename 员工姓名 ,sal 薪水 from emp where deptno = 20 and sal &gt; 2000;</p>
+
+<p>22.查询出emp表中所有的工作种类（无重复）
+分析： select distinct job from emp;</p>
+
+<p>23.查询出所有奖金（comm）字段不为空的人员的所有信息。
+分析：不为空 is not null
+select * from emp where comm is not null;</p>
+
+<p>24.查询出薪水在800到2500之间（闭区间）所有员工的信息。（注：使用两种方式实现and以及between and）
+分析：select * from emp where sal &gt;= 800 and sal &lt;= 2500;
+select * from emp where sal between 800 and 2500;</p>
+
+<p>25.查询出员工号为7521，7900，7782的所有员工的信息。（注：使用两种方式实现，or以及in）
+分析：select * from emp where empno in(7521,7900,7782);
+select * from emp where empno=7521 or empno = 7900 or empno = 7782;</p>
+
+<p>26.查询出名字中有“A”字符，并且薪水在1000以上（不包括1000）的所有员工信息。
+分析： 模糊查询
+select * from emp where ename like ‘%A%’ and sal &gt; 1000;</p>
+
+<p>27.查询出名字第三个字母是“M”的所有员工信息。
+分析：第三个字母 __M%
+select * from emp where ename like ‘__M%’;</p>
+
+<p>28.将所有员工按薪水升序排序，薪水相同的按照入职时间降序排序。
+分析：select * from emp order by sal asc,hiredate desc;</p>
+
+<p>29.将所有员工按照名字首字母升序排序，首字母相同的按照薪水降序排序。
+分析：SUBSTRING(‘字符串’,第几个字符,长度);  —- 首字母 substring(ename,1,1)
+select * from emp order by substring(ename,1,1) asc,sal desc;</p>
+
+<p>30.查询出最早工作的那个人的名字、入职时间和薪水。
+分析：最早工作人 — hiredate 最小值
+select ename,hiredate,sal from emp where hiredate = (select min(hiredate) from emp);
+select ename,hiredate,sal from emp where hiredate &lt;= all(select hiredate from emp);</p>
+
+<blockquote>
+  <p>any === &gt; min
+all === &gt; max
+&lt; any === &lt; max
+&lt; all === &lt; min</p>
+</blockquote>
+
+<p>31.显示所有员工的名字、薪水、奖金，如果没有奖金，暂时显示100.
+分析：select ename,sal,comm from emp; —- 没有奖金显示100  函数ifnull
+select ename,sal,ifnull(comm,100) from emp;</p>
+
+<p>32.显示出薪水最高人的职位。
+分析: select job from emp where sal = (select max(sal) from emp);
+select job from emp where sal &gt;= all(select sal from emp);</p>
+
+<p>33.查出emp表中所有部门的最高薪水和最低薪水，部门编号为10的部门不显示。
+分析：按部门分组 select deptno,max(sal),min(sal) from emp where deptno&lt;&gt;10 group by deptno;</p>
+
+<p>34.删除10号部门薪水最高的员工。
+分析：delete from emp where deptno=10 and sal &gt;= all(select sal from emp where deptno=10 ); // MYSQL 不支持
+Mysql 规范，修改或者删除 表中记录，不允许在子查询中 查询相同表
+ERROR 1093 (HY000): You can’t specify target table ’emp’ for update in FROM clause</p>
+
+<p>解决方案：临时表
+delete from emp where deptno=10 and sal &gt;= all(select t.sal from (select sal from emp where deptno=10) t );</p>
+
+<p>35.将薪水最高的员工的薪水降30%。
+分析：update emp set sal = sal<em>0.7 where sal = (select max(sal) from emp); // MYSQL 不支持
+引入 临时表
+update emp set sal = sal</em>0.7 where sal = (select t.maxsal  from (select max(sal) maxsal from emp) t);</p>
+
+<p>36.查询员工姓名，工资和 工资级别(工资&gt;=3000 为3级，工资&gt;2000 为2级，工资&lt;=2000 为1级)
+分析：
+select ename,sal, case when sal&gt;=3000 then ‘3级’ when sal&gt;2000 then ‘2级’ else ‘1级’ end 级别 from emp;</p>
+
+<p>语法：case … when … then … when … then … else … end</p>
+
+<p>行列互换
+姓名 课程 分数</p>
+
+<p>张三 语文 74</p>
+
+<p>张三 数学 83</p>
+
+<p>张三 物理 93</p>
+
+<p>李四 语文 74</p>
+
+<p>李四 数学 84</p>
+
+<p>李四 物理 94</p>
+
+<p>想变成(得到如下结果)：</p>
+
+<p>姓名 语文 数学 物理</p>
+
+<p>—- —- —- —-</p>
+
+<p>李四 74   84   94</p>
+
+<p>张三 74   83   93</p>
+
+<p>——————-</p>
+
+<p>select name,max(case when cource =’语文’ then score else 0 end) from scores group by name;</p>
+
+<p>select name,max(case when cource =’语文’ then score else 0 end)  语文,max(case when cource =’数学’ then score else 0 end) 数学,
+max(case when cource =’英语’ then score else 0 end) 英语  from scores group by name;</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/oracle-database-interview-exercises.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/why-so-hard-for-promotion-of-programmer.html">&laquo; 程序员为什么那么难升职</a>
+  
+  
+  <a class="next" href="/2017/nanjing-sap-interview-experience.html">南京SAP面试经历 » java面试题 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

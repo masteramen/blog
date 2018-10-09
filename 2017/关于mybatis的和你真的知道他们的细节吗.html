@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>关于Mybatis的$和#,你真的知道他们的细节吗? | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="关于Mybatis的$和#,你真的知道他们的细节吗?" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="在JDBC中，主要使用的是两种语句，一种是支持参数化和预编译的PrepareStatement，能够支持原生的Sql，也支持设置占位符的方式，参数化输入的参数，防止Sql注入，一种是支持原生Sql的Statement，有Sql注入的风险。" />
+<meta property="og:description" content="在JDBC中，主要使用的是两种语句，一种是支持参数化和预编译的PrepareStatement，能够支持原生的Sql，也支持设置占位符的方式，参数化输入的参数，防止Sql注入，一种是支持原生Sql的Statement，有Sql注入的风险。" />
+<link rel="canonical" href="http://www.jfox.info/2017/%E5%85%B3%E4%BA%8Emybatis%E7%9A%84%E5%92%8C%E4%BD%A0%E7%9C%9F%E7%9A%84%E7%9F%A5%E9%81%93%E4%BB%96%E4%BB%AC%E7%9A%84%E7%BB%86%E8%8A%82%E5%90%97.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/%E5%85%B3%E4%BA%8Emybatis%E7%9A%84%E5%92%8C%E4%BD%A0%E7%9C%9F%E7%9A%84%E7%9F%A5%E9%81%93%E4%BB%96%E4%BB%AC%E7%9A%84%E7%BB%86%E8%8A%82%E5%90%97.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:54:25+00:00" />
+<script type="application/ld+json">
+{"description":"在JDBC中，主要使用的是两种语句，一种是支持参数化和预编译的PrepareStatement，能够支持原生的Sql，也支持设置占位符的方式，参数化输入的参数，防止Sql注入，一种是支持原生Sql的Statement，有Sql注入的风险。","@type":"BlogPosting","url":"http://www.jfox.info/2017/%E5%85%B3%E4%BA%8Emybatis%E7%9A%84%E5%92%8C%E4%BD%A0%E7%9C%9F%E7%9A%84%E7%9F%A5%E9%81%93%E4%BB%96%E4%BB%AC%E7%9A%84%E7%BB%86%E8%8A%82%E5%90%97.html","headline":"关于Mybatis的$和#,你真的知道他们的细节吗?","dateModified":"2017-01-01T15:54:25+00:00","datePublished":"2017-01-01T15:54:25+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/%E5%85%B3%E4%BA%8Emybatis%E7%9A%84%E5%92%8C%E4%BD%A0%E7%9C%9F%E7%9A%84%E7%9F%A5%E9%81%93%E4%BB%96%E4%BB%AC%E7%9A%84%E7%BB%86%E8%8A%82%E5%90%97.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">关于Mybatis的$和#,你真的知道他们的细节吗?</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:54:25+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>在JDBC中，主要使用的是两种语句，一种是支持参数化和预编译的PrepareStatement，能够支持原生的Sql，也支持设置占位符的方式，参数化输入的参数，防止Sql注入，一种是支持原生Sql的Statement，有Sql注入的风险。</p>
+
+<p>在使用Mybatis进行开发过程中，隐藏了底层具体使用哪一种语句的细节，我们通过使用#和$告诉Mybatis，我们实际上进行的是怎么样的操作，需要对语句进行参数化还是说直接保持原生状态就好。</p>
+
+<p>今天我们主要看一下使用两种符号使用时系统应对Sql注入的表现和Mybatis在内部是如何对他们处理的源码分析。</p>
+
+<h3 id="和在应对sql注入上的区别表现">和$在应对Sql注入上的区别表现</h3>
+
+<p>利用现有应用程序，将（恶意的）SQL命令注入到后台数据库发动机执行的能力，它可以通过在Web表单中输入（恶意）SQL语句得到一个存在安全漏洞的网站上的数据库，而不是按照设计者意图去执行SQL语句。</p>
+
+<p>比如说根据学生姓名查学生信息，会传入一个name的参数，假设学生姓名是方方，那么Sql就是</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>SELECT id,name,age FROM student WHERE name = '方方'; 
+</code></pre></div></div>
+
+<p>在没有做防Sql注入的时候，我们的Sql语句可能是这么写的</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;select id="fetchStudentByName" parameterType="String" resultType="entity.StudentEntity"&gt; SELECT id,name,age FROM student WHERE name = '${value}' &lt;/select&gt; 
+</code></pre></div></div>
+
+<p>正常情况下查出姓名符合方方的学生信息。</p>
+
+<p>但如果我们对传入的姓名参数做一些更改，比如改成anything’ OR ‘x’=’x，那么拼接而成的Sql就变成了</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>SELECT id,name,age FROM student WHERE name = 'anything' OR 'x'='x' 
+</code></pre></div></div>
+
+<p>库里面所有的学生信息都被拉了出来，是不是很可怕。原因就是传入的anything’ OR ‘x’=’x和原有的单引号，正好组成了 ‘anything’ OR ‘x’=’x’，而OR后面恒等于1，所以等于对这个库执行了查所有的操作。</p>
+
+<p><strong>防范Sql注入的话，就是要把整个anything’ OR ‘x’=’x中的单引号作为参数的一部分，而不是和Sql中的单引号进行拼接</strong></p>
+
+<p>使用了$即可在Mybatis中对参数进行转义</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;select id="fetchStudentByName" parameterType="String" resultType="entity.StudentEntity"&gt; SELECT id,name,age FROM student WHERE name = #{name} &lt;/select&gt; 
+</code></pre></div></div>
+
+<p>我们看一下发送到数据库端的Sql语句长什么样子。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>SELECT id,name,age FROM student WHERE name = 'anything' OR 'x'='x' 
+</code></pre></div></div>
+
+<p>从上述代码中我们可以看到参数中的所有单引号统统被转移了，这都是JDBC中PrepareStatement的功劳，如果在数据库服务端开启了预编译，则是服务端来做了这件事情。</p>
+
+<p>具体可以看我之前写的这篇: JDBC与Mysql的那些事,里面解释了为何PrepareStatement能做到这件事情。</p>
+
+<h3 id="源码">源码</h3>
+
+<p>在以前的文章中，我们说明过Mybatis的执行流程主要部件，SqlSession 提供给用户操作的Api，Executor 具体执行对数据库的操作，但其实在Executor内部还会再委托给StatementHandler这个接口。</p>
+
+<p>这个Handler的实现类就是代表了JDBC中的操作语句,CallableStatementHandler、PrepareStatementHandler和SimpleStatementHandler就会代表对JDBC中的CallableStatement，PrepareStatement和Statement，这些handler的内部就会调用JDBC中的相关Statement。</p>
+
+<p>类比Mybatis的执行流程和JDBC原有的我们使用的方法就是。</p>
+
+<p>Mybatis: Sqlsession -&gt; Executor -&gt; StatementHandler -&gt; ResultHandler</p>
+
+<p>JDBC: Connection -&gt; Statement -&gt; Result</p>
+
+<p>因此我们可以知道对JDBC语句的操作都会在StatementHandler内部。</p>
+
+<p>在PrepareStatementHandler中会使用paramterize对Statement进行参数化，在其中他会委托给DefualtParameterHandler进行操作。我们通过两种不同的语句，看一下，Debug下这段代码的不同。</p>
+
+<p>首先是使用$符号，它是会直接在Sql中进行拼接的，从下图可知，在进行参数化的时候，Sql语句已经被拼接完成了，见originSql。</p>
+
+<p>进入DefualtParameterHandler内部，如下图可知，我们看到，这儿boundSql的ParameterMappings不存在，所以不用执行第二个红框处，设置对应占位符的操作。</p>
+
+<p>然后，我们看一下当使用#的时候，同样的代码，会得到什么样的处理结果。从下图可知，当使用#的时候，原有的#{value}被替换成了？号，也就是我们熟知的JDBC中的占位符。</p>
+
+<p>再进入DefualtParameterHandler的时候， 此时会有ParameterMappings，value -&gt; anything’ OR ‘x’=’x’，找到合适的TypeHandler塞入PrepareStatement中。</p>
+
+<p>**从上文的分析中，我们得到的就是，当使用的时候，的时候，{value}，是直接被替换为了对应的值，没有参数映射，不会进行设置占位符的操作，当使用#的时候，#{}会被替换为?号，有参数映射,会在DefaultParameterHandler中进行设置占位符的操作。</p>
+
+<p><strong>问题</strong></p>
+
+<p>1 为什么默认使用的语句是PrepareStatementHandler</p>
+
+<p>2 和#是什么时候被替换的，为什么对应的BoundSql，$时没有映射，#有映射。</p>
+
+<p>带着这两个问题我们来看一下，Mybatis的初始化阶段，为节省篇幅，仅列出大致路径，和关键代码。</p>
+
+<p>Mybatis是通过SqlSessionFactory build出来的，会解析映射文件，大致路径就是</p>
+
+<p>SqlSessionFactoryBuilder -&gt; XmlConfigBuilder-&gt;XMLMapperBuilder-&gt;XMLStatementBuilder。</p>
+
+<p>在XMLStatementBuilder的parseStatementNode负责了生成MappedStatement，首先回答第一个问题。当你不指定statementType时，Mybatis默认使用的就是PrepareStatementHandler，这里的StatementType，在后续流程中使用RoutingStatementHandler选择使用哪一个StatementHandler。</p>
+
+<p>然后继续看第二个问题，$和#是怎么被替换的。</p>
+
+<p>在之前我们提到了，BoundSql中包含了Sql主体，同时其中的参数映射决定了后续是否要进行参数化,在$和#时，表现是不同的。</p>
+
+<p>BoudSql来自于MappedStatement，在MappedStatement中，获取BoundSql的任务会委托给SqlSource接口。所以我们接下来主要看SqlSource是如何生成的。</p>
+
+<p>XMLLandDriver可以理解为就是用来解析Mybatis定制的XML符号的语句。他会把具体解析符号的职责交给XMLScriptBuilder的parseScriptNode方法。</p>
+
+<p>parseDynamicTags中会把语句用TextSql包装起来，然后使用isDynamic方法，在方法中使用GerenericTokenParser判断是否是动态语句。如果其中包含$，就是动态的，如果是#就不是动态的，使用的Handler是DrynamicCheckerTokenParser。</p>
+
+<p>在进入parse方法后，主要看以下这一段。</p>
+
+<p>这里会使用TokenHandler不同的实现类，对表达式进行进一步的处理，这里是对Sql自后的完善，在判断isDynamic中，使用的是DrynamicCheckerTokenParser，一个最简单的实现。</p>
+
+<p>parse完成后，如果isDynamic是true的话，就是动态语句，使用DynamicSqlSource。</p>
+
+<p>如果是非动态的话，其实一般就是指使用了#的语句，使用RawSqlSource，在其中，还会进一步解析。</p>
+
+<p>从下图中可以看到，这个TokenParser这回使用的是#{}，而且使用的是ParameterMappingTokenHandler。</p>
+
+<p>ParameterMappingTokenHandler的handlerToken方法中，完成了添加参数映射和替换#{value}为？的职责。</p>
+
+<p>从以上我们可以知道，使用#在初始化阶段，会被替换成？号，同时生成参数映射，而使用$在初始化阶段，没有什么特别的地方，仅仅做了一个是否动态语句的判断。</p>
+
+<p>在初始化完毕后，我们进入getBoundSql方法，看一下DynamicSqlSource和StaticSource在此刻做了什么，首先是DynamicSqlSource。</p>
+
+<p>在其中，首先会生成一个DynamicContext,主要就是 生成bindings，一个是 “_parameter” -&gt; “anything’ OR ‘x’=’x”,一个是”_databaseId” -&gt; “null”</p>
+
+<p>然后使用了apply方法，我理解这里是要去做替换了。具体还是使用${}去判断，和上文一致，只不过这里使用的是BindingTokenParser。</p>
+
+<p>看一下BindingTokenParser的HandleToken方法。</p>
+
+<p>上述代码的效果，就是会使用Ognl,使用value在Bindings中，找对应的值，最后返回，拼接在Sql中，这也就是为什么会有Sql注入风险的原因。使用value是因为Ognl去找的时候，就会使用value这个默认值，所以需要在bindings额外加入这么一个键值对，有兴趣可以继续往下看ONGL相关的东西。</p>
+
+<p>接下来是生成SqlSource，使用的是SqlSourceBuilder的parse方法。</p>
+
+<p>在前文介绍过，在这个parse方法里，是用#{}来判断的，所以走不到ParameterMappingTokenHandler的handlerToken方法，也就无法添加参数映射了，这个直接返回一个StaticSqlSource，这也解释了为什么使用$时，参数映射为空。</p>
+
+<p>再接下去就是获取BoundSql，使用的是StaticSqlSource，直接根据参数，实例化了一个，参数映射为空。</p>
+
+<p>当使用#的时候，使用的就是StaticSqlSource，直接实例化，因为参数映射在之前初始化的阶段，也生成好了，所以很简单的一个流程。</p>
+
+<p>后续的流程，就和Mybatis正常的流程一致了。</p>
+
+<h3 id="总结">总结</h3>
+
+<p>本文主要剖析了Mybatis中$和#两种符号使用上的不同，以及使用这两种符号时，源码流程上的区别。建议大家都使用#号，在orm这层也规避到Sql注入的风险。</p>
+
+<p><strong>倘若您有疑问或者有进一步想了解内容，欢迎留言给我。</strong></p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/%E5%85%B3%E4%BA%8Emybatis%E7%9A%84%E5%92%8C%E4%BD%A0%E7%9C%9F%E7%9A%84%E7%9F%A5%E9%81%93%E4%BB%96%E4%BB%AC%E7%9A%84%E7%BB%86%E8%8A%82%E5%90%97.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/java%E5%9F%BA%E7%A1%80io%E4%BA%8C.html">&laquo; Java基础——iO（二）</a>
+  
+  
+  <a class="next" href="/2017/nooperationwasfoundwiththename%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95%E6%80%BB%E7%BB%93.html">No operation was found with the name解决方法总结 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

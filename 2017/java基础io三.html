@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>Java基础——iO（三） | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="Java基础——iO（三）" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="演示：PipedInputStream , PipedOutputStream" />
+<meta property="og:description" content="演示：PipedInputStream , PipedOutputStream" />
+<link rel="canonical" href="http://www.jfox.info/2017/java%E5%9F%BA%E7%A1%80io%E4%B8%89.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/java%E5%9F%BA%E7%A1%80io%E4%B8%89.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:54:38+00:00" />
+<script type="application/ld+json">
+{"description":"演示：PipedInputStream , PipedOutputStream","@type":"BlogPosting","url":"http://www.jfox.info/2017/java%E5%9F%BA%E7%A1%80io%E4%B8%89.html","headline":"Java基础——iO（三）","dateModified":"2017-01-01T15:54:38+00:00","datePublished":"2017-01-01T15:54:38+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/java%E5%9F%BA%E7%A1%80io%E4%B8%89.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Java基础——iO（三）</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:54:38+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>演示：PipedInputStream  , PipedOutputStream</p>
+
+<p>注意：管道流本身就不建议在一个线程中使用，这是因为向输出流中写的数据，都会存到输入流内部的一个1024字节大小的数组中，如果写的内容超过这个数组的大小，而且没有被输入流读取的话，输出流所在的线程就会等待，如果这时是在同一个线程中，该线程就会死锁，不推荐在同一个线程中使用。（API）</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>import java.io.IOException;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
+
+publicclass Test17 {
+    publicstaticvoid main(String[] args) throws IOException,
+            InterruptedException {
+        Sender sender = new Sender();
+        Receiver receiver = new Receiver();
+
+        PipedOutputStream out = sender.getOut();
+        PipedInputStream in = receiver.getIn();
+
+        in.connect(out);
+        // out.connect(in); //这样也可以
+        sender.start();
+
+        Thread.sleep(10);
+        receiver.start();
+    }
+}
+
+// 发送者class Sender extends Thread {
+    private PipedOutputStream out = new PipedOutputStream();
+
+    publicvoid run() {
+        try {
+            int i = 1;
+            while (true) {
+                Thread.sleep(2000);
+                String msg = "你好,这是发送端发的第" + i++ + "条信息";
+                out.write(msg.getBytes());
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    public PipedOutputStream getOut() {
+        returnthis.out;
+    }
+}
+
+// 接收者class Receiver extends Thread {
+    private PipedInputStream in = new PipedInputStream();
+
+    publicvoid run() {
+        try {
+            while (true) {
+                byte[] buff = newbyte[1024];
+                int len = in.read(buff);
+                String str = new String(buff, 0, len);
+                System.out.println(str);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    public PipedInputStream getIn() {
+        returnthis.in;
+    }
+}
+
+// Pipe closed 发生在管道关了,发送者还在发的情况下
+</code></pre></div></div>
+
+<p><strong>二、文件切割和合并</strong></p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>publicstaticvoid merget2() throws Exception {
+        OutputStream out=new FileOutputStream("c:/src_new.zip");
+        BufferedOutputStream bos=new BufferedOutputStream(out);
+        
+        for(int i=1;i&lt;=20;i++){
+            InputStream in=new FileInputStream("c:/src_"+i);
+            byte [] buff=newbyte[in.available()];    
+            in.read(buff);
+            bos.write(buff);    
+            in.close();    
+        }
+        
+        bos.close();
+        
+        System.out.println("合并成功");
+    }
+    
+    
+    publicstaticvoid merge()throws Exception{
+        OutputStream out=new FileOutputStream("c:/src_new.zip");
+        for(int i=1;i&lt;=20;i++){
+            
+            InputStream in=new FileInputStream("c:/src_"+i);
+            
+            byte [] buff=newbyte[in.available()];
+            
+            in.read(buff);
+            out.write(buff);
+            
+            in.close();
+            
+        }
+        
+        out.close();
+        
+        System.out.println("合并成功");
+    }
+</code></pre></div></div>
+
+<p><strong>四、File 类概述</strong></p>
+
+<p>流只能操作数据</p>
+
+<p>File 类 是IO包中,唯一代表磁盘文件本身的类</p>
+
+<p>File 定义了一些与平台无关的方法来操作文件</p>
+
+<p>File: 文件和目录路径名的抽象表示形式。//路径也是一种文件</p>
+
+<p>用来将文件或文件夹封装成对象</p>
+
+<p>方便对文件及文件夹的属性信息进行操作</p>
+
+<p>File对象.经常做为参数传给流的构造函数</p>
+
+<p>File类不能访问文件内容,即不能从文件中读数据,也不能写入数据,它只能对文件本身的属性进行操作</p>
+
+<p><strong>五、File 类的常见操作</strong></p>
+
+<p>boolean createNewFile() //创建一个新文件,成功返回true ,否则返回false ,如果文件已经存在,则返回false,和流不一样,流是覆盖</p>
+
+<p>mikdir()  mikdirs  //创建目录,后者可以创建多级目录</p>
+
+<p>boolean delete ()  //删除 删除此抽象路径名表示的文件或目录。如果此路径名表示一个目录，则该目录必须为空才能删除。 否则返回false</p>
+
+<p>void deleteOnExit() //在虚拟机终止时,删除文件或目录 注意它的返回类型是void 因为虚拟机都终止了,当然要返回值也没用了</p>
+
+<p>exists() // 测试此抽象路径名表示的文件或目录是否存在。</p>
+
+<p>isDirectory() // 判断是否是目录</p>
+
+<p>isFile() //判断是否是文件</p>
+
+<p>isHidden() //判断是否是隐藏文件</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>staticvoid fileDemo() throws IOException{
+        File f1=new File("1.txt"); //当前路径下
+        File f2=new File("c:2.txt");
+        File f3=new File("c:","3.txt");
+        File f4=new File("c:");
+        File f5=new File(f4,"5.txt");  //File(File parent,String child)/*f1.createNewFile();
+        f2.createNewFile();
+        f3.createNewFile();
+        System.out.println(f4.createNewFile());    //返回false
+        f5.createNewFile();
+*//*    System.out.println(f1.delete());  //true
+        System.out.println(f2.delete());  //true
+        System.out.println(f3.delete());  //true
+        System.out.println(f4.delete());  //false
+        System.out.println(f5.delete());  //true
+        *///System.out.println(    new File("c:/aaa").delete()); //(aaa是个文件夹)如果aaa下有内容,则返回false,否则返回true,并将文件夹删除/*    File f=new File("c:BBBSSS1.txtccdd");  //这样写,1.txt也会被做为文件夹的名称
+        f.mkdirs();  //创建多级的时候,用mkdirs();
+        
+        new File("c:/forlder1").mkdir();  //只能创建一级目录
+     *//*File ff=new File("c:不存在的文件.txt");
+        System.out.println(ff.isDirectory()); //false
+        System.out.println(ff.isFile()); //false
+        System.out.println(ff.isHidden()); //false
+        *//*    
+        File ff=new File("c:不存在的文件.txt");
+        ff.createNewFile();
+        System.out.println(ff.isDirectory()); //false
+        System.out.println(ff.isFile());  //true
+        System.out.println(ff.isHidden()); //false
+   */    
+        
+        File ff=new File("c:不存在的文件.txt");
+        ff.mkdir();
+        System.out.println(ff.isDirectory()); //true
+        System.out.println(ff.isFile());  //false
+        System.out.println(ff.isHidden()); //false
+        
+        //注意,对于还没有创建的文件,或文件夹,isDirectory,isFile 都会返回false 要想得到正确结果,必须先用 exists判断            
+    }
+</code></pre></div></div>
+
+<p><strong>六、File 类获取文件信息类操作</strong></p>
+
+<p>String getName(); //返回文件或目录的名称</p>
+
+<p>String getParent(); //返回父目录的名字,没有则返回null</p>
+
+<p>String getPath(); //返回路径字串 ??? 含文件名</p>
+
+<p>String getAbsolutePath(); // 返回绝对路径名字符串</p>
+
+<p>//File getAbsoluteFile(); //返回绝对路径名形式。等同于 new File(this.getAbsolutePath())</p>
+
+<p>long length(); //返回文件长度,以字节为单位</p>
+
+<p>static File[] listRoots() //列出可用的文件系统根 在windows下即列出C D E等盘符</p>
+
+<p>String [] list()  //返回目录中的文件和目录 (即连文件名一起返回)(隐藏文件也会被返回)</p>
+
+<p>String [] list(FilenameFilter filter) //返回经过指定过滤器过滤的文件和目录。</p>
+
+<p>File [] listFiles() //返回当前目录下所有的文件</p>
+
+<p>File[] listFiles(FilenameFilter filter)</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>publicstaticvoid fileInfoDemo(){    
+                File f=new File("c:Test1.txt");
+                System.out.println("getName--"+f.getName()); //1.txt
+                System.out.println("getParent()--"+f.getParent()); //c:Test
+                System.out.println("getPath()--"+f.getPath()); //c:Test1.txt
+                System.out.println("getAbsolutePath--"+f.getAbsolutePath()); //c:Test1.txt
+                System.out.println("length()--"+f.length()); //1234                
+               File[] fileList=File.listRoots();
+               for(File file : fileList)  {     
+                       System.out.println (file); //打印出 C:  D: 等               }
+            }
+
+
+ 如果把上面的文件路径换成     File f=new File("1.txt"); //使用的是相对路径,则结果为:
+                getName--1.txt
+                getParent()--null
+                getPath()--1.txt
+                getAbsolutePath--C:workspaceLession211.txt
+                length()--0
+                A:
+                C:
+                D:
+                E:
+
+//例 显示全部staticvoid listDemo(){
+    File f=new File("C:/文件夹A/大学毕业论文收集");
+    String [] nameList=f.list();
+        for(String str:nameList){
+        System.out.println(str);
+    }    
+}
+
+//例子,带过滤的staticvoid filterDemo(){
+        File f=new File("C:/文件夹A/大学毕业论文收集/中文系");
+        File [] fileList=f.listFiles(new FilenameFilter() {
+    publicboolean accept(File dir, String name) {
+        return !name.endsWith(".exe"); //只看exe文件        }
+        });
+        for (File item: fileList) {
+        System.out.println(item.getName());
+        }
+}
+</code></pre></div></div>
+
+<p><strong>七、递归操作</strong>递归的查看目录中的内容</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>publicstaticvoid main(String[] args) {
+    recuDir(new File("C:作业8.13"));
+}
+            
+    staticvoid recuDir(File dir){
+    System.out.println("------------------");
+    File [] fileList= dir.listFiles();
+                
+    for(File f:fileList){
+        if(f.isDirectory()){
+        recuDir(f);  //递归调用
+        }else{
+        System.out.println(f.getName());
+        }
+    }
+}
+</code></pre></div></div>
+
+<p><strong>八、RandomAccessFile</strong></p>
+
+<p>java 语言中功能最丰富的文件访问类</p>
+
+<p>支持 “随机访问” 方式</p>
+
+<p>可以跳转到文件的任意位置读写数据</p>
+
+<p>该类对象有个指示器,指向当前读写的位置,当读写n个字节后,文件指示器将指向这n个字节的下一个字节处</p>
+
+<p>刚打开文件的时候,指示器指向指向文件开头,可以移动指示器到新的位置</p>
+
+<p>在等长记录格式文件的随机读取时有极大优势,但它只限于操作文件,不能访问其他io设备,如网络,内存图像等</p>
+
+<p><strong>RandomAccessFile的构造函数</strong></p>
+
+<p>new RandomAccessFile(f,”rw”);  //读写方式 (如果文件不存在,会创建)</p>
+
+<p>new RandomAccessFile(f,”r”);    //只读方式</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>publicstaticvoid main(String[] args) throws IOException {
+                finalint LEN=8;
+                /*Student stu1=new Student(20,"cat");
+                Student stu2=new Student(21,"sheep");
+                Student stu3=new Student(15,"duck");
+                
+                RandomAccessFile r=new RandomAccessFile("c:/stu.txt","rw");
+                
+                r.write(stu1.name.getBytes());
+                r.writeInt(stu1.age);
+                
+                r.write(stu2.name.getBytes());
+                r.writeInt(stu2.age);
+                
+                r.write(stu3.name.getBytes());
+                r.writeInt(stu3.age);
+                
+                r.close();*/
+                
+                RandomAccessFile read=new RandomAccessFile("c:/stu.txt","rw");
+                
+                read.skipBytes(12);  //跳过第一个学生的信息,其中年龄是4个字节,姓名是8个字节
+                System.out.println("第二个学生的信息:");
+                    
+                String str="";
+                for(int i=0;i&lt;LEN;i++){
+                    str+=(char)read.readByte();
+                }
+                System.out.println("name:"+str);
+                System.out.println("age:"+read.readInt());
+                
+                System.out.println("第一个学生的信息:");
+                read.seek(0);
+                str="";
+                for(int i=0;i&lt;LEN;i++){
+                    str+=(char)read.readByte();
+                }
+                System.out.println("name:"+str);
+                System.out.println("age:"+read.readInt());
+                
+                System.out.println("第三个学生的信息:");
+                read.skipBytes(12);
+                str="";
+                for(int i=0;i&lt;LEN;i++){
+                    str+=(char)read.readByte();
+                }
+                System.out.println("name:"+str);
+                System.out.println("age:"+read.readInt());
+                
+                read.close();
+        
+            }
+</code></pre></div></div>
+
+<p><strong>九、Properties 类详解</strong></p>
+
+<p>Properties是 HashTable 的子类，它增加了将键和值保存到流中,或从流中读取的功能。如果要用 properties.store()方法存储其对象内容,则关键字和值必须是String型。可以从流中载入键值对信息 void load(InputStream inStream) 从输入流中读取属性列表（键和元素对）。Set<String> stringPropertyNames() 返回此属性列表中的键集。注意：尽量不要用中文</String></p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>publicstaticvoid main(String[] args) throws  IOException {
+            Properties settings =new Properties();
+            settings.load(new FileInputStream("c:/config.ini"));
+            
+            System.out.println(settings.getProperty("port"));  //8080
+                
+            //从流中取
+            Set&lt;String&gt; set=settings.stringPropertyNames(); //取所有属性for(String key:set){
+                System.out.println(key+":"+settings.getProperty(key));
+            }
+            
+            //输入
+            settings.setProperty("niceCat", "this is a niceCat"); 
+            settings.store(new FileOutputStream("c:/config.ini"),"this is note");
+            
+            System.out.println("ok");
+            
+        }
+</code></pre></div></div>
+
+<p>posted @ 
+ 2017-07-09 13:50<a href="https://www.jfox.info/go.php?url=http://www.cnblogs.com/1693977889zz/">zzbd4444</a> 阅读( 
+ …) 评论( 
+ …)</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/java%E5%9F%BA%E7%A1%80io%E4%B8%89.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/springboot%E6%97%A5%E5%BF%97%E9%85%8D%E7%BD%AElogbacklockback%E5%BC%82%E6%AD%A5%E6%97%A5%E5%BF%97.html">&laquo; Spring Boot 日志配置(LogBack,LockBack异步日志)</a>
+  
+  
+  <a class="next" href="/2017/akka%E7%B3%BB%E5%88%97%E5%85%ADactor%E8%A7%A3%E5%86%B3%E4%BA%86%E4%BB%80%E4%B9%88%E9%97%AE%E9%A2%98.html">Akka系列（六）：Actor解决了什么问题？ &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

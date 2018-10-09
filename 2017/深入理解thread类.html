@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>深入理解Thread类 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="深入理解Thread类" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="云计算与大数据时代，分布式、高并发是Java程序员面临的难题，其中Thread类的复杂性，往往让人摸不着头脑，学习《Java多线程编程核心技术》，对于初学者确实是一本入门宝典。" />
+<meta property="og:description" content="云计算与大数据时代，分布式、高并发是Java程序员面临的难题，其中Thread类的复杂性，往往让人摸不着头脑，学习《Java多线程编程核心技术》，对于初学者确实是一本入门宝典。" />
+<link rel="canonical" href="http://www.jfox.info/2017/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3thread%E7%B1%BB.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3thread%E7%B1%BB.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:53:47+00:00" />
+<script type="application/ld+json">
+{"description":"云计算与大数据时代，分布式、高并发是Java程序员面临的难题，其中Thread类的复杂性，往往让人摸不着头脑，学习《Java多线程编程核心技术》，对于初学者确实是一本入门宝典。","@type":"BlogPosting","url":"http://www.jfox.info/2017/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3thread%E7%B1%BB.html","headline":"深入理解Thread类","dateModified":"2017-01-01T15:53:47+00:00","datePublished":"2017-01-01T15:53:47+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3thread%E7%B1%BB.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">深入理解Thread类</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:53:47+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>云计算与大数据时代，分布式、高并发是Java程序员面临的难题，其中Thread类的复杂性，往往让人摸不着头脑，学习《Java多线程编程核心技术》，对于初学者确实是一本入门宝典。</p>
+
+<h4 id="一interruptinterrupted和isinterrupted方法的差异">一、interrupt、interrupted和isInterrupted方法的差异</h4>
+
+<ul>
+  <li>interrupt仅是为线程打了一个停止标记，并不影响其正常运行；</li>
+  <li>interrupted判断当前线程是否为中断状态，有则清除停止标记；</li>
+  <li>
+    <p>isInterrupted判断调用线程是否为中断状态，不清楚停止标记；</p>
+
+    <p>public class MyThread extends Thread {
+      @Override
+      public void run() {
+          super.run();
+          for(int i=0;i &lt; 10000;i++){
+              System.out.println(“i : “+(i+1));
+          }
+      }
+  }</p>
+
+    <p>public class Run {
+      public static void main(String[] args) {
+          try {
+              MyThread t = new MyThread();
+              t.start();
+              t.interrupt();
+              // interruted方法为判断当前线程是否中断，此为main线程
+              System.out.println(“是否停止： “+t.interrupted()); 
+              // isInterrupted方法为判断调用线程是否中断，此为t 
+              System.out.println(“是否停止: “+t.isInterrupted());
+          } catch (Exception e) {
+              e.getStackTrace();
+          }
+      }
+  }</p>
+
+    <p>i : 1
+  是否停止： false
+  i : 2
+  是否停止: true
+  i : 3</p>
+  </li>
+</ul>
+
+<h4 id="二sleep与interrupt方法的先后顺序">二、sleep与interrupt方法的先后顺序</h4>
+
+<ul>
+  <li>
+    <p>无论是先sleep后interrupt，或是顺序切换，中断状态均会被清除；</p>
+
+    <p>public class MyThread extends Thread {
+      @Override
+      public void run() {
+          super.run();
+          try {
+              for(int i=0;i &lt; 200000;i++){
+                  System.out.println(“i : “+(i+1));
+              }
+              Thread.sleep(5000);
+          } catch (InterruptedException e) {
+              System.out.println(“睡眠中中断状态是否清除： “+this.isInterrupted());
+              e.printStackTrace();
+          }
+      }
+  }</p>
+
+    <p>public class Run {
+      public static void main(String[] args) {
+          try {
+              MyThread t = new MyThread();
+              t.start();
+              t.interrupt(); // 先中断后睡眠
+          } catch (Exception e) {
+              e.getStackTrace();
+          }
+      }
+  }</p>
+
+    <p>i : 199999
+  i : 200000
+  睡眠中中断状态是否清除： false
+  java.lang.InterruptedException: sleep interrupted
+      at java.lang.Thread.sleep(Native Method)
+      at javaBasic.MyThread.run(MyThread.java:11)</p>
+  </li>
+</ul>
+
+<h4 id="三加锁后被暂停程序卡顿">三、加锁后被暂停，程序卡顿</h4>
+
+<ul>
+  <li>suspend方法，虽然已经被deprecated，学习其工作原理；</li>
+  <li>
+    <p>suspend与resume联合使用，容易造成数据不一致的情况；</p>
+
+    <p>public class MyThread extends Thread {
+      @Override
+      public void run() {
+          super.run();
+          try {
+              for(int i=0;i &lt; 200000;i++){
+                  System.out.println(“i : “+(i+1));
+              }
+          } catch (Exception e) {
+              e.printStackTrace();
+          }
+      }
+  }
+  public class Run {
+      public static void main(String[] args) {
+          try {
+              MyThread t = new MyThread();
+              t.start();
+              Thread.sleep(1000);
+              t.suspend();
+              System.out.println(“共享对象加锁被停止后，被独占”);
+          } catch (Exception e) {
+              e.getStackTrace();
+          }
+      }
+  }</p>
+
+    <p>// 程序停顿在此，无法继续执行
+  i : 109178
+  i : 109179
+  i : 109180
+  i : 109181
+  i : 109182</p>
+
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  // 加锁后被暂停，println方法不能被使用，知道resume恢复后继续执行
+  public void println(String x) {
+      synchronized (this) {
+          print(x);
+          newLine();
+      }
+  }
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<h4 id="四常用概念小结">四、常用概念小结</h4>
+
+<ul>
+  <li>守护线程
+Dameon的作用是为其他线程提供便利，一旦没有其他线程工作，则伴随JVM一起停止，常见的是JVM垃圾回收线程；</li>
+  <li>优先级
+线程的优先级具有继承性、规则性和随机性，意味着CPU会提供更多的时间为其服务；高优先级的任务会大部分先执行完，不代表会全部先执行完；</li>
+  <li>常用的方法
+yield()：放弃CPU资源，让给其他任务，放弃时间未知；
+isAlive()：判断当前线程是否是存活状态；
+concurrentThread()：判断当前线程；</li>
+  <li>线程状态(常用五种、细分七种)</li>
+</ul>
+
+<p><img src="5f58a8b.png" alt="" /></p>
+
+<p>线程状态切换.png</p>
+
+<h4 id="五等待通知机制">五、等待通知机制</h4>
+
+<ul>
+  <li>wait和notify方法使用前，均需要获得对象锁，即二者须使用在同步语句中；</li>
+  <li>wait方法执行后，释放对象锁，进入阻塞状态；此时调用该进程的interrupt方法，抛出java.lang.InterruptedException异常；</li>
+  <li>
+    <p>notify方法执行后，从该同步对象的阻塞队列中唤醒一个线程（每个对象具有一个就绪队列和一个阻塞队列）；notify执行完所在的同步语句后，线程才被真正唤醒；（notifyAll唤醒多个线程）</p>
+
+    <p>public class Add {
+      private String lock;
+      private ArrayList<String> list;</String></p>
+
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  public Add(String lock,ArrayList&lt;String&gt; list){
+      this.lock = lock;
+      this.list = list;
+  }
+
+  public void add() {
+      synchronized(lock){
+          list.add("Hello World");
+          lock.notifyAll();;
+      }
+  }   }
+</code></pre></div>    </div>
+
+    <p>public class Substract {
+      private String lock;
+      private ArrayList<String> list;</String></p>
+
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  public Substract(String lock,ArrayList&lt;String&gt; list){
+      this.lock = lock;
+      this.list = list;
+  }
+
+  public void substract(){
+      try {
+          synchronized(lock){
+              while(list.size() == 0){
+                  System.out.println("begin : "+System.currentTimeMillis());
+                  lock.wait();
+                  System.out.println("end :　"+System.currentTimeMillis());
+              }
+              list.remove(0);
+              System.out.println("The operation is done now");
+          }
+      } catch (Exception e) {
+          e.printStackTrace();
+      }
+  }   }
+</code></pre></div>    </div>
+
+    <p>public class ThreadAdd extends Thread{
+      private Add p;</p>
+
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  public ThreadAdd(Add p){
+      super();
+      this.p = p;
+  }
+
+  @Override
+  public void run() {
+      p.add();
+  }   }   public class ThreadSubstract extends Thread{
+  private Substract s;
+
+  public ThreadSubstract(Substract s){
+      super();
+      this.s = s;
+  }
+
+  @Override
+  public void run() {
+      s.substract();
+  }   }
+</code></pre></div>    </div>
+
+    <p>public class Test {
+      public static void main(String[] args) throws Exception {
+          String lock = new String(“”);
+          ArrayList<String> list = new ArrayList<String>();</String></String></p>
+
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>      Add p = new Add(lock,list);
+      Substract s = new Substract(lock,list);
+
+      ThreadSubstract ts1 = new ThreadSubstract(s);
+      ts1.start();
+
+      ThreadSubstract ts2 = new ThreadSubstract(s);
+      ts2.start();
+</code></pre></div>    </div>
+
+    <p>//        ts1.interrupt();</p>
+
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>      Thread.sleep(1000);
+
+      ThreadAdd ta = new ThreadAdd(p);
+      ta.start();
+
+  }   }
+</code></pre></div>    </div>
+
+    <p>// 执行结果
+  begin : 1499092455187  // ts1执行wait方法阻塞
+  begin : 1499092455187  // ts2执行wait方法阻塞
+  end :　1499092456188  // list添加后执行notifyAll，ts1或者ts2抢先执行后删除list中元素
+  The operation is done now
+  end :　1499092456188 // 未结束的线程一直在循环执行
+  begin : 1499092456188</p>
+  </li>
+  <li>因为synchronized同步语句执行退出后，会将最新值从主内存刷新到线程的工作内存中，同理，在开始执行synchronized语句获得对象锁前，将主内存中的最新值刷新到工作内存中，所以list的大小实现同步；</li>
+</ul>
+
+<h4 id="六join方法">六、join方法</h4>
+
+<ul>
+  <li>
+    <p>作用
+将指定线程添加到当前线程；
+调用iterrupt方法，直接抛出中断异常（直接原因与wait方法相同）；</p>
+
+    <p>a.join(); // b线程调用a的join方法，等待直到a运行结束
+  a.join(1000); //b线程调用a的join方法，等待1s</p>
+
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  public final synchronized void join(long millis)
+  throws InterruptedException {
+      long base = System.currentTimeMillis();
+      long now = 0;
+
+      if (millis &lt; 0) {
+          throw new IllegalArgumentException("timeout value is negative");
+      }
+
+      if (millis == 0) {
+          while (isAlive()) {
+              wait(0);
+          }
+      } else {
+          while (isAlive()) {
+              long delay = millis - now;
+              if (delay &lt;= 0) {
+                  break;
+              }
+              wait(delay);
+              now = System.currentTimeMillis() - base;
+          }
+      }
+  }
+</code></pre></div>    </div>
+
+    <p>public class ThreadA extends Thread{</p>
+
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  @Override
+  synchronized public void run() {
+      try {
+          System.out.println("begin A : ThreadName--"+
+                  Thread.currentThread().getName()+System.currentTimeMillis());
+          Thread.sleep(5000);
+          System.out.println("end A : ThreadName--"+
+                  Thread.currentThread().getName()+System.currentTimeMillis());                
+      } catch (InterruptedException e) {
+          e.printStackTrace();
+      }    
+  }   }
+</code></pre></div>    </div>
+
+    <p>public class TestJoin {</p>
+
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  public static void main(String[] args) throws InterruptedException {
+      ThreadA ta = new ThreadA();
+      ta.start();
+      ta.join(1000);        
+      System.out.println("main end -- " + System.currentTimeMillis());
+  }   }
+</code></pre></div>    </div>
+
+    <p>// 测试结果，main线程无法获取锁对象只能等待，且执行时间为5秒而不是6秒
+  begin A : ThreadName–Thread-01499224208429
+  end A : ThreadName–Thread-01499224213429
+  main end – 1499224213429</p>
+
+    <p>public class ThreadA extends Thread{
+      private ThreadB tb;</p>
+
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  public ThreadA(ThreadB tb){
+      super();
+      this.tb = tb;
+  }
+
+  @Override
+  public void run() {
+      synchronized(tb){
+          try {
+              System.out.println("begin A : ThreadName--"+
+                      Thread.currentThread().getName()+System.currentTimeMillis());
+              Thread.sleep(5000);
+              System.out.println("end A : ThreadName--"+
+                      Thread.currentThread().getName()+System.currentTimeMillis());                
+          } catch (InterruptedException e) {
+              // TODO Auto-generated catch block
+              e.printStackTrace();
+          }
+      }
+  }   }
+</code></pre></div>    </div>
+
+    <p>public class ThreadB extends Thread{</p>
+
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  @Override
+  synchronized public void run() {
+      super.run();
+      try {
+          System.out.println("begin B : ThreadName--"+
+                  Thread.currentThread().getName()+System.currentTimeMillis());
+          Thread.sleep(1000);
+          System.out.println("end B : ThreadName--"+
+                  Thread.currentThread().getName()+System.currentTimeMillis());                
+      } catch (InterruptedException e) {
+          e.printStackTrace();
+      }
+  }       }
+</code></pre></div>    </div>
+
+    <p>public class TestJoin {</p>
+
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  public static void main(String[] args) throws InterruptedException {
+      ThreadB tb = new ThreadB();
+      ThreadA ta = new ThreadA(tb);
+
+      ta.start();
+      tb.start();
+      //参见源码，快速释放锁，出现ta、tb和tb.join抢占锁，出现多种情况
+      tb.join(2000);
+
+      System.out.println("main end -- " + System.currentTimeMillis());
+  }   }
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3thread%E7%B1%BB.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/%E6%BA%90%E8%B5%84%E8%AE%AF%E7%AC%AC34%E6%9C%9F%E7%A8%8B%E5%BA%8F%E5%91%98%E4%B8%8D%E7%94%A8%E4%B8%8A%E7%8F%AD%E8%BF%98%E8%83%BD%E6%8B%BF%E9%AB%98%E8%96%AA%E7%9A%84%E6%96%B9%E6%B3%95.html">&laquo; 【源资讯 第34期】程序员不用上班还能拿高薪的方法……</a>
+  
+  
+  <a class="next" href="/2017/springcloud%E6%9E%84%E5%BB%BA%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%9E%B6%E6%9E%84%E6%9C%8D%E5%8A%A1%E6%B3%A8%E5%86%8C%E4%B8%8E%E5%8F%91%E7%8E%B0eurekaconsuldalston%E7%89%88.html">Spring Cloud构建微服务架构：服务注册与发现（Eureka、Consul）【Dalston版】 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

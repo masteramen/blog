@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>Spring+SpringMVC+MyBatis+easyUI集成进阶篇(二)RESTful API实战笔记(接口设计及Java后端实现) | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="Spring+SpringMVC+MyBatis+easyUI集成进阶篇(二)RESTful API实战笔记(接口设计及Java后端实现)" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="原计划这部分代码的更新也是上传到ssm-demo仓库中，因为如下原因并没有这么做：" />
+<meta property="og:description" content="原计划这部分代码的更新也是上传到ssm-demo仓库中，因为如下原因并没有这么做：" />
+<link rel="canonical" href="http://www.jfox.info/2017/springspringmvcmybatiseasyui%E9%9B%86%E6%88%90%E8%BF%9B%E9%98%B6%E7%AF%87%E4%BA%8Crestfulapi%E5%AE%9E%E6%88%98%E7%AC%94%E8%AE%B0%E6%8E%A5%E5%8F%A3%E8%AE%BE%E8%AE%A1%E5%8F%8Ajava%E5%90%8E%E7%AB%AF.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/springspringmvcmybatiseasyui%E9%9B%86%E6%88%90%E8%BF%9B%E9%98%B6%E7%AF%87%E4%BA%8Crestfulapi%E5%AE%9E%E6%88%98%E7%AC%94%E8%AE%B0%E6%8E%A5%E5%8F%A3%E8%AE%BE%E8%AE%A1%E5%8F%8Ajava%E5%90%8E%E7%AB%AF.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:59:58+00:00" />
+<script type="application/ld+json">
+{"description":"原计划这部分代码的更新也是上传到ssm-demo仓库中，因为如下原因并没有这么做：","@type":"BlogPosting","url":"http://www.jfox.info/2017/springspringmvcmybatiseasyui%E9%9B%86%E6%88%90%E8%BF%9B%E9%98%B6%E7%AF%87%E4%BA%8Crestfulapi%E5%AE%9E%E6%88%98%E7%AC%94%E8%AE%B0%E6%8E%A5%E5%8F%A3%E8%AE%BE%E8%AE%A1%E5%8F%8Ajava%E5%90%8E%E7%AB%AF.html","headline":"Spring+SpringMVC+MyBatis+easyUI集成进阶篇(二)RESTful API实战笔记(接口设计及Java后端实现)","dateModified":"2017-01-01T15:59:58+00:00","datePublished":"2017-01-01T15:59:58+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/springspringmvcmybatiseasyui%E9%9B%86%E6%88%90%E8%BF%9B%E9%98%B6%E7%AF%87%E4%BA%8Crestfulapi%E5%AE%9E%E6%88%98%E7%AC%94%E8%AE%B0%E6%8E%A5%E5%8F%A3%E8%AE%BE%E8%AE%A1%E5%8F%8Ajava%E5%90%8E%E7%AB%AF.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Spring+SpringMVC+MyBatis+easyUI集成进阶篇(二)RESTful API实战笔记(接口设计及Java后端实现)</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:59:58+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>原计划这部分代码的更新也是上传到ssm-demo仓库中，因为如下原因并没有这么做：</p>
+
+<ul>
+  <li>
+    <p>有些使用了该项目的朋友建议重新创建一个仓库，因为原来仓库中的项目太多，结构多少有些乱糟糟的。</p>
+  </li>
+  <li>
+    <p>而且这次的代码改动较大，与原来的目录结构及代码风格相比都有很大的差别。</p>
+  </li>
+  <li>
+    <p>同时也考虑到不同的人所处的学习阶段不同，担心有人不习惯也不适应这种风格及后面的更新，有的朋友甚至可能是初学者，更适合学习ssm-demo这个基础项目。</p>
+  </li>
+</ul>
+
+<p>基于以上几点，最终并没有选择把几个项目都放在一个代码仓库中，而是另外花了些时间改动并且重新创建了一个仓库，<a href="https://www.jfox.info/go.php?url=https://github.com/ZHENFENG13/perfect-ssm">perfect-ssm</a>另起炉灶，项目也在新的服务器和域名下部署。</p>
+
+<p><img src="d8800da.png" alt="" /></p>
+
+<h2 id="接口设计">接口设计</h2>
+
+<p>项目共有三个模块:</p>
+
+<p>针对以上三个模块，并结合前文<a href="https://www.jfox.info/go.php?url=http://www.cnblogs.com/han-1034683568/p/7196345.html">《设计一套好的RESTful API》</a>中所总结的RESTful API设计原则，对api进行改造，目标接口如下：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>图片上传：
+原接口 []      http://ssm-demo.hanshuai.xin/loadimage/upload.do
+现接口 [POST]  http://perfect-ssm.hanshuai.xin/images
+
+文章添加：
+原接口 []      http://ssm-demo.hanshuai.xin/article/save.do
+现接口 [POST]  http://perfect-ssm.hanshuai.xin/articles 
+
+文章修改：
+原接口 []      http://ssm-demo.hanshuai.xin/article/save.do
+现接口 [PUT]  http://perfect-ssm.hanshuai.xin/articles 
+
+文章列表：
+原接口 []      http://ssm-demo.hanshuai.xin/article/list.do
+现接口 [GET]   http://perfect-ssm.hanshuai.xin/articles
+
+文章删除：
+原接口 []      http://ssm-demo.hanshuai.xin/article/delete.do
+现接口 [DELETE]http://perfect-ssm.hanshuai.xin/articles
+
+图片添加：
+原接口 []      http://ssm-demo.hanshuai.xin/picture/save.do
+现接口 [POST]  http://perfect-ssm.hanshuai.xin/pictures
+
+图片修改：
+原接口 []      http://ssm-demo.hanshuai.xin/picture/save.do
+现接口 [PUT]  http://perfect-ssm.hanshuai.xin/pictures
+
+图片列表：
+原接口 []      http://ssm-demo.hanshuai.xin/picture/list.do
+现接口 [GET]   http://perfect-ssm.hanshuai.xin/pictures
+
+图片删除：
+原接口 []      http://ssm-demo.hanshuai.xin/picture/delete.do
+现接口 [DELETE]http://perfect-ssm.hanshuai.xin/pictures
+
+用户登录：
+原接口 []      http://ssm-demo.hanshuai.xin/user/login.do
+现接口 [POST]  http://perfect-ssm.hanshuai.xin/users/cookie 
+
+用户列表：
+原接口 []      http://ssm-demo.hanshuai.xin/user/list.do
+现接口 [GET]   http://perfect-ssm.hanshuai.xin/users 
+
+用户删除：
+原接口 []      http://ssm-demo.hanshuai.xin/user/delete.do
+现接口 [DELETE]http://perfect-ssm.hanshuai.xin/users
+
+用户添加：
+原接口 []      http://ssm-demo.hanshuai.xin/user/save.do
+现接口 [POST]  http://perfect-ssm.hanshuai.xin/users
+
+修改密码：
+原接口 []      http://ssm-demo.hanshuai.xin/user/modifyPassword.do
+现接口 [PUT]   http://perfect-ssm.hanshuai.xin/users
+</code></pre></div></div>
+
+<p>根据不同资源映射成不同的uri，对于资源的具体操作类型，由HTTP动词来表示。</p>
+
+<h2 id="java后端实现">java后端实现</h2>
+
+<p>前文中提到了一些设计原则，这一篇就是将这些原则运用到项目中，但是理论性的知识看看就忘了，我写博客的目的不是为了写理论概念，没有实际项目配合我是不会写的，我觉得通过代码实现出来，配合实战才能让理论知识吸收的更好。</p>
+
+<p>由于是ssm项目，因此主要是通过SpringMVC实现，更多的是使用了SpringMVC的注解来进行简化开发。</p>
+
+<h4 id="整合过程">整合过程：</h4>
+
+<ul>
+  <li>
+    <p>首先是修改web.xml配置文件，使得URI可以符合RESTful风格。</p>
+
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;servlet&gt;
+      &lt;servlet-name&gt;springMVC&lt;/servlet-name&gt;
+      &lt;servlet-class&gt;org.springframework.web.servlet.DispatcherServlet&lt;/servlet-class&gt;
+      &lt;init-param&gt;
+          &lt;param-name&gt;contextConfigLocation&lt;/param-name&gt;
+          &lt;param-value&gt;classpath:spring-context-mvc.xml&lt;/param-value&gt;
+      &lt;/init-param&gt;
+      &lt;!--加载顺序为1 --&gt;
+      &lt;load-on-startup&gt;1&lt;/load-on-startup&gt;
+  &lt;/servlet&gt;
+
+  &lt;servlet-mapping&gt;
+      &lt;servlet-name&gt;springMVC&lt;/servlet-name&gt;
+      &lt;url-pattern&gt;/&lt;/url-pattern&gt;
+  &lt;/servlet-mapping&gt;
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>修改spring-context-mvc.xml配置文件，配置json消息转换器及动态资源过滤。</p>
+
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;!-- Start: 配置json消息转换器 &amp; 参数解析--&gt;
+  &lt;bean id="objectMapper" class="com.fasterxml.jackson.databind.ObjectMapper"&gt;
+      &lt;property name="dateFormat"&gt;
+          &lt;bean class="java.text.SimpleDateFormat"&gt;
+              &lt;constructor-arg index="0" type="java.lang.String" value="yyyy-MM-dd HH:mm:ss"/&gt;
+          &lt;/bean&gt;
+      &lt;/property&gt;
+  &lt;/bean&gt;
+  &lt;mvc:annotation-driven&gt;
+      &lt;mvc:message-converters register-defaults="true"&gt;
+          &lt;bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter"&gt;
+              &lt;property name="supportedMediaTypes"&gt;
+                  &lt;list&gt;
+                      &lt;value&gt;application/json; charset=UTF-8&lt;/value&gt;
+                  &lt;/list&gt;
+              &lt;/property&gt;
+              &lt;property name="prettyPrint" value="true"/&gt;
+              &lt;property name="objectMapper" ref="objectMapper"/&gt;
+          &lt;/bean&gt;
+      &lt;/mvc:message-converters&gt;
+  &lt;/mvc:annotation-driven&gt;
+  &lt;!-- End: 配置json消息转换器 &amp; 参数解析 --&gt;
+
+  &lt;!-- 使用了&lt;url-pattern&gt;/&lt;/url-pattern&gt;,所以要对静态资源进行处理 --&gt;
+  &lt;mvc:default-servlet-handler/&gt;
+
+  &lt;!-- 默认的视图解析器 在上边的解析错误时使用 (默认使用html)- --&gt;
+  &lt;bean id="defaultViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver"
+        p:order="1"&gt;
+      &lt;property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/&gt;
+      &lt;property name="contentType" value="text/html"/&gt;
+      &lt;property name="prefix" value="/WEB-INF/"/&gt;
+      &lt;property name="suffix" value=".jsp"/&gt;
+  &lt;/bean&gt;
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>@RequestMapping注解，规范和限制Http请求的请求方法。</p>
+
+    <p>@RequestMapping(value = “”, method = RequestMethod.PUT)</p>
+
+    <p>@RequestMapping(value = “/{ids}”, method = RequestMethod.DELETE)</p>
+  </li>
+  <li>
+    <p>@ResponseBody注解，将返回结果转换为JSON格式。</p>
+  </li>
+  <li>
+    <p>增加common包，其中的工具类规定了返回状态码及返回数据的基本格式。
+<img src="2ec87f1.png" alt="" /></p>
+
+    <p>public class Constants {</p>
+
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public static final int RESULT_CODE_SUCCESS = 200;  // 成功处理请求
+public static final int RESULT_CODE_BAD_REQUEST = 412;  // bad request
+public static final int RESULT_CODE_SERVER_ERROR = 500;  // 没有对应结果
+</code></pre></div>    </div>
+
+    <p>}</p>
+
+    <p>public class Result<T> implements Serializable {
+    private static final long serialVersionUID = 1L;
+    private int resultCode;
+    private String message;
+    private T data;</T></p>
+
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public Result() {
+} }
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<h2 id="注意事项">注意事项</h2>
+
+<p>几个需要注意的注解：</p>
+
+<ul>
+  <li>@RequestMapping</li>
+  <li>@PathVariable</li>
+  <li>@ResponseBody</li>
+  <li>@RequestParam</li>
+</ul>
+
+<p>代码中大量的出现，本文中也一再强调，因此，给正在看本篇文章的你一个建议就是如果你不熟悉这几个注解，花点时间去认真学习和实践一下，知道这几个注解的用法和注意事项，网上针对这些注解的文章有很多，可以针对性的学习一下，这篇文章就不再占用篇幅去赘述了，需要代码的话，直接去我的GitHub仓库中去下载就好。</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/springspringmvcmybatiseasyui%E9%9B%86%E6%88%90%E8%BF%9B%E9%98%B6%E7%AF%87%E4%BA%8Crestfulapi%E5%AE%9E%E6%88%98%E7%AC%94%E8%AE%B0%E6%8E%A5%E5%8F%A3%E8%AE%BE%E8%AE%A1%E5%8F%8Ajava%E5%90%8E%E7%AB%AF.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/%E6%88%91%E7%9A%84%E7%BD%91%E7%AB%99%E4%B9%8Bstruts2%E7%AC%94%E8%AE%B02.html">&laquo; 我的网站之struts2笔记2</a>
+  
+  
+  <a class="next" href="/2017/%E5%9B%9E%E7%9C%B8spring%E4%BA%8B%E7%89%A9%E8%BF%90%E8%A1%8C%E5%8E%9F%E7%90%86%E6%9C%BA%E5%88%B6.html">回眸Spring – 事物运行原理机制 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

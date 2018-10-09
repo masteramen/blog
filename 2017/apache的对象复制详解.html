@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>Apache的对象复制详解 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="Apache的对象复制详解" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="BeanUtils.copyProperties 和 PropertyUtils.copyProperties" />
+<meta property="og:description" content="BeanUtils.copyProperties 和 PropertyUtils.copyProperties" />
+<link rel="canonical" href="http://www.jfox.info/2017/apache%E7%9A%84%E5%AF%B9%E8%B1%A1%E5%A4%8D%E5%88%B6%E8%AF%A6%E8%A7%A3.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/apache%E7%9A%84%E5%AF%B9%E8%B1%A1%E5%A4%8D%E5%88%B6%E8%AF%A6%E8%A7%A3.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:51:37+00:00" />
+<script type="application/ld+json">
+{"description":"BeanUtils.copyProperties 和 PropertyUtils.copyProperties","@type":"BlogPosting","url":"http://www.jfox.info/2017/apache%E7%9A%84%E5%AF%B9%E8%B1%A1%E5%A4%8D%E5%88%B6%E8%AF%A6%E8%A7%A3.html","headline":"Apache的对象复制详解","dateModified":"2017-01-01T15:51:37+00:00","datePublished":"2017-01-01T15:51:37+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/apache%E7%9A%84%E5%AF%B9%E8%B1%A1%E5%A4%8D%E5%88%B6%E8%AF%A6%E8%A7%A3.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Apache的对象复制详解</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:51:37+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p><strong>BeanUtils.copyProperties 和 PropertyUtils.copyProperties</strong></p>
+
+<p>两个工具类都是对两个bean之前存在name相同的属性进行处理，无论是源bean或者目标bean多出的属性均不处理。</p>
+
+<p>其原理是通过JDK自带的反射机制动态的去get,set，从而去转换我们的类。</p>
+
+<p>但是要注意一点他们所支持的数据类型，还有一个就是假如一个类里面又写了一个类，一般叫做内部类，像这种类进行转换的时候，是不会成功的。</p>
+
+<p>两者最大的区别是： 
+1.BeanUtils.copyProperties会进行类型转换，而PropertyUtils.copyProperties不会。 
+既然进行了类型转换，那BeanUtils.copyProperties的速度比不上PropertyUtils.copyProperties。 
+因此，PropertyUtils.copyProperties应用的范围稍为窄一点，它只对名字和类型都一样的属性进行copy，如果名字一样但类型不一样，它会报错。</p>
+
+<p>2.对null的处理：PropertyUtils支持为null的场景；BeanUtils对部分属性不支持null的情况，具体为下：</p>
+
+<p><em>1）、date类型不支持； 
+2）、</em>Boolean、*Ineger、Long、Short、Float、Double等不支持： 转为false、0； 
+3）、string：支持，保持null； *</p>
+
+<p><strong>使用BeanUtils有几个要注意的地方：</strong>
+1.对于类型为Boolean/Short/Integer/Float/Double的属性，它会转换为false、0： 
+<img src="ec09646.gif" alt="" /><img src="/wp-content/uploads/2017/06/ExpandedBlockStart12.gif" alt="" />
+     1publicclass User {<br />
+     2 3private Integer intVal;<br />
+     4 5private Double doubleVal;<br />
+     6 7private Short shortVal;<br />
+     8 9private Long longVal;<br />
+    1011private Float floatVal;<br />
+    1213private Byte byteVal;<br />
+    1415private Boolean booleanVal;<br />
+    16}<br />
+    1718 User src = new User();<br />
+    19 User dest = new User();<br />
+    20BeanUtils.copyProperties(dest, src);<br />
+    21System.out.println(src);<br />
+    22System.out.println(dest);<br />
+    2324//输出结果：      25 User [intVal=null, doubleVal=null, shortVal=null, longVal=null, floatVal=null, byteVal=null, booleanVal=null]<br />
+    26 User [intVal=0, doubleVal=0.0, shortVal=0, longVal=0, floatVal=0.0, byteVal=0, booleanVal=false]</p>
+
+<p>View Code
+解释说是因为这几个类型都有对应的基本类型，在进行类型转换时，有可能遇到类似Integer -&gt; int的转换，此时显然不能对int类型的属性赋值为null，因此统一转换为0。</p>
+
+<p>如何让它不要转为0呢？可以这样：
+<img src="ec09646.gif" alt="" /><img src="/wp-content/uploads/2017/06/ExpandedBlockStart12.gif" alt="" />
+    1import org.apache.commons.beanutils.converters.IntegerConverter;<br />
+    23 IntegerConverter converter = new IntegerConverter(null);    //默认为null，而不是0  4 BeanUtilsBean beanUtilsBean = new BeanUtilsBean();<br />
+    5 beanUtilsBean.getConvertUtils().register(converter, Integer.class);</p>
+
+<p>View Code
+2.对于java.util.Date/BigDecimal/java.sql.Date/java.sql.Timestamp/java.sql.Time这几个类，如果值为null，则在copy时会抛异常，需要使用对应的Conveter： 
+<img src="ec09646.gif" alt="" /><img src="/wp-content/uploads/2017/06/ExpandedBlockStart12.gif" alt="" />
+     1publicclass User2 {<br />
+     2 3private java.util.Date javaUtilDateVal;<br />
+     4 5private java.sql.Date javaSqlDateVal;<br />
+     6 7private java.sql.Timestamp javaSqlTimeStampVal;<br />
+     8 9private BigDecimal bigDecimalVal;<br />
+    1011private java.sql.Time javaSqlTime;<br />
+    1213}<br />
+    1415 User2 src = new User2();<br />
+    16 User2 dest = new User2();<br />
+    1718 BeanUtilsBean beanUtilsBean = new BeanUtilsBean();<br />
+    1920//如果没有下面几行，则在转换null时会抛异常，例如：org.apache.commons.beanutils.ConversionException: No value specified for ‘BigDecimal’<br />
+    21//在org.apache.commons.beanutils.converters这个包下面有很多的Converter，可以按需要使用  22 beanUtilsBean.getConvertUtils().register(new BigDecimalConverter(null), BigDecimal.class);<br />
+    23 beanUtilsBean.getConvertUtils().register(new DateConverter(null), java.util.Date.class);<br />
+    2425 beanUtilsBean.getConvertUtils().register(new SqlTimestampConverter(null), java.sql.Timestamp.class);<br />
+    26 beanUtilsBean.getConvertUtils().register(new SqlDateConverter(null), java.sql.Date.class);<br />
+    27 beanUtilsBean.getConvertUtils().register(new SqlTimeConverter(null), java.sql.Time.class);<br />
+    2829beanUtilsBean.copyProperties(dest, src);<br />
+    30System.out.println(src);<br />
+    31 System.out.println(dest);</p>
+
+<p>View Code
+假设是从A复制到B： 
+需求1：如果B中某字段有值（不为null），则该字段不复制；也就是B中该字段没值时，才进行复制，适合于对B进行补充值的情况。
+<img src="ec09646.gif" alt="" /><img src="/wp-content/uploads/2017/06/ExpandedBlockStart12.gif" alt="" />
+     1import org.apache.commons.beanutils.BeanUtilsBean;<br />
+     2import org.apache.commons.beanutils.PropertyUtils;<br />
+     3 4publicclass CopyWhenNullBeanUtilsBean extends BeanUtilsBean{<br />
+     5 6    @Override<br />
+     7publicvoid copyProperty(Object bean, String name, Object value)<br />
+     8throws IllegalAccessException, InvocationTargetException {<br />
+     9try {<br />
+    10             Object destValue = PropertyUtils.getSimpleProperty(bean, name);<br />
+    11if (destValue == null) {<br />
+    12super.copyProperty(bean, name, value);<br />
+    13            }<br />
+    14         } catch (NoSuchMethodException e) {<br />
+    15thrownew RuntimeException(e);<br />
+    16        }<br />
+    17    }<br />
+    1819 }</p>
+
+<p>View Code
+需求2：如果A中某字段没值（为null），则该字段不复制，也就是不要把null复制到B当中。
+<img src="ec09646.gif" alt="" /><img src="/wp-content/uploads/2017/06/ExpandedBlockStart12.gif" alt="" />
+     1import org.apache.commons.beanutils.BeanUtilsBean;<br />
+     2 3publicclass CopyFromNotNullBeanUtilsBean extends BeanUtilsBean {<br />
+     4 5    @Override<br />
+     6publicvoid copyProperty(Object bean, String name, Object value) throws IllegalAccessException, InvocationTargetException {<br />
+     7if (value == null) {<br />
+     8return;<br />
+     9        }<br />
+    10super.copyProperty(bean, name, value);<br />
+    11    }<br />
+    12 }</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/apache%E7%9A%84%E5%AF%B9%E8%B1%A1%E5%A4%8D%E5%88%B6%E8%AF%A6%E8%A7%A3.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/java%E7%BA%BF%E7%A8%8B%E4%B9%8Bsleep-wait-yield-%E4%B8%89%E4%B8%AA%E6%96%B9%E6%B3%95%E7%9A%84%E4%BD%9C%E7%94%A8%E5%92%8C%E7%89%B9%E7%82%B9.html">&laquo; Java线程之sleep(), wait(), yield() 三个方法的作用和特点</a>
+  
+  
+  <a class="next" href="/2017/accp8-0%E8%BD%AC%E6%8D%A2%E6%95%99%E6%9D%90%E7%AC%AC1%E7%AB%A0%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%90%86%E8%A7%A3%E4%B8%8E%E7%BB%83%E4%B9%A0.html">accp8.0转换教材第1章多线程理解与练习 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

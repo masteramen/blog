@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>java排列数字组合面试题 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="java排列数字组合面试题" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="By Lee - Last updated: 星期五, 六月 21, 2013" />
+<meta property="og:description" content="By Lee - Last updated: 星期五, 六月 21, 2013" />
+<link rel="canonical" href="http://www.jfox.info/2017/java-pai-lie-shu-zi-zu-he-mian-shi-ti.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/java-pai-lie-shu-zi-zu-he-mian-shi-ti.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:42:22+00:00" />
+<script type="application/ld+json">
+{"description":"By Lee - Last updated: 星期五, 六月 21, 2013","@type":"BlogPosting","url":"http://www.jfox.info/2017/java-pai-lie-shu-zi-zu-he-mian-shi-ti.html","headline":"java排列数字组合面试题","dateModified":"2017-01-01T15:42:22+00:00","datePublished":"2017-01-01T15:42:22+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/java-pai-lie-shu-zi-zu-he-mian-shi-ti.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">java排列数字组合面试题</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:42:22+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>By Lee - Last updated: 星期五, 六月 21, 2013</p>
+
+<p>java排列数字组合面试题</p>
+
+<p>要求用java语言编写程序，输出数字1,2,2,3,4,5的所有可能的排列组合,而且4不能在第三位,3和5不能相邻，例如122345是正确的，12435是错误的。</p>
+
+<p>参考答案代码一</p>
+
+<p>import java.util.Iterator;
+import java.util.Set;
+import java.util.TreeSet;</p>
+
+<p>/*
+*</p>
+<ul>
+  <li>@author <a href="https://www.jfox.info/go.php?url=http://www.jfox.info/">java面试题</a>
+*
+*/</li>
+</ul>
+
+<p>public class Test
+{
+public static void main(String[] args)
+{
+int[] nums = new int[]{1,2,2,3,4,5};
+int len = nums.length;
+Set set = new TreeSet();
+int[] indexs = new int[]{0,0,0,0,0,0};
+for(indexs[0]=0; indexs[0] for(indexs[1]=0; indexs[1] for(indexs[2]=0; indexs[2] for(indexs[3]=0; indexs[3] for(indexs[4]=0; indexs[4] for(indexs[5]=0; indexs[5] {</p>
+
+<p>//同一个字符重复出现的跳过，两个2不是同一个字符</p>
+
+<p>boolean skip = false;</p>
+
+<p>a:</p>
+
+<p>for(int i=0;i</p>
+
+<p>for(int j=i+1;j {</p>
+
+<p>if(indexs[i]==indexs[j])
+{</p>
+
+<p>skip = true;</p>
+
+<p>break a;</p>
+
+<p>}</p>
+
+<p>}</p>
+
+<p>if(skip)
+{</p>
+
+<p>continue;</p>
+
+<p>}</p>
+
+<p>//4不能在第三位</p>
+
+<p>if(4==nums[indexs[2]])
+{</p>
+
+<p>continue;</p>
+
+<p>}</p>
+
+<p>//3和5不能相邻</p>
+
+<p>boolean ok = true;</p>
+
+<p>int[] tmpResult = new int[]{nums[indexs[0]],nums[indexs[1]],nums[indexs[2]],nums[indexs[3]],nums
+for(int i=0; i {</p>
+
+<p>if(2==Math.abs(tmpResult[i]-tmpResult[i+1]) &amp;&amp; 8==(tmpResult[i]+tmpResult[i+1]))
+{</p>
+
+<p>ok = false;</p>
+
+<p>break;</p>
+
+<p>}</p>
+
+<p>}</p>
+
+<p>if(ok)
+{</p>
+
+<p>//自动去重，其实这是针对两个2的</p>
+
+<p>set.add(“”+tmpResult[0]+tmpResult[1]+tmpResult[2]+tmpResult[3]+tmpResult[4]+tmpResult[5])</p>
+
+<p>}</p>
+
+<p>}</p>
+
+<p>System.out.println(“共</p>
+
+<p>有 “+set.size()+” 个”);</p>
+
+<p>Iterator iter = set.iterator();</p>
+
+<p>int no = 1;</p>
+
+<p>while(iter.hasNext())
+{</p>
+
+<p>if(no%10==1)
+{</p>
+
+<p>System.out.println();</p>
+
+<p>System.out.print(no);</p>
+
+<p>}</p>
+
+<p>no++;</p>
+
+<p>System.out.print(” ” + iter.next());</p>
+
+<p>}</p>
+
+<p>}</p>
+
+<p>}</p>
+
+<p>答案代码二，只写思路,这个虽然有点笨，当很直观，容易理解:</p>
+
+<p>for(int i=0;i&lt;6;i++) //第层for循环 ，确定第1个数字</p>
+
+<p>for(int i2=0;i2&lt;6;i2++) //第层for循环 ，确定第2个数字</p>
+
+<p>for(int i3=0;i3&lt;6;i3++) //第层for循环 ，确定第3个数字</p>
+
+<p>for(int i4=0;i4&lt;6;i4++) //第层for循环 ，确定第4个数字</p>
+
+<p>for(int i5=0;i5&lt;6;i5++) //第层for循环 ，确定第5个数字</p>
+
+<p>for(int i6=0;i6&lt;6;i6++) //第层for循环 ，确定第6个数字</p>
+
+<p>最后使用 全部 add 到 set 里边，去掉 重复的组合。再手工移去不符合要求的组合。剩下来的就是结果了。</p>
+
+<p>这个很简单，只有了6 层循环。</p>
+
+<p>答案代码三：</p>
+
+<p>import java.util.*;</p>
+
+<p>public class Test {
+public static void main(String[] args) {
+for (int i = 122345; i &lt;= 543221; i++) {
+String s = String.valueOf(i);
+if (s.contains(“35”) || s.contains(“53”) || “4”.equals(s.substring(2, 3))) continue;//排除35相邻和第三位为4</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>        char[] c = s.toCharArray(); Arrays.sort(c); if (!String.valueOf(c).equals(“122345”)) continue;//排除这些数字之外的组合
+
+        System.out.println(s);
+
+    } } }
+</code></pre></div></div>
+
+<p>很感谢这位朋友，他的思路更加简单，呵呵。思路很好.</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/java-pai-lie-shu-zi-zu-he-mian-shi-ti.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/java-pai-lie-shu-zi-zu-he-mian-shi-ti.html">&laquo; java排列数字组合面试题</a>
+  
+  
+  <a class="next" href="/2017/fen-xiang-8-nian-kai-fa-jing-yan-qian-tan-java-cheng-xu-yuan-zhi-ye-gui-hua.html">分享8年开发经验，浅谈java程序员职业规划 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

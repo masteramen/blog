@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>java设计模式面试题之——代理模式 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="java设计模式面试题之——代理模式" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="By Lee - Last updated: 星期三, 十月 16, 2013" />
+<meta property="og:description" content="By Lee - Last updated: 星期三, 十月 16, 2013" />
+<link rel="canonical" href="http://www.jfox.info/2017/java-she-ji-mo-shi-mian-shi-ti-zhi-dai-li-mo-shi.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/java-she-ji-mo-shi-mian-shi-ti-zhi-dai-li-mo-shi.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:42:36+00:00" />
+<script type="application/ld+json">
+{"description":"By Lee - Last updated: 星期三, 十月 16, 2013","@type":"BlogPosting","url":"http://www.jfox.info/2017/java-she-ji-mo-shi-mian-shi-ti-zhi-dai-li-mo-shi.html","headline":"java设计模式面试题之——代理模式","dateModified":"2017-01-01T15:42:36+00:00","datePublished":"2017-01-01T15:42:36+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/java-she-ji-mo-shi-mian-shi-ti-zhi-dai-li-mo-shi.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">java设计模式面试题之——代理模式</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:42:36+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>By Lee - Last updated: 星期三, 十月 16, 2013</p>
+
+<p>1，什么是代理模式？</p>
+
+<p>代理模式的作用是：为其他对象提供一种代理以控制对这个对象的访问。</p>
+
+<p>2，策略模式有什么好处？</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>在某些情况下，一个客户不想或者不能直接引用另一个对象，而代理对象可以在客户端和目标对象之间起到中介的作用。
+</code></pre></div></div>
+
+<p>3，代理模式一般涉及到的角色有：</p>
+
+<p>抽象角色：声明真实对象和代理对象的共同接口；</p>
+
+<p>代理角色：代理对象角色内部含有对真实对象的引用，从而可以操作真实对象，同时代理对象提供与真实对象相同的接口以便在任何时刻都能代替真实对象。同时，代理对象可以在执行真实对象操作时，附加其他的操作，相当于对真实对象进行封装。</p>
+
+<p>真实角色：代理角色所代表的真实对象，是我们最终要引用的对象。</p>
+
+<p>4，应用场景举例：</p>
+
+<p>比如西门庆找潘金莲，那潘金莲不好意思答复呀，咋办，找那个王婆做代理，表现在程序上时是这样的体现的</p>
+
+<p>先说说这个场景中的要素：一种类型的女人，潘金莲，王婆，西门庆，后来扩展的贾氏也和西门庆勾上了，我们是假设的，然后西门庆找潘金莲happy,但潘金莲不好意思直接，就找个王婆代理呗。我们看看具体代码。</p>
+
+<p>先定义一种女人</p>
+
+<p>package com.yangguangfu.proxy;
+/**</p>
+<ul>
+  <li></li>
+  <li>@author 阿福(trygf521@126.com)<br />
+*定义一种类型的女人，王婆和潘金莲都属于这个类型的女人
+*/
+public interface KindWoman {
+//这种女人能做什么事情呢？
+public void makeEyesWithMan();//抛媚眼
+public void happyWithMan();//和男人那个….</li>
+</ul>
+
+<p>}</p>
+
+<p>一种类型嘛，那肯定是接口，定义个潘金莲</p>
+
+<p>package com.yangguangfu.proxy;
+/**</p>
+<ul>
+  <li></li>
+  <li>
+    <p>@author 阿福(trygf521@126.com)<br />
+*定义一个潘金莲是什么样的人
+*/
+public class PanJinLian  implements KindWoman{</p>
+
+    <p>@Override
+public void happyWithMan() {
+System.out.println(“潘金莲和男人在做那个…”);
+}</p>
+
+    <p>@Override
+public void makeEyesWithMan() {
+System.out.println(“潘金莲抛媚眼…”);
+}</p>
+  </li>
+</ul>
+
+<p>}</p>
+
+<p>再定义个丑陋的王婆</p>
+
+<p>package com.yangguangfu.proxy;
+/**</p>
+<ul>
+  <li></li>
+  <li>
+    <p>@author 阿福(trygf521@126.com)<br />
+*王婆这个人老聪明了，她太老了，是个男人都看不上她，
+*但是她有智慧经验呀，他作为一类女人的代理！
+*/
+public class WangPo implements KindWoman {
+private KindWoman kindWoman;
+public WangPo(){
+//默认的话是潘金莲的代理
+this.kindWoman = new PanJinLian();
+}
+//她可以是KindWomam的任何一个女人的代理，只要你是这一类型
+public WangPo(KindWoman kindWoman){
+this.kindWoman = kindWoman;
+}</p>
+
+    <p>@Override
+public void happyWithMan() {
+//自己老了，干不了了，但可以叫年轻的代替。
+this.kindWoman.happyWithMan();
+}</p>
+
+    <p>@Override
+public void makeEyesWithMan() {
+//王婆年纪大了，谁看她抛媚眼啊
+this.kindWoman.makeEyesWithMan();
+}</p>
+  </li>
+</ul>
+
+<p>}</p>
+
+<p>两个女主角都上场了，该男主角了，定义个西门庆</p>
+
+<p>package com.yangguangfu.proxy;
+/**</p>
+<ul>
+  <li></li>
+  <li>
+    <p>@author 阿福(trygf521@126.com)<br />
+*水浒传是这样写的：西门庆被潘金莲用竹竿敲了一下，西门庆看痴迷了，被王婆看到了，就开始撮合两人好事，王婆作为潘金莲的代理人收了不少好处费，那我们假设一下：
+*如果没有王婆在中间牵线，这两个不要脸的能成事吗？难说得很！
+*/
+public class XiMenQiang {</p>
+
+    <p>/**</p>
+  </li>
+  <li>
+    <p>@param args
+*/
+public static void main(String[] args) {
+WangPo wangPo;
+//把王婆叫出来
+wangPo = new WangPo();
+//然后西门庆说，我要和潘金莲Happy,然后王婆就安排了西门庆丢筷子哪出戏：
+wangPo.makeEyesWithMan();
+//看到没有表面是王婆在做，其实爽的是潘金莲
+wangPo.happyWithMan();</p>
+
+    <p>}</p>
+  </li>
+</ul>
+
+<p>}</p>
+
+<p>那这就是活生生的一个例子，通过代理人实现了某种目的，如果真去了王婆这个中间环节，直接西门庆和潘金莲勾搭，估计很难成就武松杀嫂事件。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> 那我们再考虑一下，水浒里面还有没有这类型的女人？有，卢俊义的老婆贾氏（就是和那个管家苟合的那个），这个名字起的：“贾氏”，那我们也让王婆做她的代理：
+</code></pre></div></div>
+
+<p>package com.yangguangfu.proxy;
+/**</p>
+<ul>
+  <li></li>
+  <li>
+    <p>@author 阿福(trygf521@126.com)<br />
+*定义一个贾氏是什么样的人
+*/
+public class JiaShi implements KindWoman {</p>
+
+    <p>@Override
+public void happyWithMan() {
+System.out.println(“贾氏和男人在做那个…”);
+}</p>
+
+    <p>@Override
+public void makeEyesWithMan() {
+System.out.println(“贾氏抛媚眼…”);
+}</p>
+  </li>
+</ul>
+
+<p>}
+西门庆勾潘金莲又勾引贾氏</p>
+
+<p>package com.yangguangfu.proxy;
+/**</p>
+<ul>
+  <li></li>
+  <li>
+    <p>@author 阿福(trygf521@126.com)<br />
+*水浒传是这样写的：西门庆被潘金莲用竹竿敲了一下，西门庆看痴迷了，被王婆看到了，就开始撮合两人好事，王婆作为潘金莲的代理人收了不少好处费，那我们假设一下：
+*如果没有王婆在中间牵线，这两个不要脸的能成事吗？难说得很！
+*/
+public class XiMenQiang {</p>
+
+    <p>/**</p>
+  </li>
+  <li>
+    <p>@param args
+*/
+public static void main(String[] args) {
+WangPo wangPo;
+//把王婆叫出来
+wangPo = new WangPo();
+//然后西门庆说，我要和潘金莲Happy,然后王婆就安排了西门庆丢筷子哪出戏：
+wangPo.makeEyesWithMan();
+//看到没有表面是王婆在做，其实爽的是潘金莲
+wangPo.happyWithMan();
+//西门庆勾引贾氏
+JiaShi jiaShi = new JiaShi();
+wangPo = new WangPo(jiaShi);
+wangPo.makeEyesWithMan();
+wangPo.happyWithMan();</p>
+
+    <p>}</p>
+  </li>
+</ul>
+
+<p>}
+说完这个故事，那我总结一下，代理模式主要使用了java的多态，干活的是被代理类，代理类主要是接活，你让我干活，好，我交给幕后的类去干，你满意就 成，那怎么知道被代理类能不能干呢？同根就成，大家知根知底，你能做啥，我能做啥都清楚得很，同样一个接口呗。好了不多说了，慢慢体会吧。</p>
+
+<p>本文转自 <a href="https://www.jfox.info/go.php?url=http://yangguangfu.iteye.com/blog/815787">http://yangguangfu.iteye.com/blog/815787</a></p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/java-she-ji-mo-shi-mian-shi-ti-zhi-dai-li-mo-shi.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/java-she-ji-mo-shi-mian-shi-ti-zhi-dai-li-mo-shi.html">&laquo; java设计模式面试题之——代理模式</a>
+  
+  
+  <a class="next" href="/2017/guan-yu-spring-shi-wu-de-mian-shi-ti.html">关于Spring事务的面试题 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

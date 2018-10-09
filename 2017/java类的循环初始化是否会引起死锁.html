@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>【Java】类的循环初始化是否会引起死锁? | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="【Java】类的循环初始化是否会引起死锁?" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="【Java】类的循环初始化是否会引起死锁?" />
+<meta property="og:description" content="【Java】类的循环初始化是否会引起死锁?" />
+<link rel="canonical" href="http://www.jfox.info/2017/java%E7%B1%BB%E7%9A%84%E5%BE%AA%E7%8E%AF%E5%88%9D%E5%A7%8B%E5%8C%96%E6%98%AF%E5%90%A6%E4%BC%9A%E5%BC%95%E8%B5%B7%E6%AD%BB%E9%94%81.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/java%E7%B1%BB%E7%9A%84%E5%BE%AA%E7%8E%AF%E5%88%9D%E5%A7%8B%E5%8C%96%E6%98%AF%E5%90%A6%E4%BC%9A%E5%BC%95%E8%B5%B7%E6%AD%BB%E9%94%81.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:52:38+00:00" />
+<script type="application/ld+json">
+{"description":"【Java】类的循环初始化是否会引起死锁?","@type":"BlogPosting","url":"http://www.jfox.info/2017/java%E7%B1%BB%E7%9A%84%E5%BE%AA%E7%8E%AF%E5%88%9D%E5%A7%8B%E5%8C%96%E6%98%AF%E5%90%A6%E4%BC%9A%E5%BC%95%E8%B5%B7%E6%AD%BB%E9%94%81.html","headline":"【Java】类的循环初始化是否会引起死锁?","dateModified":"2017-01-01T15:52:38+00:00","datePublished":"2017-01-01T15:52:38+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/java%E7%B1%BB%E7%9A%84%E5%BE%AA%E7%8E%AF%E5%88%9D%E5%A7%8B%E5%8C%96%E6%98%AF%E5%90%A6%E4%BC%9A%E5%BC%95%E8%B5%B7%E6%AD%BB%E9%94%81.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">【Java】类的循环初始化是否会引起死锁?</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:52:38+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<h1 id="java类的循环初始化是否会引起死锁">【Java】类的循环初始化是否会引起死锁?</h1>
+
+<p>H2M_LI_HEADER 
+静态变量<code class="highlighter-rouge">a=new B()</code>;静态变量<code class="highlighter-rouge">a1=1</code>(之后在静态初始化块里赋值为2);</p>
+
+<p>H2M_LI_HEADER 
+实例变量<code class="highlighter-rouge">a2=11</code>(之后再初始化块中赋值为12);</p>
+
+<p>H2M_LI_HEADER 
+构造函数;</p>
+
+<p>H2M_LI_HEADER 
+B类:</p>
+
+<ul>
+  <li>
+    <p>静态变量<code class="highlighter-rouge">b=new A()</code>;静态变量<code class="highlighter-rouge">b1=3</code>(之后在静态初始化块里赋值为4);</p>
+  </li>
+  <li>
+    <p>实例变量<code class="highlighter-rouge">b2=21</code>(之后再初始化块中赋值为22);</p>
+  </li>
+  <li>
+    <p>构造函数;</p>
+  </li>
+</ul>
+
+<p>H2M_LI_HEADER 
+猜想执行结果: 由于类初始化之后类实例化,所以A类初始化需要B实例化,B实例化又需要A初始化,造成循环依赖,最终结果为死锁</p>
+
+<p>H2M_LI_HEADER 
+打点位置:</p>
+
+<ol>
+  <li>
+    <p>类加载结束点(text: Loaded Main2 from file)</p>
+  </li>
+  <li>
+    <p>类初始化开始点/结束点(text: Class A2 init)</p>
+  </li>
+  <li>
+    <p>实例初始化开始点/结束点(text: Instance A2 init)</p>
+  </li>
+  <li>
+    <p>构造函数结束点(text: Instance A2 new)</p>
+  </li>
+</ol>
+
+<h3 id="场景代码">场景代码</h3>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>class A2 {
+    static {
+        System.out.println("Class A2 init start");
+    }
+
+    static B2 a = new B2();
+    static int a1 = 1;
+
+    {
+        System.out.println("Instance A2 init start. ta=" + a + " ta1=" + a1 + " ta.b2=" + (a == null ? "NPE" : a.b2) + " tb=" + B2.b + " tb1=" + B2.b1 + " tb.a2=" + (B2.b == null ? "NPE" : B2.b.a2));
+    }
+
+    public int a2 = 11;
+
+    static {
+        a1 = 2;
+        System.out.println("Class A2 init end. ta=" + a + " ta1=" + a1 + " ta.b2=" + (a == null ? "NPE" : a.b2) + " tb=" + B2.b + " tb1=" + B2.b1 + " tb.a2=" + (B2.b == null ? "NPE" : B2.b.a2));
+    }
+
+    {
+        a2 = 12;
+        System.out.println("Instance A2 init end. ta=" + a + " ta1=" + a1 + " ta.b2=" + (a == null ? "NPE" : a.b2) + " tb=" + B2.b + " tb1=" + B2.b1 + " tb.a2=" + (B2.b == null ? "NPE" : B2.b.a2));
+    }
+
+    public A2() {
+        System.out.println("Instance A2 new. ta=" + a + " ta1=" + a1 + " ta.b2=" + (a == null ? "NPE" : a.b2) + " tb=" + B2.b + " tb1=" + B2.b1 + " tb.a2=" + (B2.b == null ? "NPE" : B2.b.a2));
+    }
+}
+
+class B2 {
+    static {
+        System.out.println("Class B2 init start");
+    }
+
+    static A2 b = new A2();
+    static int b1 = 3;
+
+    {
+        System.out.println("Instance B2 init start. tb=" + b + " tb1=" + b1 + " tb.a2=" + (b == null ? "NPE" : b.a2) + " ta=" + A2.a + " ta1=" + A2.a1 + " ta.b2=" + (A2.a == null ? "NPE" : A2.a.b2));
+    }
+
+    public int b2 = 21;
+
+    static {
+        b1 = 4;
+        System.out.println("Class B2 init end. tb=" + b + " tb1=" + b1 + " tb.a2=" + (b == null ? "NPE" : b.a2) + " ta=" + A2.a + " ta1=" + A2.a1 + " ta.b2=" + (A2.a == null ? "NPE" : A2.a.b2));
+    }
+
+    {
+        b2 = 22;
+        System.out.println("Instance B2 init end. tb=" + b + " tb1=" + b1 + " tb.a2=" + (b == null ? "NPE" : b.a2) + " ta=" + A2.a + " ta1=" + A2.a1 + " ta.b2=" + (A2.a == null ? "NPE" : A2.a.b2));
+    }
+
+    public B2() {
+        System.out.println("Instance B2 new. tb=" + b + " tb1=" + b1 + " tb.a2=" + (b == null ? "NPE" : b.a2) + " ta=" + A2.a + " ta1=" + A2.a1 + " ta.b2=" + (A2.a == null ? "NPE" : A2.a.b2));
+    }
+}
+
+class Main2 {
+    static public void main(String... args) {
+        System.out.println("A2 a=" + A2.a);
+        System.out.println("A2 a1=" + A2.a1);
+        System.out.println("A2 a2=" + B2.b.a2);
+        System.out.println("B2 b=" + B2.b);
+        System.out.println("B2 b1=" + B2.b1);
+        System.out.println("B2 b2=" + A2.a.b2);
+    }
+}
+</code></pre></div></div>
+
+<h1 id="执行结果分析">执行结果分析</h1>
+
+<p>程序输出结果:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1. [Loaded Main2 from file:/Users/jiadongy/JVM_Learning_Sample/out/production/JVM_Learning_Sample/]
+2. [Loaded A2 from file:/Users/jiadongy/JVM_Learning_Sample/out/production/JVM_Learning_Sample/]
+3. Class A2 init start
+4. [Loaded B2 from file:/Users/jiadongy/JVM_Learning_Sample/out/production/JVM_Learning_Sample/]
+5. Class B2 init start
+6. Instance A2 init start. a=null a1=0 a.b2=NPE b=null b1=0 b.a2=NPE
+7. Instance A2 init end.      a=null a1=0 a.b2=NPE b=null b1=0 b.a2=NPE
+8. Instance A2 new.         a=null a1=0 a.b2=NPE b=null b1=0 b.a2=NPE
+9. Class B2 init end.              b=A2@61bbe9ba b1=4 b.a2=12 a=null a1=0 a.b2=NPE
+10. Instance B2 init start.       b=A2@61bbe9ba b1=4 b.a2=12 a=null a1=0 a.b2=NPE
+11. Instance B2 init end.          b=A2@61bbe9ba b1=4 b.a2=12 a=null a1=0 a.b2=NPE
+12. Instance B2 new.             b=A2@61bbe9ba b1=4 b.a2=12 a=null a1=0 a.b2=NPE
+13. Class A2 init end.      a=B2@610455d6 a1=2 a.b2=22 b=A2@61bbe9ba b1=4 b.a2=12
+14. A2 a=B2@610455d6
+15. A2 a1=2
+16. A2 a2=12
+17. B2 b=A2@61bbe9ba
+18. B2 b1=4
+19. B2 b2=22
+</code></pre></div></div>
+
+<p>把它转化为下面的表格,更加清晰地描述A/B各个阶段执行的过程:
+ABA类加载完成<em>A类初始化 – 开始</em>B类加载完成B类初始化 – 开始A类实例初始化 – 开始A类实例初始化 – 结束A类实例构造函数执行完成B类初始化 – 结束B类实例初始化 – 开始B类实例初始化 – 结束B类实例构造函数执行完成<em>A类初始化 – 结束</em>
+可以看到在A类初始化的过程中,A类被实例化了(并且该阶段正常结束了),也就是说<strong>类的初始化阶段并不是原子的/排他的</strong>.
+如在本例中,A类实例化阶段的结束早于其类初始化阶段,A类实例化完成时,A类的静态变量还未被初始化.</p>
+
+<p>Reference.1中已经描述了这种情况:</p>
+
+<p><em>加载/验证/准备/初始化和卸载这5个阶段的顺序是确定的</em>,类的加载过程必须按照这种顺序按部就班的开始…注意,这里笔者写的是按部就班的”开始”,而不是按部就班的”进行”或”完成”,强调这点是因为这些阶段通都是相互交叉混合式进行的,通常会在一个阶段执行的过程中调用/激活另外一个阶段</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>                                                          &lt;&lt;深入理解Java虚拟机&gt;&gt;P210
+</code></pre></div></div>
+
+<h1 id="总结">总结</h1>
+
+<ol>
+  <li>
+    <p>类的循环初始化不会引起死锁</p>
+  </li>
+  <li>
+    <p>5个阶段的开始是有顺序的,结束则不一定</p>
+  </li>
+  <li>
+    <p>阶段不是排他的/临界的</p>
+  </li>
+  <li>
+    <p>循环初始化可能引起意料之外的情况,尽量避免</p>
+  </li>
+</ol>
+
+<ul>
+  <li>eg.类在初始化过程中修改另一个类的变量,导致另一个类得到了意料之外的初始值</li>
+</ul>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/java%E7%B1%BB%E7%9A%84%E5%BE%AA%E7%8E%AF%E5%88%9D%E5%A7%8B%E5%8C%96%E6%98%AF%E5%90%A6%E4%BC%9A%E5%BC%95%E8%B5%B7%E6%AD%BB%E9%94%81.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/%E4%BB%80%E4%B9%88%E6%98%AFrocauc.html">&laquo; 什么是 ROC AUC</a>
+  
+  
+  <a class="next" href="/2017/%E4%B8%BA%E4%BD%95%E4%B8%8D%E7%94%A8%E6%8B%85%E5%BF%83%E5%A4%A7%E5%85%AC%E5%8F%B8%E5%81%B7%E4%BD%A0%E7%9A%84%E7%BB%9D%E4%B8%96%E5%88%9B%E4%B8%9A%E7%82%B9%E5%AD%90.html">为何不用担心大公司偷你的绝世创业点子 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

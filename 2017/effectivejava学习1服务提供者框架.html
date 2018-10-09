@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>Effective Java学习(1) 服务提供者框架 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="Effective Java学习(1) 服务提供者框架" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="什么是服务提供者框架？服务提供者框架是指这一个系统:多个服务提供者来实现一个服务，系统为客户端的服务提供者提供多个实现，并且 把他们从多个实现中解耦出来。咋一看这个定义，一脸懵逼。那么我们就来看一下他们之间的关系图吧。" />
+<meta property="og:description" content="什么是服务提供者框架？服务提供者框架是指这一个系统:多个服务提供者来实现一个服务，系统为客户端的服务提供者提供多个实现，并且 把他们从多个实现中解耦出来。咋一看这个定义，一脸懵逼。那么我们就来看一下他们之间的关系图吧。" />
+<link rel="canonical" href="http://www.jfox.info/2017/effectivejava%E5%AD%A6%E4%B9%A01%E6%9C%8D%E5%8A%A1%E6%8F%90%E4%BE%9B%E8%80%85%E6%A1%86%E6%9E%B6.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/effectivejava%E5%AD%A6%E4%B9%A01%E6%9C%8D%E5%8A%A1%E6%8F%90%E4%BE%9B%E8%80%85%E6%A1%86%E6%9E%B6.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:55:25+00:00" />
+<script type="application/ld+json">
+{"description":"什么是服务提供者框架？服务提供者框架是指这一个系统:多个服务提供者来实现一个服务，系统为客户端的服务提供者提供多个实现，并且 把他们从多个实现中解耦出来。咋一看这个定义，一脸懵逼。那么我们就来看一下他们之间的关系图吧。","@type":"BlogPosting","url":"http://www.jfox.info/2017/effectivejava%E5%AD%A6%E4%B9%A01%E6%9C%8D%E5%8A%A1%E6%8F%90%E4%BE%9B%E8%80%85%E6%A1%86%E6%9E%B6.html","headline":"Effective Java学习(1) 服务提供者框架","dateModified":"2017-01-01T15:55:25+00:00","datePublished":"2017-01-01T15:55:25+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/effectivejava%E5%AD%A6%E4%B9%A01%E6%9C%8D%E5%8A%A1%E6%8F%90%E4%BE%9B%E8%80%85%E6%A1%86%E6%9E%B6.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Effective Java学习(1) 服务提供者框架</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:55:25+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>什么是服务提供者框架？服务提供者框架是指这一个系统:多个服务提供者来实现一个服务，系统为客户端的服务提供者提供多个实现，并且
+把他们从多个实现中解耦出来。咋一看这个定义，一脸懵逼。那么我们就来看一下他们之间的关系图吧。</p>
+
+<h4 id="关系图">关系图</h4>
+<p><img src="3a5e329.png" alt="" /></p>
+
+<p>这里写图片描述</p>
+
+<h4 id="讲解">讲解</h4>
+
+<p>服务提供框架有4个组件，依次是服务接口，服务器提供者接口，提供者注册API，服务访问API。</p>
+
+<ul>
+  <li>
+    <p>服务接口
+在服务接口中定义一些提供具体服务的方法，假设我们要提供一个注册登录的服务UserService。那么这个服务接口中肯定有login(),register()方法。我们再去创建这个服务接口的具体实现类去实现login(),register()方法。</p>
+  </li>
+  <li>
+    <p>服务提供者接口
+在服务提供者接口里，就是去定义提供什么样子的服务的方法。我们上面创建了一个提供“注册登录”的服务。那么这里我们肯定要去定义一个能获取“注册登录”的服务的方法，假设是getUserService(),返回类型是UserService。然后在去创建服务提供者接口的具体实现类去这个getUserService()，那么我们怎么去实现呢？我们只需要返回一个UserService的具体实现类即可。</p>
+  </li>
+  <li>
+    <p>提供者注册API
+其实是服务提供者接口的具体实现类里面去注册这个API，在类中的静态初始化块中去注册API，因为你只有注册了API，才能享有享受服务的权利。这些注册过的服务集中交给ServiceManager管理。</p>
+  </li>
+  <li>
+    <p>服务访问API
+既然已经注册了API，那么我们可以向ServiceManager申请具体的服务，可以获得具体服务的实例，就可以调用服务里面的方法。服务访问API是“灵活的静态工厂”，它构成了服务提供者框架的基础。</p>
+  </li>
+</ul>
+
+<h4 id="jdbc">JDBC</h4>
+
+<p>为什么要讲到JDBC?其实我们可以仔细回想一下JDBC的基本步骤，是不是和我们上面的步骤类似。没错，JDBC也是用到了服务提供者框架。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Class.forName("com.mysql.jdbc.Driver");   
+Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/test","root","cmazxiaoma");
+</code></pre></div></div>
+
+<ul>
+  <li>
+    <p>Class.forName()这个方法其实是利用反射的方法获得服务提供者接口的具体实现类。Connection就是服务接口，DriverManager就是我们上面提供的服务管理类，getConnection()就是从服务管理类里面获取指定名字的且已经注册过的服务。</p>
+  </li>
+  <li>
+    <p>DriverManager.getConnection(“jdbc:mysql://localhost:3306/test”,”root”,”cmazxiaoma”);这个方法返回的是一个服务接口的具体实现类的实例，把这个实现类的实例赋值给Connection的服务接口，就可以调用具体服务的里面的一些方法，接口回调嘛。</p>
+  </li>
+  <li>
+    <p>观看JDBC源码，JDBC中的服务接口具体实现类中其实调用了DriverManager.registerDriver（）静态工厂方法去注册服务的api。java.sql.Driver就是服务提供者接口，com.mysql.jdbc.Driver是服务提供者具体的实现类。</p>
+  </li>
+</ul>
+
+<h4 id="java代码">JAVA代码</h4>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">/**</span>
+ <span class="p">*</span> <span class="err">服务接口</span>
+ <span class="p">*</span> <span class="p">@</span><span class="n">author</span> <span class="n">Administrator</span>
+ <span class="p">*</span>
+ <span class="p">*/</span>
+
+<span class="k">public</span> <span class="n">interface</span> <span class="n">UserService</span> <span class="p">{</span>
+
+    <span class="k">public</span> <span class="n">void</span> <span class="n">login</span><span class="p">();</span>
+
+    <span class="k">public</span> <span class="n">void</span> <span class="n">register</span><span class="p">();</span>
+
+<span class="p">}</span>
+
+<span class="k">package</span> <span class="err">服务提供者框架</span><span class="p">;</span>
+
+<span class="p">/**</span>
+ <span class="p">*</span> <span class="err">服务具体实现类</span>
+ <span class="p">*</span> <span class="p">@</span><span class="n">author</span> <span class="n">Administrator</span>
+ <span class="p">*</span>
+ <span class="p">*/</span>
+<span class="k">public</span> <span class="n">class</span> <span class="n">UserServiceImpl</span> <span class="n">implements</span> <span class="n">UserService</span><span class="p">{</span>
+
+    <span class="p">@</span><span class="n">Override</span>
+    <span class="k">public</span> <span class="n">void</span> <span class="n">login</span><span class="p">()</span> <span class="p">{</span>
+        <span class="p">//</span> <span class="n">TODO</span> <span class="n">Auto</span><span class="p">-</span><span class="n">generated</span> <span class="n">method</span> <span class="n">stub</span>
+        <span class="nf">System</span><span class="p">.</span><span class="n">out</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="s2">"cmazxiaoma登录成功"</span><span class="p">);</span>
+
+    <span class="p">}</span>
+
+    <span class="p">@</span><span class="n">Override</span>
+    <span class="k">public</span> <span class="n">void</span> <span class="n">register</span><span class="p">()</span> <span class="p">{</span>
+        <span class="p">//</span> <span class="n">TODO</span> <span class="n">Auto</span><span class="p">-</span><span class="n">generated</span> <span class="n">method</span> <span class="n">stub</span>
+        <span class="nf">System</span><span class="p">.</span><span class="n">out</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="s2">"cmazxiaoma注册成功"</span><span class="p">);</span>
+    <span class="p">}</span>
+
+
+<span class="p">}</span>
+
+  <span class="k">package</span> <span class="err">服务提供者框架</span><span class="p">;</span>
+
+<span class="p">/**</span>
+ <span class="p">*</span> <span class="err">服务提供者接口</span>
+ <span class="p">*</span> <span class="p">@</span><span class="n">author</span> <span class="n">Administrator</span>
+ <span class="p">*</span>
+ <span class="p">*/</span>
+<span class="k">public</span> <span class="n">interface</span> <span class="n">UserProvider</span> <span class="p">{</span>
+
+    <span class="k">public</span> <span class="n">UserService</span> <span class="n">getUserService</span><span class="p">();</span>
+
+<span class="p">}</span>
+
+ <span class="k">package</span> <span class="err">服务提供者框架</span><span class="p">;</span>
+
+<span class="p">/**</span>
+ <span class="p">*</span> <span class="err">服务提供者具体实现类</span>
+ <span class="p">*</span> <span class="p">@</span><span class="n">author</span> <span class="n">Administrator</span>
+ <span class="p">*</span>
+ <span class="p">*/</span>
+<span class="k">public</span> <span class="n">class</span> <span class="n">UserProviderImpl</span> <span class="n">implements</span> <span class="n">UserProvider</span><span class="p">{</span>
+
+    <span class="p">@</span><span class="n">Override</span>
+    <span class="k">public</span> <span class="n">UserService</span> <span class="n">getUserService</span><span class="p">()</span> <span class="p">{</span>
+        <span class="p">//</span> <span class="n">TODO</span> <span class="n">Auto</span><span class="p">-</span><span class="n">generated</span> <span class="n">method</span> <span class="n">stub</span>
+        <span class="n">return</span> <span class="n">new</span> <span class="n">UserServiceImpl</span><span class="p">();</span>
+    <span class="p">}</span>
+
+
+    <span class="n">static</span><span class="p">{</span>
+        <span class="n">ServiceManager</span><span class="p">.</span><span class="n">registerProvider</span><span class="p">(</span><span class="s2">"登录注册"</span><span class="p">,</span><span class="n">new</span> <span class="n">UserProviderImpl</span><span class="p">());</span>
+    <span class="p">}</span>
+
+<span class="p">}</span>
+
+  <span class="k">package</span> <span class="err">服务提供者框架</span><span class="p">;</span>
+
+<span class="n">import</span> <span class="n">java</span><span class="p">.</span><span class="n">util</span><span class="p">.</span><span class="n">Map</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">java</span><span class="p">.</span><span class="n">util</span><span class="p">.</span><span class="n">concurrent</span><span class="p">.</span><span class="n">ConcurrentHashMap</span><span class="p">;</span>
+
+<span class="p">/**</span>
+ <span class="p">*</span> <span class="err">服务提供者注册类</span>
+ <span class="p">*</span> <span class="p">@</span><span class="n">author</span> <span class="n">Administrator</span>
+ <span class="p">*</span>
+ <span class="p">*/</span>
+<span class="k">public</span> <span class="n">class</span> <span class="n">ServiceManager</span> <span class="p">{</span>
+
+    <span class="n">private</span> <span class="n">ServiceManager</span><span class="p">(){</span>
+
+    <span class="p">}</span>
+
+    <span class="n">private</span> <span class="n">static</span> <span class="n">final</span>  <span class="n">Map</span><span class="p">&lt;</span><span class="k">String</span><span class="p">,</span><span class="n">UserProvider</span><span class="p">&gt;</span> <span class="n">providers</span><span class="p">=</span><span class="n">new</span> <span class="n">ConcurrentHashMap</span><span class="p">&lt;</span><span class="k">String</span><span class="p">,</span><span class="n">UserProvider</span><span class="p">&gt;();</span>
+
+    <span class="k">public</span> <span class="n">static</span> <span class="n">void</span>  <span class="n">registerProvider</span><span class="p">(</span><span class="k">String</span> <span class="n">name</span><span class="p">,</span><span class="n">UserProvider</span> <span class="n">provider</span><span class="p">){</span>
+
+        <span class="n">providers</span><span class="p">.</span><span class="n">put</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">provider</span><span class="p">);</span>
+
+    <span class="p">}</span>
+
+    <span class="k">public</span> <span class="n">static</span> <span class="n">UserService</span> <span class="n">getService</span><span class="p">(</span><span class="k">String</span> <span class="n">name</span><span class="p">){</span>
+        <span class="n">UserProvider</span> <span class="n">provider</span><span class="p">=</span><span class="n">providers</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">);</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">provider</span><span class="p">==</span><span class="n">null</span><span class="p">){</span>
+            <span class="n">throw</span> <span class="n">new</span> <span class="n">IllegalArgumentException</span><span class="p">(</span><span class="s2">"No provider registered with name="</span><span class="p">+</span><span class="n">name</span><span class="p">);</span>
+
+        <span class="p">}</span>
+        <span class="n">return</span> <span class="n">provider</span><span class="p">.</span><span class="n">getUserService</span><span class="p">();</span>
+    <span class="p">}</span>
+
+
+
+
+<span class="p">}</span>
+
+   <span class="k">package</span> <span class="err">服务提供者框架</span><span class="p">;</span>
+
+
+<span class="p">/**</span>
+ <span class="p">*</span> <span class="err">测试类</span>
+ <span class="p">*</span> <span class="p">@</span><span class="n">author</span> <span class="n">Administrator</span>
+ <span class="p">*</span>
+ <span class="p">*/</span>
+<span class="k">public</span> <span class="n">class</span> <span class="n">test</span> <span class="p">{</span>
+
+    <span class="k">public</span> <span class="n">static</span> <span class="n">void</span> <span class="n">main</span><span class="p">(</span><span class="k">String</span><span class="p">[]</span> <span class="n">args</span><span class="p">){</span>
+
+        <span class="n">try</span> <span class="p">{</span>
+            <span class="n">Class</span><span class="p">.</span><span class="n">forName</span><span class="p">(</span><span class="s2">"服务提供者框架.UserProviderImpl"</span><span class="p">);</span>
+            <span class="n">UserService</span> <span class="n">userService</span><span class="p">=</span><span class="n">ServiceManager</span><span class="p">.</span><span class="n">getService</span><span class="p">(</span><span class="s2">"登录注册"</span><span class="p">);</span>
+            <span class="n">userService</span><span class="p">.</span><span class="n">register</span><span class="p">();</span>
+            <span class="n">userService</span><span class="p">.</span><span class="n">login</span><span class="p">();</span>
+
+        <span class="p">}</span> <span class="n">catch</span> <span class="p">(</span><span class="n">ClassNotFoundException</span> <span class="n">e</span><span class="p">)</span> <span class="p">{</span>
+            <span class="p">//</span> <span class="n">TODO</span> <span class="n">Auto</span><span class="p">-</span><span class="n">generated</span> <span class="n">catch</span> <span class="n">block</span>
+            <span class="n">e</span><span class="p">.</span><span class="n">printStackTrace</span><span class="p">();</span>
+        <span class="p">}</span>
+
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/effectivejava%E5%AD%A6%E4%B9%A01%E6%9C%8D%E5%8A%A1%E6%8F%90%E4%BE%9B%E8%80%85%E6%A1%86%E6%9E%B6.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/spring%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E5%BE%AA%E7%8E%AF%E4%BE%9D%E8%B5%96%E7%9A%84%E6%8E%A2%E6%B5%8B%E4%B8%8E%E5%A4%84%E7%90%86.html">&laquo; Spring源码解析：循环依赖的探测与处理</a>
+  
+  
+  <a class="next" href="/2017/%E6%AD%BB%E7%A3%95java%E5%B9%B6%E5%8F%91juc%E4%B9%8Bjava%E5%B9%B6%E5%8F%91%E5%AE%B9%E5%99%A8concurrentlinkedqueue.html">【死磕Java并发】—–J.U.C之Java并发容器：ConcurrentLinkedQueue &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

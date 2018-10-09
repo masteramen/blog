@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>主题模型︱几款新主题模型——SentenceLDA、CopulaLDA、TWE简析与实现 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="主题模型︱几款新主题模型——SentenceLDA、CopulaLDA、TWE简析与实现" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="主题模型︱几款新主题模型——SentenceLDA、CopulaLDA、TWE简析与实现" />
+<meta property="og:description" content="主题模型︱几款新主题模型——SentenceLDA、CopulaLDA、TWE简析与实现" />
+<link rel="canonical" href="http://www.jfox.info/2017/%E4%B8%BB%E9%A2%98%E6%A8%A1%E5%9E%8B%E5%87%A0%E6%AC%BE%E6%96%B0%E4%B8%BB%E9%A2%98%E6%A8%A1%E5%9E%8Bsentenceldacopulaldatwe%E7%AE%80%E6%9E%90%E4%B8%8E%E5%AE%9E%E7%8E%B0.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/%E4%B8%BB%E9%A2%98%E6%A8%A1%E5%9E%8B%E5%87%A0%E6%AC%BE%E6%96%B0%E4%B8%BB%E9%A2%98%E6%A8%A1%E5%9E%8Bsentenceldacopulaldatwe%E7%AE%80%E6%9E%90%E4%B8%8E%E5%AE%9E%E7%8E%B0.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:56:54+00:00" />
+<script type="application/ld+json">
+{"description":"主题模型︱几款新主题模型——SentenceLDA、CopulaLDA、TWE简析与实现","@type":"BlogPosting","url":"http://www.jfox.info/2017/%E4%B8%BB%E9%A2%98%E6%A8%A1%E5%9E%8B%E5%87%A0%E6%AC%BE%E6%96%B0%E4%B8%BB%E9%A2%98%E6%A8%A1%E5%9E%8Bsentenceldacopulaldatwe%E7%AE%80%E6%9E%90%E4%B8%8E%E5%AE%9E%E7%8E%B0.html","headline":"主题模型︱几款新主题模型——SentenceLDA、CopulaLDA、TWE简析与实现","dateModified":"2017-01-01T15:56:54+00:00","datePublished":"2017-01-01T15:56:54+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/%E4%B8%BB%E9%A2%98%E6%A8%A1%E5%9E%8B%E5%87%A0%E6%AC%BE%E6%96%B0%E4%B8%BB%E9%A2%98%E6%A8%A1%E5%9E%8Bsentenceldacopulaldatwe%E7%AE%80%E6%9E%90%E4%B8%8E%E5%AE%9E%E7%8E%B0.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">主题模型︱几款新主题模型——SentenceLDA、CopulaLDA、TWE简析与实现</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:56:54+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<h1 id="主题模型几款新主题模型sentenceldacopulaldatwe简析与实现">主题模型︱几款新主题模型——SentenceLDA、CopulaLDA、TWE简析与实现</h1>
+
+<p>百度最近开源了一个新的关于主题模型的项目。文档主题推断工具、语义匹配计算工具以及基于工业级语料训练的三种主题模型：Latent 
+Dirichlet Allocation(LDA)、SentenceLDA 和Topical Word Embedding(TWE)。 
+.</p>
+
+<h1 id="一familia简介">一、Familia简介</h1>
+
+<p>帮Familia，打个小广告~ Familia的<a href="https://www.jfox.info/go.php?url=https://github.com/baidu/Familia">github</a>
+<strong>主题模型在工业界的应用范式可以抽象为两大类: 语义表示和语义匹配。</strong></p>
+
+<ul>
+  <li>
+    <p>语义表示 (Semantic Representation) 
+对文档进行主题降维，获得文档的语义表示，这些语义表示可以应用于文本分类、文本内容分析、CTR预估等下游应用。</p>
+  </li>
+  <li>
+    <p>语义匹配 (Semantic Matching)</p>
+  </li>
+</ul>
+
+<p>计算文本间的语义匹配度，我们提供两种文本类型的相似度计算方式:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>- 短文本-长文本相似度计算，使用场景包括文档关键词抽取、计算搜索发动机查询和网页的相似度等等。
+- 长文本-长文本相似度计算，使用场景包括计算两篇文档的相似度、计算用户画像和新闻的相似度等等。
+</code></pre></div></div>
+
+<h3 id="familia自带的demo包含以下功能"><strong>Familia自带的Demo包含以下功能：</strong></h3>
+
+<p>利用主题模型对输入文档进行主题推断，以得到文档的主题降维表示。</p>
+
+<ul>
+  <li>语义匹配计算</li>
+</ul>
+
+<p>计算文本之间的相似度，包括短文本-长文本、长文本-长文本间的相似度计算。</p>
+
+<ul>
+  <li>模型内容展现 
+对模型的主题词，近邻词进行展现，方便用户对模型的主题有直观的理解。</li>
+</ul>
+
+<p>.</p>
+
+<h1 id="二topical-word-embeddingtwe">二、Topical Word Embedding(TWE)</h1>
+
+<p>Zhiyuan Liu老师的文章，<a href="https://www.jfox.info/go.php?url=http://www.aaai.org/ocs/index.php/AAAI/AAAI15/paper/download/9314/9535/">paper下载</a>以及<a href="https://www.jfox.info/go.php?url=https://github.com/largelymfs/topical_word_embeddings">github</a>
+In this way, contextual word embeddings can be flexibly obtained to measure contextual word similarity. We can also build document representations.</p>
+
+<h3 id="且有三款twe-1twe-2twe-3来看看和传统的skip-gram的结构区别">且有三款：TWE-1，TWE-2，TWE-3，来看看和传统的skip-gram的结构区别：</h3>
+
+<p><img src="4c69f6d.png" alt="" /></p>
+
+<h3 id="在多标签文本分类的精确度">在多标签文本分类的精确度：</h3>
+
+<p><img src="60e8f5f.png" alt="" /></p>
+
+<h3 id="百度开源项目-familia中twe模型的内容展现">百度开源项目 Familia中TWE模型的内容展现：</h3>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>请输入主题编号(0-10000):    105
+Embedding Result Multinomial Result ------------------------------------------------
+对话                                    对话
+磋商                                    合作
+合作                                    中国
+非方                                    磋商
+探讨                                    交流
+对话会议                                联合
+议题                                    国家
+中方                                    讨论
+对话会                                  支持
+交流                                    包括
+</code></pre></div></div>
+
+<p>第一列为基于embedding的结果，第二列为基于多项分布的结果，均按照在主题中的重要程度从大到小的顺序排序。</p>
+
+<h3 id="来简单看一下train文件">来简单看一下train文件：</h3>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>import gensim #modified gensim versionimport pre_process # read the wordmap and the tassgin file and create the sentenceimport sys
+if __name__=="__main__":
+    if len(sys.argv)!=4:
+        print"Usage : python train.py wordmap tassign topic_number"
+        sys.exit(1) 
+    reload(sys)
+    sys.setdefaultencoding('utf-8')
+    wordmapfile = sys.argv[1]
+    tassignfile = sys.argv[2]
+    topic_number = int(sys.argv[3])
+    id2word = pre_process.load_id2word(wordmapfile)
+    pre_process.load_sentences(tassignfile, id2word)
+    sentence_word = gensim.models.word2vec.LineSentence("tmp/word.file")
+    print"Training the word vector..."
+    w = gensim.models.Word2Vec(sentence_word,size=400, workers=20)
+    sentence = gensim.models.word2vec.CombinedSentence("tmp/word.file","tmp/topic.file")
+    print"Training the topic vector..."
+    w.train_topic(topic_number, sentence)
+    print"Saving the topic vectors..."
+    w.save_topic("output/topic_vector.txt")
+    print"Saving the word vectors..."
+    w.save_wordvector("output/word_vector.txt")
+</code></pre></div></div>
+
+<p>.</p>
+
+<h1 id="三sentencelda">三、SentenceLDA</h1>
+
+<p><a href="https://www.jfox.info/go.php?url=https://pdfs.semanticscholar.org/c311/778adb9484c86250e915aecd9714f4206050.pdf">paper链接</a> + <a href="https://www.jfox.info/go.php?url=https://github.com/balikasg/topicModelling/">github：balikasg/topicModelling</a></p>
+
+<h3 id="sentencelda是什么"><strong>SentenceLDA是什么？</strong></h3>
+
+<p>an extension of LDA whose goal is to overcome this limitation by incorporating the structure of 
+the text in the generative and inference processes.</p>
+
+<h3 id="sentencelda和lda区别"><strong>SentenceLDA和LDA区别？</strong></h3>
+
+<p>LDA and senLDA differ in that the second assumes a very strong dependence of the latent topics between the words of sentences, whereas the first ssumes independence between the words of documents in general</p>
+
+<h3 id="sentencelda和lda两者对比实验"><strong>SentenceLDA和LDA两者对比实验：</strong></h3>
+
+<p>We illustrate the advantages of sentenceLDA by comparing it with LDA using both intrinsic (perplexity) and extrinsic (text classification) evaluation tasks on different text collections 
+<img src="70ea32b.png" alt="" /></p>
+
+<p><img src="4eb009d.png" alt="" /></p>
+
+<h3 id="原作者的github的结果"><strong>原作者的github的结果：</strong></h3>
+
+<p><a href="https://www.jfox.info/go.php?url=https://github.com/balikasg/topicModelling/tree/master/senLDA">https://github.com/balikasg/topicModelling/tree/master/senLDA</a>
+截取一部分code：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>import numpy as np, vocabulary_sentenceLayer, string, nltk.data, sys, codecs, json, time
+from nltk.tokenize import sent_tokenize
+from lda_sentenceLayer import lda_gibbs_sampling1
+from sklearn.cross_validation import train_test_split, StratifiedKFold
+from nltk.stem import WordNetLemmatizer
+from sklearn.utils import shuffle
+from functions import *
+
+path2training = sys.argv[1]
+training = codecs.open(path2training, 'r', encoding='utf8').read().splitlines()
+
+topics = int(sys.argv[2])
+alpha, beta = 0.5 / float(topics), 0.5 / float(topics)
+
+voca_en = vocabulary_sentenceLayer.VocabularySentenceLayer(set(nltk.corpus.stopwords.words('english')), WordNetLemmatizer(), excluds_stopwords=True)
+
+ldaTrainingData = change_raw_2_lda_input(training, voca_en, True)
+ldaTrainingData = voca_en.cut_low_freq(ldaTrainingData, 1)
+iterations = 201
+
+
+classificationData, y = load_classification_data(sys.argv[3], sys.argv[4])
+classificationData = change_raw_2_lda_input(classificationData, voca_en, False)
+classificationData = voca_en.cut_low_freq(classificationData, 1)
+
+final_acc, final_mif, final_perpl, final_ar, final_nmi, final_p, final_r, final_f = [], [], [], [], [], [], [], []
+start = time.time()
+for j in range(5):
+    perpl, cnt, acc, mif, ar, nmi, p, r, f = [], 0, [], [], [], [], [], [], []
+    lda = lda_gibbs_sampling1(K=topics, alpha=alpha, beta=beta, docs= ldaTrainingData, V=voca_en.size())
+    for i in range(iterations):
+        lda.inference()
+        if i % 5 == 0:
+            print"Iteration:", i, "Perplexity:", lda.perplexity()
+            features = lda.heldOutPerplexity(classificationData, 3)
+            print"Held-out:", features[0]
+            scores = perform_class(features[1], y)
+            acc.append(scores[0][0])
+            mif.append(scores[1][0])
+            perpl.append(features[0])
+    final_acc.append(acc)
+    final_mif.append(mif)
+    final_perpl.append(perpl)
+</code></pre></div></div>
+
+<h3 id="来看看百度开源项目的最终效果lda和sentencelda的内容展现"><strong>来看看百度开源项目的最终效果，LDA和SentenceLDA的内容展现：</strong></h3>
+
+<p>LDA结果：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>请输入主题编号(0-1999): 105 --------------------------------------------
+对话    0.189676
+合作    0.0805558
+中国    0.0276284
+磋商    0.0269797
+交流    0.021069
+联合    0.0208559
+国家    0.0183163
+讨论    0.0154165
+支持    0.0146714
+包括    0.014198
+</code></pre></div></div>
+
+<p>第二列的数值表示词在该主题下的重要程度。 
+SentenceLDA结果：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>请输入主题编号(0-1999): 105 --------------------------------------------
+浙江    0.0300595
+浙江省  0.0290975
+宁波    0.0195277
+记者    0.0174735
+宁波市  0.0132504
+长春市  0.0123353
+街道    0.0107271
+吉林省  0.00954326
+金华    0.00772971
+公安局  0.00678163
+</code></pre></div></div>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/%E4%B8%BB%E9%A2%98%E6%A8%A1%E5%9E%8B%E5%87%A0%E6%AC%BE%E6%96%B0%E4%B8%BB%E9%A2%98%E6%A8%A1%E5%9E%8Bsentenceldacopulaldatwe%E7%AE%80%E6%9E%90%E4%B8%8E%E5%AE%9E%E7%8E%B0.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/%E5%AE%89%E8%A3%85nexus%E5%B9%B6%E4%B8%8A%E4%BC%A0jar%E5%8C%85.html">&laquo; 安装Nexus并上传jar包</a>
+  
+  
+  <a class="next" href="/2017/mysql%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6%E5%8E%9F%E7%90%86%E6%8E%A2%E7%B4%A2.html">MySQL 主从复制原理探索 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

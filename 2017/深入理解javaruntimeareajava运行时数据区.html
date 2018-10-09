@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>深入理解Java Runtime Area Java运行时数据区 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="深入理解Java Runtime Area Java运行时数据区" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="深入理解Java Runtime Area Java运行时数据区" />
+<meta property="og:description" content="深入理解Java Runtime Area Java运行时数据区" />
+<link rel="canonical" href="http://www.jfox.info/2017/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3javaruntimeareajava%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%B0%E6%8D%AE%E5%8C%BA.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3javaruntimeareajava%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%B0%E6%8D%AE%E5%8C%BA.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:59:48+00:00" />
+<script type="application/ld+json">
+{"description":"深入理解Java Runtime Area Java运行时数据区","@type":"BlogPosting","url":"http://www.jfox.info/2017/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3javaruntimeareajava%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%B0%E6%8D%AE%E5%8C%BA.html","headline":"深入理解Java Runtime Area Java运行时数据区","dateModified":"2017-01-01T15:59:48+00:00","datePublished":"2017-01-01T15:59:48+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3javaruntimeareajava%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%B0%E6%8D%AE%E5%8C%BA.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">深入理解Java Runtime Area Java运行时数据区</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:59:48+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<h1 id="深入理解java-runtime-area-java运行时数据区">深入理解Java Runtime Area Java运行时数据区</h1>
+
+<p>H2M_LI_HEADER Java Runtime Area的分类
+H2M_LI_HEADER 从线程的角度理解Java Runtime Area
+H2M_LI_HEADER 从存储内容理解Java Runtime Area
+H2M_LI_HEADER 方法区中究竟存储了哪些信息？
+H2M_LI_HEADER 基本数据类型的成员变量放在jvm的哪块内存区域里？</p>
+
+<h1 id="java-runtime-area的分类">Java Runtime Area的分类</h1>
+
+<p>Java Runtime Area主要可以分为六部分 ：</p>
+
+<ul>
+  <li>Program Counter (PC) Register <strong>程序计数器</strong></li>
+  <li>Java Virtual Machine Stacks <strong>Java虚拟机栈</strong></li>
+  <li>Heap Memory <strong>Java堆</strong></li>
+  <li>Method Area <strong>方法区</strong></li>
+  <li>Run-time Constant Pool <strong>运行时常量池</strong></li>
+  <li>Native Method Stacks <strong>本地方法栈</strong></li>
+</ul>
+
+<p>具体的每个区域的内容和特点可以参考《深入理解Java虚拟机》,此书已经讲的很详细了。
+下面我们对这几个数据区域进行分类，分别从不同的视角来分析，加深我们的理解</p>
+
+<h1 id="从线程的角度理解java-runtime-area">从线程的角度理解Java Runtime Area</h1>
+
+<p>首先，我们从区域是否是线程私有的还是所有线程共享的来分类：
+<img src="073cb69.png" alt="" /></p>
+
+<p>image.png</p>
+
+<p><strong>程序计数器</strong><strong>Java虚拟机栈</strong><strong>本地方法栈</strong>都是线程私有的
+而
+<strong>Java堆</strong><strong>方法区</strong><strong>运行时常量池</strong>都是所有线程共享的</p>
+
+<p>进一步理解：</p>
+
+<ul>
+  <li>
+    <p>对于线程私有的数据区域<strong>程序计数器</strong><strong>Java虚拟机栈</strong><strong>本地方法栈</strong>，他们的生存周期都是一致的，都是
+随着线程开始，而进行初始化
+随着线程结束而销毁</p>
+  </li>
+  <li>
+    <p>而对于线程共享的数据区域<strong>Java堆</strong><strong>方法区</strong><strong>运行时常量池</strong>，他们的生存周期都是一致的
+随着JVM的启动而分配内存
+随着JVM的关闭而销毁</p>
+  </li>
+</ul>
+
+<h1 id="从存储内容理解java-runtime-area">从存储内容理解Java Runtime Area</h1>
+
+<p>下面我们再根据不同区域所存储的数据类型进行分类：
+可以分为三类</p>
+
+<ul>
+  <li>方法区和常量池存储类的信息</li>
+  <li>堆内存存储对象信息</li>
+  <li>程序计数器，Java虚拟机栈，本地方法栈存储线程的信息</li>
+</ul>
+
+<p>下图很清楚的说明
+<img src="2110f06.png" alt="" /></p>
+
+<p>image.png</p>
+
+<p><strong>The heap space holds object data, the method area holds class code, and the native area holds references to the code and object data.</strong>
+<strong>堆存储object的data，方法区存储class的信息和code，native区域存储指向class信息和code的引用和指向对象的data的引用</strong></p>
+
+<p>下面这个图更详细的指出了三个区域存储的内容：
+<img src="72b8f81.png" alt="" /></p>
+
+<p>image.png</p>
+
+<p>下面我们通过一个实际代码的例子，来说明;</p>
+
+<p>看下面这段代码：
+<img src="da4d17a.png" alt="" /></p>
+
+<p>image.png</p>
+
+<p>这段代码编译之后，就存储成如下这个样子：
+<img src="8a88dfd.png" alt="" /></p>
+
+<p>image.png</p>
+
+<h1 id="易混淆的java-runtime-area-的问题">易混淆的Java Runtime Area 的问题</h1>
+
+<p>下面我们会对关于Java 运行时数据区易混淆的问题进行释疑</p>
+
+<h2 id="方法区中究竟存储了哪些信息">方法区中究竟存储了哪些信息？</h2>
+
+<p>栈中存放了局部变量表等与方法有关的信息，但方法中还有指令代码这一重要内容，它既没有放在栈(Stack)中也没放在堆(Heap)中，那它放在哪呢？
+其实，方法区中除了包括你所说的“已加载的类的基本信息、常量、静态变量等”外，还包括编译器编译后的代码，而且这应该是方法区中主要的一部分，毕竟类中主要是方法和属性，而类中的属性，如果是实例域的话则新建对象后存储在堆(Heap)中，静态的话就如你所说存储在方法区中，因此该区域中方法占主要部分，这应该是此运行时数据区称为方法区的原因吧。</p>
+
+<h2 id="基本数据类型的成员变量放在jvm的哪块内存区域里">基本数据类型的成员变量放在jvm的哪块内存区域里？</h2>
+
+<p>比如</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>class{
+private int i;
+}
+</code></pre></div></div>
+
+<p>有的朋友可能因为基本数据类型，就认为存储在栈中。但其实是存储在堆中的，因为这是属于对象的信息，每个对象都拥有不同的实例变量，这些实例变量都存储在堆中，不管是基本数据类型还是引用数据类型
+ava虚拟机栈是线程私有的，生命周期跟线程相同，每个方法调用的时候都会创建一个栈帧用于存储局部变量表，操作数栈，动态链接，方法出口等信息。每个方法调用的过程，就代表了一个栈帧在虚拟机栈中入栈到出栈的过程，当进入一个方法时，这个方法在栈中需要分配多大的内存都是完全确定的，方法运行时不会改变局部变量表的大小——《深入理解java虚拟机第二版》
+很多java程序员一开始就被网上的一些教程所误导：基本数据类型放在栈中，数组和类的实例放在堆中。 这个说法不准确，事实上，如上面的实例变量i，他是存放在java堆中。因为它不是静态的变量，不会独立于类的实例而存在，而该类实例化之后，放在堆中，当然也包含了它的属性i。
+如果在方法中定义了int i = 0;则在局部变量表创建了两个对象：引用i和0。 这两个对象都是线程私有（安全）的。 比如定义了int[] is = new int[10]. 定义了两个对象，一个是is引用，放在局部变量表中，一个是长度为10的数组，放在堆中，这个数组，只能通过is来访问，方法结束后出栈，is被销毁，根据java的根搜索算法，判断数组不可达，就将它销毁了。</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3javaruntimeareajava%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%B0%E6%8D%AE%E5%8C%BA.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/%E6%9C%89%E5%93%AA%E4%BA%9Bjava%E6%BA%90%E4%BB%A3%E7%A0%81%E7%9C%8B%E4%BA%86%E5%90%8E%E8%AE%A9%E4%BD%A0%E6%94%B6%E8%8E%B7%E5%BE%88%E5%A4%9A%E4%BB%A3%E7%A0%81%E6%80%9D%E7%BB%B4%E5%92%8C%E8%83%BD.html">&laquo; 有哪些 Java 源代码看了后让你收获很多，代码思维和能力有较大的提升？</a>
+  
+  
+  <a class="next" href="/2017/java%E5%AF%B9excel%E8%A1%A8%E6%A0%BC%E7%9A%84%E4%B8%8A%E4%BC%A0%E5%92%8C%E4%B8%8B%E8%BD%BD%E5%A4%84%E7%90%86.html">java对excel表格的上传和下载处理 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

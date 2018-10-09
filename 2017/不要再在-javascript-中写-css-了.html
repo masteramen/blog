@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>不要再在 JavaScript 中写 CSS 了 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="不要再在 JavaScript 中写 CSS 了" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="不要再在 JavaScript 中写 CSS 了" />
+<meta property="og:description" content="不要再在 JavaScript 中写 CSS 了" />
+<link rel="canonical" href="http://www.jfox.info/2017/%E4%B8%8D%E8%A6%81%E5%86%8D%E5%9C%A8-javascript-%E4%B8%AD%E5%86%99-css-%E4%BA%86.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/%E4%B8%8D%E8%A6%81%E5%86%8D%E5%9C%A8-javascript-%E4%B8%AD%E5%86%99-css-%E4%BA%86.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:51:32+00:00" />
+<script type="application/ld+json">
+{"description":"不要再在 JavaScript 中写 CSS 了","@type":"BlogPosting","url":"http://www.jfox.info/2017/%E4%B8%8D%E8%A6%81%E5%86%8D%E5%9C%A8-javascript-%E4%B8%AD%E5%86%99-css-%E4%BA%86.html","headline":"不要再在 JavaScript 中写 CSS 了","dateModified":"2017-01-01T15:51:32+00:00","datePublished":"2017-01-01T15:51:32+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/%E4%B8%8D%E8%A6%81%E5%86%8D%E5%9C%A8-javascript-%E4%B8%AD%E5%86%99-css-%E4%BA%86.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">不要再在 JavaScript 中写 CSS 了</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:51:32+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<h1 id="不要再在-javascript-中写-css-了">不要再在 JavaScript 中写 CSS 了</h1>
+
+<p>本文作者是 react-css-modules 和 babel-plugin-react-css-modules 的作者。并不是对 CSS in JavaScript: The future of component-based styling，或是使用样式组件的反对，而是一种补充，web 开发者要了解自己的需求，明白自己使用 styled-components 的真正原因。</p>
+
+<h1 id="不要再在-javascript-中用-css了">不要再在 JavaScript 中用 CSS了</h1>
+
+<h3 id="9-个谎言">9 个谎言</h3>
+
+<p>CSS 不应随意放置。许多项目选择将样式写在 JavaScript 中的理由不对。本文列出了常见的误解，以及解决问题的现存 CSS 方案。</p>
+
+<p>本文的任何言论都没有对某个项目或人进行人身攻击的意思。<code class="highlighter-rouge">styled-components</code> 是 React 的目前趋势，所以我将 styled-components 定义为“JavaScript 中的 CSS”。</p>
+
+<p><a href="https://www.jfox.info/go.php?url=https://styled-components.com/"><code class="highlighter-rouge">styled-components</code></a> 的发起人（<a href="https://www.jfox.info/go.php?url=https://medium.com/@mxstbr">Max Stoiber</a>、<a href="https://www.jfox.info/go.php?url=https://medium.com/@glenmaddern">Glen Maddern</a> 以及所有的贡献者）都很聪明、想法独特，出发点也是好的。</p>
+
+<p>为了完全透明，我还要指出我是 <a href="https://www.jfox.info/go.php?url=https://github.com/gajus/react-css-modules">react-css-modules</a> 和 <a href="https://www.jfox.info/go.php?url=https://github.com/gajus/babel-plugin-react-css-modules">babel-plugin-react-css-modules</a> 的作者。</p>
+
+<p>小红帽</p>
+
+<h2 id="css-和-javascript-历史">CSS 和 JavaScript 历史</h2>
+
+<p>层叠样式表（CSS）是为描述标记语言文档的展现样式而出现的。JavaScript 是为了组合图片、插件等组件而创造的一种“胶水语言”。随着发展，JavaScript 拓展、转变，有了新的应用场景。</p>
+
+<p>Ajax 的出现（2005）是一个重要的里程碑。这时 Prototype、jQuery、MooTools 等库已经吸引了大量的拥护者，共同解决后台跨浏览器数据获取问题。这又引发了新的问题：如何管理数据？</p>
+
+<p>到了 2010 年，Backbone.js 出现，成为了应用状态管理的行业标准。不久后，Knockout 和 Angular 双向绑定的特点吸引了所有人。之后，React 和 Flux 出现，开启了单页应用（SPA）的新纪元，组件构造应用。</p>
+
+<h2 id="那么-css-呢">那么 CSS 呢？</h2>
+
+<p>借用 <code class="highlighter-rouge">styled-components</code> 文档中的话：</p>
+
+<p>纯 CSS 的问题在于它产生的那个时代，网站由文档组成。1993 年，网站产生，主要用于交换科学文献，CSS 是设计文献样式的解决方案。但是如今我们构建的是丰富的、面向用户的交互应用，而 CSS 并不是为此而生的。</p>
+
+<p>我不这么认为 。</p>
+
+<p>CSS 已经发展到可以满足现代 UI 的需求了。过去十年中出现的新特性数不胜数（pseudo-classes、pseudo-elements、CSS variables、media queries、keyframes、combinators、columns、flex、grid、computed values 等等）。</p>
+
+<p>从 UI 的角度看，“组件”是文档中一个独立的片段（<code class="highlighter-rouge">&lt;button /&gt;</code> 就是个组件）。CSS 被设计用来样式化文档，包括所有组件。问题在哪？</p>
+
+<p>俗话说：“工欲善其事必先利其器”。</p>
+
+<h2 id="styled-components">Styled-components</h2>
+
+<p><code class="highlighter-rouge">styled-components</code> 可以用标记模板字面量在 JavaScript 中写 CSS。这样就省去了组件和样式间的匹配 ——组件由细粒度的样式结构组成，比如：</p>
+
+<p>import React from ‘react’;
+import styled from ‘styled-components’;
+// Create a  react component that renders an &lt;h1&gt; which is
+// centered, palevioletred and sized at 1.5em
+const Title = styled.h1<code class="highlighter-rouge">
+  font-size: 1.5em;
+  text-align: center;
+  color: palevioletred;
+</code>;
+// Create a <Wrapper> react component that renders a &lt;section&gt; with
+// some padding and a papayawhip background
+const Wrapper = styled.section`
+  padding: 4em;
+  background: papayawhip;
+`;
+// Use them like any other React component – except they’re styled!</Wrapper></p>
+<Wrapper>
+  <Title>Hello World, this is my first styled component!
+</Title></Wrapper>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/%E4%B8%8D%E8%A6%81%E5%86%8D%E5%9C%A8-javascript-%E4%B8%AD%E5%86%99-css-%E4%BA%86.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/http%E5%88%A9%E7%94%A8multipartentitybuilder%E6%A8%A1%E6%8B%9F%E8%A1%A8%E5%8D%95%E4%B8%8A%E4%BC%A0%E6%96%87%E4%BB%B6.html">&laquo; HTTP利用MultipartEntityBuilder模拟表单上传文件</a>
+  
+  
+  <a class="next" href="/2017/svg-filter-%E7%9B%B8%E5%85%B3%E7%9A%84%E5%87%A0%E4%B8%AA%E9%97%AE%E9%A2%98.html">svg filter 相关的几个问题 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

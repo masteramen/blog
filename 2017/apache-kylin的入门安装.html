@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>Apache Kylin的入门安装 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="Apache Kylin的入门安装" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="Apache Kylin™是一个开源的分布式分析引擎，提供Hadoop之上的SQL查询接口及多维分析（OLAP）能力以支持超大规模数据，最初由eBay Inc. 开发并贡献至开源社区。它能在亚秒内查询巨大的Hive表。" />
+<meta property="og:description" content="Apache Kylin™是一个开源的分布式分析引擎，提供Hadoop之上的SQL查询接口及多维分析（OLAP）能力以支持超大规模数据，最初由eBay Inc. 开发并贡献至开源社区。它能在亚秒内查询巨大的Hive表。" />
+<link rel="canonical" href="http://www.jfox.info/2017/apache-kylin%E7%9A%84%E5%85%A5%E9%97%A8%E5%AE%89%E8%A3%85.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/apache-kylin%E7%9A%84%E5%85%A5%E9%97%A8%E5%AE%89%E8%A3%85.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:51:24+00:00" />
+<script type="application/ld+json">
+{"description":"Apache Kylin™是一个开源的分布式分析引擎，提供Hadoop之上的SQL查询接口及多维分析（OLAP）能力以支持超大规模数据，最初由eBay Inc. 开发并贡献至开源社区。它能在亚秒内查询巨大的Hive表。","@type":"BlogPosting","url":"http://www.jfox.info/2017/apache-kylin%E7%9A%84%E5%85%A5%E9%97%A8%E5%AE%89%E8%A3%85.html","headline":"Apache Kylin的入门安装","dateModified":"2017-01-01T15:51:24+00:00","datePublished":"2017-01-01T15:51:24+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/apache-kylin%E7%9A%84%E5%85%A5%E9%97%A8%E5%AE%89%E8%A3%85.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Apache Kylin的入门安装</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:51:24+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>Apache Kylin™是一个开源的分布式分析引擎，提供Hadoop之上的SQL查询接口及多维分析（OLAP）能力以支持超大规模数据，最初由eBay Inc. 开发并贡献至开源社区。它能在亚秒内查询巨大的Hive表。</p>
+
+<p>从官网的介绍来看Kylin是一个OLAP的数据查询引擎，其特点就是快。公司最近准备引入Kylin做数据分析，原来也听说过</p>
+
+<p>但一直没有接触，现在正好可以验证下Kylin是否是传说中那么NB，今天我们先来看看如何安装部署Kylin。</p>
+
+<p>由于Kylin本身只是一个Server，所以安装部署还是比较简单的，但是它的前提要求是Hadoop，Hive，Hbase必须已经安装而且能正常工作，在这里关于Hadoop生态的一些框架的安装部署就不再重复写了，有兴趣的可以看我以前的博文。</p>
+
+<p>下面来看下一些基础软件的版本：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Hadoop2.7.2
+Hive2.1.1
+Hbase1.2.0
+Zookeeper3.4.8
+Kylin2.0.0
+</code></pre></div></div>
+
+<p>在这里假设你的Hadoop，Hive，Hbase都已经安装成功并能正常运行。</p>
+
+<p>然后去Kylin官网下载对应的kylin版本，链接如下：</p>
+
+<p><a href="https://www.jfox.info/go.php?url=http://kylin.apache.org/cn/download/">http://kylin.apache.org/cn/download/</a>
+下载的具体版本是：</p>
+
+<p>apache-kylin-2.0.0-bin-hbase1x.tar.gz</p>
+
+<p>下载成功后，解压到根目录，然后重命名目录为kylin并在.bash_profile 文件中，配置kylin的环境变量：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>export KYLIN_HOME=/home/search/kylin
+export CLASSPATH=$CLASSPATH:$KYLIN_HOME/lib
+export PATH=$KYLIN_HOME/bin:$PATH
+</code></pre></div></div>
+
+<p>然后执行bin/check-env.sh 脚本，检查环境变量是否有缺失的，校验通过之后，可以执行如下脚本启动：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>bin/kylin.sh start // 启动
+bin/kylin.sh stop // 停止
+</code></pre></div></div>
+
+<p>这里需要注意一点，Kylin当前最新的版本只支持spark1.6.0的版本，原来我的机器中，安装了一个spark2.0的版本，导致</p>
+
+<p>启动kylin失败，终端仅仅输出spark assembly lib not found这个提示信息，别的什么也没有，导致我误以为我编译的spark有问题，后来我将我的spark移除，重新启动kylin才成功，</p>
+
+<p>另外一个注意的地方是Hadoop的mr-jobhistory-daemon.sh 进程也要启动起来。</p>
+
+<p>启动成功之后，访问地址：http://hostname:7070/kylin（kylin的启动过程感觉有点慢，差不多1分钟之后，在访问这个地址基本能生效）</p>
+
+<p>并输入默认的用户名和密码：ADMIN / KYLIN 成功登录之后，看到下面的页面，就代表安装部署成功了。</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/apache-kylin%E7%9A%84%E5%85%A5%E9%97%A8%E5%AE%89%E8%A3%85.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/maven%E8%BD%AC%E5%8C%96%E4%B8%BAdynamic-web-module.html">&laquo; Maven转化为Dynamic Web Module</a>
+  
+  
+  <a class="next" href="/2017/java-queue%E6%96%B9%E6%B3%95.html">java-Queue方法 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

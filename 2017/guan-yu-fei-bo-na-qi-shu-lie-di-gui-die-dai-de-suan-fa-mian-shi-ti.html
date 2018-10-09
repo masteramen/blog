@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>关于斐波那契数列递归迭代的算法面试题 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="关于斐波那契数列递归迭代的算法面试题" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="By Lee - Last updated: 星期四, 十月 17, 2013" />
+<meta property="og:description" content="By Lee - Last updated: 星期四, 十月 17, 2013" />
+<link rel="canonical" href="http://www.jfox.info/2017/guan-yu-fei-bo-na-qi-shu-lie-di-gui-die-dai-de-suan-fa-mian-shi-ti.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/guan-yu-fei-bo-na-qi-shu-lie-di-gui-die-dai-de-suan-fa-mian-shi-ti.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:42:39+00:00" />
+<script type="application/ld+json">
+{"description":"By Lee - Last updated: 星期四, 十月 17, 2013","@type":"BlogPosting","url":"http://www.jfox.info/2017/guan-yu-fei-bo-na-qi-shu-lie-di-gui-die-dai-de-suan-fa-mian-shi-ti.html","headline":"关于斐波那契数列递归迭代的算法面试题","dateModified":"2017-01-01T15:42:39+00:00","datePublished":"2017-01-01T15:42:39+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/guan-yu-fei-bo-na-qi-shu-lie-di-gui-die-dai-de-suan-fa-mian-shi-ti.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">关于斐波那契数列递归迭代的算法面试题</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:42:39+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>By Lee - Last updated: 星期四, 十月 17, 2013</p>
+
+<p>谓Fibonacci数列是指这样一种数列，它的前两项均为1，从第三项开始各项均为前两项之和。用数学公式表示出来就是：
+1                            (n=1,2)
+fib(n)=   fib(n-1)+fib(n-2)     (n&gt;2)
+可以证明斐波那契数列的通项公式为fib(n) = [(1＋√5)/2]^n /√5 － [(1－√5)/2]^n /√5 (n=1,2,3…..）,关于斐波那契数列的详细介绍请参阅百度百科。
+下面我将介绍三种比较常用的求解第n项斐波那契数列的方法：递归法、迭代法、通项公式法。
+1、递归法
+这种方法的优点是简洁和容易理解，缺点是时间复杂度太大，随着n的增大，运算时间将会急剧增加。因此在很多场合这种方法是不可取的。
+使用这种方法的关键代码是：
+if(n == 1|| n== 2)
+{
+return 1;
+}
+else
+{
+return fib(n – 1) + fib(n – 2);
+}
+2、迭代法
+这种方法相对于递归法来说在时间复杂度上减小了不少，但代码相对就要复杂些了。它的思想是这样的，假设开始时f0=1,f1=1,currentFib表示当前斐波那契数，则：
+for(i = 1;i &lt; n;i++)
+{
+currentFib = f0 + f1;
+f0 = f1;
+f1 = currentFib;
+}
+这样迭代结束和currentFib就是fib(n)了。
+3、通项公式法
+这种方法是最没技术含量的方法，只要你知道通项公式照着把它翻译成编程语言就可以了，优点不言而喻。
+fib(n) = pow(((1 + sqrt(5)) / 2.0),n) / sqrt(5) – pow(((1 – sqrt(5)) / 2.0),n) / sqrt(5));
+小结：
+这三种方法各有优缺点，使用哪种方法根据实际情况确定，从时间复杂度上来说O(通向公式法)&lt;O(迭代法)&lt;O(递归法)。
+下面我做了一个简单的测试：分别测试这三种方法计算0-30这31个斐波那契数所用的总时间。从测试结果看，递归确实很费时，特别是n在30以后计算起来就很费时了，而另外两种方法计算这31个斐波那契数所费时间基本为0。当然结果不会很准确，但至少能说明问题。
+测试代码：
+<strong>**</strong><strong>**</strong><strong>**</strong><strong>**</strong><strong>**</strong><strong>**</strong><strong>**</strong><strong>**</strong><strong>**</strong><strong>**</strong><strong>**</strong><strong>**</strong><strong>**</strong><strong>**</strong><strong>**</strong><strong>**</strong><strong>**</strong><strong>**</strong><strong>**</strong><strong>**</strong><strong>**</strong><strong>**</strong>
+#include <stdio.h>
+#include <math.h>
+#include <time.h>
+#define ROOT_OF_FIVE sqrt(5.0)
+long double fib1(int n);
+//使用递归
+long double fib2(int n);
+//使用迭代
+long double fib3(int n);
+//使用通项公式
+int main()
+{
+int i;
+long double result1[31],result2[31],result3[31],consume[3],start,finish;
+printf(“N           递归法          迭代法          通项公式法/n”);
+start = (long double)clock();
+for(i = 0;i &lt;= 30;i++)
+{   
+result1[i] = fib1(i);
+}
+finish = (long double)clock();
+consume[0] = finish – start;</time.h></math.h></stdio.h></p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>start = (long double)clock(); for(i = 0;i &lt;= 30;i++) {    result2[i] = fib2(i); } finish = (long double)clock(); consume[1] = finish – start;
+
+start = (long double)clock(); for(i = 0;i &lt;= 30;i++) {    result3[i] = fib3(i); } finish = (long double)clock(); consume[2] = finish – start;
+
+for(i = 0;i &lt;= 30;i++) { printf(“%02d          %06.0lf          %06.0lf          %06.0lf/n”,i,result1[i],result2[i],result3[i]); } printf(“Total time: %lfms    %lfms      %lfms/n”,consume[0],consume[1],consume[2]); return 0; } =============================================================================================================== long double fib1(int n) {//使用递归 if(n == 0) { return 0; } else if(n == 1) { return 1; } else { return fib1(n – 1) + fib1(n – 2); } }
+</code></pre></div></div>
+
+<p>long double fib2(int n)
+{//使用迭代
+if(n == 0)
+{
+return 0;
+}
+else if(n == 1)
+{
+return 1;
+}
+else
+{
+long double f0 = 0,f1 = 1,currentFib;
+int i;
+for(i = 1;i &lt; n;i++)
+{
+currentFib = f0 + f1;
+f0 = f1;
+f1 = currentFib;
+}
+return currentFib;
+}
+}</p>
+
+<p>long double fib3(int n)
+{//使用通项公式Fib(n) = [(1＋√5)/2]^n /√5 － [(1－√5)/2]^n /√5
+return (pow(((1 + ROOT_OF_FIVE) / 2.0),n) / ROOT_OF_FIVE –
+pow(((1 – ROOT_OF_FIVE) / 2.0),n) / ROOT_OF_FIVE);
+}</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/guan-yu-fei-bo-na-qi-shu-lie-di-gui-die-dai-de-suan-fa-mian-shi-ti.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/guan-yu-fei-bo-na-qi-shu-lie-di-gui-die-dai-de-suan-fa-mian-shi-ti.html">&laquo; 关于斐波那契数列递归迭代的算法面试题</a>
+  
+  
+  <a class="next" href="/2017/stringbuffer-yu-stringbuilder-de-qu-bie.html">StringBuffer与StringBuilder的区别 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

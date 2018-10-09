@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>JYUOA项目介绍——适合刚学完SSH的朋友 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="JYUOA项目介绍——适合刚学完SSH的朋友" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="JYUOA项目介绍——适合刚学完SSH的朋友" />
+<meta property="og:description" content="JYUOA项目介绍——适合刚学完SSH的朋友" />
+<link rel="canonical" href="http://www.jfox.info/2017/jyuoa-xiang-mu-jie-shao-shi-he-gang-xue-wan-ssh-de-peng-you.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/jyuoa-xiang-mu-jie-shao-shi-he-gang-xue-wan-ssh-de-peng-you.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:48:51+00:00" />
+<script type="application/ld+json">
+{"description":"JYUOA项目介绍——适合刚学完SSH的朋友","@type":"BlogPosting","url":"http://www.jfox.info/2017/jyuoa-xiang-mu-jie-shao-shi-he-gang-xue-wan-ssh-de-peng-you.html","headline":"JYUOA项目介绍——适合刚学完SSH的朋友","dateModified":"2017-01-01T15:48:51+00:00","datePublished":"2017-01-01T15:48:51+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/jyuoa-xiang-mu-jie-shao-shi-he-gang-xue-wan-ssh-de-peng-you.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">JYUOA项目介绍——适合刚学完SSH的朋友</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:48:51+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<h1 id="jyuoa项目介绍适合刚学完ssh的朋友">JYUOA项目介绍——适合刚学完SSH的朋友</h1>
+
+<p>By Lee - Last updated: 星期三, 六月 7, 2017</p>
+
+<h1 id="前言">前言</h1>
+
+<p>我最近在复习和汇总以前学习过的知识和做过的东西，<a href="https://www.jfox.info/go.php?url=https://github.com/HuangFromJYU/JYUOA">JYUOA</a>（JYU全称是Jiaying University）是我在大二刚学完SSH框架的时候，做的第一个SSH的项目。怎么说呢，这可以说是我的启蒙项目，通过这个项目，我学到很多东西，像什么框架之间的整合，还有SSH框架的具体实战使用，还有三层架构设计，以及权限管理等知识，所以我觉得这是一个十分适合刚学完SSH框架的朋友的项目。</p>
+
+<h1 id="项目简介">项目简介</h1>
+
+<p>OA是Office Automation的缩写，本意为利用技术的手段提高办公的效率，进而实现办公的自动化处理。实现信息化、无纸化办公，可方便的生成统计报表等。</p>
+
+<p>当然了，真正的一个OA系统的功能是很多的，下面这张图是说一个OA系统能够具有的全部功能，现在的OA系统的功能基本上就是下面这张图的子集。</p>
+
+<p><img src="f975b56.png" alt="" /></p>
+
+<p>而JYUOA只是实现了其中很小的一部分功能，不够这样也够呛了，也需要具备很多知识的了，在后面我会介绍一下它的整体架构和里面的功能。下面是项目的主页</p>
+
+<p><img src="56b09c7.png" alt="" /></p>
+
+<h1 id="项目整体架构">项目整体架构</h1>
+
+<p>一般这个时候就要扯到三层架构和MVC模式了，不管很多人都这两个其实会搞混，说不出个所以然来，这里我强烈建议你去看看<a href="https://www.jfox.info/go.php?url=http://blog.csdn.net/timheath/article/details/72887267">对三层和MVC的认识过程</a>。</p>
+
+<p>现在回到我们这个项目，这个项目有采用MVC模式，至于三层嘛，其实这个项目最开始用的也是三层，但后来进行重构，直接把业务逻辑层与数据访问层合并了，所以变成了两层，为什么要这么做呢，因为这个项目的业务逻辑并不是特别复杂，普遍都是增删改查操作，这样一来的话业务逻辑层的Service类的方法只是简单地调用一下数据访问层的Dao类的方法，所以干脆把它们整合一起。</p>
+
+<p>还是普遍增删改查的问题还有分页等公共功能，所以把这些普通的功能都抽取出来了，如在界面层（UI）就抽取了<code class="highlighter-rouge">Action</code>，抽取出来一个<code class="highlighter-rouge">edu.jyu.oa.base.BaseAction</code>和<code class="highlighter-rouge">edu.jyu.oa.base.ModelDrivenBaseAction&lt;T&gt;</code>，其中<code class="highlighter-rouge">ModelDrivenBaseAction</code>继承了<code class="highlighter-rouge">BaseAction</code>，一个<code class="highlighter-rouge">Action</code>类如果需要用到Struts2的ModelDriven的话，k就继承<code class="highlighter-rouge">ModelDrivenBaseAction</code>，否则继承<code class="highlighter-rouge">BaseAction</code>，例如<code class="highlighter-rouge">edu.jyu.oa.view.action.ProcessDefinitionAction</code>。</p>
+
+<p>那么就以部门为例，整个项目的层次结构如下图</p>
+
+<p><img src="8893e1b.png" alt="" /></p>
+
+<p>还有就是实体类图，可能在这里看不清楚，但是我已经放在<strong>相关资料</strong>那里了</p>
+
+<p><img src="3d6ca46.png" alt="" /></p>
+
+<h1 id="所用框架技术">所用框架、技术</h1>
+
+<ul>
+  <li>Struts2 2.1.8.1</li>
+  <li>Hibernate 3.6.0</li>
+  <li>Spring 2.5</li>
+  <li>jBPM 4.4：工作流支持</li>
+  <li>Junit 4：单元测试</li>
+  <li>jQuery 1.4</li>
+</ul>
+
+<p>说明：还有jQuery.validate与jQuery.treeview等小插件</p>
+
+<h1 id="项目目录结构与包结构">项目目录结构与包结构</h1>
+
+<p><strong>目录结构</strong></p>
+
+<ul>
+  <li>源码文件夹 
+src：项目源代码 
+conf：配置文件 
+test：单元测试</li>
+  <li>WebContent文件夹下 
+script：JavaScript脚本文件 
+style：CSS样式文件 
+WEB-INF/jsp：jsp页面文件（再创建子文件夹分类存放）</li>
+</ul>
+
+<p><strong>包结构</strong></p>
+
+<ul>
+  <li>edu.jyu.oa.base：抽取公共功能的一些类</li>
+  <li>edu.jyu.oa.cfg：管理配置信息</li>
+  <li>edu.jyu.oa.domain：实体</li>
+  <li>edu.jyu.oa.install：安装程序所在包</li>
+  <li>edu.jyu.oa.service：Service接口</li>
+  <li>edu.jyu.oa.service.impl：Service的实现类</li>
+  <li>edu.jyu.oa.view.action：Struts的Action</li>
+  <li>edu.jyu.oa.util：一些工具类</li>
+</ul>
+
+<h1 id="项目功能">项目功能</h1>
+
+<h2 id="系统管理">系统管理</h2>
+
+<h3 id="岗位管理">岗位管理</h3>
+
+<p>这个岗位管理其实可以看作是角色管理了，而角色有什么用呢？角色其实就是用户跟权限中间的一个桥梁，一个用户可以拥有很多权限，但是如果有些用户的所拥有的权限是一样的，那么分别跟这些用户分配权限的话就会很麻烦，所以不如就将权限分配到角色去，然后给用户分配角色，这样子，用户就拥有了角色所拥有的权限。<strong>一个用户可以有多个角色，一个角色可以有多个权限</strong>。如果一个用户没有某一项权限，那么就不会显示那个权限对应的操作给该用户看。</p>
+
+<p><img src="cd65d58.png" alt="" /></p>
+
+<p>岗位管理有以下功能：</p>
+
+<ul>
+  <li>查看岗位列表</li>
+  <li>添加岗位</li>
+  <li>修改岗位</li>
+  <li>设置岗位权限：可以给岗位设置多个权限</li>
+  <li>删除岗位：一个用户如果关联着该岗位，则会取消关联该岗位</li>
+</ul>
+
+<p>岗位对应的实体类是<code class="highlighter-rouge">edu.jyu.oa.domain.Role</code></p>
+
+<h3 id="部门管理">部门管理</h3>
+
+<p>部门呢，就是部门咯，它可以有一个上级部门，也可以有多个下级部门，没有上级部门的可以称作顶级部门，一个部门下面可以有多个用户，即用户与部门的关系是1对多。</p>
+
+<p><img src="07c274f.png" alt="" /></p>
+
+<p>部门管理有以下功能：</p>
+
+<ul>
+  <li>查看所有顶级部门列表</li>
+  <li>查看一个部门所有的子部门</li>
+  <li>查看一个部门的上级部门</li>
+  <li>添加部门</li>
+  <li>修改部门</li>
+  <li>删除部门：会将下级部门一并删除，原本在这部门上的用户就没有所属部门了</li>
+</ul>
+
+<p>部门对应的实体类是<code class="highlighter-rouge">edu.jyu.oa.domain.Department</code></p>
+
+<h3 id="用户管理">用户管理</h3>
+
+<p>用户管理呢，真的没什么好说的，大家都懂的。</p>
+
+<p><img src="76fdff7.png" alt="" /></p>
+
+<p>用户管理有以下功能：</p>
+
+<ul>
+  <li>查看用户列表</li>
+  <li>添加用户：可以在这里设置岗位和部门</li>
+  <li>修改用户：可以在这里设置岗位和部门</li>
+  <li>删除用户</li>
+  <li>初始化用户密码：其实用户创建出来密码默认就是1234，所以初始化也是1234，修改用户密码可以在个人设置中修改，不过我没做这个功能……大家喜欢的话可以补上</li>
+</ul>
+
+<p>用户对应的实体类是<code class="highlighter-rouge">edu.jyu.oa.domain.User</code></p>
+
+<h2 id="网上交流">网上交流</h2>
+
+<h3 id="论坛管理">论坛管理</h3>
+
+<p>这里应该说称作论坛版块管理比较适合点。</p>
+
+<p><img src="11574f7.png" alt="" /></p>
+
+<p>论坛管理有以下功能：</p>
+
+<ul>
+  <li>添加板块</li>
+  <li>查看论坛列表</li>
+  <li>修改板块</li>
+  <li>删除板块</li>
+  <li>对列表中的板块进行上移下移排序：板块的顺序在论坛列表中的顺序相同</li>
+</ul>
+
+<p>论坛版块对应的实体类是<code class="highlighter-rouge">edu.jyu.oa.domain.Forum</code></p>
+
+<h3 id="论坛">论坛</h3>
+
+<p>这里就是真正可以去论坛版块交流的地方了，你可以选择一个版块，然后再该版块上发帖子</p>
+
+<p><img src="4dedfc7.png" alt="" /></p>
+
+<p><img src="48081e6.png" alt="" /></p>
+
+<p>论坛有以下功能：</p>
+
+<ul>
+  <li>查看论坛版块以及相关信息，如论坛版块的帖子数等</li>
+  <li>查看一个论坛板块的所有帖子，还可以根据各种条件进行排序</li>
+  <li>发帖</li>
+  <li>回帖</li>
+</ul>
+
+<p>编辑帖子和删除帖子功能没有做。置顶和精华也没做，其实就是修改<code class="highlighter-rouge">edu.jyu.oa.domain.Topic</code>的<code class="highlighter-rouge">type</code>值。有兴趣的也可以做一下，也不是很难的。</p>
+
+<p>论坛中的帖子对应着实体类<code class="highlighter-rouge">edu.jyu.oa.domain.Topic</code>和<code class="highlighter-rouge">edu.jyu.oa.domain.Article</code>，其中<code class="highlighter-rouge">Topic</code>继承了<code class="highlighter-rouge">Article</code></p>
+
+<h2 id="审批流转">审批流转</h2>
+
+<h3 id="审批流程管理">审批流程管理</h3>
+
+<p>你要要申请一个东西，就要有一个流程，比如说请假，先给谁审批，再给谁审批。这里就可以部署一个流程的定义文件了，这个流程定义定义文件是用Eclipse的JBPM插件做的。</p>
+
+<p><img src="23bc589.png" alt="" /></p>
+
+<p>审批流程管理有以下功能：</p>
+
+<ul>
+  <li>查看流程定义列表</li>
+  <li>部署流程定义文档：如果是具有同一个name的流程定义文档的话，再次部署相当于修改，就是将已部署的该文档的版本号加1，比如说我部署了一个请假流程名称为“员工请假流程”，流程步骤是 <strong>开始-》提交申请-》总经理审批-》结束</strong>，后来改成 <strong>开始-》提交申请-》部门经理审批-》总经理审批-》结束</strong>，这样子的话，即使流程改变，流程的name没有改变的话，再次部署就会把该流程版本+1，每次使用流程定义的时候都是用最新版本的</li>
+  <li>删除流程定义：会删除该流程定义以及与它具有相同name或者说key值的所有版本的流程定义</li>
+  <li>查看流程图：查看部署的的文件中xxx.png</li>
+</ul>
+
+<p>流程定义对应的是<code class="highlighter-rouge">org.jbpm.api.ProcessDefinition</code>，这是一个接口，由JBPM提供的</p>
+
+<h3 id="申请模板管理">申请模板管理</h3>
+
+<p>有了流程定义，我们就可以创建一个申请模板了，该申请模板可以引用一个流程定义，并且关联一个申请文件（.doc格式），员工可以根据该申请模板进行申请事务。</p>
+
+<p><img src="cc0068e.png" alt="" /></p>
+
+<p>申请模板管理有以下功能：</p>
+
+<ul>
+  <li>查看申请模板列表</li>
+  <li>添加申请模板：要关联一个流程，上传一个模板文件</li>
+  <li>修改申请模板</li>
+  <li>删除申请模板</li>
+  <li>下载申请模板中的相关模板文件.doc</li>
+</ul>
+
+<p>申请模板对应的实体类是<code class="highlighter-rouge">edu.jyu.oa.domain.Template</code></p>
+
+<h3 id="起草申请">起草申请</h3>
+
+<p>有了申请模板以后，就可以起草申请了。</p>
+
+<p><img src="c6895cb.png" alt="" /></p>
+
+<p>起草申请有以下功能：</p>
+
+<ul>
+  <li>查看所有的申请模板</li>
+  <li>选择一个申请模板然后填写申请，申请后跳到我的申请查询</li>
+</ul>
+
+<p>申请对应的实体类是<code class="highlighter-rouge">edu.jyu.oa.domain.Application</code></p>
+
+<h3 id="待我审批">待我审批</h3>
+
+<p>在申请以后，就需要对申请进行审批。</p>
+
+<p><img src="eff734d.png" alt="" /></p>
+
+<p>待我审批有以下功能：</p>
+
+<ul>
+  <li>显示出待我审批的申请记录</li>
+  <li>审批记录：可以同意申请和不同意申请，如果有多条路线选择的话，还可以在同意后指定下一条路线，比如说在部门经理审批同意后，可以直接结束，也可以转到总经理，这时候部门经理就可以选择走哪条路线。</li>
+  <li>查看流转记录</li>
+</ul>
+
+<p>审批有关的实体类是<code class="highlighter-rouge">edu.jyu.oa.domain.ApproveInfo</code></p>
+
+<h3 id="我的申请查询">我的申请查询</h3>
+
+<p>在这里可以看到历史申请记录的和正在申请的记录。</p>
+
+<p><img src="1866300.png" alt="" /></p>
+
+<p>我的申请查询有以下功能：</p>
+
+<ul>
+  <li>查看申请的记录：可以根据申请模板和状态来作为查询条件</li>
+  <li>查看流转记录</li>
+</ul>
+
+<h1 id="项目搭建">项目搭建</h1>
+
+<p>整个项目大概就介绍到这里，现在就来说说怎么在你的机器上泡起来。我在本机运行这个项目的时候，用的JDK版本是1.7，Tomcat版本是8，千万不要用JDK 1.8，因为这个项目的Spring版本跟JDK 1.8不兼容，所以关于一些环境版本的选择，你要小心咯。</p>
+
+<ol>
+  <li>你要创建一个数据库，我的是<code class="highlighter-rouge">jyuoa</code>，如果你创建的数据库名不是这个的话，就得到<code class="highlighter-rouge">config</code>中的<code class="highlighter-rouge">jdbc.properties</code>里修改一下数据库配置，还有就是数据库账号密码什么也是在那修改的，注意了，你创建的这个数据库要选择UTF-8编码。</li>
+  <li>下载这个项目的代码，然后在你自己的IDE中创建Web工程，随便起你喜欢的名字，把下载好的代码拷贝到工程的对应位置中。你可以发现我没有上传<code class="highlighter-rouge">.project</code>文件，因为我用的是Eclipse，你可能用的是其它工具。我也没有上传<code class="highlighter-rouge">.classpath</code>，因为像Eclipse的<code class="highlighter-rouge">WebContent</code>到了<code class="highlighter-rouge">MyEclipse</code>就是<code class="highlighter-rouge">WebRoot</code>，<code class="highlighter-rouge">.classpath</code>文件可能会让产生一些让你疑惑的问题，比如说同时出现了<code class="highlighter-rouge">WebContent</code>和<code class="highlighter-rouge">WebRoot</code>，反正我就被懵过，至于其它的IDE我也没用过了，也不知道会出现什么问题，所以你要记得把<code class="highlighter-rouge">src</code>、<code class="highlighter-rouge">test</code>还有<code class="highlighter-rouge">config</code>文件夹Build Path为源码目录(Source Folder)。</li>
+  <li>在配置好工程后，找到<code class="highlighter-rouge">edu.jyu.oa.install.Installer</code>类，运行一下，把项目的基本信息插入到数据库中，像超级管理员信息还有一些权限的信息，不过可能第一次运行会比较慢，因为要建很多表。</li>
+  <li>然后就是部署到你的Web容器中啦，我只试过在在Tomcat 8中部署。</li>
+</ol>
+
+<p>大概就是这样子吧，出了错别慌，尽情地谷歌和百度，实在不行你找我。</p>
+
+<h1 id="总结">总结</h1>
+
+<p>这个项目可能对于以后我遇到的项目来讲，是<strong>a piece of cake</strong>，但是这对于我来说是一个很好的开始，每次积累一点点，最后整合起来就是一大块。但是这个项目也有很多缺点，比如说日志没怎么做，异常处理也不好，有些功能没有完成，不过只要花点时间，肯定是能行的！最后需要说的是，这个项目我是学习传智播客的OA项目的，所以非常感谢传智播客将他们的教学资源分享出来。</p>
+
+<p>项目地址<a href="https://www.jfox.info/go.php?url=https://github.com/HuangFromJYU/JYUOA">https://github.com/HuangFromJYU/JYUOA</a></p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/jyuoa-xiang-mu-jie-shao-shi-he-gang-xue-wan-ssh-de-peng-you.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/javaweb-kai-fa-zhi-mybatis-xiang-jie-yi-mybatis-de-ru-men-shi-xian-zeng-shan-gai-cha-cao-zuo-zi-ding.html">&laquo; JAVAWEB开发之mybatis详解(一)——mybatis的入门(实现增删改查操作)、自定义别名、抽取代码块以及动态SQL的使用</a>
+  
+  
+  <a class="next" href="/2017/jie-jue-qian-duan-html5-he-egret-kua-yu-qing-qiu-http-shu-ju-de-li-zi.html">解决前端Html5和Egret跨域请求Http数据的例子 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

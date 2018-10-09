@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>bencode解码实现 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="bencode解码实现" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="字符串被如此编码::字符串正文.这种表示法没有任何的分界符." />
+<meta property="og:description" content="字符串被如此编码::字符串正文.这种表示法没有任何的分界符." />
+<link rel="canonical" href="http://www.jfox.info/2017/bencode%E8%A7%A3%E7%A0%81%E5%AE%9E%E7%8E%B0.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/bencode%E8%A7%A3%E7%A0%81%E5%AE%9E%E7%8E%B0.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:50:07+00:00" />
+<script type="application/ld+json">
+{"description":"字符串被如此编码::字符串正文.这种表示法没有任何的分界符.","@type":"BlogPosting","url":"http://www.jfox.info/2017/bencode%E8%A7%A3%E7%A0%81%E5%AE%9E%E7%8E%B0.html","headline":"bencode解码实现","dateModified":"2017-01-01T15:50:07+00:00","datePublished":"2017-01-01T15:50:07+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/bencode%E8%A7%A3%E7%A0%81%E5%AE%9E%E7%8E%B0.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">bencode解码实现</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:50:07+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>字符串被如此编码:<字符串长度>:字符串正文.这种表示法没有任何的分界符.</字符串长度></p>
+
+<p>例子:如”8:announce”指”announce”.</p>
+
+<p>整数:</p>
+
+<p>整数被如此编码:整数值.可以为负数,如’i-3e’</p>
+
+<p>例子:’i3e’ 指 3.</p>
+
+<p>列表:</p>
+
+<p>列表是如此被表示的:Bencode Value,</p>
+
+<p>列表可以用来表示多个对象.</p>
+
+<p>列表内容可以包括字符串,整数,字典,甚至列表本身.</p>
+
+<p>例子:’l4:spam4:eggse’ 指 [ “spam”, eggs” ]</p>
+
+<p>字典:</p>
+
+<p>字典是一个一对一的映射.它表示了一个主键(必须为字符串)和一个数据项(可以为任何Bencode值)的关系.字典可以用来表示一个对象的多种属性.</p>
+
+<p>字典是如此被编码:</p>
+
+<p>注意:字典必须根据主键预排序.</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">com</span><span class="p">.</span><span class="n">norkts</span><span class="p">.</span><span class="n">torrents</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">java</span><span class="p">.</span><span class="n">io</span><span class="p">.*;</span>
+<span class="n">import</span> <span class="n">java</span><span class="p">.</span><span class="n">nio</span><span class="p">.</span><span class="n">ByteBuffer</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">java</span><span class="p">.</span><span class="n">util</span><span class="p">.*;</span>
+<span class="p">/**</span>
+ <span class="p">*</span> <span class="n">bencode</span><span class="err">解码实现</span>
+ <span class="p">*</span> <span class="p">@</span><span class="n">author</span> <span class="n">norkts</span><span class="p">&lt;</span><span class="n">norkts</span><span class="p">@</span><span class="n">gmail</span><span class="p">.</span><span class="n">com</span><span class="p">&gt;</span>
+ <span class="p">*</span> <span class="p">@</span><span class="n">date</span> <span class="m">2017</span><span class="p">-</span><span class="m">06</span><span class="p">-</span><span class="m">21</span>
+ <span class="p">*</span> <span class="p">@</span><span class="k">version</span> <span class="m">1.0</span>
+ <span class="p">*/</span>
+<span class="k">public</span> <span class="n">class</span> <span class="n">BencodeDecoder</span> <span class="p">{</span>
+    <span class="k">public</span> <span class="n">static</span> <span class="n">Object</span> <span class="n">decode</span><span class="p">(</span><span class="n">byte</span><span class="p">[]</span> <span class="n">data</span><span class="p">){</span>
+        <span class="n">ByteBuffer</span> <span class="n">buffer</span> <span class="p">=</span> <span class="n">ByteBuffer</span><span class="p">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">data</span><span class="p">);</span>
+        <span class="n">return</span> <span class="n">decode</span><span class="p">(</span><span class="n">buffer</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">public</span> <span class="n">static</span> <span class="n">Object</span> <span class="n">decode</span><span class="p">(</span><span class="n">ByteBuffer</span> <span class="n">buffer</span><span class="p">){</span>
+        <span class="n">Stack</span><span class="p">&lt;</span><span class="n">Object</span><span class="p">&gt;</span> <span class="n">endStack</span> <span class="p">=</span> <span class="n">new</span> <span class="n">Stack</span><span class="p">&lt;</span><span class="n">Object</span><span class="p">&gt;();</span>
+        <span class="k">while</span> <span class="p">(</span><span class="n">buffer</span><span class="p">.</span><span class="n">hasRemaining</span><span class="p">()){</span>
+            <span class="n">byte</span> <span class="n">ch</span> <span class="p">=</span> <span class="n">buffer</span><span class="p">.</span><span class="n">get</span><span class="p">();</span>
+            <span class="k">if</span><span class="p">(</span><span class="n">ch</span> <span class="p">&gt;=</span> <span class="s1">'0'</span> <span class="p">&amp;</span> <span class="n">ch</span> <span class="p">&lt;=</span> <span class="s1">'9'</span><span class="p">){</span>
+                <span class="n">buffer</span><span class="p">.</span><span class="n">position</span><span class="p">(</span><span class="n">buffer</span><span class="p">.</span><span class="n">position</span><span class="p">()</span> <span class="p">-</span> <span class="m">1</span><span class="p">);</span>
+                <span class="p">//</span><span class="k">string</span>
+                <span class="n">byte</span><span class="p">[]</span> <span class="n">lenByte</span> <span class="p">=</span> <span class="n">readUntil</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span> <span class="s1">':'</span><span class="p">);</span>
+                <span class="n">int</span> <span class="n">len</span> <span class="p">=</span> <span class="k">Integer</span><span class="p">.</span><span class="nf">parseInt</span><span class="p">(</span><span class="n">new</span> <span class="k">String</span><span class="p">(</span><span class="n">lenByte</span><span class="p">));</span>
+                <span class="n">lenByte</span> <span class="p">=</span> <span class="n">new</span> <span class="n">byte</span><span class="p">[</span><span class="n">len</span><span class="p">];</span>
+                <span class="n">buffer</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="n">lenByte</span><span class="p">);</span>
+                <span class="k">String</span> <span class="n">str</span> <span class="p">=</span> <span class="n">new</span> <span class="k">String</span><span class="p">(</span><span class="n">lenByte</span><span class="p">);</span>
+                <span class="k">if</span><span class="p">(</span><span class="n">endStack</span><span class="p">.</span><span class="n">empty</span><span class="p">()){</span>
+                    <span class="n">endStack</span><span class="p">.</span><span class="n">push</span><span class="p">(</span><span class="n">new</span> <span class="n">LinkedList</span><span class="p">&lt;</span><span class="n">Object</span><span class="p">&gt;());</span>
+                <span class="p">}</span>
+                <span class="n">setStackVal</span><span class="p">(</span><span class="n">endStack</span><span class="p">,</span> <span class="n">str</span><span class="p">);</span>
+                <span class="p">//</span><span class="err">继续执行下一次</span>
+                <span class="n">continue</span><span class="p">;</span>
+            <span class="p">}</span>
+            <span class="k">if</span><span class="p">(</span><span class="n">ch</span> <span class="p">==</span> <span class="s1">'i'</span><span class="p">){</span>
+                <span class="p">//</span><span class="err">字符串处理</span>
+                <span class="n">byte</span><span class="p">[]</span> <span class="n">temp</span> <span class="p">=</span> <span class="n">readUntil</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span> <span class="s1">'e'</span><span class="p">);</span>
+                <span class="n">Long</span> <span class="n">val</span> <span class="p">=</span> <span class="n">Long</span><span class="p">.</span><span class="n">parseLong</span><span class="p">(</span><span class="n">new</span> <span class="k">String</span><span class="p">(</span><span class="n">temp</span><span class="p">));</span>
+                <span class="k">if</span><span class="p">(</span><span class="n">endStack</span><span class="p">.</span><span class="n">empty</span><span class="p">()){</span>
+                    <span class="n">endStack</span><span class="p">.</span><span class="n">push</span><span class="p">(</span><span class="n">new</span> <span class="n">LinkedList</span><span class="p">&lt;</span><span class="n">Object</span><span class="p">&gt;());</span>
+                <span class="p">}</span>
+                <span class="n">setStackVal</span><span class="p">(</span><span class="n">endStack</span><span class="p">,</span> <span class="n">val</span><span class="p">);</span>
+                <span class="n">continue</span><span class="p">;</span>
+            <span class="p">}</span>
+            <span class="k">if</span><span class="p">(</span><span class="n">ch</span> <span class="p">==</span> <span class="s1">'l'</span><span class="p">){</span>
+                <span class="p">//</span><span class="err">列表处理</span>
+                <span class="n">endStack</span><span class="p">.</span><span class="n">push</span><span class="p">(</span><span class="n">new</span> <span class="n">LinkedList</span><span class="p">&lt;</span><span class="n">Object</span><span class="p">&gt;());</span>
+                <span class="n">continue</span><span class="p">;</span>
+            <span class="p">}</span>
+            <span class="k">if</span><span class="p">(</span><span class="n">ch</span> <span class="p">==</span> <span class="s1">'d'</span><span class="p">){</span>
+                <span class="p">//</span><span class="err">字典类型开始解码</span>
+                <span class="n">endStack</span><span class="p">.</span><span class="n">push</span><span class="p">(</span><span class="n">new</span> <span class="n">LinkedHashMap</span><span class="p">&lt;</span><span class="n">Object</span><span class="p">,</span> <span class="n">Object</span><span class="p">&gt;());</span>
+                <span class="n">continue</span><span class="p">;</span>
+            <span class="p">}</span>
+            <span class="k">if</span><span class="p">(</span><span class="n">ch</span> <span class="p">==</span> <span class="s1">'e'</span><span class="p">){</span>
+                <span class="n">Object</span> <span class="n">last</span> <span class="p">=</span> <span class="n">endStack</span><span class="p">.</span><span class="n">pop</span><span class="p">();</span>
+                <span class="k">if</span><span class="p">(</span><span class="n">endStack</span><span class="p">.</span><span class="n">empty</span><span class="p">()){</span>
+                    <span class="n">return</span> <span class="n">last</span><span class="p">;</span>
+                <span class="p">}</span>
+                <span class="n">setStackVal</span><span class="p">(</span><span class="n">endStack</span><span class="p">,</span> <span class="n">last</span><span class="p">);</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="n">return</span> <span class="n">endStack</span><span class="p">.</span><span class="n">empty</span><span class="p">()</span> <span class="p">?</span> <span class="n">null</span> <span class="p">:</span> <span class="n">endStack</span><span class="p">.</span><span class="n">pop</span><span class="p">();</span>
+    <span class="p">}</span>
+    <span class="n">private</span> <span class="n">static</span> <span class="n">byte</span><span class="p">[]</span> <span class="n">readUntil</span><span class="p">(</span><span class="n">ByteBuffer</span> <span class="n">buff</span><span class="p">,</span> <span class="n">char</span> <span class="k">end</span><span class="p">){</span>
+        <span class="n">ByteArrayOutputStream</span> <span class="n">baos</span> <span class="p">=</span> <span class="n">new</span> <span class="n">ByteArrayOutputStream</span><span class="p">();</span>
+        <span class="k">while</span> <span class="p">(</span><span class="nb">true</span><span class="p">){</span>
+            <span class="n">byte</span> <span class="n">ch</span> <span class="p">=</span> <span class="n">buff</span><span class="p">.</span><span class="n">get</span><span class="p">();</span>
+            <span class="k">if</span><span class="p">(</span><span class="n">ch</span> <span class="p">==</span> <span class="k">end</span><span class="p">){</span>
+                <span class="k">break</span><span class="p">;</span>
+            <span class="p">}</span>
+            <span class="n">baos</span><span class="p">.</span><span class="nb">write</span><span class="p">(</span><span class="n">ch</span><span class="p">);</span>
+        <span class="p">}</span>
+        <span class="n">return</span> <span class="n">baos</span><span class="p">.</span><span class="n">toByteArray</span><span class="p">();</span>
+    <span class="p">}</span>
+    <span class="n">private</span> <span class="n">static</span> <span class="n">void</span> <span class="n">setStackVal</span><span class="p">(</span><span class="n">Stack</span><span class="p">&lt;</span><span class="n">Object</span><span class="p">&gt;</span> <span class="n">stack</span><span class="p">,</span> <span class="n">Object</span> <span class="n">val</span><span class="p">){</span>
+        <span class="n">Object</span> <span class="n">prev</span> <span class="p">=</span> <span class="n">stack</span><span class="p">.</span><span class="n">peek</span><span class="p">();</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">prev</span> <span class="n">instanceof</span> <span class="k">List</span><span class="p">){</span>
+            <span class="p">((</span><span class="k">List</span><span class="p">)</span><span class="n">prev</span><span class="p">).</span><span class="n">add</span><span class="p">(</span><span class="n">val</span><span class="p">);</span>
+        <span class="p">}</span><span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">prev</span> <span class="n">instanceof</span> <span class="n">Map</span><span class="p">){</span>
+            <span class="n">Pair</span><span class="p">&lt;</span><span class="n">Object</span><span class="p">,</span> <span class="n">Object</span><span class="p">&gt;</span> <span class="n">entry</span> <span class="p">=</span> <span class="n">new</span> <span class="n">Pair</span><span class="p">&lt;</span><span class="n">Object</span><span class="p">,</span> <span class="n">Object</span><span class="p">&gt;(</span><span class="n">val</span><span class="p">,</span> <span class="n">null</span><span class="p">);</span>
+            <span class="n">stack</span><span class="p">.</span><span class="n">push</span><span class="p">(</span><span class="n">entry</span><span class="p">);</span>
+        <span class="p">}</span><span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">prev</span> <span class="n">instanceof</span> <span class="n">Pair</span><span class="p">){</span>
+            <span class="n">Pair</span><span class="p">&lt;</span><span class="n">Object</span><span class="p">,</span> <span class="n">Object</span><span class="p">&gt;</span> <span class="n">entry</span> <span class="p">=</span> <span class="p">(</span><span class="n">Pair</span><span class="p">&lt;</span><span class="n">Object</span><span class="p">,</span> <span class="n">Object</span><span class="p">&gt;)</span><span class="n">stack</span><span class="p">.</span><span class="n">pop</span><span class="p">();</span>
+            <span class="n">entry</span><span class="p">.</span><span class="n">setVal</span><span class="p">(</span><span class="n">val</span><span class="p">);</span>
+            <span class="n">prev</span> <span class="p">=</span> <span class="n">stack</span><span class="p">.</span><span class="n">peek</span><span class="p">();</span>
+            <span class="p">((</span><span class="n">Map</span><span class="p">&lt;</span><span class="n">Object</span><span class="p">,</span> <span class="n">Object</span><span class="p">&gt;)</span><span class="n">prev</span><span class="p">).</span><span class="n">put</span><span class="p">(</span><span class="n">entry</span><span class="p">.</span><span class="n">getKey</span><span class="p">(),</span> <span class="n">entry</span><span class="p">.</span><span class="n">getVal</span><span class="p">());</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="n">static</span> <span class="n">class</span> <span class="n">Pair</span><span class="p">&lt;</span><span class="n">K</span><span class="p">,</span><span class="n">V</span><span class="p">&gt;{</span>
+        <span class="n">private</span> <span class="n">K</span> <span class="n">key</span><span class="p">;</span>
+        <span class="n">private</span> <span class="n">V</span> <span class="n">val</span><span class="p">;</span>
+        <span class="k">public</span> <span class="n">Pair</span><span class="p">(</span><span class="n">K</span> <span class="n">k</span><span class="p">,</span> <span class="n">V</span> <span class="n">v</span><span class="p">){</span>
+            <span class="n">this</span><span class="p">.</span><span class="n">key</span> <span class="p">=</span> <span class="n">k</span><span class="p">;</span>
+            <span class="n">this</span><span class="p">.</span><span class="n">val</span> <span class="p">=</span> <span class="n">v</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="k">public</span> <span class="n">K</span> <span class="n">getKey</span><span class="p">()</span> <span class="p">{</span>
+            <span class="n">return</span> <span class="n">key</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="k">public</span> <span class="n">void</span> <span class="n">setKey</span><span class="p">(</span><span class="n">K</span> <span class="n">key</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">this</span><span class="p">.</span><span class="n">key</span> <span class="p">=</span> <span class="n">key</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="k">public</span> <span class="n">V</span> <span class="n">getVal</span><span class="p">()</span> <span class="p">{</span>
+            <span class="n">return</span> <span class="n">val</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="k">public</span> <span class="n">void</span> <span class="n">setVal</span><span class="p">(</span><span class="n">V</span> <span class="n">val</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">this</span><span class="p">.</span><span class="n">val</span> <span class="p">=</span> <span class="n">val</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="k">public</span> <span class="n">static</span> <span class="n">void</span> <span class="n">main</span><span class="p">(</span><span class="k">String</span><span class="p">[]</span> <span class="n">argv</span><span class="p">){</span>
+<span class="p">/*</span>        <span class="n">Object</span> <span class="n">obj</span> <span class="p">=</span> <span class="n">BencodeDecoder</span><span class="p">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">"l:3:abci45678el:3:xxxi123ed3:key3:val4:name5:zhangeee"</span><span class="p">.</span><span class="n">getBytes</span><span class="p">());</span>
+        <span class="nf">System</span><span class="p">.</span><span class="n">out</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="n">obj</span><span class="p">);</span>
+        <span class="n">obj</span> <span class="p">=</span> <span class="n">BencodeDecoder</span><span class="p">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">"d3:key3:val4:name5:zhang3:mapd3:key3:vali123e4:xxxxee"</span><span class="p">.</span><span class="n">getBytes</span><span class="p">());</span>
+        <span class="nf">System</span><span class="p">.</span><span class="n">out</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="n">obj</span><span class="p">);*/</span>
+        <span class="n">try</span> <span class="p">{</span>
+            <span class="n">File</span> <span class="n">f</span> <span class="p">=</span> <span class="n">new</span> <span class="n">File</span><span class="p">(</span><span class="s2">"Q:studytorrents000405710f78d75c5d1dd9cc69ffdd7d1561bb1.torrent"</span><span class="p">);</span>
+            <span class="n">FileInputStream</span> <span class="n">inputStream</span> <span class="p">=</span> <span class="n">new</span> <span class="n">FileInputStream</span><span class="p">(</span><span class="n">f</span><span class="p">);</span>
+            <span class="n">ByteBuffer</span> <span class="n">buff</span> <span class="p">=</span> <span class="n">ByteBuffer</span><span class="p">.</span><span class="n">allocate</span><span class="p">((</span><span class="n">int</span><span class="p">)</span><span class="n">f</span><span class="p">.</span><span class="n">length</span><span class="p">());</span>
+            <span class="n">inputStream</span><span class="p">.</span><span class="n">getChannel</span><span class="p">().</span><span class="nb">read</span><span class="p">(</span><span class="n">buff</span><span class="p">);</span>
+            <span class="n">inputStream</span><span class="p">.</span><span class="n">close</span><span class="p">();</span>
+            <span class="n">buff</span><span class="p">.</span><span class="n">flip</span><span class="p">();</span>
+            <span class="n">Object</span> <span class="n">o</span> <span class="p">=</span> <span class="n">BencodeDecoder</span><span class="p">.</span><span class="n">decode</span><span class="p">(</span><span class="n">buff</span><span class="p">);</span>
+            <span class="nf">System</span><span class="p">.</span><span class="n">out</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="n">o</span><span class="p">);</span>
+            <span class="nf">System</span><span class="p">.</span><span class="n">out</span><span class="p">.</span><span class="n">println</span><span class="p">((((</span><span class="n">Map</span><span class="p">&lt;</span><span class="k">String</span><span class="p">,</span> <span class="n">Object</span><span class="p">&gt;)((</span><span class="n">Map</span><span class="p">&lt;</span><span class="k">String</span><span class="p">,</span> <span class="n">Object</span><span class="p">&gt;)</span><span class="n">o</span><span class="p">).</span><span class="n">get</span><span class="p">(</span><span class="s2">"info"</span><span class="p">))).</span><span class="n">keySet</span><span class="p">());</span>
+        <span class="p">}</span> <span class="n">catch</span> <span class="p">(</span><span class="n">FileNotFoundException</span> <span class="n">e</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">e</span><span class="p">.</span><span class="n">printStackTrace</span><span class="p">();</span>
+        <span class="p">}</span> <span class="n">catch</span> <span class="p">(</span><span class="n">IOException</span> <span class="n">e</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">e</span><span class="p">.</span><span class="n">printStackTrace</span><span class="p">();</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/bencode%E8%A7%A3%E7%A0%81%E5%AE%9E%E7%8E%B0.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/java%E5%9F%BA%E7%A1%80-string%E7%B1%BB-%E4%B8%80.html">&laquo; Java基础——String类（一）</a>
+  
+  
+  <a class="next" href="/2017/%E6%9C%AC%E5%9C%B0%E7%8E%AF%E8%B7%AF%E6%95%B0%E6%8D%AE%E5%8C%85%E6%8A%93%E5%8F%96%E6%96%B9%E5%BC%8F%E6%80%BB%E7%BB%93.html">本地环路数据包抓取方式总结 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>某一类日期范围内每7天一组的销量之和，以及行转列 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="某一类日期范围内每7天一组的销量之和，以及行转列" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="得到的结果： 实现 某一类日期范围内每7天一组的销量之和，参考：http://www.cnblogs.com/wang3680/p/6056882.html" />
+<meta property="og:description" content="得到的结果： 实现 某一类日期范围内每7天一组的销量之和，参考：http://www.cnblogs.com/wang3680/p/6056882.html" />
+<link rel="canonical" href="http://www.jfox.info/2017/mou_yi_lei_ri_qi_fan_wei_nei_mei_7_tian_yi_zu_de_xiao_liang_zhi_he_yi_ji_xing_zhuan_lie.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/mou_yi_lei_ri_qi_fan_wei_nei_mei_7_tian_yi_zu_de_xiao_liang_zhi_he_yi_ji_xing_zhuan_lie.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:49:09+00:00" />
+<script type="application/ld+json">
+{"description":"得到的结果： 实现 某一类日期范围内每7天一组的销量之和，参考：http://www.cnblogs.com/wang3680/p/6056882.html","@type":"BlogPosting","url":"http://www.jfox.info/2017/mou_yi_lei_ri_qi_fan_wei_nei_mei_7_tian_yi_zu_de_xiao_liang_zhi_he_yi_ji_xing_zhuan_lie.html","headline":"某一类日期范围内每7天一组的销量之和，以及行转列","dateModified":"2017-01-01T15:49:09+00:00","datePublished":"2017-01-01T15:49:09+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/mou_yi_lei_ri_qi_fan_wei_nei_mei_7_tian_yi_zu_de_xiao_liang_zhi_he_yi_ji_xing_zhuan_lie.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">某一类日期范围内每7天一组的销量之和，以及行转列</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:49:09+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>得到的结果：<img src="9c01cde.png" alt="" /> 实现 某一类日期范围内每7天一组的销量之和，参考：http://www.cnblogs.com/wang3680/p/6056882.html</p>
+
+<p>行转列，要调用上面的存储过程的结果集：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ALTER proc [dbo].[S_trend_row2column]
+	   @B_time   varchar(30), 
+       @E_time   varchar(30),
+       @FunID    smallint
+as      
+begin  
+	DECLARE @sql_str VARCHAR(8000)
+    DECLARE @sql_col VARCHAR(8000);
+	declare @demp table(MIDDLECLASS varchar(50),groupid int,period_sum int,period_min_date datetime,period_max_date datetime);
+	insert into @demp exec S_trend @B_time,@E_time,0;
+	--select * from @demp
+	SELECT @sql_col = ISNULL(@sql_col + ',' , '') +  QUOTENAME(groupid)  FROM @demp GROUP BY groupid order by groupid  ;
+	--print (@sql_col)
+	SET @sql_str = '
+	declare @demp table(MIDDLECLASS varchar(50),groupid varchar(50),period_sum int,period_min_date datetime,period_max_date datetime);
+	insert into @demp exec S_trend '''+@B_time+''','''+@E_time+''',0;
+	SELECT * FROM (
+		SELECT [MIDDLECLASS],groupid,[period_sum] FROM @demp) p PIVOT 
+		( SUM([period_sum]) FOR [groupid] IN ('+@sql_col+')
+		) AS pvt ORDER BY pvt.[MIDDLECLASS]';
+	--print (@sql_str)
+    EXEC(@sql_str);
+</code></pre></div></div>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/mou_yi_lei_ri_qi_fan_wei_nei_mei_7_tian_yi_zu_de_xiao_liang_zhi_he_yi_ji_xing_zhuan_lie.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/mian-shi-xi-lie-qi-spring-kuang-jia.html">&laquo; 面试系列（七）：Spring（框架）</a>
+  
+  
+  <a class="next" href="/2017/rman-bei-fen-yu-hui-fu-yi-ren-shi-rman.html">RMAN备份与恢复（一）–认识RMAN &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

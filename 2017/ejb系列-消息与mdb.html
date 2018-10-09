@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>EJB系列 – 消息与MDB | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="EJB系列 – 消息与MDB" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="松散耦合的异步通信过程" />
+<meta property="og:description" content="松散耦合的异步通信过程" />
+<link rel="canonical" href="http://www.jfox.info/2017/ejb%E7%B3%BB%E5%88%97-%E6%B6%88%E6%81%AF%E4%B8%8Emdb.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/ejb%E7%B3%BB%E5%88%97-%E6%B6%88%E6%81%AF%E4%B8%8Emdb.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:51:04+00:00" />
+<script type="application/ld+json">
+{"description":"松散耦合的异步通信过程","@type":"BlogPosting","url":"http://www.jfox.info/2017/ejb%E7%B3%BB%E5%88%97-%E6%B6%88%E6%81%AF%E4%B8%8Emdb.html","headline":"EJB系列 – 消息与MDB","dateModified":"2017-01-01T15:51:04+00:00","datePublished":"2017-01-01T15:51:04+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/ejb%E7%B3%BB%E5%88%97-%E6%B6%88%E6%81%AF%E4%B8%8Emdb.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">EJB系列 – 消息与MDB</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:51:04+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>松散耦合的异步通信过程</p>
+
+<ol>
+  <li>
+    <p>面向消息的中间件(MOM): 消息发送者称为生产者; 存储消息的位置称为目的地; 接受消息的组件称为消费者</p>
+  </li>
+  <li>
+    <p>消息模型: 
+a. 点对点:目的地成为队列,消息只能被消费一次
+b. 发布-订阅:目的地成为主体,消费者称为订阅者,消息能被任意数量消费</p>
+  </li>
+</ol>
+
+<h2 id="java消息服务">Java消息服务</h2>
+
+<ol>
+  <li>
+    <p>JMS API:提供使用Java访问MOM(消息中间件)的统一标准方式</p>
+  </li>
+  <li>
+    <p>开发消息生产者流程:
+a. 使用依赖注入,获得连接工厂ConnectionFactory和目的地Destination对象
+b. 使用连接工厂的createConnection打开连接Connection
+c. 使用连接Connection的createSession创建会话Session并指定事务参数
+d. 使用会话Session的createProducer创建货运队列Producer
+e. 使用会话Session的createMessage创建消息Message并设置
+f. 使用货运队列Producer的send发送消息
+g. 释放资源
+注意: 以上流程是基于JavaEE 6 的情况下, JavaEE 7 提供了更加简易的A开发流程</p>
+  </li>
+  <li>
+    <p>Message接口: 消息头, 消息属性, 消息体; 实现类: ObjectMessage传递对象, ByteMessage传递字节, MapMessage传递Map, StreamMessage传递流数据, TextMessage传递文字</p>
+  </li>
+</ol>
+
+<h2 id="消息驱动beanmdb">消息驱动bean(MDB)</h2>
+
+<ol>
+  <li>
+    <p>优点:多线程,简化的消息代码</p>
+  </li>
+  <li>
+    <p>设计原则: 
+a. MDB类必须直接或间接实现消息监听器接口
+b. 必须是具体的公开的,不能是final和抽象类
+c. 必须是POJO,不能是另一个MDB的子类
+d. 必须有无参的构造器
+e. 不能有final方法
+f. 不能抛出任何运行时异常,因为当抛出是MDB实例将被终止</p>
+  </li>
+  <li>
+    <p>使用MDB开发消费者流程
+a. 使用注解@MessageDriven把类标记为MDB并且指定MDB配置
+b. 实现MessageListener接口, 并实现onMessage方法
+c. 在onMessage中实现逻辑</p>
+  </li>
+  <li>
+    <p>@MessageDriven: 注解被注解的类为MDB, 该注解有3个参数, name指定MDB的名称, messageListenerInterface指定MDB实现的消息接口(可以直接在类上implements接口), activationConfig用于指定专有的配置属性</p>
+  </li>
+  <li>
+    <p>MessageLisener: 把MDB注册为消息消费者, 可根据不同场景实现不同监听器接口</p>
+  </li>
+  <li>
+    <p>ActivationConfigProperty: 配置消息系统的配置信息
+a. destinationType: 通知容器该MDB监听的是队列还是主题
+b. connectionFactoryJndiName: 指定用于创建MDB的JMS连接的连接工厂JDNI
+c. destianName: 指定正在监听的目的地
+d. acknowledgeMode: 指定JMS会话确认模式
+e. subscriptionDurability: 用于设置为持久订阅者
+f. messageSelector: 过滤消息</p>
+  </li>
+  <li>
+    <p>MDB生命周期:
+a. 创建MDB实例并设置它们
+b. 注入资源
+c. 存放到受管理的池中
+d. 当检测到消息到达时监听的目的地时,从池中取出空闲bean
+e. 执行消息监听器方法,即onMessage方法
+f. 当onMessage方法执行完毕,把空闲bean存回池中
+g. 根据需求从池中撤销/销毁bean</p>
+  </li>
+  <li>
+    <p>从MDB发送消息: 从JNDI注入队列, 连接工厂对象, 然后和Java消息一样的操作</p>
+  </li>
+  <li>
+    <p>管理事务: 正常情况下, 在onMessage方法前开启事务, 方法结束时提交事务. 可以通过消息上下文对象rollback事务</p>
+  </li>
+</ol>
+
+<h2 id="mdb最佳实践">MDB最佳实践</h2>
+
+<ol>
+  <li>
+    <p>根据使用情况选择是否使用MDB</p>
+  </li>
+  <li>
+    <p>选择消息模型: 应在程序设计时决定是PTP还是发布-订阅, 但幸运的是, 两者间切换仅仅需要修改配置即可</p>
+  </li>
+  <li>
+    <p>保持模块化: MDB的onMessage方法不应该处理业务逻辑, 业务逻辑应该放在对应的会话bean, 并注入MDB, MDB负责调用对应的会话bean</p>
+  </li>
+  <li>
+    <p>根据场景充分使用过滤器或划分目的地</p>
+  </li>
+  <li>
+    <p>选择消息类型: 根据使用场景选择传输时使用的消息类型</p>
+  </li>
+  <li>
+    <p>警惕有毒消息: 无法消费但又回滚了的消息会陷入无限循环的接收/回滚中, 虽然个别厂商有自己的处理死消息的实现, 但是在编程的时候要注意</p>
+  </li>
+  <li>
+    <p>配置MDB池额大小: 根据场景和需求配置</p>
+  </li>
+</ol>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/ejb%E7%B3%BB%E5%88%97-%E6%B6%88%E6%81%AF%E4%B8%8Emdb.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/%E6%9C%89%E5%85%B3linkedlist%E5%B8%B8%E7%94%A8%E6%96%B9%E6%B3%95%E7%9A%84%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90.html">&laquo; 有关LinkedList常用方法的源码解析</a>
+  
+  
+  <a class="next" href="/2017/%E9%80%9A%E8%BF%87class%E7%B1%BB%E8%8E%B7%E5%8F%96%E5%AF%B9%E8%B1%A1%E5%AE%9E%E4%BE%8B.html">通过Class类获取对象实例 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>MyBatis源码解析【5】工厂的构建 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="MyBatis源码解析【5】工厂的构建" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="这个分类比较连续，如果这里看不懂，或者第一次看，请回顾之前的博客" />
+<meta property="og:description" content="这个分类比较连续，如果这里看不懂，或者第一次看，请回顾之前的博客" />
+<link rel="canonical" href="http://www.jfox.info/2017/mybatis%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%905%E5%B7%A5%E5%8E%82%E7%9A%84%E6%9E%84%E5%BB%BA.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/mybatis%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%905%E5%B7%A5%E5%8E%82%E7%9A%84%E6%9E%84%E5%BB%BA.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:54:54+00:00" />
+<script type="application/ld+json">
+{"description":"这个分类比较连续，如果这里看不懂，或者第一次看，请回顾之前的博客","@type":"BlogPosting","url":"http://www.jfox.info/2017/mybatis%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%905%E5%B7%A5%E5%8E%82%E7%9A%84%E6%9E%84%E5%BB%BA.html","headline":"MyBatis源码解析【5】工厂的构建","dateModified":"2017-01-01T15:54:54+00:00","datePublished":"2017-01-01T15:54:54+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/mybatis%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%905%E5%B7%A5%E5%8E%82%E7%9A%84%E6%9E%84%E5%BB%BA.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">MyBatis源码解析【5】工厂的构建</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:54:54+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>这个分类比较连续，如果这里看不懂，或者第一次看，请回顾之前的博客</p>
+
+<p><a href="https://www.jfox.info/go.php?url=http://www.cnblogs.com/linkstar/category/1027239.html">http://www.cnblogs.com/linkstar/category/1027239.html</a></p>
+
+<p>终于算是把装备弄齐全了。接下来就一步步看看MyBatis是如何工作的。</p>
+
+<p>那么我们学习组件的时候就知道了，首先需要构建一个工厂。</p>
+
+<p>那么我们今天就来看看这个工厂是如何建造出来的。</p>
+
+<h2 id="建造工厂大致步骤">建造工厂大致步骤</h2>
+
+<p>我们先从外部的我们第一次使用MyBatis的代码开始看看工厂是如何建造的。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>String resource = "mybatis-config.xml";
+InputStream inputStream = Resources.getResourceAsStream(resource);
+SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
+</code></pre></div></div>
+
+<p>1、我们需要一个配置文件 mybatis-config.xml</p>
+
+<p>2、利用一个叫Resources的类的getResourceAsStream方法从xml文件中获取里面的内容</p>
+
+<p>3、然后用SqlSessionFactoryBuilder也就是之前说的工厂构建者把获取的资源传进去就构建出了我们需要使用的工厂</p>
+
+<h2 id="建造工厂的内部过程">建造工厂的内部过程</h2>
+
+<p>从大致步骤我们看起来好像很容易的样子。但是实际其实复杂的很呢。</p>
+
+<p>我们慢慢来分析。</p>
+
+<p>1、首先我们可以确定的是，MyBatis建造工厂的时候肯定从我们配置的xml中获取了相应的配置信息，然后就能构建出我们想要的工厂了。（只有我们想要的工厂才能生产出我们想要的产品嘛）</p>
+
+<p>2、前面两个步骤就我们知道就是把我们的资源给转换成一个InputStream（可能建造者就认识这样的配置信息吧）</p>
+
+<p>3、那么我们的重点目标就应该放在SqlSessionFactoryBuilder的build方法上面咯，那么走，我们进源码。（如果你是一步步跟前面的博客来的话，那么源码应该点一下就进去了。。。）</p>
+
+<p><img src="5c0eb14.png" alt="" /></p>
+
+<p>其中我们看到了，建造之前需要对xml的资源进行读取。将我们的配置资源转换成了一个XMLConfigBuilder类。</p>
+
+<p>这个类可想而知就是为了解析XML而生的一个类。</p>
+
+<p>具体XML的解析我肯定就不仔仔细细讲了，因为解析XML的方式很多。我们就看看MyBatis解析XML需要那些XML里面的东西咯。</p>
+
+<p>我们进入parser.parse()的parse方法。</p>
+
+<p><img src="aedc7ff.png" alt="" /></p>
+
+<p>然后我们注意一下，这个parse方法的返回值，Configuration</p>
+
+<p>也就是说MyBatis把读取到的数据保存到了一个Configuration类中。</p>
+
+<p>跟上节奏哦！！！</p>
+
+<p>然后我们回到上一张图中的最下方的build方法</p>
+
+<p>也就是</p>
+
+<p>public SqlSessionFactory build(Configuration config) {
+return new DefaultSqlSessionFactory(config);
+}可以看见入参就是Configuration如果你有兴趣那么可以直接进入Configuration类里面去看看。里面就是各种各样的配置信息了。当然我们关注的点不在这里，所以就不仔细看那些配置了。</p>
+
+<p>我们的重点在这里的返回值是一个SqlSessionFactory工厂。但是看最后new的对象是DefaultSqlSessionFactory看名字我们知道是一个叫做默认的工厂。那么我们重点就是在这里，这个默认工厂怎么就造起来了呢？</p>
+
+<h2 id="默认工厂defaultsqlsessionfactory的构建">默认工厂、DefaultSqlSessionFactory的构建</h2>
+
+<p>首先我们进入DefaultSqlSessionFactory这个类里面去看看。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>![](3f0c74f.png)
+</code></pre></div></div>
+
+<p>一进去我就看到了这个这里我们可以看出两个点：SqlSessionFactory在MyBatis中是一个接口而不是一个类，DefaultSqlSessionFactory实现了这个接口。DefaultSqlSessionFactory这个类不是很长，我们来看看里面的方法，最后再来看看构造方法。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>![](cf1c0cf.png)
+</code></pre></div></div>
+
+<p>如果你仔细看看，就会发现上面生产产品的方法都是调用的最后的openSessionFromDataSource</p>
+
+<p>openSessionFromConnection这两个方法。里面到底干啥了呢？其实从入参和出参我们可以看出。（两个方法类似，我就挑一个来讲）根据执行类型，事务隔离性，是否自动提交来创建DefaultSqlSession因为我们最后的产品是要执行sql语句的，所以我们的产品也就是会话里面会带有很多的执行参数，到底这个产品要做成什么样。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>![](dde8376.png)
+</code></pre></div></div>
+
+<p>这里我们需要有一些觉悟，源码里代码规范还是不错的，你看，一个在之后的不会被改变的变量就用了final进行了修饰，如果你来写会这样写吗？这里只是生产产品而已，对于产品的执行我们会在之后细讲。之后我们就来看看这个构造方法；其实构造方法贼简单，就是单纯的赋值了一下，你以为有多难？？public DefaultSqlSessionFactory(Configuration configuration) {
+this.configuration = configuration;
+}</p>
+
+<h2 id="产品的生产">产品的生产</h2>
+
+<p>最后我们来看看产品的生产，为之后的产品的执行做个准备。</p>
+
+<p>首先进入return new DefaultSqlSession(configuration, executor, autoCommit);</p>
+
+<p><img src="0a08ae0.png" alt="" /></p>
+
+<p>我们可以看到，也是很简单的一个构造方法，也是设置了必要的参数主要我们先来大致浏览一下这个类</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>![](d553b00.png)
+</code></pre></div></div>
+
+<p>可以看见，SqlSession也是一个接口，而我们的默认产品是实现了这个接口。我们看看这个接口有哪些方法其实就很明了了由于方法很多，我就不展示全部了。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>![](6aa3105.png)
+</code></pre></div></div>
+
+<p>从方法名字是不是就很熟悉了，就是执行sql语句的方法嘛。所以我们的产品原来就是这样的。</p>
+
+<h2 id="总结">总结</h2>
+
+<p>最后总结一下：其实工厂的构建其实还算是简单的，我们需要注意的点是，构建过程中，读取了xml配置，把配置加载加载进了类里面，而且配置的读取是有一个顺序的。</p>
+
+<p>配置的不同导致了最后工厂创建的不同，导致了最后生产的产品不同。</p>
+
+<p>所有真正的工厂和产品都是接口，而使用的都是默认工厂和默认产品，去实现了这些接口，一般情况下我们不可能自己去实现这些接口然后去开发的。</p>
+
+<p>最后依然留下几个问题：</p>
+
+<p>1、为什么MyBatis要这样设计？为什么要设计成工厂这样的模式呢？有什么样的好处？</p>
+
+<p>2、接口在这里的好处是什么？</p>
+
+<p>3、Configuration这个类的作用是什么？仅仅是保存和提供配置信息吗？</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/mybatis%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%905%E5%B7%A5%E5%8E%82%E7%9A%84%E6%9E%84%E5%BB%BA.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/whatissuesshouldbeconsideredwhenoverridingequalsandhashcodeinjava.html">&laquo; What issues should be considered when overriding equals and hashCode in Java?</a>
+  
+  
+  <a class="next" href="/2017/whatisanullpointerexceptionandhowdoifixit.html">What is a NullPointerException, and how do I fix it? &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

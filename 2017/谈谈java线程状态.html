@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>谈谈Java线程状态 » java面试题 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="谈谈Java线程状态 » java面试题" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="作者凌风郎少2017.07.29 09:07*字数 1329 本来以为这个知识点自己已经很了解了，但最近跟同事讨论Java线程对应的状态以及转换过程的时候，发现还是有一些没理清楚的地方，或者说争议点，趁机梳理了一下这块的知识，自己也动手做了实验，写篇文章总结一下。" />
+<meta property="og:description" content="作者凌风郎少2017.07.29 09:07*字数 1329 本来以为这个知识点自己已经很了解了，但最近跟同事讨论Java线程对应的状态以及转换过程的时候，发现还是有一些没理清楚的地方，或者说争议点，趁机梳理了一下这块的知识，自己也动手做了实验，写篇文章总结一下。" />
+<link rel="canonical" href="http://www.jfox.info/2017/%E8%B0%88%E8%B0%88java%E7%BA%BF%E7%A8%8B%E7%8A%B6%E6%80%81.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/%E8%B0%88%E8%B0%88java%E7%BA%BF%E7%A8%8B%E7%8A%B6%E6%80%81.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:58:31+00:00" />
+<script type="application/ld+json">
+{"description":"作者凌风郎少2017.07.29 09:07*字数 1329 本来以为这个知识点自己已经很了解了，但最近跟同事讨论Java线程对应的状态以及转换过程的时候，发现还是有一些没理清楚的地方，或者说争议点，趁机梳理了一下这块的知识，自己也动手做了实验，写篇文章总结一下。","@type":"BlogPosting","url":"http://www.jfox.info/2017/%E8%B0%88%E8%B0%88java%E7%BA%BF%E7%A8%8B%E7%8A%B6%E6%80%81.html","headline":"谈谈Java线程状态 » java面试题","dateModified":"2017-01-01T15:58:31+00:00","datePublished":"2017-01-01T15:58:31+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/%E8%B0%88%E8%B0%88java%E7%BA%BF%E7%A8%8B%E7%8A%B6%E6%80%81.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">谈谈Java线程状态 » java面试题</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:58:31+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>作者<a href="/u/1d96ba4c1912">凌风郎少</a>2017.07.29 09:07*字数 1329
+本来以为这个知识点自己已经很了解了，但最近跟同事讨论Java线程对应的状态以及转换过程的时候，发现还是有一些没理清楚的地方，或者说争议点，趁机梳理了一下这块的知识，自己也动手做了实验，写篇文章总结一下。</p>
+
+<p>先看一下Thread类中关于状态的源码：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public enum State {
+        /**
+         * Thread state for a thread which has not yet started.
+         */
+        NEW,
+
+        /**
+         * Thread state for a runnable thread.  A thread in the runnable
+         * state is executing in the Java virtual machine but it may
+         * be waiting for other resources from the operating system
+         * such as processor.
+         */
+        RUNNABLE,
+
+        /**
+         * Thread state for a thread blocked waiting for a monitor lock.
+         * A thread in the blocked state is waiting for a monitor lock
+         * to enter a synchronized block/method or
+         * reenter a synchronized block/method after calling
+         * {@link Object#wait() Object.wait}.
+         */
+        BLOCKED,
+
+        /**
+         * Thread state for a waiting thread.
+         * A thread is in the waiting state due to calling one of the
+         * following methods:
+         * &lt;ul&gt;
+         *   &lt;li&gt;{@link Object#wait() Object.wait} with no timeout&lt;/li&gt;
+         *   &lt;li&gt;{@link #join() Thread.join} with no timeout&lt;/li&gt;
+         *   &lt;li&gt;{@link LockSupport#park() LockSupport.park}&lt;/li&gt;
+         * &lt;/ul&gt;
+         *
+         * &lt;p&gt;A thread in the waiting state is waiting for another thread to
+         * perform a particular action.
+         *
+         * For example, a thread that has called &lt;tt&gt;Object.wait()&lt;/tt&gt;
+         * on an object is waiting for another thread to call
+         * &lt;tt&gt;Object.notify()&lt;/tt&gt; or &lt;tt&gt;Object.notifyAll()&lt;/tt&gt; on
+         * that object. A thread that has called &lt;tt&gt;Thread.join()&lt;/tt&gt;
+         * is waiting for a specified thread to terminate.
+         */
+        WAITING,
+
+        /**
+         * Thread state for a waiting thread with a specified waiting time.
+         * A thread is in the timed waiting state due to calling one of
+         * the following methods with a specified positive waiting time:
+         * &lt;ul&gt;
+         *   &lt;li&gt;{@link #sleep Thread.sleep}&lt;/li&gt;
+         *   &lt;li&gt;{@link Object#wait(long) Object.wait} with timeout&lt;/li&gt;
+         *   &lt;li&gt;{@link #join(long) Thread.join} with timeout&lt;/li&gt;
+         *   &lt;li&gt;{@link LockSupport#parkNanos LockSupport.parkNanos}&lt;/li&gt;
+         *   &lt;li&gt;{@link LockSupport#parkUntil LockSupport.parkUntil}&lt;/li&gt;
+         * &lt;/ul&gt;
+         */
+        TIMED_WAITING,
+
+        /**
+         * Thread state for a terminated thread.
+         * The thread has completed execution.
+         */
+        TERMINATED;
+    }
+</code></pre></div></div>
+
+<p>这里特意贴了下英文注释，下面我挨个来解释一下：
+<strong>NEW状态：</strong>
+英文翻译过来是线程还是没有开始执行。
+首先，既然已经有状态了，那肯定是已经创建好线程对象了（如果对象都没有，何来状态这一说？），这样一来问题的焦点就在于还没有开始执行，我们都知道当调用线程的start()方法时，线程不一定会马上执行，因为Java线程是映射到操作系统的线程进行执行，此时可能还需要等操作系统调度，但此时该线程的状态已经为RUNNABLE了。</p>
+
+<p><strong>RUNNABLE状态：</strong>
+英文翻译过来是该状态指运行中的线程，一个线程处于RUNNABLE状态的意思是在JVM层面它是在执行的，但是该线程可能是在等待操作系统的资源，比如说CPU。这个状态是最有争议的，注释中说了，它表示线程在JVM层面是执行的，但在操作系统层面不一定，它举例是CPU，毫无疑问CPU是一个操作系统资源，但这也就意味着在等操作系统其他资源的时候，线程也会是这个状态，这里就有一个关键点<strong>IO阻塞</strong>算是等操作系统的资源么？
+我自己写代码测试了一下：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public class BIOServer {
+    public static void main(String[] args) throws Exception {
+        ServerSocket serverSocket = new ServerSocket(8888);
+        Socket accept = serverSocket.accept();
+        System.out.println("连接");
+        accept.getInputStream().read();
+        System.out.println("读取");
+    }
+}
+</code></pre></div></div>
+
+<p>代码很简单，开始的accept()会阻塞直到有连接进来，然后输入流的read()方法又会阻塞等数据进来，这个时候线程的状态应该是BLOKED？RUNNABLE？
+我用jstack导出线程查了一下：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>"Monitor Ctrl-Break" #10 daemon prio=5 os_prio=31 tid=0x00007fc5ac029000 nid=0x5503 runnable [0x0000000124689000]
+   java.lang.Thread.State: RUNNABLE
+        at java.net.PlainSocketImpl.socketAccept(Native Method)
+        at java.net.AbstractPlainSocketImpl.accept(AbstractPlainSocketImpl.java)
+        at java.net.ServerSocket.implAccept(ServerSocket.java:545)
+        at java.net.ServerSocket.accept(ServerSocket.java:513)
+        at com.intellij.rt.execution.application.AppMain$1.run(AppMain.java:90)
+        at java.lang.Thread.run(Redefined)
+</code></pre></div></div>
+
+<p><strong>java.lang.Thread.State: RUNNABLE！！！</strong>
+从调用栈来看它确实是阻塞在accept()方法上，但是线程状态是RUNNABLE，是不是很意外？同理，read()方法也阻塞了，也处于RUNNABLE状态。
+在回过头去理解JDK的英文注释，<strong>在等操作系统资源，比如说CPU</strong>，我们都知道Java的线程是映射到操作系统的线程上去执行的，也就是说操作系统的线程到底有没有在执行JVM是不知道的，JVM判断线程是否执行的逻辑就是自己的线程是否已经映射到了一个操作系统的线程，而不关系操作系统层面上该映射到的线程到底有没有再执行。
+同理，NIO中调用select()方法时，线程状态也是RUNNABLE，这里就不贴代码了。</p>
+
+<p><strong>BLOCKED状态：</strong>
+英文翻译过来是该状态表示线程在阻塞等待monitor lock(监视器锁)。一个线程在进入synchronized修饰的临界区的时候,或者在synchronized临界区中调用Object.wait然后被唤醒重新进入synchronized临界区都对应该状态。结合上面RUNNABLE的分析,也就是IO阻塞不会进入BLOCKED状态,只有synchronized会导致线程进入该状态。
+关于BLOCKED状态，注释里只提到一种情况就是进入synchronized声明的临界区时会导致，这个也很好理解，synchronized是JVM自己控制的，所以这个阻塞事件它自己能够知道（对比理解上面的操作系统层面）。</p>
+
+<p><strong>WAITING状态：</strong>
+代表线程进入等待状态。 当一个线程调用如下方法时会进入该状态:
+1.Object.wait;
+2.Thread.join;
+3.LockSupport.park
+处在这个状态的线程是在等另一个线程做一些特殊的操作。比如Object.wait()方法在等另一个线程调用Object.notify()或者Object.notifyAll()，Thread.join()方法在等一个指定线程完成,即变为TERMINATED状态，当然，LockSupport.park则是在等另一个线程调用LockSupport.unpark方法。</p>
+
+<p><strong>TIMED_WAITING状态：</strong>
+代表一个线程在等一个指定时间,然后自动醒来。
+调用以下方法时,线程会进入该状态:
+1.Thread.sleep
+2.Object.wait(long)
+3.Thread.join(long)
+4.LockSupport.parkNanos
+5.LockSupport.parkUntil</p>
+
+<p><strong>TERMINATED状态：</strong>
+当线程执行完成时会进入该状态。</p>
+
+<p>通过上面的分析，我画了一个Java线程状态转换图：
+<img src="58da995.png" alt="" /></p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Java线程状态转换图 
+</code></pre></div></div>
+
+<p>写在最后：
+Java线程状态应该算是一个有争议的问题，因为它涉及到操作系统本身。上面的内容只是我自己的理解跟做实验的结论，如果大家有不一样的看法或者其他实验证明我上面的观点有问题，欢迎给我评论或者私信，期待跟大家交流。</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/%E8%B0%88%E8%B0%88java%E7%BA%BF%E7%A8%8B%E7%8A%B6%E6%80%81.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/java%E7%BA%BF%E7%A8%8B%E6%B1%A0%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2.html">&laquo; Java 线程池艺术探索</a>
+  
+  
+  <a class="next" href="/2017/httpclient%E8%BF%9E%E6%8E%A5%E6%B1%A0%E7%9B%B8%E5%85%B3%E5%8F%82%E6%95%B0%E7%9A%84%E5%9D%91.html">httpclient连接池相关参数的坑 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

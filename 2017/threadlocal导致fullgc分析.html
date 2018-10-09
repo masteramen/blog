@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>ThreadLocal 导致Full GC 分析 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="ThreadLocal 导致Full GC 分析" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="难得出现了一次Full GC，抓住机会分析了一次。" />
+<meta property="og:description" content="难得出现了一次Full GC，抓住机会分析了一次。" />
+<link rel="canonical" href="http://www.jfox.info/2017/threadlocal%E5%AF%BC%E8%87%B4fullgc%E5%88%86%E6%9E%90.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/threadlocal%E5%AF%BC%E8%87%B4fullgc%E5%88%86%E6%9E%90.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:59:20+00:00" />
+<script type="application/ld+json">
+{"description":"难得出现了一次Full GC，抓住机会分析了一次。","@type":"BlogPosting","url":"http://www.jfox.info/2017/threadlocal%E5%AF%BC%E8%87%B4fullgc%E5%88%86%E6%9E%90.html","headline":"ThreadLocal 导致Full GC 分析","dateModified":"2017-01-01T15:59:20+00:00","datePublished":"2017-01-01T15:59:20+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/threadlocal%E5%AF%BC%E8%87%B4fullgc%E5%88%86%E6%9E%90.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">ThreadLocal 导致Full GC 分析</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:59:20+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>难得出现了一次Full GC，抓住机会分析了一次。</p>
+
+<h3 id="事件回顾">事件回顾</h3>
+
+<p>之前服务线上总共有6台机器，其中2台机器为4核CPU+4G内存，另外4台机器为4核CPU+8G内存。</p>
+
+<ul>
+  <li>2017-08-01 早上11:00 开始FullGC报警，同时有两台，均为4G内存机器，其他8G内存机器未发现报警。监控无业务报警及Exception。</li>
+  <li>接到报警之后，马上摘除了一台机器留作jvm分析，另外一台重启。</li>
+  <li>dump 机器的堆栈信息</li>
+  <li>观察重启之后的机器情况，以及其他机器的运行情况，均未发现异常迹象。</li>
+</ul>
+
+<p>事件背景</p>
+
+<ul>
+  <li>这个服务已经有超过一周的时间未发布也未重启过，之前一直没有出现过问题。</li>
+  <li>当时周二，在一周时间内是流量较低的时候；发生在早上，也是一天内流量较小的时候。</li>
+</ul>
+
+<p>周维度qps情况
+<img src="c3314cf.png" alt="" />
+天维度qps情况
+<img src="8edf650.png" alt="" /></p>
+<h3 id="事件分析">事件分析</h3>
+
+<p>在dump文件下来之后，使用 <a href="https://www.jfox.info/go.php?url=http://www.eclipse.org/mat/">MAT</a> 打开dump文件。</p>
+
+<ul>
+  <li>内存泄漏分析结果：</li>
+</ul>
+
+<p>333 instances of “java.lang.Thread”, loaded by “<system class="" loader="">” occupy 575,044,016 (89.85%) bytes.</system></p>
+
+<p>Keywords</p>
+
+<p>java.lang.Thread</p>
+
+<p><img src="11c5dae.png" alt="" />
+根据分析，应该是有大量的线程未被会收掉，且配置监控系统的监控见过可以发现：
+<img src="582a30a.png" alt="" /></p>
+<ul>
+  <li>从运行图中可以发现在每次FullGC之后，oldgen里面的内存并没有释放，也就是说FullGC也没有起到回收内存的作用。由此可见，占用oldgen的对象仍然被持有。</li>
+  <li>jvm稳定的有5个左右的线程处于blocked状态。</li>
+</ul>
+
+<p><img src="3c8ee19.png" alt="" />再来看看mat中对问题线程的分析，发现有大量相同大小的线程，根据线程命名可以发现是中间件组提供的RPC线程。因为线程中由嵌套了大量线程，因此初步怀疑有两个可能：</p>
+
+<ol>
+  <li>代码里面出现了死循环，再极端情况下导致出现case</li>
+  <li>RPC框架出现问题</li>
+</ol>
+
+<p>首先针对第一个可能，因为近一周都没有上线和重启，且经历过qps较高和客服case较高的时候，且检查代码之后也未曾发现循环调用，因此这种可能性很小。</p>
+
+<p>现在通过内存泄漏分析已经知道，thread持有了大量占用内存的引用，但是到底持有了什么类型的对象呢，继续使用mat来分析占用内存最大的类型。
+<img src="65730ff.png" alt="" />
+发现占用内存最大的是mtrace.KVAnnotation和LinkedList$Node，其中mtrace是中间件提供一个打点组件，一般情况下也只会在RPC组件里使用，业务代码里是不会涉及到的。
+ 知道了占用内存最大的类，却不清楚调用链是什么样子的，而且mtrace.KVAnnotation和LinkedList$Node是否有关系也不清楚。使用mat一直没有找到相关的分析功能，因此换成 <a href="https://www.jfox.info/go.php?url=https://visualvm.github.io/">VisualVM</a> 继续分析。 
+<img src="c865c75.png" alt="" />从VisualVM的分析结果来看，mtrace.KVAnnotation引用了LinkedList$Node，而且从调用信息来看，mtrace.KVAnnotation保存了一定的业务信息。</p>
+
+<p>至此，基本确定了是mtrace导致了问题。
+因此联系了中间件的相关同事，来定位问题。联想到前一天（07-31）RPC框架组曾打开mtrace开关，当时造成了事故。这个服务当时有exception报警，但并未影响业务。</p>
+<h4 id="确认问题">确认问题</h4>
+
+<p>考虑到RPC框架在短暂打开mtrace之后立即关闭了，如果出问题只可能是其中使用了ThreadLocal变量，且未清理。如果推论成立，那其他的机器这种内存占用会一直上升，中间不重启，其他机器会再次出现FullGC。按照内存容量估算，应该在第二天的相同时间点就会出现。</p>
+
+<p>事件后的第二天（08-03）早上09:00左右，其他8G机器也相继出现FullGC报警，dump下来之后，发现问题相同。重启之后均未在出现。</p>
+
+<h3 id="rootcause">RootCause</h3>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public void complete(){
+    super.complete();
+    InvocationResponse response = InvocationContext.getResponse();
+    if(response!=null){
+        tracer.setSize(response.getSize());
+    }
+    Tracer.serverSend();
+}
+</code></pre></div></div>
+
+<p>在这段代码中的 <code class="highlighter-rouge">Tracer.serverSend()</code> 会进行ThreadLocal变量的清楚，但 <code class="highlighter-rouge">tracer.setSize(response.getSize())</code> 抛异常，未能执行 <code class="highlighter-rouge">Tracer.serverSend()</code> ，从而导致未能清除ThreadLocal变量。 
+ 关于ThreadLocal导致内存泄漏更多可以参考： <a href="https://www.jfox.info/go.php?url=http://j360.me/2017/04/13/ThreadLocal-gc/">ThreadLocal原理和内存泄露分析</a> 和 <a href="https://www.jfox.info/go.php?url=http://www.cnblogs.com/duanxz/p/5445152.html">深入ThreadLocal之三（ThreadLocal可能引起的内存泄露）</a></p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/threadlocal%E5%AF%BC%E8%87%B4fullgc%E5%88%86%E6%9E%90.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/spring5%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E8%AE%BAspringdispatcherservlet%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F.html">&laquo; Spring5源码解析-论Spring DispatcherServlet的生命周期</a>
+  
+  
+  <a class="next" href="/2017/java%E5%A4%A7%E6%95%B0%E6%8D%AE%E4%BA%BA%E6%89%8D%E5%BA%94%E7%94%A8%E9%A2%86%E5%9F%9F%E5%B9%BF%E5%B0%B1%E4%B8%9A%E8%96%AA%E9%85%AC%E9%AB%98.html">Java大数据人才应用领域广，就业薪酬高 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

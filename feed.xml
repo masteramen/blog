@@ -1,1 +1,2824 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.8.3">Jekyll</generator><link href="http://www.jfox.info/blog/feed.xml" rel="self" type="application/atom+xml" /><link href="http://www.jfox.info/blog/" rel="alternate" type="text/html" /><updated>2018-10-01T12:39:16+08:00</updated><id>http://www.jfox.info/blog/feed.xml</id><title type="html">收藏馆</title></feed>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.8.3">Jekyll</generator><link href="http://www.jfox.info/feed.xml" rel="self" type="application/atom+xml" /><link href="http://www.jfox.info/" rel="alternate" type="text/html" /><updated>2018-10-09T13:52:40+00:00</updated><id>http://www.jfox.info/feed.xml</id><title type="html">Java面试</title><entry xml:lang="zh_CN"><title type="html">node环境下如何使用jquery？</title><link href="http://www.jfox.info/2018/50f3d18/index.html" rel="alternate" type="text/html" title="node环境下如何使用jquery？" /><published>2018-09-06T19:07:21+00:00</published><updated>2018-09-06T19:07:21+00:00</updated><id>http://www.jfox.info/2018/50f3d18/50f3d18</id><content type="html" xml:base="http://www.jfox.info/2018/50f3d18/index.html">&lt;p&gt;版权声明：本文为博主原创文章，未经博主允许不得转载。 https://blog.csdn.net/cvper/article/details/79576071&lt;/p&gt;
+
+&lt;p&gt;（测试环境：node 7.6.0 npm 5.6.0 jquery 3.3.1 jsdom 11.6.2）&lt;/p&gt;
+
+&lt;p&gt;第一步，下载 jquery 包&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;          命令：npm install jquery
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;第二步 , 下载 jsdom 包&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;          命令：npm install jsdom
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;第三步，我们新建一个 index.js&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;         代码如下：
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;** const**jsdom=require(“jsdom”);&lt;/p&gt;
+
+&lt;p&gt;** const** { JSDOM } =jsdom;&lt;/p&gt;
+
+&lt;p&gt;** const** { window } =newJSDOM(&lt;code class=&quot;highlighter-rouge&quot;&gt;&lt;span class=&quot;cp&quot;&gt;&amp;lt;!DOCTYPE html&amp;gt;&lt;/span&gt;&lt;/code&gt;);&lt;/p&gt;
+
+&lt;p&gt;** const**$=require(‘jQuery’)(window);&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    console.log($); //测试jquery是否可以正常工作
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;第四步：执行命令 node index.js&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;         查看输出信息：
+
+          ![](2a53e6d)
+
+          证明jquery可以正常使用了；
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;</content><author><name></name></author><summary type="html">版权声明：本文为博主原创文章，未经博主允许不得转载。 https://blog.csdn.net/cvper/article/details/79576071</summary></entry><entry xml:lang="zh_CN"><title type="html">回眸Spring – 事物运行原理机制</title><link href="http://www.jfox.info/2018/2443f3f/index.html" rel="alternate" type="text/html" title="回眸Spring – 事物运行原理机制" /><published>2018-09-06T16:44:59+00:00</published><updated>2018-09-06T16:44:59+00:00</updated><id>http://www.jfox.info/2018/2443f3f/2443f3f</id><content type="html" xml:base="http://www.jfox.info/2018/2443f3f/index.html">&lt;p&gt;By - Last updated: 星期四, 八月 10, 2017&lt;/p&gt;
+
+&lt;p&gt;H2M_LI_HEADER Spring 的事物是通过哪些原理实现的?
+H2M_LI_HEADER Spring 的事物机制是如何提交和回滚的?&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;==希望你有阅读过 Spring 源码的经历,不然有的东西可能理解不清楚..==&lt;/strong&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;spring-的事物是通过哪些原理实现的&quot;&gt;Spring 的事物是通过哪些原理实现的?&lt;/h3&gt;
+
+&lt;p&gt;首先给大家布置一个代码场景(以项目代码为例):&lt;/p&gt;
+
+&lt;p&gt;spring-dataSource.xml 文件&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;     &amp;lt;bean id=&quot;db1&quot; class=&quot;com.alibaba.druid.pool.DruidDataSource&quot;     destroy-method=&quot;close&quot;&amp;gt;
+         ....
+    &amp;lt;/bean&amp;gt;
+    &amp;lt;!-- 数据源配置 --&amp;gt;
+    &amp;lt;bean id=&quot;transactionManager&quot; class=&quot;org.springframework.jdbc.datasource.DataSourceTransactionManager&quot;&amp;gt;
+    &amp;lt;property name=&quot;dataSource&quot; ref=&quot;db1&quot;/&amp;gt;
+    &amp;lt;qualifier value=&quot;&quot;/&amp;gt;
+&amp;lt;/bean&amp;gt;
+
+&amp;lt;!-- 事物管理器 --&amp;gt;
+    &amp;lt;tx:annotation-driven transaction-manager=&quot;transactionManager&quot;
+    proxy-target-class=&quot;true&quot;&amp;gt;&amp;lt;/tx:annotation-driven&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Spring-service.xml&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&amp;lt;!-- 注解扫描包 --&amp;gt;
+ &amp;lt;context:component-scan base-package=&quot;com.elab.execute.services,com.elab.execute.dao,com.elab.execute.utils&quot;&amp;gt;
+        &amp;lt;context:include-filter type=&quot;annotation&quot; expression=&quot;org.springframework.stereotype.Service&quot;/&amp;gt;
+        &amp;lt;context:include-filter type=&quot;annotation&quot; expression=&quot;org.springframework.stereotype.Repository&quot;/&amp;gt;
+        &amp;lt;context:include-filter type=&quot;annotation&quot; expression=&quot;org.springframework.stereotype.Component&quot;/&amp;gt;
+        &amp;lt;context:exclude-filter type=&quot;annotation&quot; expression=&quot;org.springframework.stereotype.Controller&quot;/&amp;gt;
+    &amp;lt;/context:component-scan&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Serivce.java&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    //方法上只要加上@Transactional方法就行了,一个DML操作
+    @Transactional
+    public void testTransactional() throws Exception {
+        System.out.println(&quot;=====================开始处理事物&quot;);
+        TGirl girl = new TGirl();
+        girl.setAge(11);
+        girl.setGirl_name(&quot;hah&quot;);
+        girl.setStatus(1);
+        int insert = girlMapper.insert(girl);
+        System.out.println(&quot;=====================结束处理事物&quot;);
+        System.out.println(&quot;处理完成...&quot;);
+        // 模拟程序报错
+//        int i = 1 / 0;
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;strong&gt;==注意我们这只是模拟一个简单的事物管理配置场景,大概就是这么一些要配置的东西==&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;测试类: 我没有用 Junit,不过效果是差不多的&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;String xml[] = new String[]{&quot;applicationContext-service.xml&quot;, &quot;applicationContext-datasource.xml&quot;, };
+        ApplicationContext app = new ClassPathXmlApplicationContext(xml);
+        IDemoService demoService = (IDemoService) app.getBean(&quot;demoService&quot;);
+        // DML操作
+        demoService.testTransactional();
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;首先我们的目的是想知道 Spring 事物的运行流程,这时候可能就需要 Debug 调试,我们也就只关注事物这块初始化和执行的情况,我们可以采用&lt;strong&gt;倒推&lt;/strong&gt;的方式
+&lt;strong&gt;先看 spring 事物的执行过程,再看初始化过程&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;debug 断点打在 demoService.testTransactional(); 这块,然后 F5 进去
+&lt;img src=&quot;4c65d5d.png&quot; alt=&quot;&quot; /&gt;
+image&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;进入到的是一个 CglibAopProxy 内部类&lt;strong&gt;DynamicAdvisedInterceptor&lt;/strong&gt;的&lt;strong&gt;intercept&lt;/strong&gt;方法,从这里看的话,其实这个类就是一个责任链类型的处理类&lt;/p&gt;
+
+&lt;p&gt;注意这一块是一个&lt;strong&gt;责任链模式&lt;/strong&gt;,表示需要经过一系列链条之后才会到达最终的方法,&lt;strong&gt;当然这三个类切入点类型的类,是通过动态代理加入到责任链中的,下面初始化的时候会讲到&lt;/strong&gt;&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;      // 这一段代码表示获取到你将要执行最终方法前要经过的一系列拦截类的处理,也就是责任链类的中的核心集合
+    List&amp;lt;Object&amp;gt; chain = this.advised.getInterceptorsAndDynamicInterceptionAdvice(method, targetClass);
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;c2c8a47.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;image&lt;/p&gt;
+
+&lt;p&gt;图中 chain 集合有三个类,表示执行到目的方法之前需要经过这几个类&lt;/p&gt;
+
+&lt;p&gt;我们来看到执行到目标方法的执行轨迹:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;e7ce0f9.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;image&lt;/p&gt;
+
+&lt;p&gt;确实是经过了三个拦截链&lt;/p&gt;
+
+&lt;p&gt;我们直接看事物相关的拦截链类&lt;/p&gt;
+
+&lt;p&gt;下面代码是不是似曾相识,这都是开启事物的操作和异常情况下,回滚和提交操作&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;0058398.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;image&lt;/p&gt;
+
+&lt;p&gt;经过这些代理类之后到达最终的方法,这是一个大概的运行过程.异常会被事物捕获到,没有则提交… 都是通过这个 TransactionAspectSupport 的 invokeWithinTransaction 方法去做的&lt;/p&gt;
+
+&lt;h3 id=&quot;那-spring-又是如何初始化这一系列的代理类操作的呢&quot;&gt;那 Spring 又是如何初始化这一系列的代理类操作的呢?&lt;/h3&gt;
+
+&lt;p&gt;回到运行的第一步我们在那个 Aop 的拦截器类中(CglibApoProxy),想一想既然 spring 运行这个方法的时候会执行这个拦截器方法,那么初始化的时候应该也和这个类相关,然后从上面实例化的地方和可以的地方打打断点…&lt;/p&gt;
+
+&lt;p&gt;果然,初始化的方法断点被触发了…&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;a52da6b.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;image&lt;/p&gt;
+
+&lt;p&gt;这时候我们可以看断点的运行轨迹&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;f31168b.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;image&lt;/p&gt;
+
+&lt;p&gt;我们发现,触发到这个断点的时候,会经过一系列的方法执行,这些执行的方法链都是创建 bean 的时候必须经过的过程,也就是说每个 bean 创建的时候,都会经过这一系列的链路的检查(applyBeanPostProcessorsAfterInitialization 方法里面的 getBeanPostProcessors()方法),才会生成最终的 bean,这时候我们需要定位到执行这个 CglibAopProxy 初始化的方法这块,&lt;strong&gt;在什么情况下&lt;/strong&gt;,会执行这个创建代理的类&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;3ef958b.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;image&lt;/p&gt;
+
+&lt;p&gt;我们现在已经知道他创建了代理类的过程,现在需要知道在什么情况下会为某些 bean 创建代理。了解了 getAdvicesAndAdvisorsForBean 这个方法运行做了什么事情,就大概知道创建代理类 bean 的条件&lt;/p&gt;
+
+&lt;p&gt;首先我们一步步看这个方法的代码:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    /**
+        这是一个获取切入点和包含切入点的bean方法
+    /*
+    protected Object[] getAdvicesAndAdvisorsForBean(Class&amp;lt;?&amp;gt; beanClass, String beanName, TargetSource targetSource) {
+        // 查询当前的bean是否包含切入点
+        List&amp;lt;Advisor&amp;gt; advisors = findEligibleAdvisors(beanClass, beanName);
+        if (advisors.isEmpty()) {
+            return DO_NOT_PROXY;
+        }
+        return advisors.toArray();
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;findEligibleAdvisors 方法&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    /**
+     * 大概意思是为这个bean找到合适的自动代理类
+     * Find all eligible Advisors for auto-proxying this class.
+     * @param beanClass the clazz to find advisors for
+     * @param beanName the name of the currently proxied bean
+     * @return the empty List, not {@code null},
+     * if there are no pointcuts or interceptors
+     * @see #findCandidateAdvisors
+     * @see #sortAdvisors
+     * @see #extendAdvisors
+     */
+    protected List&amp;lt;Advisor&amp;gt; findEligibleAdvisors(Class&amp;lt;?&amp;gt; beanClass, String beanName) {
+        // 找到当前已经注册好的代理类bean
+        List&amp;lt;Advisor&amp;gt; candidateAdvisors = findCandidateAdvisors();
+        //将注册好的bean和当前bean的类型进行搜索查询,是否有合适的切入点类
+        List&amp;lt;Advisor&amp;gt; eligibleAdvisors = findAdvisorsThatCanApply(candidateAdvisors, beanClass, beanName);
+        extendAdvisors(eligibleAdvisors);
+        if (!eligibleAdvisors.isEmpty()) {
+            eligibleAdvisors = sortAdvisors(eligibleAdvisors);
+        }
+        return eligibleAdvisors;
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;findAdvisorsThatCanApply :&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;       /**
+       大概意思就是搜索给定的切入点集合,以用于找到可以应用到当前bean的合适的切入点集合
+     * Search the given candidate Advisors to find all Advisors that
+     * can apply to the specified bean.
+     * @param candidateAdvisors the candidate Advisors
+     * @param beanClass the target's bean class
+     * @param beanName the target's bean name
+     * @return the List of applicable Advisors
+     * @see ProxyCreationContext#getCurrentProxiedBeanName()
+     */
+    protected List&amp;lt;Advisor&amp;gt; findAdvisorsThatCanApply(
+            List&amp;lt;Advisor&amp;gt; candidateAdvisors, Class&amp;lt;?&amp;gt; beanClass, String beanName) {
+                // 设置代理的上下文,只针当前线程
+        ProxyCreationContext.setCurrentProxiedBeanName(beanName);
+        try {
+            // 这是一个AOP的工具类,用于
+            return AopUtils.findAdvisorsThatCanApply(candidateAdvisors, beanClass);
+        }
+        finally {
+            ProxyCreationContext.setCurrentProxiedBeanName(null);
+        }
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;AopUtils.findAdvisorsThatCanApply&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    /**
+     * 确定能应用到当前clazz的List&amp;lt;Advisor&amp;gt;
+     * Determine the sublist of the {@code candidateAdvisors} list
+     * that is applicable to the given class.
+     * @param candidateAdvisors the Advisors to evaluate
+     * @param clazz the target class
+     * @return sublist of Advisors that can apply to an object of the given class
+     * (may be the incoming List as-is)
+     */
+    public static List&amp;lt;Advisor&amp;gt; findAdvisorsThatCanApply(List&amp;lt;Advisor&amp;gt; candidateAdvisors, Class&amp;lt;?&amp;gt; clazz) {
+        if (candidateAdvisors.isEmpty()) {
+            return candidateAdvisors;
+        }
+        List&amp;lt;Advisor&amp;gt; eligibleAdvisors = new LinkedList&amp;lt;Advisor&amp;gt;();
+        for (Advisor candidate : candidateAdvisors) {
+            if (candidate instanceof IntroductionAdvisor &amp;amp;&amp;amp; canApply(candidate, clazz)) {
+                eligibleAdvisors.add(candidate);
+            }
+        }
+        boolean hasIntroductions = !eligibleAdvisors.isEmpty();
+        for (Advisor candidate : candidateAdvisors) {
+            if (candidate instanceof IntroductionAdvisor) {
+                // already processed
+                continue;
+            }
+                         // 这个方法很关键,用于判断是否能将当前Advisor应用到这个bean上
+            if (canApply(candidate, clazz, hasIntroductions)) {
+                // 如果验证通过,则会将当前切入点加入进来
+                eligibleAdvisors.add(candidate);
+            }
+        }
+        return eligibleAdvisors;
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;我们来看看 canApply 做了些什么?&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;// 大概就是比较了Advisor的类型
+public static boolean canApply(Advisor advisor, Class&amp;lt;?&amp;gt; targetClass, boolean hasIntroductions) {
+        if (advisor instanceof IntroductionAdvisor) {
+            return ((IntroductionAdvisor) advisor).getClassFilter().matches(targetClass);
+        }
+        else if (advisor instanceof PointcutAdvisor) {
+            PointcutAdvisor pca = (PointcutAdvisor) advisor;
+            // 最终会执行到这个方法
+            return canApply(pca.getPointcut(), targetClass, hasIntroductions);
+        }
+        else {
+            // It doesn't have a pointcut so we assume it applies.
+            return true;
+        }
+    }
+
+    public static boolean canApply(Pointcut pc, Class&amp;lt;?&amp;gt; targetClass, boolean hasIntroductions) {
+        Assert.notNull(pc, &quot;Pointcut must not be null&quot;);
+        if (!pc.getClassFilter().matches(targetClass)) {
+            return false;
+        }
+                // 获取当前切入点的类型
+        MethodMatcher methodMatcher = pc.getMethodMatcher();
+        IntroductionAwareMethodMatcher introductionAwareMethodMatcher = null;
+                //比较类型
+        if (methodMatcher instanceof IntroductionAwareMethodMatcher) {
+            introductionAwareMethodMatcher = (IntroductionAwareMethodMatcher) methodMatcher;
+        }
+
+
+                // !!!!! 这一部分的代码很关键!!!!
+                // 获取所有相关的类
+        Set&amp;lt;Class&amp;lt;?&amp;gt;&amp;gt; classes = new LinkedHashSet&amp;lt;Class&amp;lt;?&amp;gt;&amp;gt;(ClassUtils.getAllInterfacesForClassAsSet(targetClass));
+        classes.add(targetClass);
+                // 遍历这些类
+        for (Class&amp;lt;?&amp;gt; clazz : classes) {
+                        // 获取类的所有方法
+            Method[] methods = clazz.getMethods();
+                      // 遍历这些方法
+            for (Method method : methods) {
+                    //methodMatcher.matches(method, targetClass) 这个方法很重要
+                if ((introductionAwareMethodMatcher != null &amp;amp;&amp;amp;
+                        introductionAwareMethodMatcher.matches(method, targetClass, hasIntroductions)) ||
+                        methodMatcher.matches(method, targetClass)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;matches 方法&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;     public boolean matches(Method method, Class&amp;lt;?&amp;gt; targetClass) {
+        TransactionAttributeSource tas = getTransactionAttributeSource();
+        // tas.getTransactionAttribute(method, targetClass)  这是个获取事物注解的方法
+        return (tas == null || tas.getTransactionAttribute(method, targetClass) != null);
+    }
+
+
+
+
+    // 获取事务属性的方法
+    public TransactionAttribute getTransactionAttribute(Method method, Class&amp;lt;?&amp;gt; targetClass) {
+        // First, see if we have a cached value.
+        Object cacheKey = getCacheKey(method, targetClass);
+        Object cached = this.attributeCache.get(cacheKey);
+        if (cached != null) {
+            // Value will either be canonical value indicating there is no transaction attribute,
+            // or an actual transaction attribute.
+            if (cached == NULL_TRANSACTION_ATTRIBUTE) {
+                return null;
+            }
+            else {
+                return (TransactionAttribute) cached;
+            }
+        }
+        else {
+            // We need to work it out.
+            // 获取事物属性的方法
+            TransactionAttribute txAtt = computeTransactionAttribute(method, targetClass);
+            // Put it in the cache.
+            if (txAtt == null) {
+                this.attributeCache.put(cacheKey, NULL_TRANSACTION_ATTRIBUTE);
+            }
+            else {
+                if (logger.isDebugEnabled()) {
+                    Class&amp;lt;?&amp;gt; classToLog = (targetClass != null ? targetClass : method.getDeclaringClass());
+                    logger.debug(&quot;Adding transactional method '&quot; + classToLog.getSimpleName() + &quot;.&quot; +
+                            method.getName() + &quot;' with attribute: &quot; + txAtt);
+                }
+                this.attributeCache.put(cacheKey, txAtt);
+            }
+            return txAtt;
+        }
+    }
+
+    private TransactionAttribute computeTransactionAttribute(Method method, Class&amp;lt;?&amp;gt; targetClass) {
+        // Don't allow no-public methods as required.
+        if (allowPublicMethodsOnly() &amp;amp;&amp;amp; !Modifier.isPublic(method.getModifiers())) {
+            return null;
+        }
+
+        // Ignore CGLIB subclasses - introspect the actual user class.
+        Class&amp;lt;?&amp;gt; userClass = ClassUtils.getUserClass(targetClass);
+        // The method may be on an interface, but we need attributes from the target class.
+        // If the target class is null, the method will be unchanged.
+        Method specificMethod = ClassUtils.getMostSpecificMethod(method, userClass);
+        // If we are dealing with method with generic parameters, find the original method.
+        specificMethod = BridgeMethodResolver.findBridgedMethod(specificMethod);
+
+        // First try is the method in the target class.
+        // 查找该方法的事物属性
+        TransactionAttribute txAtt = findTransactionAttribute(specificMethod);
+        if (txAtt != null) {
+            return txAtt;
+        }
+
+        // Second try is the transaction attribute on the target class.
+        txAtt = findTransactionAttribute(specificMethod.getDeclaringClass());
+        if (txAtt != null) {
+            return txAtt;
+        }
+
+        if (specificMethod != method) {
+            // Fallback is to look at the original method.
+            txAtt = findTransactionAttribute(method);
+            if (txAtt != null) {
+                return txAtt;
+            }
+            // Last fallback is the class of the original method.
+            return findTransactionAttribute(method.getDeclaringClass());
+        }
+        return null;
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;详细看下 findTransactionAttribute 方法,由于比较深我就直接贴最终执行的方法了&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public TransactionAttribute parseTransactionAnnotation(AnnotatedElement ae) {
+        // 查看是否方法上面有@Transactional注解
+        AnnotationAttributes ann = AnnotatedElementUtils.getAnnotationAttributes(ae, Transactional.class.getName());
+        if (ann != null) {
+            return parseTransactionAnnotation(ann);
+        }
+        else {
+            return null;
+        }
+    }
+    // 处理这个注解所包含的属性如传播途径和隔离级别
+    protected TransactionAttribute parseTransactionAnnotation(AnnotationAttributes attributes) {
+        RuleBasedTransactionAttribute rbta = new RuleBasedTransactionAttribute();
+        Propagation propagation = attributes.getEnum(&quot;propagation&quot;);
+        rbta.setPropagationBehavior(propagation.value());
+        Isolation isolation = attributes.getEnum(&quot;isolation&quot;);
+        rbta.setIsolationLevel(isolation.value());
+        rbta.setTimeout(attributes.getNumber(&quot;timeout&quot;).intValue());
+        rbta.setReadOnly(attributes.getBoolean(&quot;readOnly&quot;));
+        rbta.setQualifier(attributes.getString(&quot;value&quot;));
+        ArrayList&amp;lt;RollbackRuleAttribute&amp;gt; rollBackRules = new ArrayList&amp;lt;RollbackRuleAttribute&amp;gt;();
+        Class&amp;lt;?&amp;gt;[] rbf = attributes.getClassArray(&quot;rollbackFor&quot;);
+        for (Class&amp;lt;?&amp;gt; rbRule : rbf) {
+            RollbackRuleAttribute rule = new RollbackRuleAttribute(rbRule);
+            rollBackRules.add(rule);
+        }
+        String[] rbfc = attributes.getStringArray(&quot;rollbackForClassName&quot;);
+        for (String rbRule : rbfc) {
+            RollbackRuleAttribute rule = new RollbackRuleAttribute(rbRule);
+            rollBackRules.add(rule);
+        }
+        Class&amp;lt;?&amp;gt;[] nrbf = attributes.getClassArray(&quot;noRollbackFor&quot;);
+        for (Class&amp;lt;?&amp;gt; rbRule : nrbf) {
+            NoRollbackRuleAttribute rule = new NoRollbackRuleAttribute(rbRule);
+            rollBackRules.add(rule);
+        }
+        String[] nrbfc = attributes.getStringArray(&quot;noRollbackForClassName&quot;);
+        for (String rbRule : nrbfc) {
+            NoRollbackRuleAttribute rule = new NoRollbackRuleAttribute(rbRule);
+            rollBackRules.add(rule);
+        }
+        rbta.getRollbackRules().addAll(rollBackRules);
+        return rbta;
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;这时候我们就可以大概的清楚知道哪些 bean 需要被事物代理的原因了
+这时候我们在回过头来看 spring 是如何构建代理类的,这里我就不在详细各种贴流程代码了,只贴关键的&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;DefaultAopProxyFactory 默认的AOP代理工厂
+
+
+// 创建一个AopProxy的代理类,它这里提供了两种代理方式,一种是JDK代理,一种是CGlib代理
+public AopProxy createAopProxy(AdvisedSupport config) throws AopConfigException {
+            if (config.isOptimize() || config.isProxyTargetClass() ||
+            hasNoUserSuppliedProxyInterfaces(config)) {
+            Class&amp;lt;?&amp;gt; targetClass = config.getTargetClass();
+            if (targetClass == null) {
+                throw new AopConfigException(&quot;TargetSource cannot determine target class: &quot; +
+                        &quot;Either an interface or a target is required for proxy creation.&quot;);
+            }
+            // 如果需要代理的类是接口的时候采用JDK
+            if (targetClass.isInterface()) {
+                return new JdkDynamicAopProxy(config);
+            }
+            // 普通类用CGlib代理
+            return new ObjenesisCglibAopProxy(config);
+        }
+        else {
+            return new JdkDynamicAopProxy(config);
+        }
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;ObjenesisCglibAopProxy 的 父类是 CglibAopProxy 所以初始化 ObjenesisCglibAopProxy 的构造方法时会调用 super(config);&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    /**
+    * 实例化Cglib对象时,会初始化他的父类方法,并且把拦截器传递给父类,告诉他的需要加上代理的拦截器,也就是我们的TransactionInterceptor,如果有多个的话可能就会代理多个,这里我们只看事物的
+    *
+    */
+    public ObjenesisCglibAopProxy(AdvisedSupport config) {
+        super(config);
+        this.objenesis = new ObjenesisStd(true);
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;初始化完成之后会调用它的 ObjenesisCglibAopProxy 的 getProxy()方法,这个方法是它的父类实现的,这里面才是真正实现了真正代理的对象,原理是构成一个责任链,将代理一个个链接起来&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public Object getProxy(ClassLoader classLoader) {
+        if (logger.isDebugEnabled()) {
+            logger.debug(&quot;Creating CGLIB proxy: target source is &quot; + this.advised.getTargetSource());
+        }
+        try {
+            Class&amp;lt;?&amp;gt; rootClass = this.advised.getTargetClass();
+            Assert.state(rootClass != null, &quot;Target class must be available for creating a CGLIB proxy&quot;);
+            Class&amp;lt;?&amp;gt; proxySuperClass = rootClass;
+            if (ClassUtils.isCglibProxyClass(rootClass)) {
+                proxySuperClass = rootClass.getSuperclass();
+                Class&amp;lt;?&amp;gt;[] additionalInterfaces = rootClass.getInterfaces();
+                for (Class&amp;lt;?&amp;gt; additionalInterface : additionalInterfaces) {
+                    this.advised.addInterface(additionalInterface);
+                }
+            }
+            // Validate the class, writing log messages as necessary.
+            validateClassIfNecessary(proxySuperClass, classLoader);
+            // Configure CGLIB Enhancer...
+            // 这一部分是创建一个Enhancer 对象
+            Enhancer enhancer = createEnhancer();
+            if (classLoader != null) {
+                enhancer.setClassLoader(classLoader);
+                if (classLoader instanceof SmartClassLoader &amp;amp;&amp;amp;
+                        ((SmartClassLoader) classLoader).isClassReloadable(proxySuperClass)) {
+                    enhancer.setUseCache(false);
+                }
+            }
+            enhancer.setSuperclass(proxySuperClass);
+            enhancer.setInterfaces(AopProxyUtils.completeProxiedInterfaces(this.advised));
+            enhancer.setNamingPolicy(SpringNamingPolicy.INSTANCE);
+            enhancer.setStrategy(new UndeclaredThrowableStrategy(UndeclaredThrowableException.class));
+
+            // 这部分代码非常关键,里面会创建一个DynamicAdvisedInterceptor对象,这个就是责任链的头端,所有的切入点都需要经过这个拦截器一步步执行到最终的方法
+            Callback[] callbacks = getCallbacks(rootClass);
+            Class&amp;lt;?&amp;gt;[] types = new Class&amp;lt;?&amp;gt;[callbacks.length];
+            for (int x = 0; x &amp;lt; types.length; x++) {
+                types[x] = callbacks[x].getClass();
+            }
+            // fixedInterceptorMap only populated at this point, after getCallbacks call above
+            enhancer.setCallbackFilter(new ProxyCallbackFilter(
+                    this.advised.getConfigurationOnlyCopy(), this.fixedInterceptorMap, this.fixedInterceptorOffset));
+            enhancer.setCallbackTypes(types);
+
+            // Generate the proxy class and create a proxy instance.
+            // 生成代理类并且创建实例,里面做的应该就是把DynamicAdvisedInterceptor对象和serviceImpl对象做了一个代理绑定,先进入DynamicAdvisedInterceptor,经过责任链模式一步步到达最终方法
+            return createProxyClassAndInstance(enhancer, callbacks);
+        }
+        catch (CodeGenerationException ex) {
+            throw new AopConfigException(&quot;Could not generate CGLIB subclass of class [&quot; +
+                    this.advised.getTargetClass() + &quot;]: &quot; +
+                    &quot;Common causes of this problem include using a final class or a non-visible class&quot;,
+                    ex);
+        }
+        catch (IllegalArgumentException ex) {
+            throw new AopConfigException(&quot;Could not generate CGLIB subclass of class [&quot; +
+                    this.advised.getTargetClass() + &quot;]: &quot; +
+                    &quot;Common causes of this problem include using a final class or a non-visible class&quot;,
+                    ex);
+        }
+        catch (Exception ex) {
+            // TargetSource.getTarget() failed
+            throw new AopConfigException(&quot;Unexpected AOP exception&quot;, ex);
+        }
+    }
+
+private Callback[] getCallbacks(Class&amp;lt;?&amp;gt; rootClass) throws Exception {
+        // Parameters used for optimisation choices...
+        boolean exposeProxy = this.advised.isExposeProxy();
+        boolean isFrozen = this.advised.isFrozen();
+        boolean isStatic = this.advised.getTargetSource().isStatic();
+
+        // Choose an &quot;aop&quot; interceptor (used for AOP calls).
+        // 创建一个拦截器对象,所有被代理的类都走这个对象,最终返回的bean执行的起始方法
+        Callback aopInterceptor = new DynamicAdvisedInterceptor(this.advised);
+
+        // Choose a &quot;straight to target&quot; interceptor. (used for calls that are
+        // unadvised but can return this). May be required to expose the proxy.
+        Callback targetInterceptor;
+        if (exposeProxy) {
+            targetInterceptor = isStatic ?
+                    new StaticUnadvisedExposedInterceptor(this.advised.getTargetSource().getTarget()) :
+                    new DynamicUnadvisedExposedInterceptor(this.advised.getTargetSource());
+        }
+        else {
+            targetInterceptor = isStatic ?
+                    new StaticUnadvisedInterceptor(this.advised.getTargetSource().getTarget()) :
+                    new DynamicUnadvisedInterceptor(this.advised.getTargetSource());
+        }
+
+        // Choose a &quot;direct to target&quot; dispatcher (used for
+        // unadvised calls to static targets that cannot return this).
+        Callback targetDispatcher = isStatic ?
+                new StaticDispatcher(this.advised.getTargetSource().getTarget()) : new SerializableNoOp();
+
+        Callback[] mainCallbacks = new Callback[]{
+            aopInterceptor, // for normal advice
+            targetInterceptor, // invoke target without considering advice, if optimized
+            new SerializableNoOp(), // no override for methods mapped to this
+            targetDispatcher, this.advisedDispatcher,
+            new EqualsInterceptor(this.advised),
+            new HashCodeInterceptor(this.advised)
+        };
+
+        Callback[] callbacks;
+
+        // If the target is a static one and the advice chain is frozen,
+        // then we can make some optimisations by sending the AOP calls
+        // direct to the target using the fixed chain for that method.
+        if (isStatic &amp;amp;&amp;amp; isFrozen) {
+            Method[] methods = rootClass.getMethods();
+            Callback[] fixedCallbacks = new Callback[methods.length];
+            this.fixedInterceptorMap = new HashMap&amp;lt;String, Integer&amp;gt;(methods.length);
+
+            // TODO: small memory optimisation here (can skip creation for methods with no advice)
+            for (int x = 0; x &amp;lt; methods.length; x++) {
+                List&amp;lt;Object&amp;gt; chain = this.advised.getInterceptorsAndDynamicInterceptionAdvice(methods[x], rootClass);
+                fixedCallbacks[x] = new FixedChainStaticTargetInterceptor(
+                        chain, this.advised.getTargetSource().getTarget(), this.advised.getTargetClass());
+                this.fixedInterceptorMap.put(methods[x].toString(), x);
+            }
+
+            // Now copy both the callbacks from mainCallbacks
+            // and fixedCallbacks into the callbacks array.
+            callbacks = new Callback[mainCallbacks.length + fixedCallbacks.length];
+            System.arraycopy(mainCallbacks, 0, callbacks, 0, mainCallbacks.length);
+            System.arraycopy(fixedCallbacks, 0, callbacks, mainCallbacks.length, fixedCallbacks.length);
+            this.fixedInterceptorOffset = mainCallbacks.length;
+        }
+        else {
+            callbacks = mainCallbacks;
+        }
+        return callbacks;
+    }
+
+
+ 最终生成了代理对象,将这个对象放入ioc容器当中,当调用这个对象时,ioc会直接取出代理对象,也就是先进入DynamicAdvisedInterceptor的intercept方法。
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;大概梳理一下事物的流程
+一. 初始化流程&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;1.首先开始初始化配置文件
+
+2.然后执行到&amp;lt;context:component-scan base-package=&quot;com.service&quot;&amp;gt;&amp;lt;/context:component-scan&amp;gt;这里时,会开始扫描注解
+
+3.当循环扫描到ServiceImpl的时候,会扫描每个方法,经过getAdvicesAndAdvisorsForBean这个方法时会判断每个方法是否触发代理的条件, 怎么触发代理条件, 这里以事物为例:
+&amp;lt;!--
+这里注册了一个事物管理器,也就是说每个类都会经过这个事物管理器判断,是否有@Transactional方法;
+需要注意的是,这个驱动相当于新加了一个方法环绕类型的切入点.
+--&amp;gt;
+    &amp;lt;tx:annotation-driven transaction-manager=&quot;transactionManager&quot;
+proxy-target-class=&quot;true&quot;&amp;gt;&amp;lt;/tx:annotation-driven&amp;gt;
+
+  getAdvicesAndAdvisorsForBean如果返回有值时,则表示需要生成代理类
+
+因为我们service中已经定义好了@Transactional方法了,所以触发了执行生成代理类的条件.
+
+4. 生成代理类时,他主要做了两个步骤: 实现一个责任链的类[DynamicAdvisedInterceptor],然后将这个责任链类和service的实现类做绑定生成一个代理,然后返回这个代理对象到IOC容器中,初始化完成
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;二. 调用 service 的过程&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;1. 当调用service这个实现类的时候,会从ioc容器里面去查找,找到了这个bean类则直接返回,注意这里的bean是一个代理类
+2. 直接进入代理类DynamicAdvisedInterceptor的intercept方法里面;
+3.  开始执行责任链机制,查找与这个类绑定的切入点
+
+
+// 这里是直接查找与这个类相关的切入点,然后一个个执行完之后到达最终的service方法
+List&amp;lt;Object&amp;gt; chain = this.advised.getInterceptorsAndDynamicInterceptionAdvice(method, targetClass);
+
+
+4. 需要注意的是这个责任链中有一个TransactionAspectSupport类,这是一个事物的切入点类,这个类中的invokeWithinTransaction方法,它里面详细包含了事物的一系列操作,包括事物开启、提交、回滚等等一系列操作
+5.  执行切入点后,直接到达目标方法,也就是service层的方法,service层的方法处理完毕,在回到invokeWithinTransaction判断是否报错,没有报错则事物提交,报错则进入到它的try/catch方法中进行回滚,最终执行完成;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;最终我们总结上面的问题:&lt;/p&gt;
+
+&lt;h4 id=&quot;spring-的事物是通过哪些原理实现的-1&quot;&gt;Spring 的事物是通过哪些原理实现的?&lt;/h4&gt;
+
+&lt;p&gt;动态代理 以及 切入点配合责任链组成的拦截器机制&lt;/p&gt;
+
+&lt;h4 id=&quot;spring-的事物机制是如何提交和回滚的&quot;&gt;Spring 的事物机制是如何提交和回滚的?&lt;/h4&gt;
+
+&lt;p&gt;Spring 提供了一个事物管理器,这个事物管理器专门扫描所有方法的@Transactional 注解,一旦扫描到了,则会为这个方法的类设置代理,这个事物管理器可以理解为一个环绕类型的切入点,配合责任链模式,当方法执行的时候,会被拦截到 TransactionAspectSupport 的 invokeWithinTransaction 方法中,这个里面包含了事物的一系列操作。&lt;/p&gt;
+
+&lt;h3 id=&quot;编后语&quot;&gt;编后语&lt;/h3&gt;
+
+&lt;p&gt;由于 spring 里面代码层次划分很细,导致贴出来的代码特别多,可能会影响你们阅读,不过 Spring 里面的很多东西封装的都是很完善的,几乎全部都是组件化,导致很多方法很深,不过我们只要了解它大概的原理就行了,至少能够在我们遇到问题时能够推断出从哪个步骤进行下手.可能这篇文章代码和图片比较凌乱,最好是大家有 spring 的一些基本原理基础,比如 bean 的实例化啊等等,不然有的地方会看不懂,好了就说这么多了… 希望对大家有帮助.. 也非常欢迎大家提意见!!! 谢谢&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://itunes.apple.com/cn/app/学英语听新闻/id1368539116?mt=8&quot;&gt;&lt;img src=&quot;6bf2383.png&quot; alt=&quot;&quot; /&gt;&lt;/a&gt;&lt;/p&gt;</content><author><name></name></author><summary type="html">By - Last updated: 星期四, 八月 10, 2017</summary></entry><entry xml:lang="en"><title type="html">where子句的顺序在SQL中是否重要</title><link href="http://www.jfox.info/2018/4ef2675/index.html" rel="alternate" type="text/html" title="where子句的顺序在SQL中是否重要" /><published>2018-09-05T00:53:57+00:00</published><updated>2018-09-05T00:53:57+00:00</updated><id>http://www.jfox.info/2018/4ef2675/4ef2675</id><content type="html" xml:base="http://www.jfox.info/2018/4ef2675/index.html">&lt;p&gt;不，这个顺序无关紧要（或至少：无所谓）。&lt;/p&gt;
+
+&lt;p&gt;任何体面的查询优化器都会查看&lt;strong&gt;所有&lt;/strong&gt;部分&lt;code class=&quot;highlighter-rouge&quot;&gt;WHERE&lt;/code&gt; 子句并找出满足该查询的最有效方法。&lt;/p&gt;
+
+&lt;p&gt;我知道 SQL Server 查询优化器会选择一个合适的索引 - 无论你有两个条件的顺序。我假设其他 RDBMS 将有类似的策略。&lt;/p&gt;
+
+&lt;p&gt;重要的是你是否有适合的指数！&lt;/p&gt;
+
+&lt;p&gt;对于 SQL Server，如果您有以下情况，它可能会使用索引：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;一个索引&lt;code class=&quot;highlighter-rouge&quot;&gt;(LastName, FirstName)&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;一个索引&lt;code class=&quot;highlighter-rouge&quot;&gt;(FirstName, LastName)&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;关于公正的指数&lt;code class=&quot;highlighter-rouge&quot;&gt;(LastName)&lt;/code&gt;, 要不就&lt;code class=&quot;highlighter-rouge&quot;&gt;(FirstName)&lt;/code&gt; (或两者）&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;另一方面 - 再次为 SQL Server - 如果您使用&lt;code class=&quot;highlighter-rouge&quot;&gt;SELECT *&lt;/code&gt; 从表中获取&lt;strong&gt;所有&lt;/strong&gt;列，并且表格相当小，然后查询优化器很可能只执行表（或聚簇索引）扫描而不是使用索引（因为查找到完整数据页面得到&lt;strong&gt;所有&lt;/strong&gt;其他列只是很快就太贵了）。&lt;/p&gt;</content><author><name></name></author><summary type="html">不，这个顺序无关紧要（或至少：无所谓）。</summary></entry><entry xml:lang="en"><title type="html">面向开发人员的SQL数据库性能调优</title><link href="http://www.jfox.info/2018/510e517/index.html" rel="alternate" type="text/html" title="面向开发人员的SQL数据库性能调优" /><published>2018-09-03T23:19:10+00:00</published><updated>2018-09-03T23:19:10+00:00</updated><id>http://www.jfox.info/2018/510e517/510e517</id><content type="html" xml:base="http://www.jfox.info/2018/510e517/index.html">&lt;p&gt;SQL 性能调优可能是一项非常困难的任务，尤其是在处理大规模数据时，即使是最微小的变化也会对性能产生巨大的（正面或负面）影响。&lt;/p&gt;
+
+&lt;p&gt;在中型和大型公司中，大多数 SQL 性能调优将由数据库管理员（DBA）处理。但请相信我，有很多开发人员（https://www.toptal.com/sql），他们必须执行类似DBA的任务。此外，在许多公司中，我见过&lt;em&gt;做&lt;/em&gt;有DBA，他们往往很难与开发人员合作 - 这些职位只需要不同的问题解决方式，这可能会导致同事之间的分歧。&lt;/p&gt;
+
+&lt;p&gt;在处理大规模数据时，即使是最微小的变化也会对性能产生巨大影响。&lt;/p&gt;
+
+&lt;p&gt;最重要的是，企业结构也可以发挥作用。假设 DBA 团队位于 10 楼，所有数据库都在，而开发人员在 15 楼，甚至在完全独立的报告结构下的不同建筑物中 - 在这些条件下很难顺利合作。
+￼
+在本文中，我想完成两件事：&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;为开发人员提供一些开发人员端的 SQL 性能调优技术。&lt;/li&gt;
+  &lt;li&gt;解释开发人员和 DBA 如何有效地协同工作。&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&quot;sql-性能调优在代码库中索引&quot;&gt;SQL 性能调优（在代码库中）：索引&lt;/h2&gt;
+
+&lt;p&gt;如果你是数据库的全新成员，甚至会问自己“什么是 SQL [性能调优]（https://www.toptal.com/sql-server/how-to-tune-microsoft-sql-server-for-性能）？“，您应该知道索引是调整SQL数据库的有效方法，在开发过程中经常被忽略。在基本术语中，[index]（https://en.wikipedia.org/wiki/Database_index）是一种数据结构，它通过提供快速随机查找和有序访问有序记录来提高数据库表上数据检索操作的速度。这意味着，一旦创建了索引，就可以比以前更快地选择或排序行。&lt;/p&gt;
+
+&lt;p&gt;索引还用于定义主键或唯一索引，以确保没有其他列具有相同的值。当然，数据库索引是一个非常有趣的话题，我无法用这个简短的描述来做到这一点（但是[这里有更详细的报道]（http://stackoverflow.com/questions/1108/how-does -database 索引工作/ 1130＃1130））。&lt;/p&gt;
+
+&lt;p&gt;如果您不熟悉索引，我建议您在构建查询时使用此图表：
+￼
+&lt;img src=&quot;f060a8apng&quot; alt=&quot;This diagram illustrates a few SQL performance tuning tips every developer should know.&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;基本上，目标是索引主要的搜索和排序列。&lt;/p&gt;
+
+&lt;p&gt;请注意，如果您的表经常被敲打&lt;code class=&quot;highlighter-rouge&quot;&gt;INSERT&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;UPDATE&lt;/code&gt;, 和&lt;code class=&quot;highlighter-rouge&quot;&gt;DELETE&lt;/code&gt;, 索引时应该小心 - 因为所有索引需要，你最终会降低[性能下降]（http://stackoverflow.com/questions/141232/how-many-database-indexes-is-too-many/141243#141243）在这些操作之后进行修改。&lt;/p&gt;
+
+&lt;p&gt;此外，DBA 经常删除其 SQL 索引，然后执行百万行以上的批量插入[加快插入过程]（http://stackoverflow.com/questions/13700575/is-a-good-practice-to-disable-指数先于插入的一对多-记录上-SQL-SE）。插入批处理后，它们会重新创建索引。但请记住，删除索引会影响该表中运行的每个查询;因此，只有在使用单个大插入时才建议使用此方法。&lt;/p&gt;
+
+&lt;h3 id=&quot;sql-调优sql-server-中的执行计划&quot;&gt;SQL 调优：SQL Server 中的执行计划&lt;/h3&gt;
+
+&lt;p&gt;顺便说一句：SQL Server 中的执行计划工具可用于创建索引。&lt;/p&gt;
+
+&lt;p&gt;它的主要功能是以图形方式显示 SQL Server 查询优化器选择的数据检索方法。如果你以前从未见过它们，那就是[详细的演练]（https://youtu.be/lH2_SI04PWQ）。&lt;/p&gt;
+
+&lt;p&gt;要检索执行计划（在 SQL Server Management Studio 中），只需在运行查询之前单击“包含实际执行计划”（CTRL + M）。&lt;/p&gt;
+
+&lt;p&gt;之后，将出现名为“执行计划”的第三个选项卡。您可能会看到检测到的缺失索引。要创建它，只需右键单击执行计划并选择“缺少索引详细信息…”。就这么简单！&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;91941e0png&quot; alt=&quot;This screenshot demonstrates one of the performance tuning techniques for your SQL database.&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;(&lt;em&gt;点击放大&lt;/em&gt;）&lt;/p&gt;
+
+&lt;h3 id=&quot;sql-调优避免编码循环&quot;&gt;SQL 调优：避免编码循环&lt;/h3&gt;
+
+&lt;p&gt;想象一下，1000 个查询按顺序锤击您的数据库的场景。就像是：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;for (int i = 0; i &amp;lt; 1000; i++)
+{
+    SqlCommand cmd = new SqlCommand(&quot;INSERT INTO TBL (A,B,C) VALUES...&quot;);
+    cmd.ExecuteNonQuery();
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;您应该[在代码中避免此类循环]（http://codeutopia.net/blog/2010/10/07/optimizing-sql-removing-queries-inside-loops/）。例如，我们可以使用唯一的转换上面的代码段&lt;code class=&quot;highlighter-rouge&quot;&gt;INSERT&lt;/code&gt; 要么&lt;code class=&quot;highlighter-rouge&quot;&gt;UPDATE&lt;/code&gt; 具有多个行和值的语句：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;INSERT INTO TableName (A,B,C) VALUES (1,2,3),(4,5,6),(7,8,9) -- SQL SERVER 2008
+
+INSERT INTO TableName (A,B,C) SELECT 1,2,3 UNION ALL SELECT 4,5,6 -- SQL SERVER 2005
+
+UPDATE TableName SET A = CASE B
+        WHEN 1 THEN 'NEW VALUE'
+        WHEN 2 THEN 'NEW VALUE 2'
+        WHEN 3 THEN 'NEW VALUE 3'
+    END
+WHERE B in (1,2,3)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;确保你的&lt;code class=&quot;highlighter-rouge&quot;&gt;WHERE&lt;/code&gt; 子句避免在存储值与现有值匹配时更新存储值。这种简单的优化可以通过仅更新数百行而不是数千行来显着提高 SQL 查询性能。例如：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;UPDATE TableName
+SET A = @VALUE
+WHERE
+      B = 'YOUR CONDITION'
+            AND A &amp;lt;&amp;gt; @VALUE -- VALIDATION
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;[相关子查询]（https://en.wikipedia.org/wiki/Correlated_subquery）是使用父查询中的值的子查询。这种SQL查询倾向于[逐行]运行（http://technet.microsoft.com/en-us/library/ms187638（v = sql.105）.aspx），对于每行返回一次外部查询，从而降低 SQL 查询性能。新的 SQL 开发人员经常被抓住以这种方式构建他们的查询 - 因为它通常是简单的路径。&lt;/p&gt;
+
+&lt;p&gt;以下是相关子查询的示例：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;SELECT c.Name,
+       c.City,
+       (SELECT CompanyName FROM Company WHERE ID = c.CompanyID) AS CompanyName
+FROM Customer c
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;特别是，问题是内部查询（&lt;code class=&quot;highlighter-rouge&quot;&gt;SELECT CompanyName…&lt;/code&gt;) 为外部查询返回的* each *行运行（&lt;code class=&quot;highlighter-rouge&quot;&gt;SELECT c.Name…&lt;/code&gt;). 但为什么要过去&lt;code class=&quot;highlighter-rouge&quot;&gt;Company&lt;/code&gt; 对于外部查询处理的每一行，一次又一次？&lt;/p&gt;
+
+&lt;p&gt;更高效的 SQL 性能调优技术是将相关子查询重构为连接：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;SELECT c.Name,
+       c.City,
+       co.CompanyName
+FROM Customer c
+	LEFT JOIN Company co
+		ON c.CompanyID = co.CompanyID
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;在这种情况下，我们过去了&lt;code class=&quot;highlighter-rouge&quot;&gt;Company&lt;/code&gt; 表只是一次，在开始时，和它一起加入&lt;code class=&quot;highlighter-rouge&quot;&gt;Customer&lt;/code&gt; 表。从那时起，我们可以选择我们需要的值（&lt;code class=&quot;highlighter-rouge&quot;&gt;co.CompanyName&lt;/code&gt;) 更有效率。&lt;/p&gt;
+
+&lt;h3 id=&quot;sql-调优选择-sparingly&quot;&gt;SQL 调优：选择 Sparingly&lt;/h3&gt;
+
+&lt;p&gt;我最喜欢的 SQL 优化技巧之一是避免&lt;code class=&quot;highlighter-rouge&quot;&gt;SELECT *&lt;/code&gt;! 相反，您应该单独包含所需的特定列。再次，这听起来很简单，但我看到这个错误到处都是。考虑一个包含数百列和数百万行的表 - 如果您的应用程序只需要几列，那么查询* all *数据就没有意义。这是对资源的巨大浪费。 （&lt;em&gt;有关更多问题，请参阅[此处]（http://stackoverflow.com/questions/3639861/why-is-select-considered-harmful#answer-3639964）。&lt;/em&gt;）&lt;/p&gt;
+
+&lt;p&gt;例如：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;SELECT * FROM Employees
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;vs.&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;SELECT FirstName, City, Country FROM Employees
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;如果您确实需要每一列，请明确列出每一列。这不是一个规则，而是一种防止未来系统错误和额外 SQL 性能调整的方法。例如，如果您正在使用&lt;code class=&quot;highlighter-rouge&quot;&gt;INSERT... SELECT...&lt;/code&gt; 并且通过添加新列来更改源表，即使目标表不需要该列，也可能遇到问题，例如：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;￼￼￼￼￼￼￼INSERT INTO Employees SELECT * FROM OldEmployees
+
+Msg 213, Level 16, State 1, Line 1
+Insert Error: Column name or number of supplied values does not match table definition.
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;要避免 SQL Server 出现此类错误，您应该单独声明每个列：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;INSERT INTO Employees (FirstName, City, Country)
+SELECT Name, CityName, CountryName
+FROM OldEmployees
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;但请注意，有些情况下使用&lt;code class=&quot;highlighter-rouge&quot;&gt;SELECT *&lt;/code&gt; 可能是合适的。例如，使用临时表 - 这将引导我们进入下一个主题。&lt;/p&gt;
+
+&lt;h3 id=&quot;sql-调优临时表的明智使用temp&quot;&gt;SQL 调优：临时表的明智使用（#Temp）&lt;/h3&gt;
+
+&lt;p&gt;[临时表]（http://www.tutorialspoint.com/sql/sql-temporary-tables.htm）通常会增加查询的复杂性。如果您的代码可以用简单，直接的方式编写，我建议避免使用临时表。&lt;/p&gt;
+
+&lt;p&gt;但是如果你有一个带有一些数据操作的存储过程*不能用单个查询来处理，你可以使用临时表作为中介来帮助你生成最终结果。&lt;/p&gt;
+
+&lt;p&gt;当您必须加入一个大表并且所述表上有条件时，您可以通过在临时表中传输数据，然后在* that *上进行连接来提高数据库性能。您的临时表将比原始（大）表具有更少的行，因此连接将更快完成！&lt;/p&gt;
+
+&lt;p&gt;这个决定并不总是直截了当，但是这个例子将让您了解可能需要使用临时表的情况：&lt;/p&gt;
+
+&lt;p&gt;想象一下拥有数百万条记录的客户表。您必须在特定区域进行联接。你可以通过使用 a 来实现这一点&lt;code class=&quot;highlighter-rouge&quot;&gt;SELECT INTO&lt;/code&gt; 语句然后加入临时表：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;SELECT * INTO #Temp FROM Customer WHERE RegionID = 5
+SELECT r.RegionName, t.Name FROM Region r JOIN #Temp t ON t.RegionID = r.RegionID
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;(&lt;em&gt;注意：一些 SQL 开发人员也避免使用&lt;code class=&quot;highlighter-rouge&quot;&gt;SELECT INTO&lt;/code&gt; 创建临时表，说该命令锁定 tempdb 数据库，禁止其他用户创建临时表。幸运的是，这是[在 7.0 及更高版本中修复]（http://stackoverflow.com/questions/1302670/sql-server-select-into-and-blocking-with-temp-tables#answer-1302787）&lt;/em&gt;。）&lt;/p&gt;
+
+&lt;p&gt;作为临时表的替代方法，您可以考虑将子查询用作表：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;SELECT r.RegionName, t.Name FROM Region r
+JOIN (SELECT * FROM Customer WHERE RegionID = 5) AS t
+ON t.RegionID = r.RegionID
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;可是等等！第二个查询存在问题。如上所述，我们应该只在子查询中包含我们需要的列（即，不使用&lt;code class=&quot;highlighter-rouge&quot;&gt;SELECT *&lt;/code&gt;). 考虑到这一点：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;SELECT r.RegionName, t.Name FROM Region r
+JOIN (SELECT Name, RegionID FROM Customer WHERE RegionID = 5) AS t
+ON t.RegionID = r.RegionID
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;所有这些 SQL 片段都将返回相同的数据。但是使用临时表，我们可以在临时表中创建一个索引来提高性能。有一些很好的讨论[这里]（http://stackoverflow.com/questions/11169550/is-there-a-speed-difference-between-cte-subquery-and-temp-tables/11169910#11169910）之间的差异临时表和子查询。&lt;/p&gt;
+
+&lt;p&gt;最后，当你完成临时表时，删除它以清除 tempdb 资源，而不是等待它被自动删除（就像你终止与数据库的连接时一样）：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;DROP TABLE #temp
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h3 id=&quot;sql-调优我的记录存在吗&quot;&gt;SQL 调优：“我的记录存在吗？”&lt;/h3&gt;
+
+&lt;p&gt;这种 SQL 优化技术涉及到的使用&lt;code class=&quot;highlighter-rouge&quot;&gt;EXISTS()&lt;/code&gt;. 如果要检查记录是否存在，请使用&lt;code class=&quot;highlighter-rouge&quot;&gt;EXISTS()&lt;/code&gt; 代替&lt;code class=&quot;highlighter-rouge&quot;&gt;COUNT()&lt;/code&gt;. 而&lt;code class=&quot;highlighter-rouge&quot;&gt;COUNT()&lt;/code&gt; 扫描整个表格，计算符合条件的所有条目，&lt;code class=&quot;highlighter-rouge&quot;&gt;EXISTS()&lt;/code&gt; 一看到它需要的结果就会退出。这将为您提供[更好的性能和更清晰的代码]（http://sqlblog.com/blogs/andrew_kelly/archive/2007/12/15/exists-vs-count-the-battle-never-ends.aspx）。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;IF (SELECT COUNT(1) FROM EMPLOYEES WHERE FIRSTNAME LIKE '%JOHN%') &amp;gt; 0
+    PRINT 'YES'
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;vs.&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;IF EXISTS(SELECT FIRSTNAME FROM EMPLOYEES WHERE FIRSTNAME LIKE '%JOHN%')
+    PRINT 'YES'
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;sql-server-2016-的-sql-性能调优&quot;&gt;SQL Server 2016 的 SQL 性能调优&lt;/h2&gt;
+
+&lt;p&gt;由于使用 SQL Server 2016 的 DBA 可能知道，该版本标志着[默认和兼容性管理]的重要转变（https://www.sqlshack.com/query-optimizer-changes-in-sql-server-2016-explained /）。作为一个主要版本，它当然会带来新的查询优化，但现在可以通过简化控制它们是否被使用&lt;code class=&quot;highlighter-rouge&quot;&gt;sys.databases.compatibility_level&lt;/code&gt;.&lt;/p&gt;
+
+&lt;h2 id=&quot;sql-性能调优在-office-中&quot;&gt;SQL 性能调优（在 Office 中）&lt;/h2&gt;
+
+&lt;p&gt;SQL 数据库管理员（DBA）和开发人员经常会遇到与数据和非数据相关的问题。根据我的经验，这里有一些关于如何相处和有效合作的提示（双方）。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;91e162cpng&quot; alt=&quot;SQL performance tuning goes beyond the codebase when DBAs and developers have to work together effectively.&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;开发人员的数据库优化&quot;&gt;开发人员的数据库优化：&lt;/h3&gt;
+
+&lt;p&gt;1.&lt;/p&gt;
+
+&lt;p&gt;如果您的应用程序突然停止工作，则可能不是数据库问题。例如，您可能遇到网络问题。在指责 DBA 之前调查一下！&lt;/p&gt;
+
+&lt;p&gt;2.&lt;/p&gt;
+
+&lt;p&gt;即使您是忍者 SQL 数据建模者，也请 DBA 帮助您处理关系图。他们有很多东西要分享和提供。&lt;/p&gt;
+
+&lt;p&gt;3.&lt;/p&gt;
+
+&lt;p&gt;DBA 不喜欢快速变化。这很自然：他们需要整体分析数据库，并从各个角度检查任何变化的影响。列中的简单更改可能需要一周才能实现 - 但这是因为错误可能会成为公司的巨大损失。耐心一点！&lt;/p&gt;
+
+&lt;p&gt;4.&lt;/p&gt;
+
+&lt;p&gt;不要让 SQL DBA 在生产环境中进行数据更改。如果要访问生产数据库，则必须对所有自己的更改负责。&lt;/p&gt;
+
+&lt;h3 id=&quot;sql-server-dba-的数据库优化&quot;&gt;SQL Server DBA 的数据库优化：&lt;/h3&gt;
+
+&lt;p&gt;1.&lt;/p&gt;
+
+&lt;p&gt;如果您不喜欢人们向您询问数据库，请为他们提供实时状态面板。 [开发人员]（https://www.toptal.com/sql-server）总是怀疑数据库的状态，这样的面板可以节省每个人的时间和精力。&lt;/p&gt;
+
+&lt;p&gt;2.&lt;/p&gt;
+
+&lt;p&gt;在测试/质量保证环境中帮助开发人员。通过对真实数据的简单测试，可以轻松地模拟生产服务器。对于其他人和您自己来说，这将节省大量时间。&lt;/p&gt;
+
+&lt;p&gt;3.&lt;/p&gt;
+
+&lt;p&gt;开发人员整天都在经常更改业务逻辑的系统上花费一整天。尝试理解这个世界更灵活，并能够在关键时刻打破一些规则。&lt;/p&gt;
+
+&lt;p&gt;4.&lt;/p&gt;
+
+&lt;p&gt;SQL 数据库不断发展。必须将数据迁移到新版本的那一天。开发人员依靠每个新版本的重要新功能。不要拒绝接受他们的更改，而是提前计划并为迁移做好准备。&lt;/p&gt;
+
+&lt;h2 id=&quot;了解基础知识&quot;&gt;了解基础知识&lt;/h2&gt;
+
+&lt;h3 id=&quot;什么是-dbms-中的查询处理&quot;&gt;什么是 DBMS 中的查询处理？&lt;/h3&gt;
+
+&lt;p&gt;像 SQL Server 这样的数据库管理系统必须将您提供的 SQL 查询转换为他们必须执行的实际指令，以读取或更改数据库中的数据。在处理之后，数据库引擎然后还尝试在可能的情况下自动优化查询。&lt;/p&gt;
+
+&lt;h3 id=&quot;什么是-sql-server-中的查询优化&quot;&gt;什么是 SQL Server 中的查询优化？&lt;/h3&gt;
+
+&lt;p&gt;查询优化是指开发人员或数据库引擎以这样的方式更改查询，即 SQL Server 能够更有效地返回相同的结果。有时候使用 EXISTS（）而不是 COUNT（）很简单，但有时候需要用不同的方法重写查询。&lt;/p&gt;
+
+&lt;h3 id=&quot;什么是-sql-server-中的性能调优&quot;&gt;什么是 SQL Server 中的性能调优？&lt;/h3&gt;
+
+&lt;p&gt;性能调优包括查询优化，SQL 客户端代码优化，数据库索引管理，以及在另一种意义上，开发人员和 DBA 之间更好的协调。&lt;/p&gt;
+
+&lt;h3 id=&quot;sql-中的索引有什么用&quot;&gt;SQL 中的索引有什么用？&lt;/h3&gt;
+
+&lt;p&gt;索引跟踪表数据的目标子集，以便可以更快地完成选择和排序，而服务器不必查看该表的每个最后一位数据。&lt;/p&gt;
+
+&lt;h3 id=&quot;为什么-exists比-count更快&quot;&gt;为什么 EXISTS（）比 COUNT（）更快？&lt;/h3&gt;
+
+&lt;p&gt;EXISTS（）一找到匹配的行就会停止处理，而 COUNT（）必须计算每一行，无论你最后是否真的需要这个细节。&lt;/p&gt;
+
+&lt;h2 id=&quot;关于作者&quot;&gt;关于作者&lt;/h2&gt;
+
+&lt;p&gt;[Rodrigo Koch，巴西]（https://www.toptal.com/resume/rodrigo-koch）&lt;/p&gt;
+
+&lt;p&gt;会员自 2012 年 6 月 24 日起&lt;/p&gt;
+
+&lt;p&gt;Rodrigo 是使用 C＃的.NET Web 应用程序的 Microsoft 认证专家。他的双重国籍使他成为德国和巴西开发商的宝贵资源。他具有强大的开发和故障排除技能，并且具有匹配的组合;他广泛的知名客户包括雀巢，Chartis 保险和卡西欧巴西。如今，他在三星拉丁美洲工作。 [[点击继续…]]（https://www.toptal.com/resume/rodrigo-koch）&lt;/p&gt;</content><author><name></name></author><summary type="html">SQL 性能调优可能是一项非常困难的任务，尤其是在处理大规模数据时，即使是最微小的变化也会对性能产生巨大的（正面或负面）影响。</summary></entry><entry xml:lang="zh_CN"><title type="html">xmake-vscode插件开发过程记录</title><link href="http://www.jfox.info/2018/246d3da/index.html" rel="alternate" type="text/html" title="xmake-vscode插件开发过程记录" /><published>2018-09-03T05:14:08+00:00</published><updated>2018-09-03T05:14:08+00:00</updated><id>http://www.jfox.info/2018/246d3da/246d3da</id><content type="html" xml:base="http://www.jfox.info/2018/246d3da/index.html">&lt;p&gt;最近打算给&lt;a href=&quot;https://github.com/tboox/xmake&quot;&gt;xmake&lt;/a&gt;写一些 IDE 和编辑器的集成插件，发现 vscode 的编辑器插件比较容易上手的，就先研究了下 vscode 的插件开发流程，并且完成了&lt;a href=&quot;https://github.com/tboox/xmake-vscode&quot;&gt;xmake-vscode&lt;/a&gt;插件的开发。&lt;/p&gt;
+
+&lt;p&gt;我们先来看几张最后的效果图：&lt;/p&gt;
+
+&lt;h2 id=&quot;语法高亮和自动补全&quot;&gt;语法高亮和自动补全&lt;/h2&gt;
+
+&lt;p&gt;&lt;img src=&quot;83fc69d&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;状态栏&quot;&gt;状态栏&lt;/h2&gt;
+
+&lt;p&gt;&lt;img src=&quot;919cc7d&quot; alt=&quot;statusbar&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;要实现上面的效果，其实并不复杂，首先我们先来简单介绍下，vscode 的插件开发的基本流程：&lt;/p&gt;
+
+&lt;h2 id=&quot;安装插件开发环境&quot;&gt;安装插件开发环境&lt;/h2&gt;
+
+&lt;h4 id=&quot;安装-cnpm&quot;&gt;安装 cnpm&lt;/h4&gt;
+
+&lt;p&gt;由于国内环境比较复杂，直接用 npm 安装也许很慢或者访问不稳定，因此这里先安装了 cnpm 去默认使用淘宝的镜像源。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ npm install -g cnpm --registry=https://registry.npm.taobao.org
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h4 id=&quot;创建空工程&quot;&gt;创建空工程&lt;/h4&gt;
+
+&lt;p&gt;通过 cnpm 去安装 yo 工具，用来创建一个 vscode 插件的空工程&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ cnpm install -g yo generator-code
+$ yo code
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;大体的源码结构如下：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;86654bc&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;选择创建项目后有四个输入和一个选择：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;输入你扩展的名称 xmake-vscode&lt;/li&gt;
+  &lt;li&gt;输入一个标志（项目创建的文件名称用这个）xmake-vscode&lt;/li&gt;
+  &lt;li&gt;输入对这个扩展的描述&lt;/li&gt;
+  &lt;li&gt;输入以后要发布用到的一名称（和以后再发布时候有一个名字是对应上的）tboox&lt;/li&gt;
+  &lt;li&gt;是问你要不要创建一个 git 仓库用于版本管理&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;创建完成后的空工程，我们可以用 vscode 直接打开，然后进行调试加载运行下：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;42b1698&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;加载起来后，敲 F1 打开命令窗口，运行默认的 hello world 测试命令：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;c835f86&quot; alt=&quot;&quot; /&gt;
+&lt;img src=&quot;981a05d&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;到此，一个简答的 demo 插件就搞定了，接下来我们简单介绍下如何发布这个插件到 vscode 的 market 上去。&lt;/p&gt;
+
+&lt;h4 id=&quot;创建发布者&quot;&gt;创建发布者&lt;/h4&gt;
+
+&lt;p&gt;首先我们需要在&lt;a href=&quot;https://www.visualstudio.com/products/visual-studio-team-services-vs&quot;&gt;marketplace.visualstudio.com&lt;/a&gt;上注册一个账号，创建一个发布者，这里我取名为 tboox&lt;/p&gt;
+
+&lt;p&gt;然后，我们需要在自己的账号里面，添加一个 Personal Access Token（地址：&lt;code class=&quot;highlighter-rouge&quot;&gt;https://[your name].visualstudio.com/_details/security/tokens&lt;/code&gt;，注意 Token 只显示一次，最好自己保存一份）&lt;/p&gt;
+
+&lt;p&gt;接着，我们安装下 vsce 这个工具，用于 vscode 的插件工程打包编译和发布。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ cnpm install -g vsce
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;安装好 vsce 后，我们先创建一个发布者，这里为 tboox，输入刚刚 market 账号里面提供的 token 进行绑定。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ vsce create-publisher (publisher name)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h4 id=&quot;构建发布&quot;&gt;构建发布&lt;/h4&gt;
+
+&lt;p&gt;最后，只需要通过下面命令进行打包或者发布就行了，如果仅仅打个本地包，拖入 vscode 加载测试，可以运行：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ vsce package
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;这将会生成一个类似&lt;code class=&quot;highlighter-rouge&quot;&gt;xmake-vscode-0.0.1.vslx&lt;/code&gt;的插件包文件，用 vscode 可直接加载运行。&lt;/p&gt;
+
+&lt;p&gt;如果，我们已经开发完了插件，想要发布到 market 市场，可以执行：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ vsce publish [version]
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;这个时候，我们就可以在&lt;a href=&quot;https://marketplace.visualstudio.com/items?itemName=tboox.xmake-vscode#overview&quot;&gt;xmake-vscode on marketplace&lt;/a&gt;上看到你的插件了，用户也可以直接通过 vscode 进行搜索和安装使用。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;dd9179b&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;插件开发详解&quot;&gt;插件开发详解&lt;/h2&gt;
+
+&lt;h4 id=&quot;插件的加载机制&quot;&gt;插件的加载机制&lt;/h4&gt;
+
+&lt;p&gt;插件通过工程根目录 extension.json 中配置的 activationEvents 进行触发，例如：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;{
+    &quot;activationEvents&quot;: [
+        &quot;workspaceContains:xmake.lua&quot;,
+        &quot;onCommand:xmake.sayHello&quot;
+    ]
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;当 vscode 打开带有&lt;code class=&quot;highlighter-rouge&quot;&gt;xmake.lua&lt;/code&gt;的目录或者执行&lt;code class=&quot;highlighter-rouge&quot;&gt;xmake.XXX&lt;/code&gt;相关命令的时候，都会触发加载 xmake-vscode 插件，然后调用&lt;code class=&quot;highlighter-rouge&quot;&gt;src/extension.ts&lt;/code&gt;中的 activate 入口函数，进行插件的加载和初始化。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;export functionactivate(context: vscode.ExtensionContext) {let disposable = vscode.commands.registerCommand('xmake.sayHello', () =&amp;gt; {
+        vscode.window.showInformationMessage('Hello XMake!');
+    });
+
+    context.subscriptions.push(disposable);
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;上述代码，在加载插件的时候，注册&lt;code class=&quot;highlighter-rouge&quot;&gt;sayHello&lt;/code&gt;命令，去显示&lt;code class=&quot;highlighter-rouge&quot;&gt;Hello XMake!&lt;/code&gt;提示信息。&lt;/p&gt;
+
+&lt;h4 id=&quot;创建自定义输出&quot;&gt;创建自定义输出&lt;/h4&gt;
+
+&lt;p&gt;vscode 通过创建 OutputChannel 来输出自己的日志信息，代码如下：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;import * as vscode from 'vscode';
+
+let log = vscode.window.createOutputChannel(&quot;xmake/log&quot;);
+log.show();
+log.appendLine(&quot;hello xmake!&quot;);
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;在创建的时候可以指定一个 label 名，用于区分不同的输出通道，最后显示的结果如下：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;059d764&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;需要注意的是，必须执行&lt;code class=&quot;highlighter-rouge&quot;&gt;log.show()&lt;/code&gt;，输出才会被显示出来，并且输出行为是带缓存刷新的，并不会实时输出，也不支持色彩高亮输出。&lt;/p&gt;
+
+&lt;h4 id=&quot;创建和控制终端&quot;&gt;创建和控制终端&lt;/h4&gt;
+
+&lt;p&gt;之前，xmake-vscode 就是采用 channel 的方式来输出 xmake 的构建信息，效果不是很理想，因此后来改用了终端直接执行的方式，可以看下下面的效果图：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;b7cbedd&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;那如何控制终端，执行自己的命令呢，其实也非常简单：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;let terminal = vscode.window.createTerminal({name: &quot;xmake&quot;});
+terminal.show(true);
+terminal.sendText(&quot;xmake&quot;);
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;上面的代码，通过创建一个 label 名为 xmake 的独立终端，然后发送执行命令：&lt;code class=&quot;highlighter-rouge&quot;&gt;xmake&lt;/code&gt;，去让终端执行 xmake 进行项目的构建，当然如果要显示出来，还是要先调用下&lt;code class=&quot;highlighter-rouge&quot;&gt;terminal.show(true)&lt;/code&gt;。&lt;/p&gt;
+
+&lt;h4 id=&quot;添加和读取全局配置&quot;&gt;添加和读取全局配置&lt;/h4&gt;
+
+&lt;p&gt;xmake-vscode 里面增加了一些全局 vscode 配置项，用于控制 xmake-vscode 插件的行为，配置清单是在 package.json 文件中进行描述的，例如：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;{
+    &quot;configuration&quot;: {
+        &quot;type&quot;: &quot;object&quot;,
+        &quot;title&quot;: &quot;XMake configuration&quot;,
+        &quot;properties&quot;: {
+            &quot;xmake.logLevel&quot;: {
+                &quot;type&quot;: &quot;string&quot;,
+                &quot;default&quot;: &quot;normal&quot;,
+                &quot;description&quot;: &quot;The Log Level: normal/verbose/minimal&quot;,
+                &quot;enum&quot;: [
+                    &quot;verbose&quot;,
+                    &quot;normal&quot;,
+                    &quot;minimal&quot;
+                ]
+            },
+            &quot;xmake.buildDirectory&quot;: {
+                &quot;type&quot;: &quot;string&quot;,
+                &quot;default&quot;: &quot;${workspaceRoot}/build&quot;,
+                &quot;description&quot;: &quot;The Build Output Directory&quot;},
+            &quot;xmake.androidNDKDirectory&quot;: {
+                &quot;type&quot;: &quot;string&quot;,
+                &quot;default&quot;: &quot;&quot;,
+                &quot;description&quot;: &quot;The Android NDK Directory&quot;}
+        }
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;上述配置，增加了三个配置项，都在&lt;code class=&quot;highlighter-rouge&quot;&gt;xmake.&lt;/code&gt;域下面，可在 vscode 配置中直接搜索 xmake 相关字样就能方便找到。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;7554f74&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;读取配置也很方便，只要获取 xmake 相关域配置，进行读取就行了：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;const config = vscode.workspace.getConfiguration('xmake');
+config.get(&quot;buildDirectory&quot;);
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h4 id=&quot;创建状态栏&quot;&gt;创建状态栏&lt;/h4&gt;
+
+&lt;p&gt;状态栏上的按钮是可以响应之前创建的那些命令的，例如：&lt;code class=&quot;highlighter-rouge&quot;&gt;xmake.sayHello&lt;/code&gt;等，下面我们在状态栏上创建一个 debug 按钮，用来调试运行 xmake 构建的程序：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;let debugButton = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 4.5);
+
+debugButton.command = 'xmake.onDebug';
+debugButton.text = `$(bug)`;
+debugButton.tooltip = &quot;Debug the given target&quot;;
+debugButton.show();
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;createStatusBarItem 中第二个参数 4.5 用于控制按钮在状态栏上的布局顺序，创建好后，再设置下一些基础属性就行了，这里按钮的文本直接通过&lt;code class=&quot;highlighter-rouge&quot;&gt;$(bug)&lt;/code&gt;设置了一个图标来显示，更加的直观。&lt;/p&gt;
+
+&lt;p&gt;更多 vscode 内置支持的图标，可以自己从&lt;a href=&quot;https://octicons.github.com/&quot;&gt;octicons&lt;/a&gt;上面去找。&lt;/p&gt;
+
+&lt;p&gt;点击这个按钮，将会触发&lt;code class=&quot;highlighter-rouge&quot;&gt;xmake.onDebug&lt;/code&gt;命令，然后在终端上执行&lt;code class=&quot;highlighter-rouge&quot;&gt;xmake run -d&lt;/code&gt;命令，去运行调试程序。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;cb7cfc8&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;添加选项输入列表&quot;&gt;添加选项输入列表&lt;/h4&gt;
+
+&lt;p&gt;在&lt;a href=&quot;https://github.com/tboox/xmake-vscode&quot;&gt;xmake-vscode&lt;/a&gt;的状态栏上，我们还增加了几个快速配置的状态按钮，用于快速切换不同的平台、架构、编译模式，例如：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;84e67a8&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;这个时候，需要有个选项选择列表的支持，在点击按钮后，列出可以选择的几个选项，然后选择切换，那如何创建这个选项列表呢，直接上代码：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;let items: vscode.QuickPickItem[] = [];
+items.push({label: &quot;linux&quot;, description: &quot;The Linux Platform&quot;});
+items.push({label: &quot;macosx&quot;, description: &quot;The MacOS Platform&quot;});
+items.push({label: &quot;windows&quot;, description: &quot;The Windows Platform&quot;});
+items.push({label: &quot;android&quot;, description: &quot;The Android Platform&quot;});
+items.push({label: &quot;iphoneos&quot;, description: &quot;The iPhoneOS Platform&quot;});
+items.push({label: &quot;watchos&quot;, description: &quot;The WatchOS Platform&quot;});
+items.push({label: &quot;mingw&quot;, description: &quot;The MingW Platform&quot;});
+items.push({label: &quot;cross&quot;, description: &quot;The Cross Platform&quot;});
+
+
+const chosen: vscode.QuickPickItem|undefined = await vscode.window.showQuickPick(items);
+if (chosen) {
+
+
+    platButton.text = chosen.label;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h4 id=&quot;自定义语法高亮&quot;&gt;自定义语法高亮&lt;/h4&gt;
+
+&lt;p&gt;语法高亮完全可以通过配置文件来搞定，不用写代码，当然也可以在代码中动态配置，这样稍微繁琐些。&lt;/p&gt;
+
+&lt;p&gt;xmake-vscode 里面需要处理工程 xmake.lua 描述文件的语法高亮，因此这边在 package.json 里面先定义了一个叫 xmake 的语言类型，如果编辑器打开&lt;code class=&quot;highlighter-rouge&quot;&gt;xmake.lua&lt;/code&gt;文件，就会对其进行语法高亮处理。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;{
+    &quot;contributes&quot;: {
+        &quot;languages&quot;: [
+            {
+                &quot;id&quot;: &quot;xmake&quot;,
+                &quot;filenames&quot;: [
+                    &quot;xmake.lua&quot;
+                ],
+                &quot;aliases&quot;: [
+                    &quot;XMake&quot;
+                ],
+                &quot;configuration&quot;: &quot;./languages/xmake-configuration.json&quot;}
+        ],
+        &quot;grammars&quot;: [
+            {
+                &quot;language&quot;: &quot;xmake&quot;,
+                &quot;scopeName&quot;: &quot;source.xmake&quot;,
+                &quot;path&quot;: &quot;./languages/xmake-grammars.json&quot;}
+        ]
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;跟语法高亮相关的描述，都放置在&lt;code class=&quot;highlighter-rouge&quot;&gt;/languages/xmake-grammars.json&lt;/code&gt;中，用 json 来描述，我们也可以用 xml 的格式来描述，但是这样可读性不是很好。&lt;/p&gt;
+
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;xmake-grammars.json&lt;/code&gt;中的描述规则，我们摘录自 lua 的 grammars 文件，因为&lt;code class=&quot;highlighter-rouge&quot;&gt;xmake.lua&lt;/code&gt;本身就是基于 lua 语法的，例如，我们匹配&lt;code class=&quot;highlighter-rouge&quot;&gt;'xxx'&lt;/code&gt;单引号字符串的规则，进行字符串的高亮输出。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;{
+    &quot;begin&quot;: &quot;'&quot;,
+    &quot;beginCaptures&quot;: {
+        &quot;0&quot;: {
+            &quot;name&quot;: &quot;punctuation.definition.string.begin.xmake&quot;}
+    },
+    &quot;end&quot;: &quot;'&quot;,
+    &quot;endCaptures&quot;: {
+        &quot;0&quot;: {
+            &quot;name&quot;: &quot;punctuation.definition.string.end.xmake&quot;}
+    },
+    &quot;name&quot;: &quot;string.quoted.single.xmake&quot;,
+    &quot;patterns&quot;: [
+        {
+            &quot;include&quot;: &quot;#escaped_char&quot;}
+    ]
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h4 id=&quot;自动补全的实现&quot;&gt;自动补全的实现&lt;/h4&gt;
+
+&lt;p&gt;代码的自动提示和补全比较麻烦下，需要写个自定义的 class，通过 languages 进行注册：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;vscode.languages.registerCompletionItemProvider(&quot;xmake&quot;, new Completion());
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;这里我们定义了一个 Completion 类，注册到 xmake 语言上去，xmake 语言定义，就是刚才讲的在 package.json 中的配置。&lt;/p&gt;
+
+&lt;p&gt;然后我们实现下这个 Completion 类：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;export class Completion implements vscode.CompletionItemProvider {
+
+
+    public provideCompletionItems(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken): Thenable&amp;lt;vscode.CompletionItem[]&amp;gt; {
+
+        // 获取当前输入的单词文本let wordAtPosition = document.getWordRangeAtPosition(position);
+        var currentWord = '';
+        if (wordAtPosition &amp;amp;&amp;amp; wordAtPosition.start.character &amp;lt; position.character) {
+            var word = document.getText(wordAtPosition);
+            currentWord = word.substr(0, position.character - wordAtPosition.start.character);
+        }
+
+
+        returnnew Promise(function(resolve, reject) {
+            Promise.all([
+                getLuaKeywordsSuggestions(currentWord),
+                getXMakeCommandsSuggestions(currentWord)
+            ]).then(function(results) {var suggestions = Array.prototype.concat.apply([], results);
+                resolve(suggestions);
+            }).catch(err =&amp;gt; { reject(err); });
+        });
+    }
+
+
+    public resolveCompletionItem(item: vscode.CompletionItem, token: vscode.CancellationToken): Thenable&amp;lt;vscode.CompletionItem&amp;gt; {
+
+        // 对每个候选文本增加文档描述returnnew Promise(function(resolve, reject) {
+            item.documentation = &quot;xxxxxxxxxxx&quot;;
+            resolve(item);
+         });
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;这部分代码比较多，就不完全贴出来了，完整实现，可参考：&lt;a href=&quot;https://github.com/tboox/xmake-vscode/blob/master/src/completion.ts&quot;&gt;completion.ts&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;83fc69d&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;结语&quot;&gt;结语&lt;/h2&gt;
+
+&lt;p&gt;本文讲述的一些 vscode 插件代码都来自&lt;a href=&quot;https://github.com/tboox/xmake-vscode&quot;&gt;xmake-vscode&lt;/a&gt;，有兴趣的同学可以直接参考源码，写个自己的插件。&lt;/p&gt;
+
+&lt;p&gt;原文出处：&lt;a href=&quot;http://tboox.org/cn/2017/10/11/xmake-vscode/&quot;&gt;http://tboox.org/cn/2017/10/11/xmake-vscode/&lt;/a&gt;&lt;/p&gt;</content><author><name></name></author><summary type="html">最近打算给xmake写一些 IDE 和编辑器的集成插件，发现 vscode 的编辑器插件比较容易上手的，就先研究了下 vscode 的插件开发流程，并且完成了xmake-vscode插件的开发。</summary></entry><entry xml:lang="zh_CN"><title type="html">回眸Spring – 事物运行原理机制</title><link href="http://www.jfox.info/2017/%E5%9B%9E%E7%9C%B8spring%E4%BA%8B%E7%89%A9%E8%BF%90%E8%A1%8C%E5%8E%9F%E7%90%86%E6%9C%BA%E5%88%B6.html" rel="alternate" type="text/html" title="回眸Spring – 事物运行原理机制" /><published>2017-01-01T15:59:59+00:00</published><updated>2017-01-01T15:59:59+00:00</updated><id>http://www.jfox.info/2017/20170101499</id><content type="html" xml:base="http://www.jfox.info/2017/%E5%9B%9E%E7%9C%B8spring%E4%BA%8B%E7%89%A9%E8%BF%90%E8%A1%8C%E5%8E%9F%E7%90%86%E6%9C%BA%E5%88%B6.html">&lt;p&gt;H2M_LI_HEADER Spring的事物是通过哪些原理实现的?
+H2M_LI_HEADER Spring的事物机制是如何提交和回滚的?&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;==希望你有阅读过Spring源码的经历,不然有的东西可能理解不清楚..==&lt;/strong&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;spring的事物是通过哪些原理实现的&quot;&gt;Spring的事物是通过哪些原理实现的?&lt;/h3&gt;
+
+&lt;p&gt;首先给大家布置一个代码场景(以项目代码为例):&lt;/p&gt;
+
+&lt;p&gt;spring-dataSource.xml文件&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;     &amp;lt;bean id=&quot;db1&quot; class=&quot;com.alibaba.druid.pool.DruidDataSource&quot;     destroy-method=&quot;close&quot;&amp;gt;
+         ....
+    &amp;lt;/bean&amp;gt;
+    &amp;lt;!-- 数据源配置 --&amp;gt;
+    &amp;lt;bean id=&quot;transactionManager&quot; class=&quot;org.springframework.jdbc.datasource.DataSourceTransactionManager&quot;&amp;gt;
+    &amp;lt;property name=&quot;dataSource&quot; ref=&quot;db1&quot;/&amp;gt;
+    &amp;lt;qualifier value=&quot;&quot;/&amp;gt;
+&amp;lt;/bean&amp;gt;
+
+&amp;lt;!-- 事物管理器 --&amp;gt;
+    &amp;lt;tx:annotation-driven transaction-manager=&quot;transactionManager&quot;
+    proxy-target-class=&quot;true&quot;&amp;gt;&amp;lt;/tx:annotation-driven&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Spring-service.xml&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&amp;lt;!-- 注解扫描包 --&amp;gt;
+ &amp;lt;context:component-scan base-package=&quot;com.elab.execute.services,com.elab.execute.dao,com.elab.execute.utils&quot;&amp;gt;
+        &amp;lt;context:include-filter type=&quot;annotation&quot; expression=&quot;org.springframework.stereotype.Service&quot;/&amp;gt;
+        &amp;lt;context:include-filter type=&quot;annotation&quot; expression=&quot;org.springframework.stereotype.Repository&quot;/&amp;gt;
+        &amp;lt;context:include-filter type=&quot;annotation&quot; expression=&quot;org.springframework.stereotype.Component&quot;/&amp;gt;
+        &amp;lt;context:exclude-filter type=&quot;annotation&quot; expression=&quot;org.springframework.stereotype.Controller&quot;/&amp;gt;
+    &amp;lt;/context:component-scan&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Serivce.java&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    //方法上只要加上@Transactional方法就行了,一个DML操作
+    @Transactional
+    public void testTransactional() throws Exception {
+        System.out.println(&quot;=====================开始处理事物&quot;);
+        TGirl girl = new TGirl();
+        girl.setAge(11);
+        girl.setGirl_name(&quot;hah&quot;);
+        girl.setStatus(1);
+        int insert = girlMapper.insert(girl);
+        System.out.println(&quot;=====================结束处理事物&quot;);
+        System.out.println(&quot;处理完成...&quot;);
+        // 模拟程序报错
+//        int i = 1 / 0;
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;strong&gt;==注意我们这只是模拟一个简单的事物管理配置场景,大概就是这么一些要配置的东西==&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;测试类: 我没有用Junit,不过效果是差不多的&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;String xml[] = new String[]{&quot;applicationContext-service.xml&quot;, &quot;applicationContext-datasource.xml&quot;, };
+        ApplicationContext app = new ClassPathXmlApplicationContext(xml);
+        IDemoService demoService = (IDemoService) app.getBean(&quot;demoService&quot;);
+        // DML操作
+        demoService.testTransactional();
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;首先我们的目的是想知道Spring事物的运行流程,这时候可能就需要Debug调试,我们也就只关注事物这块初始化和执行的情况,我们可以采用&lt;strong&gt;倒推&lt;/strong&gt;的方式
+&lt;strong&gt;先看spring事物的执行过程,再看初始化过程&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;debug断点打在 demoService.testTransactional(); 这块,然后F5进去
+&lt;img src=&quot;d0fc2db.png&quot; alt=&quot;&quot; /&gt;
+image&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;进入到的是一个CglibAopProxy内部类&lt;strong&gt;DynamicAdvisedInterceptor&lt;/strong&gt;的&lt;strong&gt;intercept&lt;/strong&gt;方法,从这里看的话,其实这个类就是一个责任链类型的处理类&lt;/p&gt;
+
+&lt;p&gt;注意这一块是一个&lt;strong&gt;责任链模式&lt;/strong&gt;,表示需要经过一系列链条之后才会到达最终的方法,&lt;strong&gt;当然这三个类切入点类型的类,是通过动态代理加入到责任链中的,下面初始化的时候会讲到&lt;/strong&gt;&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;      // 这一段代码表示获取到你将要执行最终方法前要经过的一系列拦截类的处理,也就是责任链类的中的核心集合
+    List&amp;lt;Object&amp;gt; chain = this.advised.getInterceptorsAndDynamicInterceptionAdvice(method, targetClass);
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;8c5486e.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;image&lt;/p&gt;
+
+&lt;p&gt;图中chain集合有三个类,表示执行到目的方法之前需要经过这几个类&lt;/p&gt;
+
+&lt;p&gt;我们来看到执行到目标方法的执行轨迹:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;29fda31.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;image&lt;/p&gt;
+
+&lt;p&gt;确实是经过了三个拦截链&lt;/p&gt;
+
+&lt;p&gt;我们直接看事物相关的拦截链类&lt;/p&gt;
+
+&lt;p&gt;下面代码是不是似曾相识,这都是开启事物的操作和异常情况下,回滚和提交操作&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;4ea97f2.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;image&lt;/p&gt;
+
+&lt;p&gt;经过这些代理类之后到达最终的方法,这是一个大概的运行过程.异常会被事物捕获到,没有则提交… 都是通过这个TransactionAspectSupport的invokeWithinTransaction方法去做的&lt;/p&gt;
+
+&lt;h3 id=&quot;那spring又是如何初始化这一系列的代理类操作的呢&quot;&gt;那Spring又是如何初始化这一系列的代理类操作的呢?&lt;/h3&gt;
+
+&lt;p&gt;回到运行的第一步我们在那个Aop的拦截器类中(CglibApoProxy),想一想既然spring运行这个方法的时候会执行这个拦截器方法,那么初始化的时候应该也和这个类相关,然后从上面实例化的地方和可以的地方打打断点…&lt;/p&gt;
+
+&lt;p&gt;果然,初始化的方法断点被触发了…&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;df1ae4d.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;image&lt;/p&gt;
+
+&lt;p&gt;这时候我们可以看断点的运行轨迹&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;db1649c.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;image&lt;/p&gt;
+
+&lt;p&gt;我们发现,触发到这个断点的时候,会经过一系列的方法执行,这些执行的方法链都是创建bean的时候必须经过的过程,也就是说每个bean创建的时候,都会经过这一系列的链路的检查(applyBeanPostProcessorsAfterInitialization方法里面的getBeanPostProcessors()方法),才会生成最终的bean,这时候我们需要定位到执行这个CglibAopProxy初始化的方法这块,&lt;strong&gt;在什么情况下&lt;/strong&gt;,会执行这个创建代理的类&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;eaf4f5b.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;image&lt;/p&gt;
+
+&lt;p&gt;我们现在已经知道他创建了代理类的过程,现在需要知道在什么情况下会为某些bean创建代理。了解了getAdvicesAndAdvisorsForBean这个方法运行做了什么事情,就大概知道创建代理类bean的条件&lt;/p&gt;
+
+&lt;p&gt;首先我们一步步看这个方法的代码:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    /**
+        这是一个获取切入点和包含切入点的bean方法
+    /*
+    protected Object[] getAdvicesAndAdvisorsForBean(Class&amp;lt;?&amp;gt; beanClass, String beanName, TargetSource targetSource) {
+        // 查询当前的bean是否包含切入点
+        List&amp;lt;Advisor&amp;gt; advisors = findEligibleAdvisors(beanClass, beanName);
+        if (advisors.isEmpty()) {
+            return DO_NOT_PROXY;
+        }
+        return advisors.toArray();
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;findEligibleAdvisors方法&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    /**
+     * 大概意思是为这个bean找到合适的自动代理类
+     * Find all eligible Advisors for auto-proxying this class.
+     * @param beanClass the clazz to find advisors for
+     * @param beanName the name of the currently proxied bean
+     * @return the empty List, not {@code null},
+     * if there are no pointcuts or interceptors
+     * @see #findCandidateAdvisors
+     * @see #sortAdvisors
+     * @see #extendAdvisors
+     */
+    protected List&amp;lt;Advisor&amp;gt; findEligibleAdvisors(Class&amp;lt;?&amp;gt; beanClass, String beanName) {
+        // 找到当前已经注册好的代理类bean
+        List&amp;lt;Advisor&amp;gt; candidateAdvisors = findCandidateAdvisors();
+        //将注册好的bean和当前bean的类型进行搜索查询,是否有合适的切入点类
+        List&amp;lt;Advisor&amp;gt; eligibleAdvisors = findAdvisorsThatCanApply(candidateAdvisors, beanClass, beanName);
+        extendAdvisors(eligibleAdvisors);
+        if (!eligibleAdvisors.isEmpty()) {
+            eligibleAdvisors = sortAdvisors(eligibleAdvisors);
+        }
+        return eligibleAdvisors;
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;findAdvisorsThatCanApply :&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;       /**
+       大概意思就是搜索给定的切入点集合,以用于找到可以应用到当前bean的合适的切入点集合
+     * Search the given candidate Advisors to find all Advisors that
+     * can apply to the specified bean.
+     * @param candidateAdvisors the candidate Advisors
+     * @param beanClass the target's bean class
+     * @param beanName the target's bean name
+     * @return the List of applicable Advisors
+     * @see ProxyCreationContext#getCurrentProxiedBeanName()
+     */
+    protected List&amp;lt;Advisor&amp;gt; findAdvisorsThatCanApply(
+            List&amp;lt;Advisor&amp;gt; candidateAdvisors, Class&amp;lt;?&amp;gt; beanClass, String beanName) {
+                // 设置代理的上下文,只针当前线程
+        ProxyCreationContext.setCurrentProxiedBeanName(beanName);
+        try {
+            // 这是一个AOP的工具类,用于
+            return AopUtils.findAdvisorsThatCanApply(candidateAdvisors, beanClass);
+        }
+        finally {
+            ProxyCreationContext.setCurrentProxiedBeanName(null);
+        }
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;AopUtils.findAdvisorsThatCanApply&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    /**
+     * 确定能应用到当前clazz的List&amp;lt;Advisor&amp;gt;
+     * Determine the sublist of the {@code candidateAdvisors} list
+     * that is applicable to the given class.
+     * @param candidateAdvisors the Advisors to evaluate
+     * @param clazz the target class
+     * @return sublist of Advisors that can apply to an object of the given class
+     * (may be the incoming List as-is)
+     */
+    public static List&amp;lt;Advisor&amp;gt; findAdvisorsThatCanApply(List&amp;lt;Advisor&amp;gt; candidateAdvisors, Class&amp;lt;?&amp;gt; clazz) {
+        if (candidateAdvisors.isEmpty()) {
+            return candidateAdvisors;
+        }
+        List&amp;lt;Advisor&amp;gt; eligibleAdvisors = new LinkedList&amp;lt;Advisor&amp;gt;();
+        for (Advisor candidate : candidateAdvisors) {
+            if (candidate instanceof IntroductionAdvisor &amp;amp;&amp;amp; canApply(candidate, clazz)) {
+                eligibleAdvisors.add(candidate);
+            }
+        }
+        boolean hasIntroductions = !eligibleAdvisors.isEmpty();
+        for (Advisor candidate : candidateAdvisors) {
+            if (candidate instanceof IntroductionAdvisor) {
+                // already processed
+                continue;
+            }
+                         // 这个方法很关键,用于判断是否能将当前Advisor应用到这个bean上
+            if (canApply(candidate, clazz, hasIntroductions)) {
+                // 如果验证通过,则会将当前切入点加入进来
+                eligibleAdvisors.add(candidate);
+            }
+        }
+        return eligibleAdvisors;
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;我们来看看canApply做了些什么?&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;// 大概就是比较了Advisor的类型
+public static boolean canApply(Advisor advisor, Class&amp;lt;?&amp;gt; targetClass, boolean hasIntroductions) {
+        if (advisor instanceof IntroductionAdvisor) {
+            return ((IntroductionAdvisor) advisor).getClassFilter().matches(targetClass);
+        }
+        else if (advisor instanceof PointcutAdvisor) {
+            PointcutAdvisor pca = (PointcutAdvisor) advisor;
+            // 最终会执行到这个方法
+            return canApply(pca.getPointcut(), targetClass, hasIntroductions);
+        }
+        else {
+            // It doesn't have a pointcut so we assume it applies.
+            return true;
+        }
+    }
+
+    public static boolean canApply(Pointcut pc, Class&amp;lt;?&amp;gt; targetClass, boolean hasIntroductions) {
+        Assert.notNull(pc, &quot;Pointcut must not be null&quot;);
+        if (!pc.getClassFilter().matches(targetClass)) {
+            return false;
+        }
+                // 获取当前切入点的类型
+        MethodMatcher methodMatcher = pc.getMethodMatcher();
+        IntroductionAwareMethodMatcher introductionAwareMethodMatcher = null;
+                //比较类型  
+        if (methodMatcher instanceof IntroductionAwareMethodMatcher) {
+            introductionAwareMethodMatcher = (IntroductionAwareMethodMatcher) methodMatcher;
+        }
+        
+        
+                // !!!!! 这一部分的代码很关键!!!!
+                // 获取所有相关的类
+        Set&amp;lt;Class&amp;lt;?&amp;gt;&amp;gt; classes = new LinkedHashSet&amp;lt;Class&amp;lt;?&amp;gt;&amp;gt;(ClassUtils.getAllInterfacesForClassAsSet(targetClass));
+        classes.add(targetClass);
+                // 遍历这些类
+        for (Class&amp;lt;?&amp;gt; clazz : classes) {
+                        // 获取类的所有方法
+            Method[] methods = clazz.getMethods();
+                      // 遍历这些方法
+            for (Method method : methods) {
+                    //methodMatcher.matches(method, targetClass) 这个方法很重要
+                if ((introductionAwareMethodMatcher != null &amp;amp;&amp;amp;
+                        introductionAwareMethodMatcher.matches(method, targetClass, hasIntroductions)) ||
+                        methodMatcher.matches(method, targetClass)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;matches 方法&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;     public boolean matches(Method method, Class&amp;lt;?&amp;gt; targetClass) {
+        TransactionAttributeSource tas = getTransactionAttributeSource();
+        // tas.getTransactionAttribute(method, targetClass)  这是个获取事物注解的方法
+        return (tas == null || tas.getTransactionAttribute(method, targetClass) != null);
+    }
+    
+    
+    
+    
+    // 获取事务属性的方法
+    public TransactionAttribute getTransactionAttribute(Method method, Class&amp;lt;?&amp;gt; targetClass) {
+        // First, see if we have a cached value.
+        Object cacheKey = getCacheKey(method, targetClass);
+        Object cached = this.attributeCache.get(cacheKey);
+        if (cached != null) {
+            // Value will either be canonical value indicating there is no transaction attribute,
+            // or an actual transaction attribute.
+            if (cached == NULL_TRANSACTION_ATTRIBUTE) {
+                return null;
+            }
+            else {
+                return (TransactionAttribute) cached;
+            }
+        }
+        else {
+            // We need to work it out.
+            // 获取事物属性的方法
+            TransactionAttribute txAtt = computeTransactionAttribute(method, targetClass);
+            // Put it in the cache.
+            if (txAtt == null) {
+                this.attributeCache.put(cacheKey, NULL_TRANSACTION_ATTRIBUTE);
+            }
+            else {
+                if (logger.isDebugEnabled()) {
+                    Class&amp;lt;?&amp;gt; classToLog = (targetClass != null ? targetClass : method.getDeclaringClass());
+                    logger.debug(&quot;Adding transactional method '&quot; + classToLog.getSimpleName() + &quot;.&quot; +
+                            method.getName() + &quot;' with attribute: &quot; + txAtt);
+                }
+                this.attributeCache.put(cacheKey, txAtt);
+            }
+            return txAtt;
+        }
+    }
+    
+    private TransactionAttribute computeTransactionAttribute(Method method, Class&amp;lt;?&amp;gt; targetClass) {
+        // Don't allow no-public methods as required.
+        if (allowPublicMethodsOnly() &amp;amp;&amp;amp; !Modifier.isPublic(method.getModifiers())) {
+            return null;
+        }
+
+        // Ignore CGLIB subclasses - introspect the actual user class.
+        Class&amp;lt;?&amp;gt; userClass = ClassUtils.getUserClass(targetClass);
+        // The method may be on an interface, but we need attributes from the target class.
+        // If the target class is null, the method will be unchanged.
+        Method specificMethod = ClassUtils.getMostSpecificMethod(method, userClass);
+        // If we are dealing with method with generic parameters, find the original method.
+        specificMethod = BridgeMethodResolver.findBridgedMethod(specificMethod);
+
+        // First try is the method in the target class.
+        // 查找该方法的事物属性
+        TransactionAttribute txAtt = findTransactionAttribute(specificMethod);
+        if (txAtt != null) {
+            return txAtt;
+        }
+
+        // Second try is the transaction attribute on the target class.
+        txAtt = findTransactionAttribute(specificMethod.getDeclaringClass());
+        if (txAtt != null) {
+            return txAtt;
+        }
+
+        if (specificMethod != method) {
+            // Fallback is to look at the original method.
+            txAtt = findTransactionAttribute(method);
+            if (txAtt != null) {
+                return txAtt;
+            }
+            // Last fallback is the class of the original method.
+            return findTransactionAttribute(method.getDeclaringClass());
+        }
+        return null;
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;详细看下findTransactionAttribute方法,由于比较深我就直接贴最终执行的方法了&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public TransactionAttribute parseTransactionAnnotation(AnnotatedElement ae) {
+        // 查看是否方法上面有@Transactional注解
+        AnnotationAttributes ann = AnnotatedElementUtils.getAnnotationAttributes(ae, Transactional.class.getName());
+        if (ann != null) {
+            return parseTransactionAnnotation(ann);
+        }
+        else {
+            return null;
+        }
+    }
+    // 处理这个注解所包含的属性如传播途径和隔离级别
+    protected TransactionAttribute parseTransactionAnnotation(AnnotationAttributes attributes) {
+        RuleBasedTransactionAttribute rbta = new RuleBasedTransactionAttribute();
+        Propagation propagation = attributes.getEnum(&quot;propagation&quot;);
+        rbta.setPropagationBehavior(propagation.value());
+        Isolation isolation = attributes.getEnum(&quot;isolation&quot;);
+        rbta.setIsolationLevel(isolation.value());
+        rbta.setTimeout(attributes.getNumber(&quot;timeout&quot;).intValue());
+        rbta.setReadOnly(attributes.getBoolean(&quot;readOnly&quot;));
+        rbta.setQualifier(attributes.getString(&quot;value&quot;));
+        ArrayList&amp;lt;RollbackRuleAttribute&amp;gt; rollBackRules = new ArrayList&amp;lt;RollbackRuleAttribute&amp;gt;();
+        Class&amp;lt;?&amp;gt;[] rbf = attributes.getClassArray(&quot;rollbackFor&quot;);
+        for (Class&amp;lt;?&amp;gt; rbRule : rbf) {
+            RollbackRuleAttribute rule = new RollbackRuleAttribute(rbRule);
+            rollBackRules.add(rule);
+        }
+        String[] rbfc = attributes.getStringArray(&quot;rollbackForClassName&quot;);
+        for (String rbRule : rbfc) {
+            RollbackRuleAttribute rule = new RollbackRuleAttribute(rbRule);
+            rollBackRules.add(rule);
+        }
+        Class&amp;lt;?&amp;gt;[] nrbf = attributes.getClassArray(&quot;noRollbackFor&quot;);
+        for (Class&amp;lt;?&amp;gt; rbRule : nrbf) {
+            NoRollbackRuleAttribute rule = new NoRollbackRuleAttribute(rbRule);
+            rollBackRules.add(rule);
+        }
+        String[] nrbfc = attributes.getStringArray(&quot;noRollbackForClassName&quot;);
+        for (String rbRule : nrbfc) {
+            NoRollbackRuleAttribute rule = new NoRollbackRuleAttribute(rbRule);
+            rollBackRules.add(rule);
+        }
+        rbta.getRollbackRules().addAll(rollBackRules);
+        return rbta;
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;这时候我们就可以大概的清楚知道哪些bean需要被事物代理的原因了
+这时候我们在回过头来看spring是如何构建代理类的,这里我就不在详细各种贴流程代码了,只贴关键的&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;DefaultAopProxyFactory 默认的AOP代理工厂
+
+
+// 创建一个AopProxy的代理类,它这里提供了两种代理方式,一种是JDK代理,一种是CGlib代理
+public AopProxy createAopProxy(AdvisedSupport config) throws AopConfigException {
+            if (config.isOptimize() || config.isProxyTargetClass() ||  
+            hasNoUserSuppliedProxyInterfaces(config)) {
+            Class&amp;lt;?&amp;gt; targetClass = config.getTargetClass();
+            if (targetClass == null) {
+                throw new AopConfigException(&quot;TargetSource cannot determine target class: &quot; +
+                        &quot;Either an interface or a target is required for proxy creation.&quot;);
+            }
+            // 如果需要代理的类是接口的时候采用JDK
+            if (targetClass.isInterface()) {
+                return new JdkDynamicAopProxy(config);
+            }
+            // 普通类用CGlib代理
+            return new ObjenesisCglibAopProxy(config);
+        }
+        else {
+            return new JdkDynamicAopProxy(config);
+        }
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;ObjenesisCglibAopProxy 的 父类是 CglibAopProxy 所以初始化ObjenesisCglibAopProxy 的构造方法时会调用super(config);&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    /**
+    * 实例化Cglib对象时,会初始化他的父类方法,并且把拦截器传递给父类,告诉他的需要加上代理的拦截器,也就是我们的TransactionInterceptor,如果有多个的话可能就会代理多个,这里我们只看事物的
+    *
+    */
+    public ObjenesisCglibAopProxy(AdvisedSupport config) {
+        super(config);
+        this.objenesis = new ObjenesisStd(true);
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;初始化完成之后会调用它的ObjenesisCglibAopProxy的getProxy()方法,这个方法是它的父类实现的,这里面才是真正实现了真正代理的对象,原理是构成一个责任链,将代理一个个链接起来&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public Object getProxy(ClassLoader classLoader) {
+        if (logger.isDebugEnabled()) {
+            logger.debug(&quot;Creating CGLIB proxy: target source is &quot; + this.advised.getTargetSource());
+        } 
+        try {
+            Class&amp;lt;?&amp;gt; rootClass = this.advised.getTargetClass();
+            Assert.state(rootClass != null, &quot;Target class must be available for creating a CGLIB proxy&quot;); 
+            Class&amp;lt;?&amp;gt; proxySuperClass = rootClass;
+            if (ClassUtils.isCglibProxyClass(rootClass)) {
+                proxySuperClass = rootClass.getSuperclass();
+                Class&amp;lt;?&amp;gt;[] additionalInterfaces = rootClass.getInterfaces();
+                for (Class&amp;lt;?&amp;gt; additionalInterface : additionalInterfaces) {
+                    this.advised.addInterface(additionalInterface);
+                }
+            } 
+            // Validate the class, writing log messages as necessary.
+            validateClassIfNecessary(proxySuperClass, classLoader); 
+            // Configure CGLIB Enhancer...
+            // 这一部分是创建一个Enhancer 对象
+            Enhancer enhancer = createEnhancer();
+            if (classLoader != null) {
+                enhancer.setClassLoader(classLoader);
+                if (classLoader instanceof SmartClassLoader &amp;amp;&amp;amp;
+                        ((SmartClassLoader) classLoader).isClassReloadable(proxySuperClass)) {
+                    enhancer.setUseCache(false);
+                }
+            }
+            enhancer.setSuperclass(proxySuperClass);
+            enhancer.setInterfaces(AopProxyUtils.completeProxiedInterfaces(this.advised));
+            enhancer.setNamingPolicy(SpringNamingPolicy.INSTANCE);
+            enhancer.setStrategy(new UndeclaredThrowableStrategy(UndeclaredThrowableException.class));
+            
+            // 这部分代码非常关键,里面会创建一个DynamicAdvisedInterceptor对象,这个就是责任链的头端,所有的切入点都需要经过这个拦截器一步步执行到最终的方法
+            Callback[] callbacks = getCallbacks(rootClass);
+            Class&amp;lt;?&amp;gt;[] types = new Class&amp;lt;?&amp;gt;[callbacks.length];
+            for (int x = 0; x &amp;lt; types.length; x++) {
+                types[x] = callbacks[x].getClass();
+            }
+            // fixedInterceptorMap only populated at this point, after getCallbacks call above
+            enhancer.setCallbackFilter(new ProxyCallbackFilter(
+                    this.advised.getConfigurationOnlyCopy(), this.fixedInterceptorMap, this.fixedInterceptorOffset));
+            enhancer.setCallbackTypes(types);
+
+            // Generate the proxy class and create a proxy instance.
+            // 生成代理类并且创建实例,里面做的应该就是把DynamicAdvisedInterceptor对象和serviceImpl对象做了一个代理绑定,先进入DynamicAdvisedInterceptor,经过责任链模式一步步到达最终方法
+            return createProxyClassAndInstance(enhancer, callbacks);
+        }
+        catch (CodeGenerationException ex) {
+            throw new AopConfigException(&quot;Could not generate CGLIB subclass of class [&quot; +
+                    this.advised.getTargetClass() + &quot;]: &quot; +
+                    &quot;Common causes of this problem include using a final class or a non-visible class&quot;,
+                    ex);
+        }
+        catch (IllegalArgumentException ex) {
+            throw new AopConfigException(&quot;Could not generate CGLIB subclass of class [&quot; +
+                    this.advised.getTargetClass() + &quot;]: &quot; +
+                    &quot;Common causes of this problem include using a final class or a non-visible class&quot;,
+                    ex);
+        }
+        catch (Exception ex) {
+            // TargetSource.getTarget() failed
+            throw new AopConfigException(&quot;Unexpected AOP exception&quot;, ex);
+        }
+    }
+
+private Callback[] getCallbacks(Class&amp;lt;?&amp;gt; rootClass) throws Exception {
+        // Parameters used for optimisation choices...
+        boolean exposeProxy = this.advised.isExposeProxy();
+        boolean isFrozen = this.advised.isFrozen();
+        boolean isStatic = this.advised.getTargetSource().isStatic();
+
+        // Choose an &quot;aop&quot; interceptor (used for AOP calls).
+        // 创建一个拦截器对象,所有被代理的类都走这个对象,最终返回的bean执行的起始方法
+        Callback aopInterceptor = new DynamicAdvisedInterceptor(this.advised);
+
+        // Choose a &quot;straight to target&quot; interceptor. (used for calls that are
+        // unadvised but can return this). May be required to expose the proxy.
+        Callback targetInterceptor;
+        if (exposeProxy) {
+            targetInterceptor = isStatic ?
+                    new StaticUnadvisedExposedInterceptor(this.advised.getTargetSource().getTarget()) :
+                    new DynamicUnadvisedExposedInterceptor(this.advised.getTargetSource());
+        }
+        else {
+            targetInterceptor = isStatic ?
+                    new StaticUnadvisedInterceptor(this.advised.getTargetSource().getTarget()) :
+                    new DynamicUnadvisedInterceptor(this.advised.getTargetSource());
+        }
+
+        // Choose a &quot;direct to target&quot; dispatcher (used for
+        // unadvised calls to static targets that cannot return this).
+        Callback targetDispatcher = isStatic ?
+                new StaticDispatcher(this.advised.getTargetSource().getTarget()) : new SerializableNoOp();
+
+        Callback[] mainCallbacks = new Callback[]{
+            aopInterceptor, // for normal advice
+            targetInterceptor, // invoke target without considering advice, if optimized
+            new SerializableNoOp(), // no override for methods mapped to this
+            targetDispatcher, this.advisedDispatcher,
+            new EqualsInterceptor(this.advised),
+            new HashCodeInterceptor(this.advised)
+        };
+
+        Callback[] callbacks;
+
+        // If the target is a static one and the advice chain is frozen,
+        // then we can make some optimisations by sending the AOP calls
+        // direct to the target using the fixed chain for that method.
+        if (isStatic &amp;amp;&amp;amp; isFrozen) {
+            Method[] methods = rootClass.getMethods();
+            Callback[] fixedCallbacks = new Callback[methods.length];
+            this.fixedInterceptorMap = new HashMap&amp;lt;String, Integer&amp;gt;(methods.length);
+
+            // TODO: small memory optimisation here (can skip creation for methods with no advice)
+            for (int x = 0; x &amp;lt; methods.length; x++) {
+                List&amp;lt;Object&amp;gt; chain = this.advised.getInterceptorsAndDynamicInterceptionAdvice(methods[x], rootClass);
+                fixedCallbacks[x] = new FixedChainStaticTargetInterceptor(
+                        chain, this.advised.getTargetSource().getTarget(), this.advised.getTargetClass());
+                this.fixedInterceptorMap.put(methods[x].toString(), x);
+            }
+
+            // Now copy both the callbacks from mainCallbacks
+            // and fixedCallbacks into the callbacks array.
+            callbacks = new Callback[mainCallbacks.length + fixedCallbacks.length];
+            System.arraycopy(mainCallbacks, 0, callbacks, 0, mainCallbacks.length);
+            System.arraycopy(fixedCallbacks, 0, callbacks, mainCallbacks.length, fixedCallbacks.length);
+            this.fixedInterceptorOffset = mainCallbacks.length;
+        }
+        else {
+            callbacks = mainCallbacks;
+        }
+        return callbacks;
+    }
+
+
+ 最终生成了代理对象,将这个对象放入ioc容器当中,当调用这个对象时,ioc会直接取出代理对象,也就是先进入DynamicAdvisedInterceptor的intercept方法。
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;大概梳理一下事物的流程
+一. 初始化流程&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;1.首先开始初始化配置文件
+
+2.然后执行到&amp;lt;context:component-scan base-package=&quot;com.service&quot;&amp;gt;&amp;lt;/context:component-scan&amp;gt;这里时,会开始扫描注解
+
+3.当循环扫描到ServiceImpl的时候,会扫描每个方法,经过getAdvicesAndAdvisorsForBean这个方法时会判断每个方法是否触发代理的条件, 怎么触发代理条件, 这里以事物为例:
+&amp;lt;!--
+这里注册了一个事物管理器,也就是说每个类都会经过这个事物管理器判断,是否有@Transactional方法;
+需要注意的是,这个驱动相当于新加了一个方法环绕类型的切入点.
+--&amp;gt;
+    &amp;lt;tx:annotation-driven transaction-manager=&quot;transactionManager&quot;
+proxy-target-class=&quot;true&quot;&amp;gt;&amp;lt;/tx:annotation-driven&amp;gt;   
+
+  getAdvicesAndAdvisorsForBean如果返回有值时,则表示需要生成代理类
+
+因为我们service中已经定义好了@Transactional方法了,所以触发了执行生成代理类的条件.
+
+4. 生成代理类时,他主要做了两个步骤: 实现一个责任链的类[DynamicAdvisedInterceptor],然后将这个责任链类和service的实现类做绑定生成一个代理,然后返回这个代理对象到IOC容器中,初始化完成
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;二. 调用service的过程&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;1. 当调用service这个实现类的时候,会从ioc容器里面去查找,找到了这个bean类则直接返回,注意这里的bean是一个代理类
+2. 直接进入代理类DynamicAdvisedInterceptor的intercept方法里面;
+3.  开始执行责任链机制,查找与这个类绑定的切入点
+
+
+// 这里是直接查找与这个类相关的切入点,然后一个个执行完之后到达最终的service方法
+List&amp;lt;Object&amp;gt; chain = this.advised.getInterceptorsAndDynamicInterceptionAdvice(method, targetClass);
+
+
+4. 需要注意的是这个责任链中有一个TransactionAspectSupport类,这是一个事物的切入点类,这个类中的invokeWithinTransaction方法,它里面详细包含了事物的一系列操作,包括事物开启、提交、回滚等等一系列操作
+5.  执行切入点后,直接到达目标方法,也就是service层的方法,service层的方法处理完毕,在回到invokeWithinTransaction判断是否报错,没有报错则事物提交,报错则进入到它的try/catch方法中进行回滚,最终执行完成;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;最终我们总结上面的问题:&lt;/p&gt;
+
+&lt;h4 id=&quot;spring的事物是通过哪些原理实现的-1&quot;&gt;Spring的事物是通过哪些原理实现的?&lt;/h4&gt;
+
+&lt;p&gt;动态代理 以及 切入点配合责任链组成的拦截器机制&lt;/p&gt;
+
+&lt;h4 id=&quot;spring的事物机制是如何提交和回滚的&quot;&gt;Spring的事物机制是如何提交和回滚的?&lt;/h4&gt;
+
+&lt;p&gt;Spring提供了一个事物管理器,这个事物管理器专门扫描所有方法的@Transactional注解,一旦扫描到了,则会为这个方法的类设置代理,这个事物管理器可以理解为一个环绕类型的切入点,配合责任链模式,当方法执行的时候,会被拦截到TransactionAspectSupport的invokeWithinTransaction方法中,这个里面包含了事物的一系列操作。&lt;/p&gt;
+
+&lt;h3 id=&quot;编后语&quot;&gt;编后语&lt;/h3&gt;
+
+&lt;p&gt;由于spring里面代码层次划分很细,导致贴出来的代码特别多,可能会影响你们阅读,不过Spring里面的很多东西封装的都是很完善的,几乎全部都是组件化,导致很多方法很深,不过我们只要了解它大概的原理就行了,至少能够在我们遇到问题时能够推断出从哪个步骤进行下手.可能这篇文章代码和图片比较凌乱,最好是大家有spring的一些基本原理基础,比如bean的实例化啊等等,不然有的地方会看不懂,好了就说这么多了… 希望对大家有帮助.. 也非常欢迎大家提意见!!! 谢谢&lt;/p&gt;</content><author><name></name></author><summary type="html">H2M_LI_HEADER Spring的事物是通过哪些原理实现的? H2M_LI_HEADER Spring的事物机制是如何提交和回滚的?</summary></entry><entry xml:lang="zh_CN"><title type="html">Spring+SpringMVC+MyBatis+easyUI集成进阶篇(二)RESTful API实战笔记(接口设计及Java后端实现)</title><link href="http://www.jfox.info/2017/springspringmvcmybatiseasyui%E9%9B%86%E6%88%90%E8%BF%9B%E9%98%B6%E7%AF%87%E4%BA%8Crestfulapi%E5%AE%9E%E6%88%98%E7%AC%94%E8%AE%B0%E6%8E%A5%E5%8F%A3%E8%AE%BE%E8%AE%A1%E5%8F%8Ajava%E5%90%8E%E7%AB%AF.html" rel="alternate" type="text/html" title="Spring+SpringMVC+MyBatis+easyUI集成进阶篇(二)RESTful API实战笔记(接口设计及Java后端实现)" /><published>2017-01-01T15:59:58+00:00</published><updated>2017-01-01T15:59:58+00:00</updated><id>http://www.jfox.info/2017/20170101498</id><content type="html" xml:base="http://www.jfox.info/2017/springspringmvcmybatiseasyui%E9%9B%86%E6%88%90%E8%BF%9B%E9%98%B6%E7%AF%87%E4%BA%8Crestfulapi%E5%AE%9E%E6%88%98%E7%AC%94%E8%AE%B0%E6%8E%A5%E5%8F%A3%E8%AE%BE%E8%AE%A1%E5%8F%8Ajava%E5%90%8E%E7%AB%AF.html">&lt;p&gt;原计划这部分代码的更新也是上传到ssm-demo仓库中，因为如下原因并没有这么做：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;有些使用了该项目的朋友建议重新创建一个仓库，因为原来仓库中的项目太多，结构多少有些乱糟糟的。&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;而且这次的代码改动较大，与原来的目录结构及代码风格相比都有很大的差别。&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;同时也考虑到不同的人所处的学习阶段不同，担心有人不习惯也不适应这种风格及后面的更新，有的朋友甚至可能是初学者，更适合学习ssm-demo这个基础项目。&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;基于以上几点，最终并没有选择把几个项目都放在一个代码仓库中，而是另外花了些时间改动并且重新创建了一个仓库，&lt;a href=&quot;https://www.jfox.info/go.php?url=https://github.com/ZHENFENG13/perfect-ssm&quot;&gt;perfect-ssm&lt;/a&gt;另起炉灶，项目也在新的服务器和域名下部署。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;d8800da.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;接口设计&quot;&gt;接口设计&lt;/h2&gt;
+
+&lt;p&gt;项目共有三个模块:&lt;/p&gt;
+
+&lt;p&gt;针对以上三个模块，并结合前文&lt;a href=&quot;https://www.jfox.info/go.php?url=http://www.cnblogs.com/han-1034683568/p/7196345.html&quot;&gt;《设计一套好的RESTful API》&lt;/a&gt;中所总结的RESTful API设计原则，对api进行改造，目标接口如下：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;图片上传：
+原接口 []      http://ssm-demo.hanshuai.xin/loadimage/upload.do
+现接口 [POST]  http://perfect-ssm.hanshuai.xin/images
+
+文章添加：
+原接口 []      http://ssm-demo.hanshuai.xin/article/save.do
+现接口 [POST]  http://perfect-ssm.hanshuai.xin/articles 
+
+文章修改：
+原接口 []      http://ssm-demo.hanshuai.xin/article/save.do
+现接口 [PUT]  http://perfect-ssm.hanshuai.xin/articles 
+
+文章列表：
+原接口 []      http://ssm-demo.hanshuai.xin/article/list.do
+现接口 [GET]   http://perfect-ssm.hanshuai.xin/articles
+
+文章删除：
+原接口 []      http://ssm-demo.hanshuai.xin/article/delete.do
+现接口 [DELETE]http://perfect-ssm.hanshuai.xin/articles
+
+图片添加：
+原接口 []      http://ssm-demo.hanshuai.xin/picture/save.do
+现接口 [POST]  http://perfect-ssm.hanshuai.xin/pictures
+
+图片修改：
+原接口 []      http://ssm-demo.hanshuai.xin/picture/save.do
+现接口 [PUT]  http://perfect-ssm.hanshuai.xin/pictures
+
+图片列表：
+原接口 []      http://ssm-demo.hanshuai.xin/picture/list.do
+现接口 [GET]   http://perfect-ssm.hanshuai.xin/pictures
+
+图片删除：
+原接口 []      http://ssm-demo.hanshuai.xin/picture/delete.do
+现接口 [DELETE]http://perfect-ssm.hanshuai.xin/pictures
+
+用户登录：
+原接口 []      http://ssm-demo.hanshuai.xin/user/login.do
+现接口 [POST]  http://perfect-ssm.hanshuai.xin/users/cookie 
+
+用户列表：
+原接口 []      http://ssm-demo.hanshuai.xin/user/list.do
+现接口 [GET]   http://perfect-ssm.hanshuai.xin/users 
+
+用户删除：
+原接口 []      http://ssm-demo.hanshuai.xin/user/delete.do
+现接口 [DELETE]http://perfect-ssm.hanshuai.xin/users
+
+用户添加：
+原接口 []      http://ssm-demo.hanshuai.xin/user/save.do
+现接口 [POST]  http://perfect-ssm.hanshuai.xin/users
+
+修改密码：
+原接口 []      http://ssm-demo.hanshuai.xin/user/modifyPassword.do
+现接口 [PUT]   http://perfect-ssm.hanshuai.xin/users
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;根据不同资源映射成不同的uri，对于资源的具体操作类型，由HTTP动词来表示。&lt;/p&gt;
+
+&lt;h2 id=&quot;java后端实现&quot;&gt;java后端实现&lt;/h2&gt;
+
+&lt;p&gt;前文中提到了一些设计原则，这一篇就是将这些原则运用到项目中，但是理论性的知识看看就忘了，我写博客的目的不是为了写理论概念，没有实际项目配合我是不会写的，我觉得通过代码实现出来，配合实战才能让理论知识吸收的更好。&lt;/p&gt;
+
+&lt;p&gt;由于是ssm项目，因此主要是通过SpringMVC实现，更多的是使用了SpringMVC的注解来进行简化开发。&lt;/p&gt;
+
+&lt;h4 id=&quot;整合过程&quot;&gt;整合过程：&lt;/h4&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;首先是修改web.xml配置文件，使得URI可以符合RESTful风格。&lt;/p&gt;
+
+    &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;  &amp;lt;servlet&amp;gt;
+      &amp;lt;servlet-name&amp;gt;springMVC&amp;lt;/servlet-name&amp;gt;
+      &amp;lt;servlet-class&amp;gt;org.springframework.web.servlet.DispatcherServlet&amp;lt;/servlet-class&amp;gt;
+      &amp;lt;init-param&amp;gt;
+          &amp;lt;param-name&amp;gt;contextConfigLocation&amp;lt;/param-name&amp;gt;
+          &amp;lt;param-value&amp;gt;classpath:spring-context-mvc.xml&amp;lt;/param-value&amp;gt;
+      &amp;lt;/init-param&amp;gt;
+      &amp;lt;!--加载顺序为1 --&amp;gt;
+      &amp;lt;load-on-startup&amp;gt;1&amp;lt;/load-on-startup&amp;gt;
+  &amp;lt;/servlet&amp;gt;
+
+  &amp;lt;servlet-mapping&amp;gt;
+      &amp;lt;servlet-name&amp;gt;springMVC&amp;lt;/servlet-name&amp;gt;
+      &amp;lt;url-pattern&amp;gt;/&amp;lt;/url-pattern&amp;gt;
+  &amp;lt;/servlet-mapping&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;修改spring-context-mvc.xml配置文件，配置json消息转换器及动态资源过滤。&lt;/p&gt;
+
+    &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;  &amp;lt;!-- Start: 配置json消息转换器 &amp;amp; 参数解析--&amp;gt;
+  &amp;lt;bean id=&quot;objectMapper&quot; class=&quot;com.fasterxml.jackson.databind.ObjectMapper&quot;&amp;gt;
+      &amp;lt;property name=&quot;dateFormat&quot;&amp;gt;
+          &amp;lt;bean class=&quot;java.text.SimpleDateFormat&quot;&amp;gt;
+              &amp;lt;constructor-arg index=&quot;0&quot; type=&quot;java.lang.String&quot; value=&quot;yyyy-MM-dd HH:mm:ss&quot;/&amp;gt;
+          &amp;lt;/bean&amp;gt;
+      &amp;lt;/property&amp;gt;
+  &amp;lt;/bean&amp;gt;
+  &amp;lt;mvc:annotation-driven&amp;gt;
+      &amp;lt;mvc:message-converters register-defaults=&quot;true&quot;&amp;gt;
+          &amp;lt;bean class=&quot;org.springframework.http.converter.json.MappingJackson2HttpMessageConverter&quot;&amp;gt;
+              &amp;lt;property name=&quot;supportedMediaTypes&quot;&amp;gt;
+                  &amp;lt;list&amp;gt;
+                      &amp;lt;value&amp;gt;application/json; charset=UTF-8&amp;lt;/value&amp;gt;
+                  &amp;lt;/list&amp;gt;
+              &amp;lt;/property&amp;gt;
+              &amp;lt;property name=&quot;prettyPrint&quot; value=&quot;true&quot;/&amp;gt;
+              &amp;lt;property name=&quot;objectMapper&quot; ref=&quot;objectMapper&quot;/&amp;gt;
+          &amp;lt;/bean&amp;gt;
+      &amp;lt;/mvc:message-converters&amp;gt;
+  &amp;lt;/mvc:annotation-driven&amp;gt;
+  &amp;lt;!-- End: 配置json消息转换器 &amp;amp; 参数解析 --&amp;gt;
+
+  &amp;lt;!-- 使用了&amp;lt;url-pattern&amp;gt;/&amp;lt;/url-pattern&amp;gt;,所以要对静态资源进行处理 --&amp;gt;
+  &amp;lt;mvc:default-servlet-handler/&amp;gt;
+
+  &amp;lt;!-- 默认的视图解析器 在上边的解析错误时使用 (默认使用html)- --&amp;gt;
+  &amp;lt;bean id=&quot;defaultViewResolver&quot; class=&quot;org.springframework.web.servlet.view.InternalResourceViewResolver&quot;
+        p:order=&quot;1&quot;&amp;gt;
+      &amp;lt;property name=&quot;viewClass&quot; value=&quot;org.springframework.web.servlet.view.JstlView&quot;/&amp;gt;
+      &amp;lt;property name=&quot;contentType&quot; value=&quot;text/html&quot;/&amp;gt;
+      &amp;lt;property name=&quot;prefix&quot; value=&quot;/WEB-INF/&quot;/&amp;gt;
+      &amp;lt;property name=&quot;suffix&quot; value=&quot;.jsp&quot;/&amp;gt;
+  &amp;lt;/bean&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;@RequestMapping注解，规范和限制Http请求的请求方法。&lt;/p&gt;
+
+    &lt;p&gt;@RequestMapping(value = “”, method = RequestMethod.PUT)&lt;/p&gt;
+
+    &lt;p&gt;@RequestMapping(value = “/{ids}”, method = RequestMethod.DELETE)&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;@ResponseBody注解，将返回结果转换为JSON格式。&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;增加common包，其中的工具类规定了返回状态码及返回数据的基本格式。
+&lt;img src=&quot;2ec87f1.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+    &lt;p&gt;public class Constants {&lt;/p&gt;
+
+    &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public static final int RESULT_CODE_SUCCESS = 200;  // 成功处理请求
+public static final int RESULT_CODE_BAD_REQUEST = 412;  // bad request
+public static final int RESULT_CODE_SERVER_ERROR = 500;  // 没有对应结果
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+
+    &lt;p&gt;}&lt;/p&gt;
+
+    &lt;p&gt;public class Result&lt;T&gt; implements Serializable {
+    private static final long serialVersionUID = 1L;
+    private int resultCode;
+    private String message;
+    private T data;&lt;/T&gt;&lt;/p&gt;
+
+    &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public Result() {
+} }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;注意事项&quot;&gt;注意事项&lt;/h2&gt;
+
+&lt;p&gt;几个需要注意的注解：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;@RequestMapping&lt;/li&gt;
+  &lt;li&gt;@PathVariable&lt;/li&gt;
+  &lt;li&gt;@ResponseBody&lt;/li&gt;
+  &lt;li&gt;@RequestParam&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;代码中大量的出现，本文中也一再强调，因此，给正在看本篇文章的你一个建议就是如果你不熟悉这几个注解，花点时间去认真学习和实践一下，知道这几个注解的用法和注意事项，网上针对这些注解的文章有很多，可以针对性的学习一下，这篇文章就不再占用篇幅去赘述了，需要代码的话，直接去我的GitHub仓库中去下载就好。&lt;/p&gt;</content><author><name></name></author><summary type="html">原计划这部分代码的更新也是上传到ssm-demo仓库中，因为如下原因并没有这么做：</summary></entry><entry xml:lang="zh_CN"><title type="html">我的网站之struts2笔记2</title><link href="http://www.jfox.info/2017/%E6%88%91%E7%9A%84%E7%BD%91%E7%AB%99%E4%B9%8Bstruts2%E7%AC%94%E8%AE%B02.html" rel="alternate" type="text/html" title="我的网站之struts2笔记2" /><published>2017-01-01T15:59:57+00:00</published><updated>2017-01-01T15:59:57+00:00</updated><id>http://www.jfox.info/2017/20170101497</id><content type="html" xml:base="http://www.jfox.info/2017/%E6%88%91%E7%9A%84%E7%BD%91%E7%AB%99%E4%B9%8Bstruts2%E7%AC%94%E8%AE%B02.html">&lt;p&gt;作者&lt;a href=&quot;/u/a8ae22295f18&quot;&gt;金字塔的蜗牛&lt;/a&gt;2017.08.07 10:24*字数 842
+越学习，越发现自己的无知。
+（法国）笛卡尔&lt;/p&gt;
+
+&lt;p&gt;上一篇笔记总结了struts的版本、入门案例和相关的配置说明，链接：&lt;a href=&quot;https://www.jfox.info/go.php?url=http://www.jianshu.com/p/a40a60ed4681&quot;&gt;我的网站之struts2笔记1&lt;/a&gt;，这篇总结一下struts2中action配置的三种方式以及三种可用的类方法配置。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;1、struts2中action配置的三种方式&lt;/strong&gt;&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;方式一： 创建普通类，不继承任何类，不实现任何接口，默认执行execute方法。如下图所示，action就是一个普通的类。如果想让类能够访问到，记得在struts.xml文件进行类的配置。 
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;3cb87ec.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;方式二：创建类，实现Action接口，大家知道实现一个接口，必须实现该接口中的方法，所以实现Action接口的类中需要实现execute()方法。 
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;be8182b.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;方式三：创建类，继承ActionSupport，之所以继承ActionSupport类成为一个action，是因为ActionSupport类也实现了方式二中的Action接口。 
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;e2eb3e4.png&quot; alt=&quot;&quot; /&gt;
+以上三种方式均可以创建一个action，一般建议使用第三种方式。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;2、struts2的action方法访问的三种方式&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;方式一：使用action标签的method属性，在这个属性里配置执行action的方法，过程步骤如下。
+&lt;code class=&quot;highlighter-rouge&quot;&gt;1：先创建一个action，然后在该action中创建多个方法。&lt;/code&gt;
+&lt;img src=&quot;592983d.png&quot; alt=&quot;&quot; /&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;2：进行struts.xml的配置，我们使用method方式进行配置，但是由于每个方法都需要配置，所以action方法很多的话，需要很多配置，这一点是个缺陷，我们可以在方式二中进行改进。&lt;/code&gt;&lt;img src=&quot;/wp-content/uploads/2017/08/1502353880.png&quot; alt=&quot;&quot; /&gt;
+方式二：使用通配符方式实现（&lt;strong&gt;重点&lt;/strong&gt;）
+我们可以在action中的name属性值里写 * 号代表任何配置，例如实现一本书的增删改查，我们可以用book_&lt;em&gt;代替：book_insert，book_update，book_delete。
+其中{1}代表第一个星号内容，book_&lt;/em&gt;中只有一个&lt;em&gt;号，所以&lt;/em&gt;值就是方法名，如book_update就是访问update方法。
+&lt;strong&gt;当有多个星号，如我的代码库网站采用&lt;em&gt;_&lt;/em&gt;的配置用来处理所有jsp页面的跳转，不执行任何业务逻辑，比如想访问resource文件夹下的index.jsp时，只需要浏览器访问resource_index即可进行跳转，如果想访问根目录的index.jsp文件，只需要输入（_index）即可，约定大于配置，使用起来很方便。&lt;/strong&gt;
+&lt;img src=&quot;c23ec85.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;方式三：动态访问方式实现，这个使用不是很常见，帖一下我学习视频时截的图。通过在页面上按照一定的规则进行路径的配置，通过struts.xml的跳转，进入到指定的action中执行对应的方法。 
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;bcc60cb.png&quot; alt=&quot;&quot; /&gt;
+这篇笔记总结了struts2中action书写的三种方式以及类方法配置的三种方式，一般建议通过继承ActionSupport来创建action，约定大于配置，推荐使用通配符方式实现方法的访问。下篇笔记将总结struts2中action获取页面表单提交的数据以及数据的处理封装。&lt;/p&gt;</content><author><name></name></author><summary type="html">作者金字塔的蜗牛2017.08.07 10:24*字数 842 越学习，越发现自己的无知。 （法国）笛卡尔</summary></entry><entry xml:lang="zh_CN"><title type="html">云服务器 ECS 建站教程：部署Java Web</title><link href="http://www.jfox.info/2017/%E4%BA%91%E6%9C%8D%E5%8A%A1%E5%99%A8ecs%E5%BB%BA%E7%AB%99%E6%95%99%E7%A8%8B%E9%83%A8%E7%BD%B2javaweb.html" rel="alternate" type="text/html" title="云服务器 ECS 建站教程：部署Java Web" /><published>2017-01-01T15:59:56+00:00</published><updated>2017-01-01T15:59:56+00:00</updated><id>http://www.jfox.info/2017/20170101496</id><content type="html" xml:base="http://www.jfox.info/2017/%E4%BA%91%E6%9C%8D%E5%8A%A1%E5%99%A8ecs%E5%BB%BA%E7%AB%99%E6%95%99%E7%A8%8B%E9%83%A8%E7%BD%B2javaweb.html">&lt;p&gt;浏览91评论0 发表于： &lt;a href=&quot;/teams/125&quot;&gt; 阿里云文档中心&lt;/a&gt;
+&lt;a href=&quot;/tags/type_blog-tagid_41/&quot;&gt;java&lt;/a&gt;&lt;a href=&quot;/tags/type_blog-tagid_441/&quot;&gt;防火墙&lt;/a&gt;&lt;a href=&quot;/tags/type_blog-tagid_456/&quot;&gt;HTTPS&lt;/a&gt;&lt;a href=&quot;/tags/type_blog-tagid_466/&quot;&gt;ECS&lt;/a&gt;&lt;a href=&quot;/tags/type_blog-tagid_508/&quot;&gt;云服务器&lt;/a&gt;&lt;a href=&quot;/tags/type_blog-tagid_512/&quot;&gt;Apache&lt;/a&gt;&lt;a href=&quot;/tags/type_blog-tagid_696/&quot;&gt;web&lt;/a&gt;&lt;a href=&quot;/tags/type_blog-tagid_698/&quot;&gt;配置&lt;/a&gt;&lt;a href=&quot;/tags/type_blog-tagid_712/&quot;&gt;tomcat&lt;/a&gt;&lt;a href=&quot;/tags/type_blog-tagid_713/&quot;&gt;镜像&lt;/a&gt;&lt;a href=&quot;/tags/type_blog-tagid_1019/&quot;&gt;Image&lt;/a&gt;&lt;a href=&quot;/tags/type_blog-tagid_1061/&quot;&gt;centos&lt;/a&gt;&lt;a href=&quot;/tags/type_blog-tagid_1347/&quot;&gt;Server&lt;/a&gt;&lt;a href=&quot;/tags/type_blog-tagid_1357/&quot;&gt;脚本&lt;/a&gt;&lt;a href=&quot;/tags/type_blog-tagid_1518/&quot;&gt;xml&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;摘要：&lt;/em&gt; 部署Java Web项目 Tomcat 作为一个开源且免费的 Java Web 服务器，常用来作为 web 开发的工具。它可以托管由 servlet，JSP 页面（动态内容），HTML 页面，js，样式表，图片（静态内容）组成的 Java Web 应用程序。 
+&lt;strong&gt;部署Java Web项目&lt;/strong&gt;
+Tomcat 作为一个开源且免费的 Java Web 服务器，常用来作为 web 开发的工具。它可以托管由 servlet，JSP 页面（动态内容），HTML 页面，js，样式表，图片（静态内容）组成的 Java Web 应用程序。&lt;/p&gt;
+
+&lt;h3 id=&quot;部署方式&quot;&gt;部署方式&lt;/h3&gt;
+
+&lt;p&gt;在阿里云服务器下部署 JAVA 提供三种部署方式：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;JAVA 镜像部署&lt;/li&gt;
+  &lt;li&gt;一键安装包部署&lt;/li&gt;
+  &lt;li&gt;手动部署（源码编译安装/YUM安装）&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;一般推荐使用镜像部署，尤其适合新手，使用更加快捷方便（阿里云的云市场提供了丰富的镜像软件，&lt;a href=&quot;https://www.jfox.info/go.php?url=https://market.aliyun.com/software?spm=5176.doc52806.2.4.PeZ1Vj&quot;&gt;点击查看&lt;/a&gt;）。而安装包部署以及手动部署适合对 Linux 命令有基本了解的用户，可以满足用户个性化部署的要求。本文主要介绍镜像和手工部署的方式。&lt;/p&gt;
+
+&lt;p&gt;镜像部署&lt;/p&gt;
+
+&lt;p&gt;1.单击 &lt;a href=&quot;https://www.jfox.info/go.php?url=https://market.aliyun.com/products/53400005/cmjj016483.html?spm=5176.doc52806.2.5.YvejUm&quot;&gt;JAVA 环境（CentOS7.2 Nginx Tomcat8 JDK）&lt;/a&gt;进入镜像详情页。&lt;/p&gt;
+
+&lt;p&gt;2.单击 立即购买，按提示步骤购买 ECS 实例。&lt;/p&gt;
+
+&lt;p&gt;3.登录 ECS 管理控制台。&lt;/p&gt;
+
+&lt;p&gt;4.在左边导航栏中，单击 实例，进入 ECS 实例列表页。&lt;/p&gt;
+
+&lt;p&gt;5.选择所购 ECS 实例所在的地域，并找到所购 ECS 实例，在 IP 地址 列获取该实例的公网 IP 地址。&lt;/p&gt;
+
+&lt;p&gt;6.在浏览器地址栏中输入公网 IP 地址，下载操作文档。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;f8dade8.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;7.使用 putty 登录 Linux 服务器，参考《连接Linux实例》。&lt;/p&gt;
+
+&lt;p&gt;说明：root 密码请参考《重置实例密码》。&lt;/p&gt;
+
+&lt;p&gt;8.使用 winscp 工具将 Java 代码放入 /data/wwwroot/default 中。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;21b3609.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;9.默认 tomcat 是以一般 www 用户运行，将网站代码权限改为 www，执行命令：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; chown -R www.www /data/wwwroot
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;1fc6bac.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;10.重启 tomcat。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;acb3f1f.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;11.在浏览器地址栏中输入公网 IP 地址，完成验证。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;63f4f8e.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;手工部署&quot;&gt;手工部署&lt;/h3&gt;
+
+&lt;p&gt;&lt;strong&gt;配置要求&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;系统平台：CentOS 7.3&lt;/li&gt;
+  &lt;li&gt;Tomcat 版本：Tomcat 8.5.13&lt;/li&gt;
+  &lt;li&gt;JDK 版本：JDK1.8.0_121&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;strong&gt;安装前准备&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;CentOS 7.3 系统默认开启了防火墙，需关闭后外部才可访问本机的 80、443、8080 等端口，如需做安全类配置可自行参考官方文档。&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;关闭防火墙： &lt;code class=&quot;highlighter-rouge&quot;&gt;java systemctl stop firewalld.service &lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;关闭防火墙开机自启动功能： &lt;code class=&quot;highlighter-rouge&quot;&gt;java systemctl disable firewalld.service &lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;创建一般用户 www，运行 tomcat： &lt;code class=&quot;highlighter-rouge&quot;&gt;java useradd www &lt;/code&gt;&lt;img src=&quot;43172fe.png&quot; alt=&quot;&quot; /&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;strong&gt;创建网站根目录：&lt;/strong&gt;&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;  mkdir -p /data/wwwroot/default
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;strong&gt;新建 Tomcat 测试页面：&lt;/strong&gt;&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;  echo Tomcat test &amp;gt; /data/wwwroot/default/index.jsp
+  chown -R www.www /data/wwwroot
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;f866164.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;源代码下载&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;wget
+&lt;a href=&quot;https://www.jfox.info/go.php?url=https://mirrors.aliyun.com/apache/tomcat/tomcat-8/v8.5.13/bin/apache-tomcat-8.5.13.tar.gz&quot;&gt;https://mirrors.aliyun.com/apache/tomcat/tomcat-8/v8.5.13/bin/apache-tomcat-8.5.13.tar.gz&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;wget
+&lt;a href=&quot;https://www.jfox.info/go.php?url=http://mirrors.linuxeye.com/jdk/jdk-8u121-linux-x64.tar.gz&quot;&gt;http://mirrors.linuxeye.com/jdk/jdk-8u121-linux-x64.tar.gz&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;安装 JDK&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;1.新建一个目录：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;mkdir /usr/java
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;2.解压 jdk-8u121-linux-x64.tar.gz 到 /usr/java。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; tar xzf jdk-8u121-linux-x64.tar.gz -C /usr/java
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;78e02fe.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;3.设置环境变量&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;vi /etc/profile&lt;/li&gt;
+  &lt;li&gt;#set java environment&lt;/li&gt;
+  &lt;li&gt;export JAVA_HOME=/usr/java/jdk1.8.0_121&lt;/li&gt;
+  &lt;li&gt;export CLASSPATH=$JAVA_HOME/lib/tools.jar:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib&lt;/li&gt;
+  &lt;li&gt;export PATH=$JAVA_HOME/bin:$PATH&lt;/li&gt;
+  &lt;li&gt;加载环境变量： &lt;code class=&quot;highlighter-rouge&quot;&gt;java source /etc/profile &lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;查看 jdk 版本： &lt;code class=&quot;highlighter-rouge&quot;&gt;java java -version &lt;/code&gt;&lt;img src=&quot;1f0ffa2.png&quot; alt=&quot;&quot; /&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;strong&gt;安装 Tomcat&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;1.解压 apache-tomcat-8.5.13.tar.gz，重命名 tomcat 目录，设置用户权限。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;tar xzf apache-tomcat-8.5.13.tar.gz
+mv apache-tomcat-8.5.13 /usr/local/tomcat
+chown -R www.www /usr/local/tomcat
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;说明：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;bin 目录中存放 Tomcat 的一些脚本文件，包含启动和关闭 tomcat 服务脚本。&lt;/li&gt;
+  &lt;li&gt;conf：存放 Tomcat 服务器的各种全局配置文件，其中最重要的是 server.xml 和 web.xml。&lt;/li&gt;
+  &lt;li&gt;webapps：Tomcat 的主要 Web 发布目录，默认情况下把 Web 应用文件放于此目录。&lt;/li&gt;
+  &lt;li&gt;logs：存放 Tomcat 执行时的日志文件。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;2.配置 server.xml。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; cd /usr/local/tomcat/conf/
+ mv server.xml server.xml_bk
+vi server.xml 添加如下内容：
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;vi server.xml 添加如下内容：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; &amp;lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&amp;gt;
+ &amp;lt;Server port=&quot;8006&quot; shutdown=&quot;SHUTDOWN&quot;&amp;gt;
+   &amp;lt;Listener className=&quot;org.apache.catalina.core.JreMemoryLeakPreventionListener&quot;/&amp;gt;
+   &amp;lt;Listener className=&quot;org.apache.catalina.mbeans.GlobalResourcesLifecycleListener&quot;/&amp;gt;
+   &amp;lt;Listener className=&quot;org.apache.catalina.core.ThreadLocalLeakPreventionListener&quot;/&amp;gt;
+   &amp;lt;Listener className=&quot;org.apache.catalina.core.AprLifecycleListener&quot;/&amp;gt;
+   &amp;lt;GlobalNamingResources&amp;gt;
+     &amp;lt;Resource name=&quot;UserDatabase&quot; auth=&quot;Container&quot;
+               type=&quot;org.apache.catalina.UserDatabase&quot;
+               description=&quot;User database that can be updated and saved&quot;
+               factory=&quot;org.apache.catalina.users.MemoryUserDatabaseFactory&quot;
+               pathname=&quot;conf/tomcat-users.xml&quot; /&amp;gt;
+   &amp;lt;/GlobalNamingResources&amp;gt;
+   &amp;lt;Service name=&quot;Catalina&quot;&amp;gt;
+     &amp;lt;Connector port=&quot;8080&quot;
+               protocol=&quot;HTTP/1.1&quot;
+               connectionTimeout=&quot;20000&quot;
+               redirectPort=&quot;8443&quot;
+               maxThreads=&quot;1000&quot;
+               minSpareThreads=&quot;20&quot;
+               acceptCount=&quot;1000&quot;
+               maxHttpHeaderSize=&quot;65536&quot;
+               debug=&quot;0&quot;
+               disableUploadTimeout=&quot;true&quot;
+               useBodyEncodingForURI=&quot;true&quot;
+               enableLookups=&quot;false&quot;
+               URIEncoding=&quot;UTF-8&quot; /&amp;gt;
+     &amp;lt;Engine name=&quot;Catalina&quot; defaultHost=&quot;localhost&quot;&amp;gt;
+       &amp;lt;Realm className=&quot;org.apache.catalina.realm.LockOutRealm&quot;&amp;gt;
+         &amp;lt;Realm className=&quot;org.apache.catalina.realm.UserDatabaseRealm&quot;
+                resourceName=&quot;UserDatabase&quot;/&amp;gt;
+       &amp;lt;/Realm&amp;gt;
+       &amp;lt;Host name=&quot;localhost&quot; appBase=&quot;/data/wwwroot/default&quot; unpackWARs=&quot;true&quot; autoDeploy=&quot;true&quot;&amp;gt;
+         &amp;lt;Context path=&quot;&quot; docBase=&quot;/data/wwwroot/default&quot; debug=&quot;0&quot; reloadable=&quot;false&quot; crossContext=&quot;true&quot;/&amp;gt;
+         &amp;lt;Valve className=&quot;org.apache.catalina.valves.AccessLogValve&quot; directory=&quot;logs&quot;
+           prefix=&quot;localhost_access_log.&quot; suffix=&quot;.txt&quot; pattern=&quot;%h %l %u %t &amp;amp;quot;%r&amp;amp;quot; %s %b&quot; /&amp;gt;
+       &amp;lt;/Host&amp;gt;
+     &amp;lt;/Engine&amp;gt;
+   &amp;lt;/Service&amp;gt;
+ &amp;lt;/Server&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;3.设置 JVM 内存参数。&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;创建/usr/local/tomcat/bin/setenv.sh&lt;/li&gt;
+  &lt;li&gt;vi /usr/local/tomcat/bin/setenv.sh&lt;/li&gt;
+  &lt;li&gt;JAVA_OPTS=’-Djava.security.egd=file:/dev/./urandom -server -Xms256m -Xmx496m – Dfile.encoding=UTF-8’&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;4.设置 tomcat 自启动脚本。&lt;/p&gt;
+
+&lt;p&gt;5.设置自启动。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; chkconfig --add tomcat
+ [chkconfig tomcat on
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;43d06be.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;6.启动 tomcat。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; service tomcat start
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;aed209c.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;7.在浏览器地址栏中输入 http://ip:8080 进行访问。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;c26de8f.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://www.jfox.info/go.php?url=https://help.aliyun.com/document_detail/52806.html?spm=5176.doc50700.6.708.7XQbZ7&quot;&gt;原文链接&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;如果您发现本社区中有涉嫌抄袭的内容，欢迎发送邮件至：yqgroup@service.aliyun.com 进行举报，并提供相关证据，一经查实，本社区将立刻删除涉嫌侵权内容。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;df89f0d.png&quot; alt=&quot;&quot; /&gt;
+用云栖社区APP，舒服~&lt;/p&gt;
+
+&lt;p&gt;【云栖快讯】阿里云数据库MySQL金融版发布，实现日志多副本同步复制，提供金融级可靠性！8月10日，阿里云数据库掌门人褚霸等大牛直播，揭开它的背后故事！赶紧报名吧&lt;/p&gt;</content><author><name></name></author><summary type="html">浏览91评论0 发表于： 阿里云文档中心 java防火墙HTTPSECS云服务器Apacheweb配置tomcat镜像ImagecentosServer脚本xml</summary></entry><entry xml:lang="zh_CN"><title type="html">一起来学SpringCloud之 – 断路器Hystrix（Ribbon）</title><link href="http://www.jfox.info/2017/%E4%B8%80%E8%B5%B7%E6%9D%A5%E5%AD%A6springcloud%E4%B9%8B%E6%96%AD%E8%B7%AF%E5%99%A8hystrixribbon.html" rel="alternate" type="text/html" title="一起来学SpringCloud之 – 断路器Hystrix（Ribbon）" /><published>2017-01-01T15:59:55+00:00</published><updated>2017-01-01T15:59:55+00:00</updated><id>http://www.jfox.info/2017/20170101495</id><content type="html" xml:base="http://www.jfox.info/2017/%E4%B8%80%E8%B5%B7%E6%9D%A5%E5%AD%A6springcloud%E4%B9%8B%E6%96%AD%E8%B7%AF%E5%99%A8hystrixribbon.html">&lt;p&gt;微服务架构中，根据业务划分成若干个服务，各单元应用间通过服务注册与订阅的方式互相依赖，依赖通过远程调用的方式执行，该方式难以避免因网络或自身原因而出现故障或者延迟，从而并不能保证服务的100%可用，此时若有大量的网络涌入，会形成任务累计，导致服务瘫痪，甚至导致服务“雪崩”。&lt;/p&gt;
+
+&lt;h2 id=&quot;-hystrix&quot;&gt;– Hystrix&lt;/h2&gt;
+
+&lt;p&gt;1.Netflix 已经为我们创建了 Hystrix 库来实现服务降级、服务熔断、线程隔离、请求缓存、请求合并以及服务监控（Hystrix Dashboard）等强大功能，在微服务架构中，多层服务调用是非常常见的。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;d12d6e4.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;2.较底层的服务中的服务故障可能导致级联故障，当对特定的服务的调用达到一个阀值（Hystric 是5秒20次） 断路器将会被打开，故障百分比大于circuitBreaker.errorThresholdPercentage（默认值：&amp;gt; 50％）时metrics.rollingStats.timeInMilliseconds（默认10秒），断路打开后，开发人员可以回退机制。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;f91622e.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;官方文档： &lt;a href=&quot;https://www.jfox.info/go.php?url=http://cloud.spring.io/spring-cloud-static/Dalston.SR2/#_circuit_breaker_hystrix_clients&quot;&gt;http://cloud.spring.io/spring-cloud-static/Dalston.SR2/#_circuit_breaker_hystrix_clients&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;-准备工作&quot;&gt;– 准备工作&lt;/h2&gt;
+
+&lt;p&gt;1.启动Consul&lt;/p&gt;
+
+&lt;p&gt;2.创建 &lt;code class=&quot;highlighter-rouge&quot;&gt;battcn-provider&lt;/code&gt; 和 &lt;code class=&quot;highlighter-rouge&quot;&gt;battcn-consumer&lt;/code&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;-battcn-provider&quot;&gt;– battcn-provider&lt;/h2&gt;
+
+&lt;h3 id=&quot;-pomxml&quot;&gt;– pom.xml&lt;/h3&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;cp&quot;&gt;&amp;lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;project&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;xmlns=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;http://maven.apache.org/POM/4.0.0&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;xmlns:xsi=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;http://www.w3.org/2001/XMLSchema-instance&quot;&lt;/span&gt;
+         &lt;span class=&quot;na&quot;&gt;xsi:schemaLocation=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;modelVersion&amp;gt;&lt;/span&gt;4.0.0&lt;span class=&quot;nt&quot;&gt;&amp;lt;/modelVersion&amp;gt;&lt;/span&gt;
+
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;groupId&amp;gt;&lt;/span&gt;com.battcn&lt;span class=&quot;nt&quot;&gt;&amp;lt;/groupId&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;artifactId&amp;gt;&lt;/span&gt;battcn-provider&lt;span class=&quot;nt&quot;&gt;&amp;lt;/artifactId&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;version&amp;gt;&lt;/span&gt;1.0.0-SNAPSHOT&lt;span class=&quot;nt&quot;&gt;&amp;lt;/version&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;packaging&amp;gt;&lt;/span&gt;jar&lt;span class=&quot;nt&quot;&gt;&amp;lt;/packaging&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;name&amp;gt;&lt;/span&gt;battcn-provider&lt;span class=&quot;nt&quot;&gt;&amp;lt;/name&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;description&amp;gt;&lt;/span&gt;Ribbon与Hystrix&lt;span class=&quot;nt&quot;&gt;&amp;lt;/description&amp;gt;&lt;/span&gt;
+
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;parent&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;groupId&amp;gt;&lt;/span&gt;org.springframework.boot&lt;span class=&quot;nt&quot;&gt;&amp;lt;/groupId&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;artifactId&amp;gt;&lt;/span&gt;spring-boot-starter-parent&lt;span class=&quot;nt&quot;&gt;&amp;lt;/artifactId&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;version&amp;gt;&lt;/span&gt;1.5.4.RELEASE&lt;span class=&quot;nt&quot;&gt;&amp;lt;/version&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;relativePath/&amp;gt;&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;&amp;lt;!-- lookup parent from repository --&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;/parent&amp;gt;&lt;/span&gt;
+
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;properties&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;project.build.sourceEncoding&amp;gt;&lt;/span&gt;UTF-8&lt;span class=&quot;nt&quot;&gt;&amp;lt;/project.build.sourceEncoding&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;project.reporting.outputEncoding&amp;gt;&lt;/span&gt;UTF-8&lt;span class=&quot;nt&quot;&gt;&amp;lt;/project.reporting.outputEncoding&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;java.version&amp;gt;&lt;/span&gt;1.8&lt;span class=&quot;nt&quot;&gt;&amp;lt;/java.version&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;spring-cloud.version&amp;gt;&lt;/span&gt;Dalston.SR2&lt;span class=&quot;nt&quot;&gt;&amp;lt;/spring-cloud.version&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;/properties&amp;gt;&lt;/span&gt;
+
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;dependencies&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;dependency&amp;gt;&lt;/span&gt;
+            &lt;span class=&quot;nt&quot;&gt;&amp;lt;groupId&amp;gt;&lt;/span&gt;org.springframework.cloud&lt;span class=&quot;nt&quot;&gt;&amp;lt;/groupId&amp;gt;&lt;/span&gt;
+            &lt;span class=&quot;nt&quot;&gt;&amp;lt;artifactId&amp;gt;&lt;/span&gt;spring-cloud-starter-consul-discovery&lt;span class=&quot;nt&quot;&gt;&amp;lt;/artifactId&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;/dependency&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;dependency&amp;gt;&lt;/span&gt;
+            &lt;span class=&quot;nt&quot;&gt;&amp;lt;groupId&amp;gt;&lt;/span&gt;org.springframework.boot&lt;span class=&quot;nt&quot;&gt;&amp;lt;/groupId&amp;gt;&lt;/span&gt;
+            &lt;span class=&quot;nt&quot;&gt;&amp;lt;artifactId&amp;gt;&lt;/span&gt;spring-boot-starter-actuator&lt;span class=&quot;nt&quot;&gt;&amp;lt;/artifactId&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;/dependency&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;dependency&amp;gt;&lt;/span&gt;
+            &lt;span class=&quot;nt&quot;&gt;&amp;lt;groupId&amp;gt;&lt;/span&gt;org.springframework.boot&lt;span class=&quot;nt&quot;&gt;&amp;lt;/groupId&amp;gt;&lt;/span&gt;
+            &lt;span class=&quot;nt&quot;&gt;&amp;lt;artifactId&amp;gt;&lt;/span&gt;spring-boot-starter-test&lt;span class=&quot;nt&quot;&gt;&amp;lt;/artifactId&amp;gt;&lt;/span&gt;
+            &lt;span class=&quot;nt&quot;&gt;&amp;lt;scope&amp;gt;&lt;/span&gt;test&lt;span class=&quot;nt&quot;&gt;&amp;lt;/scope&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;/dependency&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;/dependencies&amp;gt;&lt;/span&gt;
+
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;dependencyManagement&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;dependencies&amp;gt;&lt;/span&gt;
+            &lt;span class=&quot;nt&quot;&gt;&amp;lt;dependency&amp;gt;&lt;/span&gt;
+                &lt;span class=&quot;nt&quot;&gt;&amp;lt;groupId&amp;gt;&lt;/span&gt;org.springframework.cloud&lt;span class=&quot;nt&quot;&gt;&amp;lt;/groupId&amp;gt;&lt;/span&gt;
+                &lt;span class=&quot;nt&quot;&gt;&amp;lt;artifactId&amp;gt;&lt;/span&gt;spring-cloud-dependencies&lt;span class=&quot;nt&quot;&gt;&amp;lt;/artifactId&amp;gt;&lt;/span&gt;
+                &lt;span class=&quot;nt&quot;&gt;&amp;lt;version&amp;gt;&lt;/span&gt;${spring-cloud.version}&lt;span class=&quot;nt&quot;&gt;&amp;lt;/version&amp;gt;&lt;/span&gt;
+                &lt;span class=&quot;nt&quot;&gt;&amp;lt;type&amp;gt;&lt;/span&gt;pom&lt;span class=&quot;nt&quot;&gt;&amp;lt;/type&amp;gt;&lt;/span&gt;
+                &lt;span class=&quot;nt&quot;&gt;&amp;lt;scope&amp;gt;&lt;/span&gt;import&lt;span class=&quot;nt&quot;&gt;&amp;lt;/scope&amp;gt;&lt;/span&gt;
+            &lt;span class=&quot;nt&quot;&gt;&amp;lt;/dependency&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;/dependencies&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;/dependencyManagement&amp;gt;&lt;/span&gt;
+
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;build&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;plugins&amp;gt;&lt;/span&gt;
+            &lt;span class=&quot;nt&quot;&gt;&amp;lt;plugin&amp;gt;&lt;/span&gt;
+                &lt;span class=&quot;nt&quot;&gt;&amp;lt;groupId&amp;gt;&lt;/span&gt;org.springframework.boot&lt;span class=&quot;nt&quot;&gt;&amp;lt;/groupId&amp;gt;&lt;/span&gt;
+                &lt;span class=&quot;nt&quot;&gt;&amp;lt;artifactId&amp;gt;&lt;/span&gt;spring-boot-maven-plugin&lt;span class=&quot;nt&quot;&gt;&amp;lt;/artifactId&amp;gt;&lt;/span&gt;
+            &lt;span class=&quot;nt&quot;&gt;&amp;lt;/plugin&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;/plugins&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;/build&amp;gt;&lt;/span&gt;
+
+
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;/project&amp;gt;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h3 id=&quot;-providerapplicationjava&quot;&gt;– ProviderApplication.java&lt;/h3&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;package&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;com&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;battcn&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;org&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;springframework&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;beans&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;factory&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;annotation&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Value&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;org&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;springframework&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;boot&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;SpringApplication&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;org&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;springframework&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;boot&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;autoconfigure&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;SpringBootApplication&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;org&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;springframework&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;cloud&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;client&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;discovery&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;EnableDiscoveryClient&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;org&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;springframework&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;web&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;bind&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;annotation&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;GetMapping&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;org&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;springframework&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;web&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;bind&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;annotation&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;RestController&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;p&quot;&gt;@&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;SpringBootApplication&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;@&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;EnableDiscoveryClient&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;@&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;RestController&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ProviderApplication&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+
+    &lt;span class=&quot;p&quot;&gt;@&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Value&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;${spring.application.name}&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;applicationName&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+
+    &lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;SpringApplication&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;run&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ProviderApplication&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;class&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+    &lt;span class=&quot;p&quot;&gt;@&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;GetMapping&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;/hello&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hello&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;My Name's :&quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;applicationName&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot; Email:1837307557@qq.com&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h3 id=&quot;-bootstrapyml&quot;&gt;– bootstrap.yml&lt;/h3&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;server:
+  port: 8765
+
+spring:
+  application:
+    name: battcn-provider
+  cloud:
+    consul:
+      host: localhost
+      port: 8500
+      enabled: true
+      discovery:
+        enabled: true
+        prefer-ip-address: true
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;-battcn-consumer&quot;&gt;– battcn-consumer&lt;/h2&gt;
+
+&lt;h3 id=&quot;-pomxml-1&quot;&gt;– pom.xml&lt;/h3&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;cp&quot;&gt;&amp;lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;project&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;xmlns=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;http://maven.apache.org/POM/4.0.0&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;xmlns:xsi=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;http://www.w3.org/2001/XMLSchema-instance&quot;&lt;/span&gt;
+         &lt;span class=&quot;na&quot;&gt;xsi:schemaLocation=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;modelVersion&amp;gt;&lt;/span&gt;4.0.0&lt;span class=&quot;nt&quot;&gt;&amp;lt;/modelVersion&amp;gt;&lt;/span&gt;
+
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;groupId&amp;gt;&lt;/span&gt;com.battcn&lt;span class=&quot;nt&quot;&gt;&amp;lt;/groupId&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;artifactId&amp;gt;&lt;/span&gt;battcn-consumer&lt;span class=&quot;nt&quot;&gt;&amp;lt;/artifactId&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;version&amp;gt;&lt;/span&gt;1.0.0-SNAPSHOT&lt;span class=&quot;nt&quot;&gt;&amp;lt;/version&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;packaging&amp;gt;&lt;/span&gt;jar&lt;span class=&quot;nt&quot;&gt;&amp;lt;/packaging&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;name&amp;gt;&lt;/span&gt;battcn-consumer&lt;span class=&quot;nt&quot;&gt;&amp;lt;/name&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;description&amp;gt;&lt;/span&gt;Ribbon与Hystrix&lt;span class=&quot;nt&quot;&gt;&amp;lt;/description&amp;gt;&lt;/span&gt;
+
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;parent&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;groupId&amp;gt;&lt;/span&gt;org.springframework.boot&lt;span class=&quot;nt&quot;&gt;&amp;lt;/groupId&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;artifactId&amp;gt;&lt;/span&gt;spring-boot-starter-parent&lt;span class=&quot;nt&quot;&gt;&amp;lt;/artifactId&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;version&amp;gt;&lt;/span&gt;1.5.4.RELEASE&lt;span class=&quot;nt&quot;&gt;&amp;lt;/version&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;relativePath/&amp;gt;&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;&amp;lt;!-- lookup parent from repository --&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;/parent&amp;gt;&lt;/span&gt;
+
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;properties&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;project.build.sourceEncoding&amp;gt;&lt;/span&gt;UTF-8&lt;span class=&quot;nt&quot;&gt;&amp;lt;/project.build.sourceEncoding&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;project.reporting.outputEncoding&amp;gt;&lt;/span&gt;UTF-8&lt;span class=&quot;nt&quot;&gt;&amp;lt;/project.reporting.outputEncoding&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;java.version&amp;gt;&lt;/span&gt;1.8&lt;span class=&quot;nt&quot;&gt;&amp;lt;/java.version&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;spring-cloud.version&amp;gt;&lt;/span&gt;Dalston.SR2&lt;span class=&quot;nt&quot;&gt;&amp;lt;/spring-cloud.version&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;/properties&amp;gt;&lt;/span&gt;
+
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;dependencies&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;dependency&amp;gt;&lt;/span&gt;
+            &lt;span class=&quot;nt&quot;&gt;&amp;lt;groupId&amp;gt;&lt;/span&gt;org.springframework.cloud&lt;span class=&quot;nt&quot;&gt;&amp;lt;/groupId&amp;gt;&lt;/span&gt;
+            &lt;span class=&quot;nt&quot;&gt;&amp;lt;artifactId&amp;gt;&lt;/span&gt;spring-cloud-starter-hystrix&lt;span class=&quot;nt&quot;&gt;&amp;lt;/artifactId&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;/dependency&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;dependency&amp;gt;&lt;/span&gt;
+            &lt;span class=&quot;nt&quot;&gt;&amp;lt;groupId&amp;gt;&lt;/span&gt;org.springframework.boot&lt;span class=&quot;nt&quot;&gt;&amp;lt;/groupId&amp;gt;&lt;/span&gt;
+            &lt;span class=&quot;nt&quot;&gt;&amp;lt;artifactId&amp;gt;&lt;/span&gt;spring-boot-starter-actuator&lt;span class=&quot;nt&quot;&gt;&amp;lt;/artifactId&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;/dependency&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;dependency&amp;gt;&lt;/span&gt;
+            &lt;span class=&quot;nt&quot;&gt;&amp;lt;groupId&amp;gt;&lt;/span&gt;org.springframework.cloud&lt;span class=&quot;nt&quot;&gt;&amp;lt;/groupId&amp;gt;&lt;/span&gt;
+            &lt;span class=&quot;nt&quot;&gt;&amp;lt;artifactId&amp;gt;&lt;/span&gt;spring-cloud-starter-consul-discovery&lt;span class=&quot;nt&quot;&gt;&amp;lt;/artifactId&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;/dependency&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;dependency&amp;gt;&lt;/span&gt;
+            &lt;span class=&quot;nt&quot;&gt;&amp;lt;groupId&amp;gt;&lt;/span&gt;org.springframework.boot&lt;span class=&quot;nt&quot;&gt;&amp;lt;/groupId&amp;gt;&lt;/span&gt;
+            &lt;span class=&quot;nt&quot;&gt;&amp;lt;artifactId&amp;gt;&lt;/span&gt;spring-boot-starter-test&lt;span class=&quot;nt&quot;&gt;&amp;lt;/artifactId&amp;gt;&lt;/span&gt;
+            &lt;span class=&quot;nt&quot;&gt;&amp;lt;scope&amp;gt;&lt;/span&gt;test&lt;span class=&quot;nt&quot;&gt;&amp;lt;/scope&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;/dependency&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;/dependencies&amp;gt;&lt;/span&gt;
+
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;dependencyManagement&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;dependencies&amp;gt;&lt;/span&gt;
+            &lt;span class=&quot;nt&quot;&gt;&amp;lt;dependency&amp;gt;&lt;/span&gt;
+                &lt;span class=&quot;nt&quot;&gt;&amp;lt;groupId&amp;gt;&lt;/span&gt;org.springframework.cloud&lt;span class=&quot;nt&quot;&gt;&amp;lt;/groupId&amp;gt;&lt;/span&gt;
+                &lt;span class=&quot;nt&quot;&gt;&amp;lt;artifactId&amp;gt;&lt;/span&gt;spring-cloud-dependencies&lt;span class=&quot;nt&quot;&gt;&amp;lt;/artifactId&amp;gt;&lt;/span&gt;
+                &lt;span class=&quot;nt&quot;&gt;&amp;lt;version&amp;gt;&lt;/span&gt;${spring-cloud.version}&lt;span class=&quot;nt&quot;&gt;&amp;lt;/version&amp;gt;&lt;/span&gt;
+                &lt;span class=&quot;nt&quot;&gt;&amp;lt;type&amp;gt;&lt;/span&gt;pom&lt;span class=&quot;nt&quot;&gt;&amp;lt;/type&amp;gt;&lt;/span&gt;
+                &lt;span class=&quot;nt&quot;&gt;&amp;lt;scope&amp;gt;&lt;/span&gt;import&lt;span class=&quot;nt&quot;&gt;&amp;lt;/scope&amp;gt;&lt;/span&gt;
+            &lt;span class=&quot;nt&quot;&gt;&amp;lt;/dependency&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;/dependencies&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;/dependencyManagement&amp;gt;&lt;/span&gt;
+
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;build&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;plugins&amp;gt;&lt;/span&gt;
+            &lt;span class=&quot;nt&quot;&gt;&amp;lt;plugin&amp;gt;&lt;/span&gt;
+                &lt;span class=&quot;nt&quot;&gt;&amp;lt;groupId&amp;gt;&lt;/span&gt;org.springframework.boot&lt;span class=&quot;nt&quot;&gt;&amp;lt;/groupId&amp;gt;&lt;/span&gt;
+                &lt;span class=&quot;nt&quot;&gt;&amp;lt;artifactId&amp;gt;&lt;/span&gt;spring-boot-maven-plugin&lt;span class=&quot;nt&quot;&gt;&amp;lt;/artifactId&amp;gt;&lt;/span&gt;
+            &lt;span class=&quot;nt&quot;&gt;&amp;lt;/plugin&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;/plugins&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;/build&amp;gt;&lt;/span&gt;
+
+
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;/project&amp;gt;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h3 id=&quot;-consumerapplication&quot;&gt;– ConsumerApplication&lt;/h3&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;package&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;com&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;battcn&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;org&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;springframework&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;boot&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;SpringApplication&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;org&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;springframework&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;cloud&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;client&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;SpringCloudApplication&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;org&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;springframework&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;cloud&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;client&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;loadbalancer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;LoadBalanced&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;org&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;springframework&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;context&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;annotation&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Bean&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;org&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;springframework&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;web&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;client&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;RestTemplate&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;p&quot;&gt;//@&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;EnableDiscoveryClient&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;//@&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;SpringBootApplication&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;//@&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;EnableCircuitBreaker&lt;/span&gt;
+
+&lt;span class=&quot;p&quot;&gt;/**&lt;/span&gt;
+ &lt;span class=&quot;p&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;SpringCloudApplication&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;一个注解顶上面三个&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;有兴趣的可以点进去看源码&lt;/span&gt;
+ &lt;span class=&quot;p&quot;&gt;*/&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;@&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;SpringCloudApplication&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ConsumerApplication&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+
+    &lt;span class=&quot;p&quot;&gt;@&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Bean&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;@&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;LoadBalanced&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;RestTemplate&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;restTemplate&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;RestTemplate&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+    &lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;SpringApplication&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;run&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ConsumerApplication&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;class&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h3 id=&quot;-hicontroller&quot;&gt;– HiController&lt;/h3&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;package&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;com&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;battcn&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;controller&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;com&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;netflix&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;hystrix&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;contrib&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;javanica&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;annotation&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;HystrixCommand&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;org&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;slf4j&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Logger&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;org&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;slf4j&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;LoggerFactory&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;org&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;springframework&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;beans&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;factory&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;annotation&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Autowired&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;org&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;springframework&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;stereotype&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Service&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;org&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;springframework&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;web&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;bind&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;annotation&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;GetMapping&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;org&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;springframework&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;web&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;bind&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;annotation&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;RestController&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;org&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;springframework&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;web&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;client&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;RestTemplate&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;p&quot;&gt;/**&lt;/span&gt;
+ &lt;span class=&quot;p&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;为了偷懒，就写一个文件了&lt;/span&gt;
+ &lt;span class=&quot;p&quot;&gt;*/&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;@&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;RestController&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;HiController&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+
+    &lt;span class=&quot;n&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Logger&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;LOGGER&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;LoggerFactory&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;getLogger&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;HiController&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;class&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;@&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Autowired&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;HiService&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hiService&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+    &lt;span class=&quot;p&quot;&gt;@&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;GetMapping&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;/hi&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hi&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hiService&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;hello&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+    &lt;span class=&quot;p&quot;&gt;@&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Service&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;HiService&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;@&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Autowired&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;RestTemplate&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;restTemplate&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+        &lt;span class=&quot;p&quot;&gt;@&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;HystrixCommand&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fallbackMethod&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;ribbonFallback&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hello&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;restTemplate&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;getForObject&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;http://battcn-provider/hello&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;class&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+        &lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ribbonFallback&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;My Name's :ribbonFallback Email:1837307557@qq.com&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h3 id=&quot;-bootstrapyml-1&quot;&gt;– bootstrap.yml&lt;/h3&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;server:
+  port: 8766
+
+spring:
+  application:
+    name: battcn-consumer
+  cloud:
+    consul:
+      host: localhost
+      port: 8500
+      enabled: true
+      discovery:
+        enabled: true
+        prefer-ip-address: true
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;-测试&quot;&gt;– 测试&lt;/h2&gt;
+
+&lt;p&gt;启动：battcn-provider&lt;/p&gt;
+
+&lt;p&gt;启动：battcn-consumer&lt;/p&gt;
+
+&lt;p&gt;访问： &lt;a href=&quot;https://www.jfox.info/go.php?url=http://localhost:8500/&quot;&gt;http://localhost:8500/&lt;/a&gt; 显示如下代表服务注册成功&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;20f835d.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;访问： &lt;a href=&quot;https://www.jfox.info/go.php?url=http://localhost:8766/hi&quot;&gt;http://localhost:8766/hi&lt;/a&gt;&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;My Name's :battcn-provider Email:1837307557@qq.com    #正确情况
+
+My Name's :ribbonFallback Email:1837307557@qq.com    #关闭battcn-provider后结果
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h3 id=&quot;-源码&quot;&gt;– 源码&lt;/h3&gt;
+
+&lt;p&gt;1.当我们开启 &lt;code class=&quot;highlighter-rouge&quot;&gt;Hystrix&lt;/code&gt; 的时候 Hystrix 会为我们注入 &lt;code class=&quot;highlighter-rouge&quot;&gt;HystrixCommandAspect&lt;/code&gt; 切面，操作所有带 &lt;code class=&quot;highlighter-rouge&quot;&gt;HystrixCommand&lt;/code&gt; 注解，随后就是通过反射与Cglib创建代理然后发送请求，不管服务是否健壮都会先进入AOP切面然后才会执行后续操作（打脸轻点…）&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;0ea4f3b.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;-监控&quot;&gt;– 监控&lt;/h3&gt;
+
+&lt;p&gt;1.在 &lt;code class=&quot;highlighter-rouge&quot;&gt;ConsumerApplication&lt;/code&gt; 中添加 &lt;code class=&quot;highlighter-rouge&quot;&gt;@EnableHystrixDashboard&lt;/code&gt; 的注解&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;@SpringCloudApplication
+@EnableHystrixDashboard    //多了个开启监控注解
+public class ConsumerApplication {
+
+    @Bean
+    @LoadBalanced
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
+    }
+
+    public static void main(String[] args) {
+        SpringApplication.run(ConsumerApplication.class, args);
+    }
+
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;2.在 &lt;code class=&quot;highlighter-rouge&quot;&gt;pom.xml&lt;/code&gt; 中添加如下配置&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&amp;lt;dependency&amp;gt;
+    &amp;lt;groupId&amp;gt;org.springframework.cloud&amp;lt;/groupId&amp;gt;
+    &amp;lt;artifactId&amp;gt;spring-cloud-starter-hystrix-dashboard&amp;lt;/artifactId&amp;gt;
+&amp;lt;/dependency&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;3.访问： &lt;a href=&quot;https://www.jfox.info/go.php?url=http://localhost:8766/hystrix&quot;&gt;http://localhost:8766/hystrix&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;5845c69.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;4.访问N次： &lt;a href=&quot;https://www.jfox.info/go.php?url=http://localhost:8766/hi&quot;&gt;http://localhost:8766/hi&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;2115564.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;我们可以看到请求成功，失败，等信息&lt;/p&gt;
+
+&lt;h2 id=&quot;-说点什么&quot;&gt;– 说点什么&lt;/h2&gt;
+
+&lt;p&gt;本章代码（battcn-provider/consumer）： &lt;a href=&quot;https://www.jfox.info/go.php?url=https://git.oschina.net/battcn/battcn-cloud/tree/master/battcn-cloud-hystrix-ribbon&quot;&gt;https://git.oschina.net/battcn/battcn-cloud/tree/master/battcn-cloud-hystrix-ribbon&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;如有问题请及时与我联系&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;个人QQ：1837307557&lt;/li&gt;
+  &lt;li&gt;Spring Cloud中国社区①：415028731&lt;/li&gt;
+  &lt;li&gt;Spring For All 社区⑤：157525002&lt;/li&gt;
+  &lt;li&gt;好消息 Dubbo 进入维护阶段，欢迎一起讨论与交流 （猜测为了迎合阿里商用软件）&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;转载标明出处，thanks
+赏
+  谢谢你请我吃糖果&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;dc28baf.png&quot; alt=&quot;&quot; /&gt;支付宝&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;1eb7990.png&quot; alt=&quot;&quot; /&gt;微信&lt;/p&gt;</content><author><name></name></author><summary type="html">微服务架构中，根据业务划分成若干个服务，各单元应用间通过服务注册与订阅的方式互相依赖，依赖通过远程调用的方式执行，该方式难以避免因网络或自身原因而出现故障或者延迟，从而并不能保证服务的100%可用，此时若有大量的网络涌入，会形成任务累计，导致服务瘫痪，甚至导致服务“雪崩”。</summary></entry></feed>

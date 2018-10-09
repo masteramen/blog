@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>idea2017+tomcat热部署配置 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="idea2017+tomcat热部署配置" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="idea2017+tomcat热部署配置" />
+<meta property="og:description" content="idea2017+tomcat热部署配置" />
+<link rel="canonical" href="http://www.jfox.info/2017/idea2017tomcat%E7%83%AD%E9%83%A8%E7%BD%B2%E9%85%8D%E7%BD%AE.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/idea2017tomcat%E7%83%AD%E9%83%A8%E7%BD%B2%E9%85%8D%E7%BD%AE.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:57:26+00:00" />
+<script type="application/ld+json">
+{"description":"idea2017+tomcat热部署配置","@type":"BlogPosting","url":"http://www.jfox.info/2017/idea2017tomcat%E7%83%AD%E9%83%A8%E7%BD%B2%E9%85%8D%E7%BD%AE.html","headline":"idea2017+tomcat热部署配置","dateModified":"2017-01-01T15:57:26+00:00","datePublished":"2017-01-01T15:57:26+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/idea2017tomcat%E7%83%AD%E9%83%A8%E7%BD%B2%E9%85%8D%E7%BD%AE.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">idea2017+tomcat热部署配置</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:57:26+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<h1 id="idea2017tomcat热部署配置">idea2017+tomcat热部署配置</h1>
+
+<p>作者<a href="/u/36a7d3a994ac">landy8530</a>2017.07.13 12:31*字数 685
+引言：部署在项目开发过程中是常有的事，特别是debug的时候，但是如果每次修改一个bug都要把整个项目重新部署一遍,以便测试修改的效果或者继续debug其他bug，那对开发人员来说无疑是一大噩梦。不过有了JVM的hotSwap以及Intellij Idea对debug，hotSwap的支持，热部署就变得很容易的一件事情。今天就简单介绍一下通过对Intellij Idea 2017热部署的设置达到最方便的最高效的debug效果。</p>
+
+<h1 id="1设置debugger-hotswap">1.设置Debugger-HotSwap</h1>
+
+<p>在setting界面，打开Debugger-HotSwap选项，确保勾选了Build project before reloading classes，同时选择Reload classes after compilation为Always。这样我们在编译某个修改了的java文件之后，就会利用HotSwap机制reload class，而Build project before reloading classes就确保了其他修改过的文件一起同步到部署目录。
+<img src="26960ab.png" alt="" /></p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>设置Debugger-HotSwap.png 
+</code></pre></div></div>
+
+<h1 id="2项目设置">2.项目设置</h1>
+
+<p>在Project Structure视图中，在Project setting –&gt; Articfacts选项中，选择war:Exploded类型的modules，然后设置编译输出项目的路径
+<img src="29252fb.png" alt="" /></p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>项目设置.png 
+</code></pre></div></div>
+
+<p>将你的构建输出目录直接设置在源程序目录中，然后重定向的docBase直接指向你的web根目录（就是WEB-INF的父目录）。这样，你只要将编译输出目录设置为WEB-INFclasses就行了，而且，修改JSP文件都不要重新构建，唯一要做的就是修改了java文件之后compile一下。</p>
+
+<p>注：关于如何设置web工程的方法请参照文章《<a href="https://www.jfox.info/go.php?url=http://www.jianshu.com/p/0458f2f5eecd">idea设置tomcat</a>》</p>
+
+<h1 id="3配置tomcat">3.配置tomcat</h1>
+<p><img src="b5b537a.png" alt="" /></p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>image.png 
+</code></pre></div></div>
+
+<p>在Deployment选项卡中选择war exploded项目
+<img src="f151356.png" alt="" /></p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>image.png 
+</code></pre></div></div>
+
+<p><img src="2f33043.png" alt="" /></p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>image.png 
+</code></pre></div></div>
+
+<p>注：如果选项中没有update classes and resources 选项，则是由于服务器添加的Artifact类型问题，一般一个module对应两种类型的Artifact，一种是war，一种是war explored。war就是已war包形式发布，当前项目是这种形式，在这种形式下on frame deactivation配置没有update classes and resources选项。war explored是发布文件目录，选择这种形式，on frame deactivation中就出现update classes and resources选项了。</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/idea2017tomcat%E7%83%AD%E9%83%A8%E7%BD%B2%E9%85%8D%E7%BD%AE.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/java%E5%BC%80%E5%8F%91%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%86%85%E6%A0%B8%E5%AE%9E%E7%8E%B0%E8%BF%9B%E7%A8%8B%E7%9A%84%E4%BC%98%E5%85%88%E7%BA%A7%E5%88%87%E6%8D%A2.html">&laquo; java开发操作系统内核：实现进程的优先级切换</a>
+  
+  
+  <a class="next" href="/2017/java%E8%AE%BF%E9%97%AE%E6%9D%83%E9%99%90%E8%AF%A6%E8%BF%B0.html">Java访问权限详述 » java面试题 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>Java字符串String常见的面试问题及答案二 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="Java字符串String常见的面试问题及答案二" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="By Lee - Last updated: 星期三, 二月 19, 2014" />
+<meta property="og:description" content="By Lee - Last updated: 星期三, 二月 19, 2014" />
+<link rel="canonical" href="http://www.jfox.info/2017/java-zi-fu-chuan-string-chang-jian-de-mian-shi-wen-ti-ji-da-an-er.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/java-zi-fu-chuan-string-chang-jian-de-mian-shi-wen-ti-ji-da-an-er.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:44:30+00:00" />
+<script type="application/ld+json">
+{"description":"By Lee - Last updated: 星期三, 二月 19, 2014","@type":"BlogPosting","url":"http://www.jfox.info/2017/java-zi-fu-chuan-string-chang-jian-de-mian-shi-wen-ti-ji-da-an-er.html","headline":"Java字符串String常见的面试问题及答案二","dateModified":"2017-01-01T15:44:30+00:00","datePublished":"2017-01-01T15:44:30+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/java-zi-fu-chuan-string-chang-jian-de-mian-shi-wen-ti-ji-da-an-er.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Java字符串String常见的面试问题及答案二</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:44:30+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>By Lee - Last updated: 星期三, 二月 19, 2014</p>
+
+<h4 id="stringstringbuffer的和stringbuilder的区别">String，StringBuffer的和StringBuilder的区别？</h4>
+
+<p>在java中String是不可变的和无法改变的，所以每当我们做字符串操作时，它会创建一个新的String。</p>
+
+<p>StringBuffer 线程安全的而StringBuilder不是线程安全的。</p>
+
+<p>所以在多个线程环境下操作的字符串时，我们应该用StringBuffer，但在单线程环境中，我们应该使用StringBuilder。</p>
+
+<p>因为在单线程中不需要考虑线程同步的问题，StringBuilder性能速度比StringBuffer快。</p>
+
+<p>#### 
+在Java中String是不可变的和无法改变的，有什么好处？</p>
+
+<p>1，可以使用字符串池来存储字符串，提高存储效率。</p>
+
+<p>2，增加安全性，在存储一些敏感信息，如数据库用户名，密码等是，黑客不能改变它的值。java的类加载器加载类时，字符串的不变性可以确保正确的类被加装。</p>
+
+<p>3，由于String是不可变的，它是安全的,在多线程环境下，我们不需要任何同步。</p>
+
+<p>### 
+为什么存储密码时，使用char数组优于String？</p>
+
+<p>String是不可变的并且存储在字符串池中。一旦它被创造，就会放在字符串池中，直到被垃圾回收，尽管我们已经使用完密码了，但是密码信息还可能长时间存留在字符串池中没有释放。所以这是一个安全风险，因为任何人都能够访问内存转储从而可以找到密码明文。</p>
+
+<p>如果我们使用char数组来存储密码，一旦我们使用完了，我们可以将其设置为空。因此，我们可以控制它的在内存中的存储时间，避免String带来的安全威胁问题。</p>
+
+<h4 id="java如何检查两个字符串是否相等的">Java如何检查两个字符串是否相等的？</h4>
+
+<p>有两种方法来检查两个字符串是否相等 – 使用“==”运算符或使用equals方法。当我们使用“==”操作符，它会检查字符串的值以和引用。</p>
+
+<h4 id="在java中为什么我们一般用string作为hashmap的key">在Java中为什么我们一般用String作为HashMap的key？</h4>
+
+<p>由于String是不可变的，它的哈希码在创建时会被缓存，而并不需要再重新计算。使用String作为HashMap 键时候，处理速度比其他对象键快。这就是为什么字符串作为HashMap的键来的原因。</p>
+
+<p>我希望在这里列出的问题及答案能帮助你在Java面试过关，如果有错误的地方，请一定告诉我。</p>
+
+<p>相关的链接 ：<a href="https://www.jfox.info/go.php?url=http://www.jfox.info/javazifuchuanstringchangjiandemianshiwentijidaanyi">Java字符串String常见的面试问题及答案一</a></p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/java-zi-fu-chuan-string-chang-jian-de-mian-shi-wen-ti-ji-da-an-er.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/java-zi-fu-chuan-string-chang-jian-de-mian-shi-wen-ti-ji-da-an-er.html">&laquo; Java字符串String常见的面试问题及答案二</a>
+  
+  
+  <a class="next" href="/2017/hui-ying-xiang-ni-yi-sheng-de-zhi-ye-jian-yi.html">会影响你一生的职业建议 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

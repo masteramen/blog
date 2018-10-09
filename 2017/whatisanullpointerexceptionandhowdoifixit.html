@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>What is a NullPointerException, and how do I fix it? | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="What is a NullPointerException, and how do I fix it?" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="When you declare a reference variable (i.e. an object) you are really creating a pointer to an object. Consider the following code where you declare a variable of primitive type int:" />
+<meta property="og:description" content="When you declare a reference variable (i.e. an object) you are really creating a pointer to an object. Consider the following code where you declare a variable of primitive type int:" />
+<link rel="canonical" href="http://www.jfox.info/2017/whatisanullpointerexceptionandhowdoifixit.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/whatisanullpointerexceptionandhowdoifixit.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:54:55+00:00" />
+<script type="application/ld+json">
+{"description":"When you declare a reference variable (i.e. an object) you are really creating a pointer to an object. Consider the following code where you declare a variable of primitive type int:","@type":"BlogPosting","url":"http://www.jfox.info/2017/whatisanullpointerexceptionandhowdoifixit.html","headline":"What is a NullPointerException, and how do I fix it?","dateModified":"2017-01-01T15:54:55+00:00","datePublished":"2017-01-01T15:54:55+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/whatisanullpointerexceptionandhowdoifixit.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">What is a NullPointerException, and how do I fix it?</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:54:55+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>When you declare a reference variable (i.e. an object) you are really creating a pointer to an object. Consider the following code where you declare a variable of primitive type <code class="highlighter-rouge">int</code>:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>int x;
+x = 10;
+</code></pre></div></div>
+
+<p>In this example the variable x is an <code class="highlighter-rouge">int</code> and Java will initialize it to 0 for you. When you assign it to 10 in the second line your value 10 is written into the memory location pointed to by x.</p>
+
+<p>But, when you try to declare a reference type something different happens. Take the following code:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Integer num;
+num = new Integer(10);
+</code></pre></div></div>
+
+<p>The first line declares a variable named <code class="highlighter-rouge">num</code>, but, it does not contain a primitive value. Instead it contains a pointer (because the type is <code class="highlighter-rouge">Integer</code> which is a reference type). Since you did not say as yet what to point to Java sets it to null, meaning “I am pointing at nothing”.</p>
+
+<p>In the second line, the <code class="highlighter-rouge">new</code> keyword is used to instantiate (or create) an object of type Integer and the pointer variable num is assigned this object. You can now reference the object using the dereferencing operator <code class="highlighter-rouge">.</code> (a dot).</p>
+
+<p>The <code class="highlighter-rouge">Exception</code> that you asked about occurs when you declare a variable but did not create an object. If you attempt to dereference <code class="highlighter-rouge">num</code> BEFORE creating the object you get a <code class="highlighter-rouge">NullPointerException</code>. In the most trivial cases the compiler will catch the problem and let you know that “num may not have been initialized” but sometimes you write code that does not directly create the object.</p>
+
+<p>For instance you may have a method as follows:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public void doSomething(SomeObject obj){
+   //do something to obj
+}
+</code></pre></div></div>
+
+<p>in which case you are not creating the object <code class="highlighter-rouge">obj</code>, rather assuming that is was created before the <code class="highlighter-rouge">doSomething</code> method was called. Unfortunately it is possible to call the method like this:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>doSomething(null);
+</code></pre></div></div>
+
+<p>in which case <code class="highlighter-rouge">obj</code> is null. If the method is intended to do something to the passed-in object, it is appropriate to throw the <code class="highlighter-rouge">NullPointerException</code> because it’s a programmer error and the programmer will need that information for debugging purposes.</p>
+
+<p>Alternatively, there may be cases where the purpose of the method is not solely to operate on the passed in object, and therefore a null parameter may be acceptable. In this case, you would need to check for a null parameter and behave differently. You should also explain this in the documentation. For example, <code class="highlighter-rouge">doSomething</code> could be written as:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/**
+  * @param obj An optional foo for ____. May be null, in which case 
+  *  the result will be ____. */
+public void doSomething(SomeObject obj){
+    if(obj != null){
+       //do something
+    } else {
+       //do something else
+    }
+}
+</code></pre></div></div>
+
+<p>Finally, <a href="https://www.jfox.info/go.php?url=https://stackoverflow.com/q/3988788/2775450">How to pinpoint the exception location &amp; cause using Stack Trace</a></p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/whatisanullpointerexceptionandhowdoifixit.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/mybatis%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%905%E5%B7%A5%E5%8E%82%E7%9A%84%E6%9E%84%E5%BB%BA.html">&laquo; MyBatis源码解析【5】工厂的构建</a>
+  
+  
+  <a class="next" href="/2017/154%E5%A4%A9%E5%B0%9A%E5%AD%A6%E5%A0%82%E9%AB%98%E7%90%AAjava300%E9%9B%86%E8%A7%86%E9%A2%91%E7%B2%BE%E5%8D%8E%E7%AC%94%E8%AE%B0121%E8%BF%90%E7%94%A8%E6%80%9D%E7%BB%B4%E6%A8%A1%E5%9E%8B01%E4%BB%A5.html">【154天】尚学堂高琪Java300集视频精华笔记（121）【运用思维模型01：以终为始，逐级分解】 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

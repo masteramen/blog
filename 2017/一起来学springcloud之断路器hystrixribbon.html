@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>一起来学SpringCloud之 – 断路器Hystrix（Ribbon） | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="一起来学SpringCloud之 – 断路器Hystrix（Ribbon）" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="微服务架构中，根据业务划分成若干个服务，各单元应用间通过服务注册与订阅的方式互相依赖，依赖通过远程调用的方式执行，该方式难以避免因网络或自身原因而出现故障或者延迟，从而并不能保证服务的100%可用，此时若有大量的网络涌入，会形成任务累计，导致服务瘫痪，甚至导致服务“雪崩”。" />
+<meta property="og:description" content="微服务架构中，根据业务划分成若干个服务，各单元应用间通过服务注册与订阅的方式互相依赖，依赖通过远程调用的方式执行，该方式难以避免因网络或自身原因而出现故障或者延迟，从而并不能保证服务的100%可用，此时若有大量的网络涌入，会形成任务累计，导致服务瘫痪，甚至导致服务“雪崩”。" />
+<link rel="canonical" href="http://www.jfox.info/2017/%E4%B8%80%E8%B5%B7%E6%9D%A5%E5%AD%A6springcloud%E4%B9%8B%E6%96%AD%E8%B7%AF%E5%99%A8hystrixribbon.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/%E4%B8%80%E8%B5%B7%E6%9D%A5%E5%AD%A6springcloud%E4%B9%8B%E6%96%AD%E8%B7%AF%E5%99%A8hystrixribbon.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:59:55+00:00" />
+<script type="application/ld+json">
+{"description":"微服务架构中，根据业务划分成若干个服务，各单元应用间通过服务注册与订阅的方式互相依赖，依赖通过远程调用的方式执行，该方式难以避免因网络或自身原因而出现故障或者延迟，从而并不能保证服务的100%可用，此时若有大量的网络涌入，会形成任务累计，导致服务瘫痪，甚至导致服务“雪崩”。","@type":"BlogPosting","url":"http://www.jfox.info/2017/%E4%B8%80%E8%B5%B7%E6%9D%A5%E5%AD%A6springcloud%E4%B9%8B%E6%96%AD%E8%B7%AF%E5%99%A8hystrixribbon.html","headline":"一起来学SpringCloud之 – 断路器Hystrix（Ribbon）","dateModified":"2017-01-01T15:59:55+00:00","datePublished":"2017-01-01T15:59:55+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/%E4%B8%80%E8%B5%B7%E6%9D%A5%E5%AD%A6springcloud%E4%B9%8B%E6%96%AD%E8%B7%AF%E5%99%A8hystrixribbon.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">一起来学SpringCloud之 – 断路器Hystrix（Ribbon）</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:59:55+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>微服务架构中，根据业务划分成若干个服务，各单元应用间通过服务注册与订阅的方式互相依赖，依赖通过远程调用的方式执行，该方式难以避免因网络或自身原因而出现故障或者延迟，从而并不能保证服务的100%可用，此时若有大量的网络涌入，会形成任务累计，导致服务瘫痪，甚至导致服务“雪崩”。</p>
+
+<h2 id="-hystrix">– Hystrix</h2>
+
+<p>1.Netflix 已经为我们创建了 Hystrix 库来实现服务降级、服务熔断、线程隔离、请求缓存、请求合并以及服务监控（Hystrix Dashboard）等强大功能，在微服务架构中，多层服务调用是非常常见的。</p>
+
+<p><img src="d12d6e4.png" alt="" /></p>
+
+<p>2.较底层的服务中的服务故障可能导致级联故障，当对特定的服务的调用达到一个阀值（Hystric 是5秒20次） 断路器将会被打开，故障百分比大于circuitBreaker.errorThresholdPercentage（默认值：&gt; 50％）时metrics.rollingStats.timeInMilliseconds（默认10秒），断路打开后，开发人员可以回退机制。</p>
+
+<p><img src="f91622e.png" alt="" /></p>
+
+<p>官方文档： <a href="https://www.jfox.info/go.php?url=http://cloud.spring.io/spring-cloud-static/Dalston.SR2/#_circuit_breaker_hystrix_clients">http://cloud.spring.io/spring-cloud-static/Dalston.SR2/#_circuit_breaker_hystrix_clients</a></p>
+
+<h2 id="-准备工作">– 准备工作</h2>
+
+<p>1.启动Consul</p>
+
+<p>2.创建 <code class="highlighter-rouge">battcn-provider</code> 和 <code class="highlighter-rouge">battcn-consumer</code></p>
+
+<h2 id="-battcn-provider">– battcn-provider</h2>
+
+<h3 id="-pomxml">– pom.xml</h3>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;project</span> <span class="na">xmlns=</span><span class="s">"http://maven.apache.org/POM/4.0.0"</span> <span class="na">xmlns:xsi=</span><span class="s">"http://www.w3.org/2001/XMLSchema-instance"</span>
+         <span class="na">xsi:schemaLocation=</span><span class="s">"http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;modelVersion&gt;</span>4.0.0<span class="nt">&lt;/modelVersion&gt;</span>
+
+    <span class="nt">&lt;groupId&gt;</span>com.battcn<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>battcn-provider<span class="nt">&lt;/artifactId&gt;</span>
+    <span class="nt">&lt;version&gt;</span>1.0.0-SNAPSHOT<span class="nt">&lt;/version&gt;</span>
+    <span class="nt">&lt;packaging&gt;</span>jar<span class="nt">&lt;/packaging&gt;</span>
+    <span class="nt">&lt;name&gt;</span>battcn-provider<span class="nt">&lt;/name&gt;</span>
+    <span class="nt">&lt;description&gt;</span>Ribbon与Hystrix<span class="nt">&lt;/description&gt;</span>
+
+    <span class="nt">&lt;parent&gt;</span>
+        <span class="nt">&lt;groupId&gt;</span>org.springframework.boot<span class="nt">&lt;/groupId&gt;</span>
+        <span class="nt">&lt;artifactId&gt;</span>spring-boot-starter-parent<span class="nt">&lt;/artifactId&gt;</span>
+        <span class="nt">&lt;version&gt;</span>1.5.4.RELEASE<span class="nt">&lt;/version&gt;</span>
+        <span class="nt">&lt;relativePath/&gt;</span> <span class="c">&lt;!-- lookup parent from repository --&gt;</span>
+    <span class="nt">&lt;/parent&gt;</span>
+
+    <span class="nt">&lt;properties&gt;</span>
+        <span class="nt">&lt;project.build.sourceEncoding&gt;</span>UTF-8<span class="nt">&lt;/project.build.sourceEncoding&gt;</span>
+        <span class="nt">&lt;project.reporting.outputEncoding&gt;</span>UTF-8<span class="nt">&lt;/project.reporting.outputEncoding&gt;</span>
+        <span class="nt">&lt;java.version&gt;</span>1.8<span class="nt">&lt;/java.version&gt;</span>
+        <span class="nt">&lt;spring-cloud.version&gt;</span>Dalston.SR2<span class="nt">&lt;/spring-cloud.version&gt;</span>
+    <span class="nt">&lt;/properties&gt;</span>
+
+    <span class="nt">&lt;dependencies&gt;</span>
+        <span class="nt">&lt;dependency&gt;</span>
+            <span class="nt">&lt;groupId&gt;</span>org.springframework.cloud<span class="nt">&lt;/groupId&gt;</span>
+            <span class="nt">&lt;artifactId&gt;</span>spring-cloud-starter-consul-discovery<span class="nt">&lt;/artifactId&gt;</span>
+        <span class="nt">&lt;/dependency&gt;</span>
+        <span class="nt">&lt;dependency&gt;</span>
+            <span class="nt">&lt;groupId&gt;</span>org.springframework.boot<span class="nt">&lt;/groupId&gt;</span>
+            <span class="nt">&lt;artifactId&gt;</span>spring-boot-starter-actuator<span class="nt">&lt;/artifactId&gt;</span>
+        <span class="nt">&lt;/dependency&gt;</span>
+        <span class="nt">&lt;dependency&gt;</span>
+            <span class="nt">&lt;groupId&gt;</span>org.springframework.boot<span class="nt">&lt;/groupId&gt;</span>
+            <span class="nt">&lt;artifactId&gt;</span>spring-boot-starter-test<span class="nt">&lt;/artifactId&gt;</span>
+            <span class="nt">&lt;scope&gt;</span>test<span class="nt">&lt;/scope&gt;</span>
+        <span class="nt">&lt;/dependency&gt;</span>
+    <span class="nt">&lt;/dependencies&gt;</span>
+
+    <span class="nt">&lt;dependencyManagement&gt;</span>
+        <span class="nt">&lt;dependencies&gt;</span>
+            <span class="nt">&lt;dependency&gt;</span>
+                <span class="nt">&lt;groupId&gt;</span>org.springframework.cloud<span class="nt">&lt;/groupId&gt;</span>
+                <span class="nt">&lt;artifactId&gt;</span>spring-cloud-dependencies<span class="nt">&lt;/artifactId&gt;</span>
+                <span class="nt">&lt;version&gt;</span>${spring-cloud.version}<span class="nt">&lt;/version&gt;</span>
+                <span class="nt">&lt;type&gt;</span>pom<span class="nt">&lt;/type&gt;</span>
+                <span class="nt">&lt;scope&gt;</span>import<span class="nt">&lt;/scope&gt;</span>
+            <span class="nt">&lt;/dependency&gt;</span>
+        <span class="nt">&lt;/dependencies&gt;</span>
+    <span class="nt">&lt;/dependencyManagement&gt;</span>
+
+    <span class="nt">&lt;build&gt;</span>
+        <span class="nt">&lt;plugins&gt;</span>
+            <span class="nt">&lt;plugin&gt;</span>
+                <span class="nt">&lt;groupId&gt;</span>org.springframework.boot<span class="nt">&lt;/groupId&gt;</span>
+                <span class="nt">&lt;artifactId&gt;</span>spring-boot-maven-plugin<span class="nt">&lt;/artifactId&gt;</span>
+            <span class="nt">&lt;/plugin&gt;</span>
+        <span class="nt">&lt;/plugins&gt;</span>
+    <span class="nt">&lt;/build&gt;</span>
+
+
+<span class="nt">&lt;/project&gt;</span>
+</code></pre></div></div>
+
+<h3 id="-providerapplicationjava">– ProviderApplication.java</h3>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">com</span><span class="p">.</span><span class="n">battcn</span><span class="p">;</span>
+
+<span class="n">import</span> <span class="n">org</span><span class="p">.</span><span class="n">springframework</span><span class="p">.</span><span class="n">beans</span><span class="p">.</span><span class="n">factory</span><span class="p">.</span><span class="n">annotation</span><span class="p">.</span><span class="n">Value</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">org</span><span class="p">.</span><span class="n">springframework</span><span class="p">.</span><span class="n">boot</span><span class="p">.</span><span class="n">SpringApplication</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">org</span><span class="p">.</span><span class="n">springframework</span><span class="p">.</span><span class="n">boot</span><span class="p">.</span><span class="n">autoconfigure</span><span class="p">.</span><span class="n">SpringBootApplication</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">org</span><span class="p">.</span><span class="n">springframework</span><span class="p">.</span><span class="n">cloud</span><span class="p">.</span><span class="n">client</span><span class="p">.</span><span class="n">discovery</span><span class="p">.</span><span class="n">EnableDiscoveryClient</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">org</span><span class="p">.</span><span class="n">springframework</span><span class="p">.</span><span class="n">web</span><span class="p">.</span><span class="n">bind</span><span class="p">.</span><span class="n">annotation</span><span class="p">.</span><span class="n">GetMapping</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">org</span><span class="p">.</span><span class="n">springframework</span><span class="p">.</span><span class="n">web</span><span class="p">.</span><span class="n">bind</span><span class="p">.</span><span class="n">annotation</span><span class="p">.</span><span class="n">RestController</span><span class="p">;</span>
+
+<span class="p">@</span><span class="n">SpringBootApplication</span>
+<span class="p">@</span><span class="n">EnableDiscoveryClient</span>
+<span class="p">@</span><span class="n">RestController</span>
+<span class="k">public</span> <span class="n">class</span> <span class="n">ProviderApplication</span> <span class="p">{</span>
+
+    <span class="p">@</span><span class="n">Value</span><span class="p">(</span><span class="s2">"${spring.application.name}"</span><span class="p">)</span>
+    <span class="k">String</span> <span class="n">applicationName</span><span class="p">;</span>
+
+
+    <span class="k">public</span> <span class="n">static</span> <span class="n">void</span> <span class="n">main</span><span class="p">(</span><span class="k">String</span><span class="p">[]</span> <span class="n">args</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">SpringApplication</span><span class="p">.</span><span class="nf">run</span><span class="p">(</span><span class="n">ProviderApplication</span><span class="p">.</span><span class="n">class</span><span class="p">,</span> <span class="n">args</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="p">@</span><span class="n">GetMapping</span><span class="p">(</span><span class="s2">"/hello"</span><span class="p">)</span>
+    <span class="k">public</span> <span class="k">String</span> <span class="n">hello</span><span class="p">()</span> <span class="p">{</span>
+        <span class="n">return</span> <span class="s2">"My Name's :"</span> <span class="p">+</span> <span class="n">applicationName</span> <span class="p">+</span> <span class="s2">" Email:1837307557@qq.com"</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="-bootstrapyml">– bootstrap.yml</h3>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>server:
+  port: 8765
+
+spring:
+  application:
+    name: battcn-provider
+  cloud:
+    consul:
+      host: localhost
+      port: 8500
+      enabled: true
+      discovery:
+        enabled: true
+        prefer-ip-address: true
+</code></pre></div></div>
+
+<h2 id="-battcn-consumer">– battcn-consumer</h2>
+
+<h3 id="-pomxml-1">– pom.xml</h3>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;project</span> <span class="na">xmlns=</span><span class="s">"http://maven.apache.org/POM/4.0.0"</span> <span class="na">xmlns:xsi=</span><span class="s">"http://www.w3.org/2001/XMLSchema-instance"</span>
+         <span class="na">xsi:schemaLocation=</span><span class="s">"http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;modelVersion&gt;</span>4.0.0<span class="nt">&lt;/modelVersion&gt;</span>
+
+    <span class="nt">&lt;groupId&gt;</span>com.battcn<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>battcn-consumer<span class="nt">&lt;/artifactId&gt;</span>
+    <span class="nt">&lt;version&gt;</span>1.0.0-SNAPSHOT<span class="nt">&lt;/version&gt;</span>
+    <span class="nt">&lt;packaging&gt;</span>jar<span class="nt">&lt;/packaging&gt;</span>
+    <span class="nt">&lt;name&gt;</span>battcn-consumer<span class="nt">&lt;/name&gt;</span>
+    <span class="nt">&lt;description&gt;</span>Ribbon与Hystrix<span class="nt">&lt;/description&gt;</span>
+
+    <span class="nt">&lt;parent&gt;</span>
+        <span class="nt">&lt;groupId&gt;</span>org.springframework.boot<span class="nt">&lt;/groupId&gt;</span>
+        <span class="nt">&lt;artifactId&gt;</span>spring-boot-starter-parent<span class="nt">&lt;/artifactId&gt;</span>
+        <span class="nt">&lt;version&gt;</span>1.5.4.RELEASE<span class="nt">&lt;/version&gt;</span>
+        <span class="nt">&lt;relativePath/&gt;</span> <span class="c">&lt;!-- lookup parent from repository --&gt;</span>
+    <span class="nt">&lt;/parent&gt;</span>
+
+    <span class="nt">&lt;properties&gt;</span>
+        <span class="nt">&lt;project.build.sourceEncoding&gt;</span>UTF-8<span class="nt">&lt;/project.build.sourceEncoding&gt;</span>
+        <span class="nt">&lt;project.reporting.outputEncoding&gt;</span>UTF-8<span class="nt">&lt;/project.reporting.outputEncoding&gt;</span>
+        <span class="nt">&lt;java.version&gt;</span>1.8<span class="nt">&lt;/java.version&gt;</span>
+        <span class="nt">&lt;spring-cloud.version&gt;</span>Dalston.SR2<span class="nt">&lt;/spring-cloud.version&gt;</span>
+    <span class="nt">&lt;/properties&gt;</span>
+
+    <span class="nt">&lt;dependencies&gt;</span>
+        <span class="nt">&lt;dependency&gt;</span>
+            <span class="nt">&lt;groupId&gt;</span>org.springframework.cloud<span class="nt">&lt;/groupId&gt;</span>
+            <span class="nt">&lt;artifactId&gt;</span>spring-cloud-starter-hystrix<span class="nt">&lt;/artifactId&gt;</span>
+        <span class="nt">&lt;/dependency&gt;</span>
+        <span class="nt">&lt;dependency&gt;</span>
+            <span class="nt">&lt;groupId&gt;</span>org.springframework.boot<span class="nt">&lt;/groupId&gt;</span>
+            <span class="nt">&lt;artifactId&gt;</span>spring-boot-starter-actuator<span class="nt">&lt;/artifactId&gt;</span>
+        <span class="nt">&lt;/dependency&gt;</span>
+        <span class="nt">&lt;dependency&gt;</span>
+            <span class="nt">&lt;groupId&gt;</span>org.springframework.cloud<span class="nt">&lt;/groupId&gt;</span>
+            <span class="nt">&lt;artifactId&gt;</span>spring-cloud-starter-consul-discovery<span class="nt">&lt;/artifactId&gt;</span>
+        <span class="nt">&lt;/dependency&gt;</span>
+        <span class="nt">&lt;dependency&gt;</span>
+            <span class="nt">&lt;groupId&gt;</span>org.springframework.boot<span class="nt">&lt;/groupId&gt;</span>
+            <span class="nt">&lt;artifactId&gt;</span>spring-boot-starter-test<span class="nt">&lt;/artifactId&gt;</span>
+            <span class="nt">&lt;scope&gt;</span>test<span class="nt">&lt;/scope&gt;</span>
+        <span class="nt">&lt;/dependency&gt;</span>
+    <span class="nt">&lt;/dependencies&gt;</span>
+
+    <span class="nt">&lt;dependencyManagement&gt;</span>
+        <span class="nt">&lt;dependencies&gt;</span>
+            <span class="nt">&lt;dependency&gt;</span>
+                <span class="nt">&lt;groupId&gt;</span>org.springframework.cloud<span class="nt">&lt;/groupId&gt;</span>
+                <span class="nt">&lt;artifactId&gt;</span>spring-cloud-dependencies<span class="nt">&lt;/artifactId&gt;</span>
+                <span class="nt">&lt;version&gt;</span>${spring-cloud.version}<span class="nt">&lt;/version&gt;</span>
+                <span class="nt">&lt;type&gt;</span>pom<span class="nt">&lt;/type&gt;</span>
+                <span class="nt">&lt;scope&gt;</span>import<span class="nt">&lt;/scope&gt;</span>
+            <span class="nt">&lt;/dependency&gt;</span>
+        <span class="nt">&lt;/dependencies&gt;</span>
+    <span class="nt">&lt;/dependencyManagement&gt;</span>
+
+    <span class="nt">&lt;build&gt;</span>
+        <span class="nt">&lt;plugins&gt;</span>
+            <span class="nt">&lt;plugin&gt;</span>
+                <span class="nt">&lt;groupId&gt;</span>org.springframework.boot<span class="nt">&lt;/groupId&gt;</span>
+                <span class="nt">&lt;artifactId&gt;</span>spring-boot-maven-plugin<span class="nt">&lt;/artifactId&gt;</span>
+            <span class="nt">&lt;/plugin&gt;</span>
+        <span class="nt">&lt;/plugins&gt;</span>
+    <span class="nt">&lt;/build&gt;</span>
+
+
+<span class="nt">&lt;/project&gt;</span>
+</code></pre></div></div>
+
+<h3 id="-consumerapplication">– ConsumerApplication</h3>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">com</span><span class="p">.</span><span class="n">battcn</span><span class="p">;</span>
+
+<span class="n">import</span> <span class="n">org</span><span class="p">.</span><span class="n">springframework</span><span class="p">.</span><span class="n">boot</span><span class="p">.</span><span class="n">SpringApplication</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">org</span><span class="p">.</span><span class="n">springframework</span><span class="p">.</span><span class="n">cloud</span><span class="p">.</span><span class="n">client</span><span class="p">.</span><span class="n">SpringCloudApplication</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">org</span><span class="p">.</span><span class="n">springframework</span><span class="p">.</span><span class="n">cloud</span><span class="p">.</span><span class="n">client</span><span class="p">.</span><span class="n">loadbalancer</span><span class="p">.</span><span class="n">LoadBalanced</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">org</span><span class="p">.</span><span class="n">springframework</span><span class="p">.</span><span class="n">context</span><span class="p">.</span><span class="n">annotation</span><span class="p">.</span><span class="n">Bean</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">org</span><span class="p">.</span><span class="n">springframework</span><span class="p">.</span><span class="n">web</span><span class="p">.</span><span class="n">client</span><span class="p">.</span><span class="n">RestTemplate</span><span class="p">;</span>
+
+<span class="p">//@</span><span class="n">EnableDiscoveryClient</span>
+<span class="p">//@</span><span class="n">SpringBootApplication</span>
+<span class="p">//@</span><span class="n">EnableCircuitBreaker</span>
+
+<span class="p">/**</span>
+ <span class="p">*</span> <span class="n">SpringCloudApplication</span> <span class="err">一个注解顶上面三个</span><span class="p">,</span><span class="err">有兴趣的可以点进去看源码</span>
+ <span class="p">*/</span>
+<span class="p">@</span><span class="n">SpringCloudApplication</span>
+<span class="k">public</span> <span class="n">class</span> <span class="n">ConsumerApplication</span> <span class="p">{</span>
+
+    <span class="p">@</span><span class="n">Bean</span>
+    <span class="p">@</span><span class="n">LoadBalanced</span>
+    <span class="k">public</span> <span class="n">RestTemplate</span> <span class="n">restTemplate</span><span class="p">()</span> <span class="p">{</span>
+        <span class="n">return</span> <span class="n">new</span> <span class="n">RestTemplate</span><span class="p">();</span>
+    <span class="p">}</span>
+
+    <span class="k">public</span> <span class="n">static</span> <span class="n">void</span> <span class="n">main</span><span class="p">(</span><span class="k">String</span><span class="p">[]</span> <span class="n">args</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">SpringApplication</span><span class="p">.</span><span class="nf">run</span><span class="p">(</span><span class="n">ConsumerApplication</span><span class="p">.</span><span class="n">class</span><span class="p">,</span> <span class="n">args</span><span class="p">);</span>
+    <span class="p">}</span>
+
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="-hicontroller">– HiController</h3>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">com</span><span class="p">.</span><span class="n">battcn</span><span class="p">.</span><span class="n">controller</span><span class="p">;</span>
+
+<span class="n">import</span> <span class="n">com</span><span class="p">.</span><span class="n">netflix</span><span class="p">.</span><span class="n">hystrix</span><span class="p">.</span><span class="n">contrib</span><span class="p">.</span><span class="n">javanica</span><span class="p">.</span><span class="n">annotation</span><span class="p">.</span><span class="n">HystrixCommand</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">org</span><span class="p">.</span><span class="n">slf4j</span><span class="p">.</span><span class="n">Logger</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">org</span><span class="p">.</span><span class="n">slf4j</span><span class="p">.</span><span class="n">LoggerFactory</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">org</span><span class="p">.</span><span class="n">springframework</span><span class="p">.</span><span class="n">beans</span><span class="p">.</span><span class="n">factory</span><span class="p">.</span><span class="n">annotation</span><span class="p">.</span><span class="n">Autowired</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">org</span><span class="p">.</span><span class="n">springframework</span><span class="p">.</span><span class="n">stereotype</span><span class="p">.</span><span class="n">Service</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">org</span><span class="p">.</span><span class="n">springframework</span><span class="p">.</span><span class="n">web</span><span class="p">.</span><span class="n">bind</span><span class="p">.</span><span class="n">annotation</span><span class="p">.</span><span class="n">GetMapping</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">org</span><span class="p">.</span><span class="n">springframework</span><span class="p">.</span><span class="n">web</span><span class="p">.</span><span class="n">bind</span><span class="p">.</span><span class="n">annotation</span><span class="p">.</span><span class="n">RestController</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">org</span><span class="p">.</span><span class="n">springframework</span><span class="p">.</span><span class="n">web</span><span class="p">.</span><span class="n">client</span><span class="p">.</span><span class="n">RestTemplate</span><span class="p">;</span>
+
+<span class="p">/**</span>
+ <span class="p">*</span> <span class="err">为了偷懒，就写一个文件了</span>
+ <span class="p">*/</span>
+<span class="p">@</span><span class="n">RestController</span>
+<span class="k">public</span> <span class="n">class</span> <span class="n">HiController</span> <span class="p">{</span>
+
+    <span class="n">static</span> <span class="n">Logger</span> <span class="n">LOGGER</span> <span class="p">=</span> <span class="n">LoggerFactory</span><span class="p">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">HiController</span><span class="p">.</span><span class="n">class</span><span class="p">);</span>
+    <span class="p">@</span><span class="n">Autowired</span>
+    <span class="n">HiService</span> <span class="n">hiService</span><span class="p">;</span>
+
+    <span class="p">@</span><span class="n">GetMapping</span><span class="p">(</span><span class="s2">"/hi"</span><span class="p">)</span>
+    <span class="k">public</span> <span class="k">String</span> <span class="n">hi</span><span class="p">()</span> <span class="p">{</span>
+        <span class="n">return</span> <span class="n">hiService</span><span class="p">.</span><span class="n">hello</span><span class="p">();</span>
+    <span class="p">}</span>
+
+    <span class="p">@</span><span class="n">Service</span>
+    <span class="n">class</span> <span class="n">HiService</span> <span class="p">{</span>
+        <span class="p">@</span><span class="n">Autowired</span>
+        <span class="n">RestTemplate</span> <span class="n">restTemplate</span><span class="p">;</span>
+
+        <span class="p">@</span><span class="n">HystrixCommand</span><span class="p">(</span><span class="n">fallbackMethod</span> <span class="p">=</span> <span class="s2">"ribbonFallback"</span><span class="p">)</span>
+        <span class="k">public</span> <span class="k">String</span> <span class="n">hello</span><span class="p">()</span> <span class="p">{</span>
+            <span class="n">return</span> <span class="n">restTemplate</span><span class="p">.</span><span class="n">getForObject</span><span class="p">(</span><span class="s2">"http://battcn-provider/hello"</span><span class="p">,</span> <span class="k">String</span><span class="p">.</span><span class="n">class</span><span class="p">);</span>
+        <span class="p">}</span>
+
+        <span class="k">public</span> <span class="k">String</span> <span class="n">ribbonFallback</span><span class="p">()</span> <span class="p">{</span>
+            <span class="n">return</span> <span class="s2">"My Name's :ribbonFallback Email:1837307557@qq.com"</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="-bootstrapyml-1">– bootstrap.yml</h3>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>server:
+  port: 8766
+
+spring:
+  application:
+    name: battcn-consumer
+  cloud:
+    consul:
+      host: localhost
+      port: 8500
+      enabled: true
+      discovery:
+        enabled: true
+        prefer-ip-address: true
+</code></pre></div></div>
+
+<h2 id="-测试">– 测试</h2>
+
+<p>启动：battcn-provider</p>
+
+<p>启动：battcn-consumer</p>
+
+<p>访问： <a href="https://www.jfox.info/go.php?url=http://localhost:8500/">http://localhost:8500/</a> 显示如下代表服务注册成功</p>
+
+<p><img src="20f835d.png" alt="" /></p>
+
+<p>访问： <a href="https://www.jfox.info/go.php?url=http://localhost:8766/hi">http://localhost:8766/hi</a></p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>My Name's :battcn-provider Email:1837307557@qq.com    #正确情况
+
+My Name's :ribbonFallback Email:1837307557@qq.com    #关闭battcn-provider后结果
+</code></pre></div></div>
+
+<h3 id="-源码">– 源码</h3>
+
+<p>1.当我们开启 <code class="highlighter-rouge">Hystrix</code> 的时候 Hystrix 会为我们注入 <code class="highlighter-rouge">HystrixCommandAspect</code> 切面，操作所有带 <code class="highlighter-rouge">HystrixCommand</code> 注解，随后就是通过反射与Cglib创建代理然后发送请求，不管服务是否健壮都会先进入AOP切面然后才会执行后续操作（打脸轻点…）</p>
+
+<p><img src="0ea4f3b.png" alt="" /></p>
+
+<h3 id="-监控">– 监控</h3>
+
+<p>1.在 <code class="highlighter-rouge">ConsumerApplication</code> 中添加 <code class="highlighter-rouge">@EnableHystrixDashboard</code> 的注解</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>@SpringCloudApplication
+@EnableHystrixDashboard    //多了个开启监控注解
+public class ConsumerApplication {
+
+    @Bean
+    @LoadBalanced
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
+    }
+
+    public static void main(String[] args) {
+        SpringApplication.run(ConsumerApplication.class, args);
+    }
+
+}
+</code></pre></div></div>
+
+<p>2.在 <code class="highlighter-rouge">pom.xml</code> 中添加如下配置</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;dependency&gt;
+    &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
+    &lt;artifactId&gt;spring-cloud-starter-hystrix-dashboard&lt;/artifactId&gt;
+&lt;/dependency&gt;
+</code></pre></div></div>
+
+<p>3.访问： <a href="https://www.jfox.info/go.php?url=http://localhost:8766/hystrix">http://localhost:8766/hystrix</a></p>
+
+<p><img src="5845c69.png" alt="" /></p>
+
+<p>4.访问N次： <a href="https://www.jfox.info/go.php?url=http://localhost:8766/hi">http://localhost:8766/hi</a></p>
+
+<p><img src="2115564.png" alt="" /></p>
+
+<p>我们可以看到请求成功，失败，等信息</p>
+
+<h2 id="-说点什么">– 说点什么</h2>
+
+<p>本章代码（battcn-provider/consumer）： <a href="https://www.jfox.info/go.php?url=https://git.oschina.net/battcn/battcn-cloud/tree/master/battcn-cloud-hystrix-ribbon">https://git.oschina.net/battcn/battcn-cloud/tree/master/battcn-cloud-hystrix-ribbon</a></p>
+
+<p>如有问题请及时与我联系</p>
+
+<ol>
+  <li>个人QQ：1837307557</li>
+  <li>Spring Cloud中国社区①：415028731</li>
+  <li>Spring For All 社区⑤：157525002</li>
+  <li>好消息 Dubbo 进入维护阶段，欢迎一起讨论与交流 （猜测为了迎合阿里商用软件）</li>
+</ol>
+
+<p>转载标明出处，thanks
+赏
+  谢谢你请我吃糖果</p>
+
+<p><img src="dc28baf.png" alt="" />支付宝</p>
+
+<p><img src="1eb7990.png" alt="" />微信</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/%E4%B8%80%E8%B5%B7%E6%9D%A5%E5%AD%A6springcloud%E4%B9%8B%E6%96%AD%E8%B7%AF%E5%99%A8hystrixribbon.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/tomcat%E5%81%9C%E6%9C%BA%E8%BF%87%E7%A8%8B%E5%88%86%E6%9E%90%E5%8F%8A%E7%BA%BF%E7%A8%8B%E5%A4%84%E7%90%86%E6%96%B9%E6%B3%95.html">&laquo; Tomcat停机过程分析及线程处理方法</a>
+  
+  
+  <a class="next" href="/2017/%E4%BA%91%E6%9C%8D%E5%8A%A1%E5%99%A8ecs%E5%BB%BA%E7%AB%99%E6%95%99%E7%A8%8B%E9%83%A8%E7%BD%B2javaweb.html">云服务器 ECS 建站教程：部署Java Web &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

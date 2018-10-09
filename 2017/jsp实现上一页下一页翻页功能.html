@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>jsp实现上一页下一页翻页功能 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="jsp实现上一页下一页翻页功能" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="前段时间一直忙于期末考试和找实习，好久没写博客了。" />
+<meta property="og:description" content="前段时间一直忙于期末考试和找实习，好久没写博客了。" />
+<link rel="canonical" href="http://www.jfox.info/2017/jsp%E5%AE%9E%E7%8E%B0%E4%B8%8A%E4%B8%80%E9%A1%B5%E4%B8%8B%E4%B8%80%E9%A1%B5%E7%BF%BB%E9%A1%B5%E5%8A%9F%E8%83%BD.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/jsp%E5%AE%9E%E7%8E%B0%E4%B8%8A%E4%B8%80%E9%A1%B5%E4%B8%8B%E4%B8%80%E9%A1%B5%E7%BF%BB%E9%A1%B5%E5%8A%9F%E8%83%BD.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:57:20+00:00" />
+<script type="application/ld+json">
+{"description":"前段时间一直忙于期末考试和找实习，好久没写博客了。","@type":"BlogPosting","url":"http://www.jfox.info/2017/jsp%E5%AE%9E%E7%8E%B0%E4%B8%8A%E4%B8%80%E9%A1%B5%E4%B8%8B%E4%B8%80%E9%A1%B5%E7%BF%BB%E9%A1%B5%E5%8A%9F%E8%83%BD.html","headline":"jsp实现上一页下一页翻页功能","dateModified":"2017-01-01T15:57:20+00:00","datePublished":"2017-01-01T15:57:20+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/jsp%E5%AE%9E%E7%8E%B0%E4%B8%8A%E4%B8%80%E9%A1%B5%E4%B8%8B%E4%B8%80%E9%A1%B5%E7%BF%BB%E9%A1%B5%E5%8A%9F%E8%83%BD.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">jsp实现上一页下一页翻页功能</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:57:20+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>前段时间一直忙于期末考试和找实习，好久没写博客了。</p>
+
+<p>这段时间做了个小项目，包含了翻页和富文本编辑器Ueditor的两个知识点,Ueditor玩的还不是很深，打算玩深后再写篇博客。</p>
+
+<p>要实现翻页功能，只需要设置一个pageIndex即可，然后每次加载页面时通过pageIndex去加载数据就行。</p>
+
+<p>那么我们可以设置一个隐藏的input框，用于传递pageIndex给下个页面。</p>
+
+<p>当我们点击上一页的时候，通过js方法改变pageIndex的值，再提交表单即可</p>
+
+<p>二话不多说，看代码，代码里面写的还算比较清楚。</p>
+
+<p>这个是index.jsp的代码。</p>
+
+<h3 id="indexjsp">index.jsp</h3>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;</span><span class="err">%@</span><span class="na">page</span> <span class="na">import=</span><span class="s">"Bean.DBBean"</span><span class="err">%</span><span class="nt">&gt;&lt;</span><span class="err">%@</span><span class="na">page</span> <span class="na">import=</span><span class="s">"Entity.Record"</span><span class="err">%</span><span class="nt">&gt;&lt;</span><span class="err">%@</span><span class="na">page</span> <span class="na">import=</span><span class="s">"java.util.List"</span><span class="err">%</span><span class="nt">&gt;&lt;</span><span class="err">%@</span> <span class="na">page</span> <span class="na">language=</span><span class="s">"java"</span> <span class="na">contentType=</span><span class="s">"text/html; charset=UTF-8"</span>
+    <span class="na">pageEncoding=</span><span class="s">"UTF-8"</span><span class="err">%</span><span class="nt">&gt;</span><span class="cp">&lt;!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"&gt;</span><span class="nt">&lt;html&gt;&lt;head&gt;&lt;meta</span> <span class="na">http-equiv=</span><span class="s">"Content-Type"</span> <span class="na">content=</span><span class="s">"text/html; charset=UTF-8"</span><span class="nt">&gt;&lt;title&gt;</span>NoteBook of Eric Wu<span class="nt">&lt;/title&gt;&lt;link</span> <span class="na">rel=</span><span class="s">"stylesheet"</span> <span class="na">href=</span><span class="s">"css/basic.css"</span><span class="nt">&gt;&lt;link</span> <span class="na">rel=</span><span class="s">"stylesheet"</span> <span class="na">href=</span><span class="s">"css/index.css"</span><span class="nt">&gt;&lt;/head&gt;&lt;body&gt;&lt;</span><span class="err">%</span><span class="na">int</span> <span class="na">allRecord=</span><span class="s">0;//总的记录条数,不包含查询后的</span>
+    <span class="na">int</span> <span class="na">totalRecord=</span><span class="s">0;//总的记录条数,包含查询后的</span>
+    <span class="na">int</span> <span class="na">totalPage=</span><span class="s">1;//总的页面数，包含查询后的</span>
+    <span class="na">int</span> <span class="na">pageIndex=</span><span class="s">1;//当前页面号，用于控制页面翻转，默认为1</span>
+    <span class="na">List</span><span class="err">&lt;</span><span class="na">Record</span><span class="nt">&gt;</span> records=null;
+    DBBean db=new DBBean();
+    allRecord=db.getRecordCount();
+    totalRecord=db.getRecordCount();
+    totalPage=(totalRecord-1)/10+1;
+    if(request.getParameter("pageIndex")!=null){//不是第一次加载
+        //要做下数据类型转换
+        pageIndex=Integer.valueOf(request.getParameter("pageIndex"));
+        if(request.getParameter("keyword")!=null){
+            String keyword=request.getParameter("keyword");
+            records=db.getRecords(pageIndex,keyword);//获取查询内容一页的事件记录集,共10条
+            totalRecord=db.getRecordCount(keyword);
+            totalPage=(totalRecord-1)/10+1;
+        }else{
+            records=db.getRecords(pageIndex);//获取一页的事件记录集,共10条
+        }
+    }else{//第一次加载
+        records=db.getRecords(pageIndex);//获取一页的事件记录集,共10条
+    }
+    session.setAttribute("records", records);//便于后面使用
+%&gt;<span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">"home"</span><span class="nt">&gt;&lt;div</span> <span class="na">id=</span><span class="s">"header"</span><span class="nt">&gt;&lt;div</span> <span class="na">id=</span><span class="s">"WebTitle"</span><span class="nt">&gt;&lt;div</span> <span class="na">class=</span><span class="s">"maintitle"</span><span class="nt">&gt;&lt;a</span> <span class="na">href=</span><span class="s">"index.jsp"</span> <span class="na">target=</span><span class="s">"_blank"</span><span class="nt">&gt;</span>NoteBook of Eric Wu<span class="nt">&lt;/a&gt;&lt;/div&gt;&lt;div</span> <span class="na">class=</span><span class="s">"subtitle"</span><span class="nt">&gt;</span>The palest ink is better than the best memory !<span class="nt">&lt;/div&gt;&lt;/div&gt;&lt;div</span> <span class="na">id=</span><span class="s">"navigator"</span><span class="nt">&gt;&lt;ul</span> <span class="na">id=</span><span class="s">"navList"</span><span class="nt">&gt;&lt;li&gt;&lt;a</span> <span class="na">href=</span><span class="s">"index.jsp"</span><span class="nt">&gt;</span>首页<span class="nt">&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a</span> <span class="na">href=</span><span class="s">"add.jsp"</span><span class="nt">&gt;</span>新增<span class="nt">&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a</span> <span class="na">href=</span><span class="s">"change.jsp"</span><span class="nt">&gt;</span>修改<span class="nt">&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a</span> <span class="na">href=</span><span class="s">"delete.jsp"</span><span class="nt">&gt;</span>删除<span class="nt">&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;&lt;div</span> <span class="na">id=</span><span class="s">"Stats"</span><span class="nt">&gt;</span>
+                记录-<span class="nt">&lt;</span><span class="err">%=</span><span class="na">allRecord</span> <span class="err">%</span><span class="nt">&gt;&lt;/div&gt;</span><span class="c">&lt;!--end: Stats 状态--&gt;</span><span class="nt">&lt;/div&gt;</span><span class="c">&lt;!-- end: navigator 导航栏 --&gt;</span><span class="nt">&lt;/div&gt;</span><span class="c">&lt;!-- end: header 头部 --&gt;</span><span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">"main"</span><span class="nt">&gt;&lt;div</span> <span class="na">id=</span><span class="s">"content"</span><span class="nt">&gt;&lt;form</span> <span class="na">id=</span><span class="s">"searchForm"</span> <span class="na">name=</span><span class="s">"searchForm"</span> <span class="na">action=</span><span class="s">"index.jsp"</span>  <span class="na">method=</span><span class="s">"get"</span><span class="nt">&gt;&lt;input</span> <span class="na">type=</span><span class="s">"hidden"</span> <span class="na">name=</span><span class="s">"pageIndex"</span> <span class="na">id=</span><span class="s">"pageIndex"</span>  <span class="na">value=</span><span class="s">"1"</span><span class="nt">&gt;&lt;div</span> <span class="na">id=</span><span class="s">"search"</span><span class="nt">&gt;&lt;div</span> <span class="na">class=</span><span class="s">"center"</span><span class="nt">&gt;&lt;/div&gt;&lt;input</span> <span class="na">type=</span><span class="s">"text"</span> <span class="na">class=</span><span class="s">"search"</span> <span class="na">id=</span><span class="s">"keyword"</span> <span class="na">name=</span><span class="s">"keyword"</span> <span class="na">placeholder=</span><span class="s">"请输入要查询的记录"</span><span class="nt">&gt;&lt;img</span> <span class="na">src=</span><span class="s">"img/search.png"</span> <span class="na">onclick=</span><span class="s">"searchKeyword();"</span> <span class="na">class=</span><span class="s">"button"</span><span class="nt">&gt;&lt;/div&gt;&lt;/form&gt;&lt;table&gt;&lt;tr&gt;&lt;th</span> <span class="na">width=</span><span class="s">"10%"</span><span class="nt">&gt;</span>序号<span class="nt">&lt;/th&gt;&lt;th</span> <span class="na">width=</span><span class="s">"60%"</span><span class="nt">&gt;</span>标题<span class="nt">&lt;/th&gt;&lt;th</span> <span class="na">width=</span><span class="s">"30%"</span><span class="nt">&gt;</span>时间<span class="nt">&lt;/th&gt;&lt;/tr&gt;&lt;</span><span class="err">%</span><span class="na">int</span> <span class="na">count=</span><span class="s">0;</span>
+                    <span class="na">if</span><span class="err">(</span><span class="na">records</span><span class="err">!=</span><span class="na">null</span><span class="err">){</span>
+                        <span class="na">for</span><span class="err">(</span><span class="na">Record</span> <span class="na">r:</span> <span class="na">records</span><span class="err">){</span>
+                            <span class="na">count</span><span class="err">++;</span>
+                <span class="err">%</span><span class="nt">&gt;&lt;tr&gt;&lt;td</span> <span class="na">class=</span><span class="s">"center"</span><span class="nt">&gt;&lt;</span><span class="err">%=</span> <span class="na">count</span> <span class="err">%</span><span class="nt">&gt;&lt;/td&gt;&lt;td&gt;&lt;a</span> <span class="na">href=</span><span class="s">"content.jsp?recordId=&lt;%= r.getId() %&gt;"</span>  <span class="na">target=</span><span class="s">"_blank"</span><span class="nt">&gt;&lt;</span><span class="err">%=</span> <span class="na">r</span><span class="err">.</span><span class="na">getTitle</span><span class="err">()</span> <span class="err">%</span><span class="nt">&gt;&lt;/a&gt;&lt;/td&gt;&lt;td</span> <span class="na">class=</span><span class="s">"center"</span><span class="nt">&gt;&lt;</span><span class="err">%=</span> <span class="na">r</span><span class="err">.</span><span class="na">getTime</span><span class="err">()</span> <span class="err">%</span><span class="nt">&gt;&lt;/td&gt;&lt;/tr&gt;&lt;</span><span class="err">%</span>    
+                        <span class="err">}</span>
+                    <span class="err">}</span>
+                <span class="err">%</span><span class="nt">&gt;&lt;tr</span> <span class="na">class=</span><span class="s">"alt"</span><span class="nt">&gt;&lt;td</span> <span class="na">class=</span><span class="s">"center"</span> <span class="na">colspan=</span><span class="s">"3"</span><span class="nt">&gt;</span>
+                        共<span class="nt">&lt;</span><span class="err">%=</span> <span class="na">totalRecord</span> <span class="err">%</span><span class="nt">&gt;</span>条记录<span class="ni">&amp;nbsp;&amp;nbsp;&amp;nbsp;</span>
+                        共<span class="nt">&lt;</span><span class="err">%=</span> <span class="na">totalPage</span> <span class="err">%</span><span class="nt">&gt;</span>页<span class="ni">&amp;nbsp;&amp;nbsp;&amp;nbsp;</span>
+                        每页10条<span class="ni">&amp;nbsp;&amp;nbsp;&amp;nbsp;</span>
+                        当前第<span class="nt">&lt;</span><span class="err">%=</span> <span class="na">pageIndex</span> <span class="err">%</span><span class="nt">&gt;</span>页<span class="ni">&amp;nbsp;&amp;nbsp;&amp;nbsp;</span><span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">"javascript:void(0);"</span> <span class="na">class=</span><span class="s">"turnPage"</span> <span class="na">onclick=</span><span class="s">"turnTopPage()"</span><span class="nt">&gt;</span>上一页<span class="nt">&lt;/a&gt;</span><span class="ni">&amp;nbsp;&amp;nbsp;&amp;nbsp;</span><span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">"javascript:void(0);"</span> <span class="na">class=</span><span class="s">"turnPage"</span> <span class="na">onclick=</span><span class="s">"turnBottomPage()"</span><span class="nt">&gt;</span>下一页<span class="nt">&lt;/a&gt;</span><span class="ni">&amp;nbsp;&amp;nbsp;&amp;nbsp;</span><span class="nt">&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;</span><span class="c">&lt;!-- end: content 内容 --&gt;</span><span class="nt">&lt;/div&gt;</span><span class="c">&lt;!-- end: main 主要部分 --&gt;</span><span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">"footer"</span><span class="nt">&gt;</span>     
+        Copyright <span class="ni">&amp;copy;</span>2017 汕大-吴广林
+    <span class="nt">&lt;/div&gt;</span><span class="c">&lt;!-- end: footer底部--&gt;</span><span class="nt">&lt;/div&gt;</span><span class="c">&lt;!-- end: home 自定义的最大容器 --&gt;</span><span class="nt">&lt;/body&gt;&lt;script </span><span class="na">type=</span><span class="s">"text/javascript"</span><span class="nt">&gt;</span><span class="kd">var</span> <span class="nx">pageIndex</span><span class="o">=&lt;%=</span><span class="nx">pageIndex</span> <span class="o">%&gt;</span><span class="p">;</span>
+    <span class="kd">var</span> <span class="nx">totalPage</span><span class="o">=&lt;%=</span><span class="nx">totalPage</span> <span class="o">%&gt;</span><span class="p">;</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">pageIndex</span><span class="p">);</span>
+    <span class="c1">//上一页function turnTopPage(){</span>
+        <span class="k">if</span><span class="p">(</span><span class="nx">pageIndex</span><span class="o">==</span><span class="mi">1</span><span class="p">){</span>
+            <span class="k">return</span><span class="p">;</span>
+        <span class="p">}</span><span class="k">else</span><span class="p">{</span>
+            <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">"pageIndex"</span><span class="p">).</span><span class="nx">value</span><span class="o">=</span><span class="nx">pageIndex</span><span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+            <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">"searchForm"</span><span class="p">).</span><span class="nx">submit</span><span class="p">();</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="c1">//下一页function turnBottomPage(){</span>
+        <span class="k">if</span><span class="p">(</span><span class="nx">pageIndex</span><span class="o">&gt;=</span><span class="nx">totalPage</span><span class="p">){</span>    
+            <span class="k">return</span><span class="p">;</span>
+           <span class="p">}</span><span class="k">else</span><span class="p">{</span>
+           <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">"pageIndex"</span><span class="p">).</span><span class="nx">value</span><span class="o">=</span><span class="nx">pageIndex</span><span class="o">+</span><span class="mi">1</span><span class="p">;</span>
+           <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">"searchForm"</span><span class="p">).</span><span class="nx">submit</span><span class="p">();</span>
+           <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="kd">function</span> <span class="nx">searchKeyword</span><span class="p">(){</span>
+        <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">"pageIndex"</span><span class="p">).</span><span class="nx">value</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span>
+        <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">"searchForm"</span><span class="p">).</span><span class="nx">submit</span><span class="p">();</span>
+    <span class="p">}</span>
+<span class="nt">&lt;/script&gt;&lt;/html&gt;</span>
+</code></pre></div></div>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/jsp%E5%AE%9E%E7%8E%B0%E4%B8%8A%E4%B8%80%E9%A1%B5%E4%B8%8B%E4%B8%80%E9%A1%B5%E7%BF%BB%E9%A1%B5%E5%8A%9F%E8%83%BD.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/kotlin%E5%92%8Cjavaee%E8%AE%A9%E4%BA%8C%E8%80%85%E7%9A%84%E8%BD%AC%E6%8D%A2%E6%9B%B4%E9%A1%BA%E7%95%85.html">&laquo; Kotlin和Java EE: 让二者的转换更顺畅</a>
+  
+  
+  <a class="next" href="/2017/%E4%BD%BF%E7%94%A8web%E5%89%8D%E7%AB%AF%E6%8A%80%E6%9C%AF%E5%AE%9E%E7%8E%B0%E7%9A%84%E6%A2%A6%E5%B9%BBvr%E8%99%9A%E6%8B%9F%E7%8E%B0%E5%AE%9E%E6%95%88%E6%9E%9C.html">使用Web前端技术实现的梦幻VR虚拟现实效果 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

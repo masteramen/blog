@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>ArrayList和数组间的相互转换代码 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="ArrayList和数组间的相互转换代码" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="By Lee - Last updated: 星期一, 二月 3, 2014" />
+<meta property="og:description" content="By Lee - Last updated: 星期一, 二月 3, 2014" />
+<link rel="canonical" href="http://www.jfox.info/2017/arraylist%E5%92%8C%E6%95%B0%E7%BB%84%E9%97%B4%E7%9A%84%E7%9B%B8%E4%BA%92%E8%BD%AC%E6%8D%A2%E4%BB%A3%E7%A0%81.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/arraylist%E5%92%8C%E6%95%B0%E7%BB%84%E9%97%B4%E7%9A%84%E7%9B%B8%E4%BA%92%E8%BD%AC%E6%8D%A2%E4%BB%A3%E7%A0%81.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:43:39+00:00" />
+<script type="application/ld+json">
+{"description":"By Lee - Last updated: 星期一, 二月 3, 2014","@type":"BlogPosting","url":"http://www.jfox.info/2017/arraylist%E5%92%8C%E6%95%B0%E7%BB%84%E9%97%B4%E7%9A%84%E7%9B%B8%E4%BA%92%E8%BD%AC%E6%8D%A2%E4%BB%A3%E7%A0%81.html","headline":"ArrayList和数组间的相互转换代码","dateModified":"2017-01-01T15:43:39+00:00","datePublished":"2017-01-01T15:43:39+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/arraylist%E5%92%8C%E6%95%B0%E7%BB%84%E9%97%B4%E7%9A%84%E7%9B%B8%E4%BA%92%E8%BD%AC%E6%8D%A2%E4%BB%A3%E7%A0%81.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">ArrayList和数组间的相互转换代码</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:43:39+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>By Lee - Last updated: 星期一, 二月 3, 2014</p>
+
+<p>开发中不免碰到List与数组类型之间的相互转换，举一个简单的例子：</p>
+
+<p>List提供给我们一个很好的方法解决List转换成为数组的问题，不防看一个例子：</p>
+
+<p>package test.test1;</p>
+
+<p>import java.util.ArrayList;</p>
+
+<p>import java.util.List;</p>
+
+<p>public class Test {</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public static void main(String[] args) {  
+
+    List&lt;String&gt; list=new ArrayList&lt;String&gt;();  
+
+    list.add(“王利虎”);  
+
+    list.add(“张三”);  
+
+    list.add(“李四”);  
+
+    int size=list.size();  
+
+    String[] array = (String[])list.toArray(new String[size]);  
+
+    for(int i=0;i&lt;array.length;i++){  
+
+        System.out.println(array[i]);  
+
+    }  
+
+}  
+</code></pre></div></div>
+
+<p>}</p>
+
+<p>你是否发现这才是你想要的呢？其实很简单，ArrayList提供public <T> T[] toArray(T[] a)方法返回一个按照正确的顺序包含此列表中所有元素的数组；返回数组的运行时类型就是指定数组的运行时类型。如果列表能放入指定的数组，则返回放入此列表元素的数组。否则，将根据指定数组的运行时类型和此列表的大小分配一个新的数组。</T></p>
+
+<p>如果指定的数组能容纳列表并有剩余空间（即数组的元素比列表的多），那么会将数组中紧跟在集合末尾的元素设置为 null。这对确定列表的长度很有用，但只 在调用方知道列表中不包含任何 null 元素时才有用。</p>
+
+<p>其实数组转换成为List的问题Arrays对象也提供给我们public static <T> List<T> asList(T… a)供我们调用, 试运行下面的例子：</T></T></p>
+
+<p>Java代码</p>
+
+<p>package test.test1;</p>
+
+<p>import java.util.Arrays;</p>
+
+<p>import java.util.List;</p>
+
+<p>public class Test {</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public static void main(String[] args) {  
+
+    String[] array=new String[3];  
+
+    array[0]=”王利虎”;  
+
+    array[1]=”张三”;  
+
+    array[2]=”李四”;  
+
+    List&lt;String&gt; list=Arrays.asList(array);  
+
+    for(int i=0;i&lt;list.size();i++){  
+
+        System.out.println(list.get(i));  
+
+    }  
+
+}  
+</code></pre></div></div>
+
+<p>}</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>简单吧，asList方法返回一个受指定数组支持的固定大小的列表，此方法同 Collection.toArray 一起，充当了基于数组的 API 与基于 collection 的 API 之间的桥梁。返回的列表是可序列化的，并且实现了 RandomAccess。除此之外， 此方法还提供了一个创建固定长度的列表的便捷方法，该列表被初始化为包含多个元素：
+</code></pre></div></div>
+
+<p>Java代码</p>
+
+<p>package test.test1;</p>
+
+<p>import java.util.Arrays;</p>
+
+<p>import java.util.List;</p>
+
+<p>public class Test1 {</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public static void main(String[] args) {  
+
+    List&lt;String&gt; list = Arrays.asList(“王利虎”,”张三”,”李四”);  
+
+    for(int i=0;i&lt;list.size();i++){  
+
+        System.out.println(list.get(i));  
+
+    }  
+
+}  
+</code></pre></div></div>
+
+<p>}</p>
+
+<p>下次遇到这样的问题，你一定会想到它，不会再for你的List对象或数组对象了吧！</p>
+
+<p>参考来源  <a href="https://www.jfox.info/go.php?url=http://wanglihu.iteye.com/blog/243238">ArrayList和数组间的相互转换 – javasky – ITeye技术网站</a>.</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/arraylist%E5%92%8C%E6%95%B0%E7%BB%84%E9%97%B4%E7%9A%84%E7%9B%B8%E4%BA%92%E8%BD%AC%E6%8D%A2%E4%BB%A3%E7%A0%81.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/arraylist%E5%92%8C%E6%95%B0%E7%BB%84%E9%97%B4%E7%9A%84%E7%9B%B8%E4%BA%92%E8%BD%AC%E6%8D%A2%E4%BB%A3%E7%A0%81.html">&laquo; ArrayList和数组间的相互转换代码</a>
+  
+  
+  <a class="next" href="/2017/css%E8%A7%A3%E5%86%B3%E8%8B%B1%E6%96%87%E8%87%AA%E5%8A%A8%E6%8D%A2%E8%A1%8C%E9%97%AE%E9%A2%98.html">CSS解决英文自动换行问题 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>Java进阶自测：面向对象基础知识掌握了吗？（附答案及个人解析） | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="Java进阶自测：面向对象基础知识掌握了吗？（附答案及个人解析）" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="publicclass Test { publicintaMethod() { staticint i=0; i++; return i; } publicstaticvoidmain(String args[]) { Test test = newTest(); test.aMethod(); int j = test.aMethod(); System.out.println(j); } }" />
+<meta property="og:description" content="publicclass Test { publicintaMethod() { staticint i=0; i++; return i; } publicstaticvoidmain(String args[]) { Test test = newTest(); test.aMethod(); int j = test.aMethod(); System.out.println(j); } }" />
+<link rel="canonical" href="http://www.jfox.info/2017/java%E8%BF%9B%E9%98%B6%E8%87%AA%E6%B5%8B-%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%8E%8C%E6%8F%A1%E4%BA%86%E5%90%97-%E9%99%84%E7%AD%94%E6%A1%88%E5%8F%8A%E4%B8%AA.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/java%E8%BF%9B%E9%98%B6%E8%87%AA%E6%B5%8B-%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%8E%8C%E6%8F%A1%E4%BA%86%E5%90%97-%E9%99%84%E7%AD%94%E6%A1%88%E5%8F%8A%E4%B8%AA.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:49:54+00:00" />
+<script type="application/ld+json">
+{"description":"publicclass Test { publicintaMethod() { staticint i=0; i++; return i; } publicstaticvoidmain(String args[]) { Test test = newTest(); test.aMethod(); int j = test.aMethod(); System.out.println(j); } }","@type":"BlogPosting","url":"http://www.jfox.info/2017/java%E8%BF%9B%E9%98%B6%E8%87%AA%E6%B5%8B-%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%8E%8C%E6%8F%A1%E4%BA%86%E5%90%97-%E9%99%84%E7%AD%94%E6%A1%88%E5%8F%8A%E4%B8%AA.html","headline":"Java进阶自测：面向对象基础知识掌握了吗？（附答案及个人解析）","dateModified":"2017-01-01T15:49:54+00:00","datePublished":"2017-01-01T15:49:54+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/java%E8%BF%9B%E9%98%B6%E8%87%AA%E6%B5%8B-%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%8E%8C%E6%8F%A1%E4%BA%86%E5%90%97-%E9%99%84%E7%AD%94%E6%A1%88%E5%8F%8A%E4%B8%AA.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Java进阶自测：面向对象基础知识掌握了吗？（附答案及个人解析）</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:49:54+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>publicclass Test { 
+           publicintaMethod() {
+                  staticint i=0;
+                  i++;
+                  return i;
+           }
+           publicstaticvoidmain(String args[]) {
+                  Test test = newTest();
+                  test.aMethod();
+                  int j = test.aMethod();
+                  System.out.println(j);
+           }
+    }</p>
+
+<p>将产生哪种结果：</p>
+
+<p>A. Compilation will fail</p>
+
+<p>B. Compilation will succeed and the program will print“0”</p>
+
+<p>C. Compilation will succeed and the program will print“1”</p>
+
+<p>D. Compilation will succeed and the program will print“2”
+H2M_LI_HEADER 
+如要在字符串s（内容为“welcome to mldn !! ”），中，发现字符’t’的位置，应该使用下面哪种方法？</p>
+
+<p>A.<code class="highlighter-rouge">mid(2,s);</code></p>
+
+<p>B. <code class="highlighter-rouge">charAt(2);</code></p>
+
+<p>C. <code class="highlighter-rouge">s.indexOf('t');</code></p>
+
+<p>D. <code class="highlighter-rouge">indexOf(s,'v');</code></p>
+
+<p>H2M_LI_HEADER 
+编译和运行下面代码可能会发生什么？</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>class Base {
+    privatevoidamethod(int iBase) {
+        System.out.println("Base.amethod");
+    }
+}    
+class Over extends Base {
+    publicstaticvoidmain(String args[]) {
+        Over o = newOver();
+        int iBase = 0 ;
+         o.amethod(iBase) ;
+    }
+    publicvoidamethod(int iOver) {
+        System.out.println("Over.amethod");
+    }
+}
+</code></pre></div></div>
+
+<p>A. Compile time error complaining that Base.amethod is private</p>
+
+<p>B. Runntime error complaining that Base.amethod is private</p>
+
+<p>C. Output of Base amethod</p>
+
+<p>D. Output of Over.amethod</p>
+
+<p>H2M_LI_HEADER 
+现在有如下一段程序</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>classsuper {
+    String name ;
+    publicsuper(String name) {    
+        this.name = name ;
+    }
+    publicvoidfun1()     {
+        System.out.println("this is class super !"+name);
+    }
+}
+class sub extendssuper {
+    publicvoidfun1()     {
+        System.out.println("this is class sub !"+name);
+    }
+}
+class Test {
+    publicstaticvoidmain(String args[]) {
+        super s = newsub();
+    }
+}
+</code></pre></div></div>
+
+<p>运行上面的程序可能会出现的结果？</p>
+
+<p>A. this is class super !</p>
+
+<p>B. this is class sub !</p>
+
+<p>C. 编译时出错</p>
+
+<p>D. 运行时出错</p>
+
+<p>H2M_LI_HEADER 
+现在有如下一段程序</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>class Happy {
+    publicstaticvoidmain(String args[]) {
+        float [][] f1 = {{1.2f,2.3f},{4.5f,5.6f}} ;
+        Object oo = f1 ;
+        f1[1] = oo ;
+        System.out.println("Best Wishes "+f1[1]);
+    }
+}
+</code></pre></div></div>
+
+<p>该程序会出现何种效果？</p>
+
+<p>A. {4.5,5.6}</p>
+
+<p>B. 4.5</p>
+
+<p>C. compilation error in line NO.5</p>
+
+<p>D. exception</p>
+
+<p>H2M_LI_HEADER 
+在一个类文件中，导入包、类和打包是怎样的排列顺序？</p>
+
+<p>A. package、import、class；</p>
+
+<p>B. class、import、package</p>
+
+<p>C. import、package、class</p>
+
+<p>D. package、class、import</p>
+
+<p>H2M_LI_HEADER 
+如果你试图编译并运行下列代码时可能会打印输出什么？</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>int i = 9 ;
+switch(i) {
+    default:
+        System.out.println("default");
+    case0 :
+        System.out.println("zero");
+        break ;
+    case1 : System.out.println("one");
+    case2 : System.out.println("two");
+}
+</code></pre></div></div>
+
+<p>A. default</p>
+
+<p>B. default , zero</p>
+
+<p>C. error default clause not defined</p>
+
+<p>D. no output displayed</p>
+
+<p>H2M_LI_HEADER 
+当你编译下列代码可能会输出什么？</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>class Test {
+    staticint i ;
+    publicstaticvoidmain(String args[]) {
+        System.out.println(i);
+    }
+}
+</code></pre></div></div>
+
+<p>A. Error Variable i may not have been initialized</p>
+
+<p>B. null</p>
+
+<p>C. 1</p>
+
+<p>D. 0</p>
+
+<p>H2M_LI_HEADER 
+下面代码会存在什么问题？</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>publicclass MyClass {
+    publicstaticvoidmain(String arguments[])     {
+        amethod(arguments);
+    }
+    publicvoidamethod(String[] arguments){
+        System.out.println(arguments);
+        System.out.println(arguments[1]);
+    }
+}
+</code></pre></div></div>
+
+<p>A. 错误，void amethod()不是static类型</p>
+
+<p>B. 错误，main()方法不正确</p>
+
+<p>C. 错误，数组必须导入参数</p>
+
+<p>D. 方法amethod()必须用String类型描述</p>
+
+<p>H2M_LI_HEADER 
+为Demo类的一个无形式参数无返回值的方法method书写方法头，使得使用类名Demo作为前缀就可以调用它，该方法头的形式为？</p>
+
+<p>A. <code class="highlighter-rouge">static void method( )</code></p>
+
+<p>B. <code class="highlighter-rouge">public void method( )</code></p>
+
+<p>C. <code class="highlighter-rouge">final void method( )</code></p>
+
+<p>D. <code class="highlighter-rouge">abstract void method( )</code></p>
+
+<h3 id="答案">答案</h3>
+
+<p>ACDCC ABDAA</p>
+
+<h3 id="个人解析">个人解析</h3>
+
+<ol>
+  <li>
+    <p>在方法体内声明的变量是“局部变量”，而局部变量是不能用static修饰的，private、protected、public也是不能用的。</p>
+  </li>
+  <li>
+    <p>indexOf是String类的一个方法，作用是查找第一次出现参数的位置，没有则返回-1。</p>
+  </li>
+  <li>
+    <p>无论amethod方法是不是private，结果都是执行子类的amethod方法。区别是，如果不是private，子类的amethod方法是重写了父类的方法；如果是private，子类的amethod方法并没有重写父类的方法。</p>
+  </li>
+  <li>
+    <p>Java中，如果类里没有写构造方法，那么会默认有一个无参的构造方法。但是一旦手动写了构造方法，那么默认的无参构造方法就没有了。这道题是因为父类只有一个有参的构造方法，但是子类却没有，所以编译出错。</p>
+  </li>
+  <li>
+    <p>Java中的数组是对象，所以第四行没有问题。而f1[1]需要的是一个数组并且是一维数组，所以第五行编译出错。</p>
+  </li>
+  <li>
+    <p>无</p>
+  </li>
+  <li>
+    <p>在default中进入，在case 0中因为break跳出。</p>
+  </li>
+  <li>
+    <p>基本数据类型都有相应的默认值，其中int是0，char为‘u0000’，boolean为false。</p>
+  </li>
+  <li>
+    <p>静态方法无法调用非静态方法。</p>
+  </li>
+  <li>
+    <p>静态方法可以用类名.方法名直接调用。</p>
+  </li>
+</ol>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/java%E8%BF%9B%E9%98%B6%E8%87%AA%E6%B5%8B-%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%8E%8C%E6%8F%A1%E4%BA%86%E5%90%97-%E9%99%84%E7%AD%94%E6%A1%88%E5%8F%8A%E4%B8%AA.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/spring%E5%86%85%E9%83%A8%E7%9A%84beanpostprocessor%E6%80%BB%E7%BB%93.html">&laquo; Spring内部的BeanPostProcessor总结</a>
+  
+  
+  <a class="next" href="/2017/java%E5%9F%BA%E7%A1%80-string%E7%B1%BB-%E4%BA%8C.html">Java基础——String类（二） &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

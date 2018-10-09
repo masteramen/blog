@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>java 关于 hashmap 的实现原理的测试 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="java 关于 hashmap 的实现原理的测试" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="网上关于HashMap的工作原理的文章多了去了，所以我也不打算再重复别人的文章。我就是有点好奇，我怎么样能更好的理解他的原理，或者说使用他的特性呢？最好的开发就是测试~" />
+<meta property="og:description" content="网上关于HashMap的工作原理的文章多了去了，所以我也不打算再重复别人的文章。我就是有点好奇，我怎么样能更好的理解他的原理，或者说使用他的特性呢？最好的开发就是测试~" />
+<link rel="canonical" href="http://www.jfox.info/2017/java%E5%85%B3%E4%BA%8Ehashmap%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86%E7%9A%84%E6%B5%8B%E8%AF%95-2.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/java%E5%85%B3%E4%BA%8Ehashmap%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86%E7%9A%84%E6%B5%8B%E8%AF%95-2.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:55:30+00:00" />
+<script type="application/ld+json">
+{"description":"网上关于HashMap的工作原理的文章多了去了，所以我也不打算再重复别人的文章。我就是有点好奇，我怎么样能更好的理解他的原理，或者说使用他的特性呢？最好的开发就是测试~","@type":"BlogPosting","url":"http://www.jfox.info/2017/java%E5%85%B3%E4%BA%8Ehashmap%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86%E7%9A%84%E6%B5%8B%E8%AF%95-2.html","headline":"java 关于 hashmap 的实现原理的测试","dateModified":"2017-01-01T15:55:30+00:00","datePublished":"2017-01-01T15:55:30+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/java%E5%85%B3%E4%BA%8Ehashmap%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86%E7%9A%84%E6%B5%8B%E8%AF%95-2.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">java 关于 hashmap 的实现原理的测试</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:55:30+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>网上关于HashMap的工作原理的文章多了去了，所以我也不打算再重复别人的文章。我就是有点好奇，我怎么样能更好的理解他的原理，或者说使用他的特性呢？最好的开发就是测试~</p>
+
+<p>　　虽说不详讲hashmap的工作原理，但是起码的常识还是要提一下的。</p>
+
+<p><strong>一句话：hashmap最直观的表现是一维数组或者说一维字典，但是每个每个值又可以指向另一个数组或都字典！</strong></p>
+
+<p><strong>一张图：</strong></p>
+
+<p><img src="2b951e9.png" alt="" /></p>
+
+<p>　　其实说实话，给我个人的感觉是，说链表只是显得高大上些罢了，当然这片面的理解，不过也是令人误解的地方。</p>
+
+<p>　　我曾经就以为，链表真是个高大上的东西，那我怎样生成这样的链接呢？</p>
+
+<p>　　难道是 HashMap.put(“c”, “xxx”).put(“sss”, “ssssss”)， 链式调用 ？</p>
+
+<p>　　难道是 HashMap.get(“c”).put(“ccx”)？</p>
+
+<p>　　难道是 HashMap.put(“c”, “1”); HashMap.put(“c”, “2”); HashMap.put(“c”, 333); ？</p>
+
+<p>　　很显然，这是会犯错误的，因为IDE就不会让你通过过，编译是不会让你过的？</p>
+
+<p>　　那么，回到这个问题上，什么叫链表？</p>
+
+<p>　　百度百科解释：<strong>链表是一种物理<a href="https://www.jfox.info/go.php?url=http://baike.baidu.com/item/%E5%AD%98%E5%82%A8%E5%8D%95%E5%85%83">存储单元</a>上非连续、非顺序的<a href="https://www.jfox.info/go.php?url=http://baike.baidu.com/item/%E5%AD%98%E5%82%A8%E7%BB%93%E6%9E%84">存储结构</a>，<a href="https://www.jfox.info/go.php?url=http://baike.baidu.com/item/%E6%95%B0%E6%8D%AE%E5%85%83%E7%B4%A0">数据元素</a>的逻辑顺序是通过链表中的<a href="https://www.jfox.info/go.php?url=http://baike.baidu.com/item/%E6%8C%87%E9%92%88">指针</a>链接次序实现的。链表由一系列结点（链表中每一个元素称为结点）组成，结点可以在运行时动态生成。每个结点包括两个部分：一个是存储<a href="https://www.jfox.info/go.php?url=http://baike.baidu.com/item/%E6%95%B0%E6%8D%AE%E5%85%83%E7%B4%A0">数据元素</a>的数据域，另一个是存储下一个结点地址的<a href="https://www.jfox.info/go.php?url=http://baike.baidu.com/item/%E6%8C%87%E9%92%88">指针</a>域。</strong></p>
+
+<p>　　那么，说白了，链表就是说，你这个key可以指向任何地方，当然也就包含了hashmap了。 所以想要形成多层链表，只要嵌套多个hashmap就可以了。</p>
+
+<p>　　测试代码如下：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>import java.util.HashMap;
+publicclass HashmapImprove {
+    publicstaticvoid main(String[] args) {
+        HashMap&lt;String, Object&gt; hashMap1 = new HashMap&lt;&gt;();
+        HashMap&lt;String, Object&gt; hashMap2 = new HashMap&lt;&gt;();
+        HashMap&lt;String, Object&gt; hashMap3 = new HashMap&lt;&gt;();
+        hashMap1.put("h1-1", 2);
+        hashMap1.put("h1-2", 336);
+        hashMap2.put("hashmap1", hashMap1);
+        hashMap2.put("h2-2", "moto");
+        hashMap2.put("h2-3", "xys");
+        hashMap3.put("hashmap2", hashMap2);
+        hashMap3.put("h3-2", "3333");
+        hashMap3.put("h3-3", 2);
+        System.out.println("hello, world." + hashMap3);
+    }
+}
+</code></pre></div></div>
+
+<p>　　断点调试一下，清晰明了：</p>
+
+<p><img src="e4594cc.png" alt="" /></p>
+
+<p>　　说得更直白一点，Hashmap其实就是个多维数据，只不过数据类型可以是任意的而已。当然了，其实现原理还是很高大上的，比如：链表、遍历、性能、并发！</p>
+
+<p>　　遇到不懂的问题，测试一下就明白了！</p>
+
+<p>　　做个不纠结的开发！哈哈</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/java%E5%85%B3%E4%BA%8Ehashmap%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86%E7%9A%84%E6%B5%8B%E8%AF%95-2.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/springcloud%E5%AE%9E%E8%B7%B5%E4%B9%8B%E9%81%93%E5%9B%9B%E6%B6%88%E6%81%AF%E5%A4%84%E7%90%86.html">&laquo; Spring cloud实践之道四（消息处理）</a>
+  
+  
+  <a class="next" href="/2017/elasticsearch%E5%AD%A6%E4%B9%A0%E4%B8%8A%E6%89%8B%E4%BA%8C.html">Elasticsearch学习上手（二） &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

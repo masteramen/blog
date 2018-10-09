@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>CIA Vault7 系列后续：新工具“Elsa”可通过WiFi对用户进行定位 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="CIA Vault7 系列后续：新工具“Elsa”可通过WiFi对用户进行定位" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="如果目标设备连接上了网络，恶意程序就会自动尝试使用谷歌或微软的公共地理位置数据库进行地理位置匹配，并将经纬度数据及时间戳一起保存下来。—— WikiLeaks" />
+<meta property="og:description" content="如果目标设备连接上了网络，恶意程序就会自动尝试使用谷歌或微软的公共地理位置数据库进行地理位置匹配，并将经纬度数据及时间戳一起保存下来。—— WikiLeaks" />
+<link rel="canonical" href="http://www.jfox.info/2017/cia-vault7-%E7%B3%BB%E5%88%97%E5%90%8E%E7%BB%AD-%E6%96%B0%E5%B7%A5%E5%85%B7-elsa-%E5%8F%AF%E9%80%9A%E8%BF%87wifi%E5%AF%B9%E7%94%A8%E6%88%B7%E8%BF%9B%E8%A1%8C%E5%AE%9A%E4%BD%8D.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/cia-vault7-%E7%B3%BB%E5%88%97%E5%90%8E%E7%BB%AD-%E6%96%B0%E5%B7%A5%E5%85%B7-elsa-%E5%8F%AF%E9%80%9A%E8%BF%87wifi%E5%AF%B9%E7%94%A8%E6%88%B7%E8%BF%9B%E8%A1%8C%E5%AE%9A%E4%BD%8D.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:51:40+00:00" />
+<script type="application/ld+json">
+{"description":"如果目标设备连接上了网络，恶意程序就会自动尝试使用谷歌或微软的公共地理位置数据库进行地理位置匹配，并将经纬度数据及时间戳一起保存下来。—— WikiLeaks","@type":"BlogPosting","url":"http://www.jfox.info/2017/cia-vault7-%E7%B3%BB%E5%88%97%E5%90%8E%E7%BB%AD-%E6%96%B0%E5%B7%A5%E5%85%B7-elsa-%E5%8F%AF%E9%80%9A%E8%BF%87wifi%E5%AF%B9%E7%94%A8%E6%88%B7%E8%BF%9B%E8%A1%8C%E5%AE%9A%E4%BD%8D.html","headline":"CIA Vault7 系列后续：新工具“Elsa”可通过WiFi对用户进行定位","dateModified":"2017-01-01T15:51:40+00:00","datePublished":"2017-01-01T15:51:40+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/cia-vault7-%E7%B3%BB%E5%88%97%E5%90%8E%E7%BB%AD-%E6%96%B0%E5%B7%A5%E5%85%B7-elsa-%E5%8F%AF%E9%80%9A%E8%BF%87wifi%E5%AF%B9%E7%94%A8%E6%88%B7%E8%BF%9B%E8%A1%8C%E5%AE%9A%E4%BD%8D.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">CIA Vault7 系列后续：新工具“Elsa”可通过WiFi对用户进行定位</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:51:40+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>如果目标设备连接上了网络，恶意程序就会自动尝试使用谷歌或微软的公共地理位置数据库进行地理位置匹配，并将经纬度数据及时间戳一起保存下来。—— WikiLeaks</p>
+
+<p>ELSA 工具主要针对具备 WiFi 功能的 Windows 设备，可以通过附近的 WiFi 网络接入点的 ESS （Extended Service Set）数据匹配地理信息数据库后定位用户的位置。此次维基解密发布的 42 页<a href="https://www.jfox.info/go.php?url=https://wikileaks.org/vault7/document/Elsa_User_Manual/Elsa_User_Manual.pdf">文档说明</a>中，将该工具的名字定为 ELSA 。文档手册中包含了一张图片，用以解释 CIA 人员是如何使用这个工具的。具体的操作步骤也可以从图中获知：</p>
+
+<h2 id="使用方法">使用方法</h2>
+
+<h3 id="第一步">第一步</h3>
+
+<p>CIA人员需要根据目标环境配置 ELSA 恶意软件。这个过程主要通过“ PATCHER wizard ”完成，该工具生成 ELSA payload （一个简单的 DLL 文件）。目标环境变量包括如下：</p>
+
+<p>目标处理器架构(x86 还是. x64)</p>
+
+<p>所需模式(dllhost, svchost, rundll32 还是 appinit)</p>
+
+<p>所需地理位置提供商（Microsoft 还是 Google）</p>
+
+<p>所需最大的 log 文件大小</p>
+
+<p>是否通过目标的AP列表解析地理位置</p>
+
+<p>Sample ELSA config</p>
+
+<h3 id="第二步">第二步</h3>
+
+<p>CIA 人员需要在目标用户的 Win 计算机上部署 ELSA 。由于 ELSA 是植入式的恶意程序，所以 CIA 人员很可能是通过使用其他 CIA 入侵工具和漏洞来将该恶意程序植入到目标 PC 上的。</p>
+
+<h3 id="第三步">第三步</h3>
+
+<p>ELSA 随后按照计划开始收集 WiFi 接入点信息，即便用户断开与 WiFi 的连接，ELSA 也是可以收集数据的。</p>
+
+<p>ELSA 通过扫描附近的网络收集 ESS 信息。ESS 数据则包含了 MAC 地址，SSID 等信息。这些信息存储在本地 log 文件中，使用 128AES 进行加密。</p>
+
+<h3 id="第四步">第四步</h3>
+
+<p>当目标用户连接上网络，ELSA 则会使用收集到的 WiFi 数据，并利用第三方的数据库进行地理信息位置的匹配。</p>
+
+<p>每一个 ESS 信息都对应着一个地理位置，这个数据就能够让 CIA 的相关人员追踪该用户大致的地理位置。</p>
+
+<p>而第三方库则是来自 Google 或微软，他们使用地理信息进行浏览器的追踪定位。</p>
+
+<h3 id="第五步">第五步</h3>
+
+<p>CIA 人员连接到目标用户电脑获取到 ELSA log 文件。这一步依旧是使用植入 ELSA 的工具实现的，当然，也可以使用其他工具。</p>
+
+<h3 id="第六步">第六步</h3>
+
+<p>CIA 人员解密 log 文件，继续分析目标用户获取所需结果。有时可能为了提升查询的准确度，他们会使用其他的EES地理位置数据库来进行重复查询。</p>
+
+<p>ELSA 文档下载地址<a href="https://www.jfox.info/go.php?url=https://wikileaks.org/vault7/document/Elsa_User_Manual/Elsa_User_Manual.pdf">点这里</a></p>
+
+<h2 id="vault-7-系列文件一览">Vault 7 系列文件一览</h2>
+
+<p>目前的这份文档说明依旧是 Vault7 系列文档的一部分，改系列文件据称是从 CIA 黑客和内部使用者处窃取出来的。下面是目前已经公开的 Vault7 系列工具及公开日期：</p>
+
+<p>ELSA malware – 6 月 28 日, 2017</p>
+
+<p>Cherry Blossom – 6 月 15 日, 2017</p>
+
+<p>Pandemic – 6 月 1 日, 2017</p>
+
+<p>Athena – 5 月 19 日, 2017</p>
+
+<p>AfterMidnight – 5 月 12 日, 2017</p>
+
+<p>Archimedes – 5 月 5 日 , 2017</p>
+
+<p>Scribbles – 4 月 28 日 , 2017</p>
+
+<p>Weeping Angel – 4 月 21 日, 2017</p>
+
+<p>Hive – 4 月 14 日, 2017</p>
+
+<p>Grasshopper – 4 月 7 日, 2017</p>
+
+<p>Marble Framework – 3 月 31 日, 2017</p>
+
+<p>Dark Matter – 3 月 23 日, 2017</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/cia-vault7-%E7%B3%BB%E5%88%97%E5%90%8E%E7%BB%AD-%E6%96%B0%E5%B7%A5%E5%85%B7-elsa-%E5%8F%AF%E9%80%9A%E8%BF%87wifi%E5%AF%B9%E7%94%A8%E6%88%B7%E8%BF%9B%E8%A1%8C%E5%AE%9A%E4%BD%8D.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/md5%E4%B8%AD%E7%9A%84%E5%87%A0%E4%B8%AA%E5%8F%98%E6%8D%A2%E5%87%BD%E6%95%B0.html">&laquo; MD5中的几个变换函数</a>
+  
+  
+  <a class="next" href="/2017/%E5%85%B3%E4%BA%8Ehtml5-%E4%BD%A0%E5%BA%94%E8%AF%A5%E7%9F%A5%E9%81%93%E8%BF%99%E4%BA%9B.html">关于HTML5，你应该知道这些 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

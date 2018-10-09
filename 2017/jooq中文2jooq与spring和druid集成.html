@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>【jOOQ中文】2. jOOQ与Spring和Druid集成 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="【jOOQ中文】2. jOOQ与Spring和Druid集成" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="jOOQ和Spring很容易整合。 在这个例子中，我们将整合：" />
+<meta property="og:description" content="jOOQ和Spring很容易整合。 在这个例子中，我们将整合：" />
+<link rel="canonical" href="http://www.jfox.info/2017/jooq%E4%B8%AD%E6%96%872jooq%E4%B8%8Espring%E5%92%8Cdruid%E9%9B%86%E6%88%90.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/jooq%E4%B8%AD%E6%96%872jooq%E4%B8%8Espring%E5%92%8Cdruid%E9%9B%86%E6%88%90.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:59:25+00:00" />
+<script type="application/ld+json">
+{"description":"jOOQ和Spring很容易整合。 在这个例子中，我们将整合：","@type":"BlogPosting","url":"http://www.jfox.info/2017/jooq%E4%B8%AD%E6%96%872jooq%E4%B8%8Espring%E5%92%8Cdruid%E9%9B%86%E6%88%90.html","headline":"【jOOQ中文】2. jOOQ与Spring和Druid集成","dateModified":"2017-01-01T15:59:25+00:00","datePublished":"2017-01-01T15:59:25+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/jooq%E4%B8%AD%E6%96%872jooq%E4%B8%8Espring%E5%92%8Cdruid%E9%9B%86%E6%88%90.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">【jOOQ中文】2. jOOQ与Spring和Druid集成</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:59:25+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>jOOQ和Spring很容易整合。 在这个例子中，我们将整合：</p>
+
+<ul>
+  <li>
+    <p>Alibaba Druid（但您也可以使用其他连接池，如BoneCP，C3P0，DBCP等）。</p>
+  </li>
+  <li>
+    <p>Spring TX作为事物管理library。</p>
+  </li>
+  <li>
+    <p>jOOQ作为SQL构建和执行library。</p>
+  </li>
+</ul>
+
+<h2 id="一准备数据库">一、准备数据库</h2>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>DROP TABLE IF EXISTS `author`;
+CREATE TABLE `author` (
+  `id` int(11) NOT NULL,
+  `first_name` varchar(50) DEFAULT NULL,
+  `last_name` varchar(50) NOT NULL,
+  `date_of_birth` date DEFAULT NULL,
+  `year_of_birth` int(11) DEFAULT NULL,
+  `distinguished` int(1) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+DROP TABLE IF EXISTS `book`;
+CREATE TABLE `book` (
+  `id` int(11) NOT NULL,
+  `author_id` int(11) NOT NULL,
+  `title` varchar(400) NOT NULL,
+  `published_in` int(11) NOT NULL,
+  `language_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+DROP TABLE IF EXISTS `book_store`;
+CREATE TABLE `book_store` (
+  `name` varchar(400) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+DROP TABLE IF EXISTS `book_to_book_store`;
+CREATE TABLE `book_to_book_store` (
+  `name` varchar(400) NOT NULL,
+  `book_id` int(11) NOT NULL,
+  `stock` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+DROP TABLE IF EXISTS `language`;
+CREATE TABLE `language` (
+  `id` int(11) NOT NULL,
+  `cd` char(2) NOT NULL,
+  `description` varchar(50) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
+ALTER TABLE `author`
+  ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `book`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_book_author` (`author_id`),
+  ADD KEY `fk_book_language` (`language_id`);
+
+ALTER TABLE `book_store`
+  ADD UNIQUE KEY `name` (`name`);
+
+ALTER TABLE `book_to_book_store`
+  ADD PRIMARY KEY (`name`,`book_id`),
+  ADD KEY `fk_b2bs_book` (`book_id`);
+
+ALTER TABLE `language`
+  ADD PRIMARY KEY (`id`);
+</code></pre></div></div>
+
+<h2 id="二添加所需的maven依赖项">二、添加所需的Maven依赖项</h2>
+
+<p>在这个例子中，我们将创建以下Maven依赖项：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;project</span> <span class="na">xmlns=</span><span class="s">"http://maven.apache.org/POM/4.0.0"</span> <span class="na">xmlns:xsi=</span><span class="s">"http://www.w3.org/2001/XMLSchema-instance"</span>
+    <span class="na">xsi:schemaLocation=</span><span class="s">"http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;modelVersion&gt;</span>4.0.0<span class="nt">&lt;/modelVersion&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>com.jsyso<span class="nt">&lt;/groupId&gt;</span>
+      <span class="nt">&lt;artifactId&gt;</span>jooq-tutorials-2<span class="nt">&lt;/artifactId&gt;</span>
+      <span class="nt">&lt;packaging&gt;</span>jar<span class="nt">&lt;/packaging&gt;</span>
+    <span class="nt">&lt;name&gt;</span>jooq-tutorials-2<span class="nt">&lt;/name&gt;</span>
+    <span class="nt">&lt;version&gt;</span>1.0.0<span class="nt">&lt;/version&gt;</span>
+    
+    <span class="nt">&lt;properties&gt;</span>
+        <span class="c">&lt;!-- spring --&gt;</span>
+        <span class="nt">&lt;spring.version&gt;</span>4.1.9.RELEASE<span class="nt">&lt;/spring.version&gt;</span>
+        <span class="c">&lt;!-- /spring --&gt;</span>
+
+        <span class="c">&lt;!-- environment --&gt;</span>
+        <span class="nt">&lt;jdk.version&gt;</span>1.8<span class="nt">&lt;/jdk.version&gt;</span>
+        <span class="nt">&lt;project.build.sourceEncoding&gt;</span>UTF-8<span class="nt">&lt;/project.build.sourceEncoding&gt;</span>
+        <span class="nt">&lt;downloadSources&gt;</span>true<span class="nt">&lt;/downloadSources&gt;</span>
+        <span class="nt">&lt;slf4j.version&gt;</span>1.7.7<span class="nt">&lt;/slf4j.version&gt;</span>
+        <span class="c">&lt;!-- /environment --&gt;</span>
+        
+        <span class="c">&lt;!-- jdbc --&gt;</span>
+        <span class="nt">&lt;mysql.driver.version&gt;</span>5.1.30<span class="nt">&lt;/mysql.driver.version&gt;</span>
+        <span class="nt">&lt;druid.version&gt;</span>1.0.18<span class="nt">&lt;/druid.version&gt;</span>
+        <span class="c">&lt;!-- /jdbc --&gt;</span>
+        
+        <span class="c">&lt;!-- jooq --&gt;</span>
+        <span class="nt">&lt;jooq.version&gt;</span>3.9.5<span class="nt">&lt;/jooq.version&gt;</span>
+        <span class="c">&lt;!-- /jooq --&gt;</span>
+        
+    <span class="nt">&lt;/properties&gt;</span>
+    
+    <span class="nt">&lt;repositories&gt;</span>
+        <span class="nt">&lt;repository&gt;</span>
+            <span class="nt">&lt;id&gt;</span>aliyun-repos<span class="nt">&lt;/id&gt;</span>
+            <span class="nt">&lt;name&gt;</span>Aliyun Repository<span class="nt">&lt;/name&gt;</span>
+            <span class="nt">&lt;url&gt;</span>http://maven.aliyun.com/nexus/content/groups/public<span class="nt">&lt;/url&gt;</span>
+        <span class="nt">&lt;/repository&gt;</span>
+    <span class="nt">&lt;/repositories&gt;</span>
+
+    <span class="nt">&lt;pluginRepositories&gt;</span> 
+        <span class="nt">&lt;pluginRepository&gt;</span>
+            <span class="nt">&lt;id&gt;</span>aliyun-repos<span class="nt">&lt;/id&gt;</span>
+            <span class="nt">&lt;name&gt;</span>Aliyun Repository<span class="nt">&lt;/name&gt;</span>
+            <span class="nt">&lt;url&gt;</span>http://maven.aliyun.com/nexus/content/groups/public<span class="nt">&lt;/url&gt;</span>
+        <span class="nt">&lt;/pluginRepository&gt;</span>
+    <span class="nt">&lt;/pluginRepositories&gt;</span>
+    
+    <span class="nt">&lt;dependencies&gt;</span>
+        <span class="nt">&lt;dependency&gt;</span>
+            <span class="nt">&lt;groupId&gt;</span>mysql<span class="nt">&lt;/groupId&gt;</span>
+            <span class="nt">&lt;artifactId&gt;</span>mysql-connector-java<span class="nt">&lt;/artifactId&gt;</span>
+            <span class="nt">&lt;version&gt;</span>${mysql.driver.version}<span class="nt">&lt;/version&gt;</span>
+        <span class="nt">&lt;/dependency&gt;</span>
+        
+        <span class="nt">&lt;dependency&gt;</span>
+            <span class="nt">&lt;groupId&gt;</span>junit<span class="nt">&lt;/groupId&gt;</span>
+            <span class="nt">&lt;artifactId&gt;</span>junit<span class="nt">&lt;/artifactId&gt;</span>
+            <span class="nt">&lt;version&gt;</span>4.11<span class="nt">&lt;/version&gt;</span>
+            <span class="nt">&lt;scope&gt;</span>test<span class="nt">&lt;/scope&gt;</span>
+        <span class="nt">&lt;/dependency&gt;</span>
+        
+        <span class="nt">&lt;dependency&gt;</span>
+          <span class="nt">&lt;groupId&gt;</span>org.jooq<span class="nt">&lt;/groupId&gt;</span>
+          <span class="nt">&lt;artifactId&gt;</span>jooq<span class="nt">&lt;/artifactId&gt;</span>
+          <span class="nt">&lt;version&gt;</span>${jooq.version}<span class="nt">&lt;/version&gt;</span>
+        <span class="nt">&lt;/dependency&gt;</span>
+        <span class="nt">&lt;dependency&gt;</span>
+          <span class="nt">&lt;groupId&gt;</span>org.jooq<span class="nt">&lt;/groupId&gt;</span>
+          <span class="nt">&lt;artifactId&gt;</span>jooq-meta<span class="nt">&lt;/artifactId&gt;</span>
+          <span class="nt">&lt;version&gt;</span>${jooq.version}<span class="nt">&lt;/version&gt;</span>
+        <span class="nt">&lt;/dependency&gt;</span>
+        <span class="nt">&lt;dependency&gt;</span>
+          <span class="nt">&lt;groupId&gt;</span>org.jooq<span class="nt">&lt;/groupId&gt;</span>
+          <span class="nt">&lt;artifactId&gt;</span>jooq-codegen<span class="nt">&lt;/artifactId&gt;</span>
+          <span class="nt">&lt;version&gt;</span>${jooq.version}<span class="nt">&lt;/version&gt;</span>
+        <span class="nt">&lt;/dependency&gt;</span>
+
+        <span class="nt">&lt;dependency&gt;</span>
+            <span class="nt">&lt;groupId&gt;</span>com.alibaba<span class="nt">&lt;/groupId&gt;</span>
+            <span class="nt">&lt;artifactId&gt;</span>druid<span class="nt">&lt;/artifactId&gt;</span>
+            <span class="nt">&lt;version&gt;</span>${druid.version}<span class="nt">&lt;/version&gt;</span>
+        <span class="nt">&lt;/dependency&gt;</span>
+
+        <span class="c">&lt;!-- spring --&gt;</span>
+        <span class="nt">&lt;dependency&gt;</span>
+            <span class="nt">&lt;groupId&gt;</span>org.springframework<span class="nt">&lt;/groupId&gt;</span>
+            <span class="nt">&lt;artifactId&gt;</span>spring-core<span class="nt">&lt;/artifactId&gt;</span>
+            <span class="nt">&lt;version&gt;</span>${spring.version}<span class="nt">&lt;/version&gt;</span>
+            <span class="nt">&lt;exclusions&gt;</span>
+                <span class="nt">&lt;exclusion&gt;</span>
+                    <span class="nt">&lt;groupId&gt;</span>commons-logging<span class="nt">&lt;/groupId&gt;</span>
+                    <span class="nt">&lt;artifactId&gt;</span>commons-logging<span class="nt">&lt;/artifactId&gt;</span>
+                <span class="nt">&lt;/exclusion&gt;</span>
+            <span class="nt">&lt;/exclusions&gt;</span>
+        <span class="nt">&lt;/dependency&gt;</span>
+        <span class="nt">&lt;dependency&gt;</span>
+            <span class="nt">&lt;groupId&gt;</span>org.springframework<span class="nt">&lt;/groupId&gt;</span>
+            <span class="nt">&lt;artifactId&gt;</span>spring-beans<span class="nt">&lt;/artifactId&gt;</span>
+            <span class="nt">&lt;version&gt;</span>${spring.version}<span class="nt">&lt;/version&gt;</span>
+        <span class="nt">&lt;/dependency&gt;</span>
+        <span class="nt">&lt;dependency&gt;</span>
+            <span class="nt">&lt;groupId&gt;</span>org.springframework<span class="nt">&lt;/groupId&gt;</span>
+            <span class="nt">&lt;artifactId&gt;</span>spring-context<span class="nt">&lt;/artifactId&gt;</span>
+            <span class="nt">&lt;version&gt;</span>${spring.version}<span class="nt">&lt;/version&gt;</span>
+        <span class="nt">&lt;/dependency&gt;</span>
+        <span class="nt">&lt;dependency&gt;</span>
+            <span class="nt">&lt;groupId&gt;</span>org.springframework<span class="nt">&lt;/groupId&gt;</span>
+            <span class="nt">&lt;artifactId&gt;</span>spring-context-support<span class="nt">&lt;/artifactId&gt;</span>
+            <span class="nt">&lt;version&gt;</span>${spring.version}<span class="nt">&lt;/version&gt;</span>
+        <span class="nt">&lt;/dependency&gt;</span>
+        <span class="nt">&lt;dependency&gt;</span>
+            <span class="nt">&lt;groupId&gt;</span>org.springframework<span class="nt">&lt;/groupId&gt;</span>
+            <span class="nt">&lt;artifactId&gt;</span>spring-aop<span class="nt">&lt;/artifactId&gt;</span>
+            <span class="nt">&lt;version&gt;</span>${spring.version}<span class="nt">&lt;/version&gt;</span>
+            <span class="nt">&lt;exclusions&gt;</span>
+                <span class="nt">&lt;exclusion&gt;</span>
+                    <span class="nt">&lt;groupId&gt;</span>commons-logging<span class="nt">&lt;/groupId&gt;</span>
+                    <span class="nt">&lt;artifactId&gt;</span>commons-logging<span class="nt">&lt;/artifactId&gt;</span>
+                <span class="nt">&lt;/exclusion&gt;</span>
+            <span class="nt">&lt;/exclusions&gt;</span>
+        <span class="nt">&lt;/dependency&gt;</span>
+        <span class="nt">&lt;dependency&gt;</span>
+            <span class="nt">&lt;groupId&gt;</span>org.springframework<span class="nt">&lt;/groupId&gt;</span>
+            <span class="nt">&lt;artifactId&gt;</span>spring-tx<span class="nt">&lt;/artifactId&gt;</span>
+            <span class="nt">&lt;version&gt;</span>${spring.version}<span class="nt">&lt;/version&gt;</span>
+        <span class="nt">&lt;/dependency&gt;</span>
+        <span class="nt">&lt;dependency&gt;</span>
+            <span class="nt">&lt;groupId&gt;</span>org.springframework<span class="nt">&lt;/groupId&gt;</span>
+            <span class="nt">&lt;artifactId&gt;</span>spring-orm<span class="nt">&lt;/artifactId&gt;</span>
+            <span class="nt">&lt;version&gt;</span>${spring.version}<span class="nt">&lt;/version&gt;</span>
+        <span class="nt">&lt;/dependency&gt;</span>
+        <span class="nt">&lt;dependency&gt;</span>
+            <span class="nt">&lt;groupId&gt;</span>org.springframework<span class="nt">&lt;/groupId&gt;</span>
+            <span class="nt">&lt;artifactId&gt;</span>spring-jdbc<span class="nt">&lt;/artifactId&gt;</span>
+            <span class="nt">&lt;version&gt;</span>${spring.version}<span class="nt">&lt;/version&gt;</span>
+        <span class="nt">&lt;/dependency&gt;</span>
+
+        <span class="c">&lt;!-- TEST begin --&gt;</span>
+        <span class="nt">&lt;dependency&gt;</span>
+            <span class="nt">&lt;groupId&gt;</span>junit<span class="nt">&lt;/groupId&gt;</span>
+            <span class="nt">&lt;artifactId&gt;</span>junit<span class="nt">&lt;/artifactId&gt;</span>
+            <span class="nt">&lt;version&gt;</span>4.11<span class="nt">&lt;/version&gt;</span>
+            <span class="nt">&lt;scope&gt;</span>test<span class="nt">&lt;/scope&gt;</span>
+        <span class="nt">&lt;/dependency&gt;</span>
+        <span class="nt">&lt;dependency&gt;</span>
+            <span class="nt">&lt;groupId&gt;</span>org.springframework<span class="nt">&lt;/groupId&gt;</span>
+            <span class="nt">&lt;artifactId&gt;</span>spring-test<span class="nt">&lt;/artifactId&gt;</span>
+            <span class="nt">&lt;version&gt;</span>${spring.version}<span class="nt">&lt;/version&gt;</span>
+            <span class="nt">&lt;scope&gt;</span>test<span class="nt">&lt;/scope&gt;</span>
+        <span class="nt">&lt;/dependency&gt;</span>
+        <span class="c">&lt;!-- TEST end --&gt;</span>
+
+        <span class="c">&lt;!-- LOGGING begin --&gt;</span>
+        <span class="nt">&lt;dependency&gt;</span>
+            <span class="nt">&lt;groupId&gt;</span>org.slf4j<span class="nt">&lt;/groupId&gt;</span>
+            <span class="nt">&lt;artifactId&gt;</span>slf4j-api<span class="nt">&lt;/artifactId&gt;</span>
+            <span class="nt">&lt;version&gt;</span>${slf4j.version}<span class="nt">&lt;/version&gt;</span>
+        <span class="nt">&lt;/dependency&gt;</span>
+        <span class="nt">&lt;dependency&gt;</span>
+            <span class="nt">&lt;groupId&gt;</span>org.slf4j<span class="nt">&lt;/groupId&gt;</span>
+            <span class="nt">&lt;artifactId&gt;</span>slf4j-log4j12<span class="nt">&lt;/artifactId&gt;</span>
+            <span class="nt">&lt;version&gt;</span>${slf4j.version}<span class="nt">&lt;/version&gt;</span>
+        <span class="nt">&lt;/dependency&gt;</span>
+        <span class="c">&lt;!-- common-logging 实际调用slf4j --&gt;</span>
+        <span class="nt">&lt;dependency&gt;</span>
+            <span class="nt">&lt;groupId&gt;</span>org.slf4j<span class="nt">&lt;/groupId&gt;</span>
+            <span class="nt">&lt;artifactId&gt;</span>jcl-over-slf4j<span class="nt">&lt;/artifactId&gt;</span>
+            <span class="nt">&lt;version&gt;</span>${slf4j.version}<span class="nt">&lt;/version&gt;</span>
+        <span class="nt">&lt;/dependency&gt;</span>
+        <span class="c">&lt;!-- java.util.logging 实际调用slf4j --&gt;</span>
+        <span class="nt">&lt;dependency&gt;</span>
+            <span class="nt">&lt;groupId&gt;</span>org.slf4j<span class="nt">&lt;/groupId&gt;</span>
+            <span class="nt">&lt;artifactId&gt;</span>jul-to-slf4j<span class="nt">&lt;/artifactId&gt;</span>
+            <span class="nt">&lt;version&gt;</span>${slf4j.version}<span class="nt">&lt;/version&gt;</span>
+        <span class="nt">&lt;/dependency&gt;</span>
+        <span class="c">&lt;!-- LOGGING end --&gt;</span>
+
+    <span class="nt">&lt;/dependencies&gt;</span>
+    
+    <span class="nt">&lt;build&gt;</span>
+        <span class="nt">&lt;plugins&gt;</span>
+            <span class="c">&lt;!-- Compiler 插件, 设定JDK版本 --&gt;</span>
+            <span class="nt">&lt;plugin&gt;</span>
+                <span class="nt">&lt;groupId&gt;</span>org.apache.maven.plugins<span class="nt">&lt;/groupId&gt;</span>
+                <span class="nt">&lt;artifactId&gt;</span>maven-compiler-plugin<span class="nt">&lt;/artifactId&gt;</span>
+                <span class="nt">&lt;version&gt;</span>3.5.1<span class="nt">&lt;/version&gt;</span>
+                <span class="nt">&lt;configuration&gt;</span>
+                    <span class="nt">&lt;source&gt;</span>${jdk.version}<span class="nt">&lt;/source&gt;</span>
+                    <span class="nt">&lt;target&gt;</span>${jdk.version}<span class="nt">&lt;/target&gt;</span>
+                    <span class="nt">&lt;showWarnings&gt;</span>true<span class="nt">&lt;/showWarnings&gt;</span>
+                <span class="nt">&lt;/configuration&gt;</span>
+            <span class="nt">&lt;/plugin&gt;</span>
+            
+            <span class="c">&lt;!-- 打包jar文件时，配置manifest文件，加入lib包的jar依赖 --&gt;</span>
+            <span class="nt">&lt;plugin&gt;</span>
+                <span class="nt">&lt;groupId&gt;</span>org.apache.maven.plugins<span class="nt">&lt;/groupId&gt;</span>
+                <span class="nt">&lt;artifactId&gt;</span>maven-jar-plugin<span class="nt">&lt;/artifactId&gt;</span>
+                <span class="nt">&lt;version&gt;</span>2.4<span class="nt">&lt;/version&gt;</span>
+            <span class="nt">&lt;/plugin&gt;</span>
+
+            <span class="c">&lt;!-- resource插件 --&gt;</span>
+            <span class="nt">&lt;plugin&gt;</span>
+                <span class="nt">&lt;groupId&gt;</span>org.apache.maven.plugins<span class="nt">&lt;/groupId&gt;</span>
+                <span class="nt">&lt;artifactId&gt;</span>maven-resources-plugin<span class="nt">&lt;/artifactId&gt;</span>
+                <span class="nt">&lt;version&gt;</span>2.7<span class="nt">&lt;/version&gt;</span>
+            <span class="nt">&lt;/plugin&gt;</span>
+            
+            <span class="c">&lt;!-- install插件 --&gt;</span>
+            <span class="nt">&lt;plugin&gt;</span>
+                <span class="nt">&lt;groupId&gt;</span>org.apache.maven.plugins<span class="nt">&lt;/groupId&gt;</span>
+                <span class="nt">&lt;artifactId&gt;</span>maven-install-plugin<span class="nt">&lt;/artifactId&gt;</span>
+                <span class="nt">&lt;version&gt;</span>2.5.2<span class="nt">&lt;/version&gt;</span>
+            <span class="nt">&lt;/plugin&gt;</span>
+            
+            <span class="c">&lt;!-- clean插件 --&gt;</span>
+            <span class="nt">&lt;plugin&gt;</span>
+                <span class="nt">&lt;groupId&gt;</span>org.apache.maven.plugins<span class="nt">&lt;/groupId&gt;</span>
+                <span class="nt">&lt;artifactId&gt;</span>maven-clean-plugin<span class="nt">&lt;/artifactId&gt;</span>
+                <span class="nt">&lt;version&gt;</span>2.6.1<span class="nt">&lt;/version&gt;</span>
+            <span class="nt">&lt;/plugin&gt;</span>
+            
+            <span class="c">&lt;!-- dependency插件 --&gt;</span>
+            <span class="nt">&lt;plugin&gt;</span>
+                <span class="nt">&lt;groupId&gt;</span>org.apache.maven.plugins<span class="nt">&lt;/groupId&gt;</span>
+                <span class="nt">&lt;artifactId&gt;</span>maven-dependency-plugin<span class="nt">&lt;/artifactId&gt;</span>
+                <span class="nt">&lt;version&gt;</span>2.10<span class="nt">&lt;/version&gt;</span>
+            <span class="nt">&lt;/plugin&gt;</span>
+            
+            <span class="c">&lt;!-- 打包时跳过不执行测试用例 --&gt;</span>
+            <span class="nt">&lt;plugin&gt;</span>
+                <span class="nt">&lt;groupId&gt;</span>org.apache.maven.plugins<span class="nt">&lt;/groupId&gt;</span>
+                <span class="nt">&lt;artifactId&gt;</span>maven-surefire-plugin<span class="nt">&lt;/artifactId&gt;</span>
+                <span class="nt">&lt;version&gt;</span>2.5<span class="nt">&lt;/version&gt;</span>
+                <span class="nt">&lt;configuration&gt;</span>
+                    <span class="nt">&lt;skipTests&gt;</span>true<span class="nt">&lt;/skipTests&gt;</span>
+                <span class="nt">&lt;/configuration&gt;</span>
+            <span class="nt">&lt;/plugin&gt;</span>
+        <span class="nt">&lt;/plugins&gt;</span>
+    <span class="nt">&lt;/build&gt;</span>
+    
+    <span class="nt">&lt;developers&gt;</span>  
+        <span class="nt">&lt;developer&gt;</span>
+            <span class="nt">&lt;id&gt;</span>com.jsyso<span class="nt">&lt;/id&gt;</span>
+            <span class="nt">&lt;name&gt;</span>Jan<span class="nt">&lt;/name&gt;</span>
+            <span class="nt">&lt;email&gt;</span>xujian_jason@163.com<span class="nt">&lt;/email&gt;</span>
+            <span class="nt">&lt;timezone&gt;</span>+8<span class="nt">&lt;/timezone&gt;</span>
+        <span class="nt">&lt;/developer&gt;</span>
+    <span class="nt">&lt;/developers&gt;</span>
+    
+<span class="nt">&lt;/project&gt;</span>
+</code></pre></div></div>
+
+<h2 id="三spring配置文件">三、Spring配置文件</h2>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;beans</span> <span class="na">xmlns=</span><span class="s">"http://www.springframework.org/schema/beans"</span> <span class="na">xmlns:xsi=</span><span class="s">"http://www.w3.org/2001/XMLSchema-instance"</span>
+    <span class="na">xmlns:context=</span><span class="s">"http://www.springframework.org/schema/context"</span> <span class="na">xmlns:jdbc=</span><span class="s">"http://www.springframework.org/schema/jdbc"</span>  
+    <span class="na">xmlns:jee=</span><span class="s">"http://www.springframework.org/schema/jee"</span> <span class="na">xmlns:tx=</span><span class="s">"http://www.springframework.org/schema/tx"</span>
+    <span class="na">xmlns:util=</span><span class="s">"http://www.springframework.org/schema/util"</span> <span class="na">xmlns:task=</span><span class="s">"http://www.springframework.org/schema/task"</span> <span class="na">xsi:schemaLocation=</span><span class="s">"
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.1.xsd
+        http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-4.1.xsd
+        http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-4.1.xsd
+        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.1.xsd
+        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.1.xsd
+        http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-4.1.xsd"</span>
+    <span class="na">default-lazy-init=</span><span class="s">"true"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;description&gt;</span>Spring Configuration<span class="nt">&lt;/description&gt;</span>
+
+    <span class="c">&lt;!-- 加载配置属性文件 --&gt;</span>
+    <span class="nt">&lt;context:property-placeholder</span> <span class="na">ignore-unresolvable=</span><span class="s">"true"</span> <span class="na">location=</span><span class="s">"classpath:config.properties"</span> <span class="nt">/&gt;</span>
+
+    <span class="c">&lt;!-- 数据源配置 --&gt;</span>
+    <span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">"dataSource"</span> <span class="na">class=</span><span class="s">"com.alibaba.druid.pool.DruidDataSource"</span> <span class="na">init-method=</span><span class="s">"init"</span> <span class="na">destroy-method=</span><span class="s">"close"</span><span class="nt">&gt;</span>
+        <span class="c">&lt;!-- 数据源驱动类可不写，Druid默认会自动根据URL识别DriverClass --&gt;</span>
+        <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"driverClassName"</span> <span class="na">value=</span><span class="s">"${jdbc.driver}"</span> <span class="nt">/&gt;</span>
+
+        <span class="c">&lt;!-- 基本属性 url、user、password --&gt;</span>
+        <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"url"</span> <span class="na">value=</span><span class="s">"${jdbc.url}"</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"username"</span> <span class="na">value=</span><span class="s">"${jdbc.username}"</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"password"</span> <span class="na">value=</span><span class="s">"${jdbc.password}"</span> <span class="nt">/&gt;</span>
+
+        <span class="c">&lt;!-- 配置初始化大小、最小、最大 --&gt;</span>
+        <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"initialSize"</span> <span class="na">value=</span><span class="s">"${jdbc.pool.init}"</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"minIdle"</span> <span class="na">value=</span><span class="s">"${jdbc.pool.minIdle}"</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"maxActive"</span> <span class="na">value=</span><span class="s">"${jdbc.pool.maxActive}"</span> <span class="nt">/&gt;</span>
+
+        <span class="c">&lt;!-- 配置获取连接等待超时的时间 --&gt;</span>
+        <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"maxWait"</span> <span class="na">value=</span><span class="s">"60000"</span> <span class="nt">/&gt;</span>
+
+        <span class="c">&lt;!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 --&gt;</span>
+        <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"timeBetweenEvictionRunsMillis"</span> <span class="na">value=</span><span class="s">"60000"</span> <span class="nt">/&gt;</span>
+
+        <span class="c">&lt;!-- 配置一个连接在池中最小生存的时间，单位是毫秒 --&gt;</span>
+        <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"minEvictableIdleTimeMillis"</span> <span class="na">value=</span><span class="s">"300000"</span> <span class="nt">/&gt;</span>
+
+        <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"validationQuery"</span> <span class="na">value=</span><span class="s">"${jdbc.testSql}"</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"testWhileIdle"</span> <span class="na">value=</span><span class="s">"true"</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"testOnBorrow"</span> <span class="na">value=</span><span class="s">"false"</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"testOnReturn"</span> <span class="na">value=</span><span class="s">"false"</span> <span class="nt">/&gt;</span>
+
+        <span class="c">&lt;!-- 配置监控统计拦截的filters --&gt;</span>
+        <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"filters"</span> <span class="na">value=</span><span class="s">"stat"</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;/bean&gt;</span>
+
+    <span class="c">&lt;!-- 定义事务 --&gt;</span>
+    <span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">"transactionManager"</span> <span class="na">class=</span><span class="s">"org.springframework.jdbc.datasource.DataSourceTransactionManager"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"dataSource"</span> <span class="na">ref=</span><span class="s">"dataSource"</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;/bean&gt;</span>
+    <span class="c">&lt;!-- 配置 Annotation 驱动，扫描@Transactional注解的类定义事务  --&gt;</span>
+    <span class="nt">&lt;tx:annotation-driven</span> <span class="na">transaction-manager=</span><span class="s">"transactionManager"</span> <span class="na">proxy-target-class=</span><span class="s">"true"</span><span class="nt">/&gt;</span>
+    <span class="c">&lt;!-- 配置jOOQ的ConnectionProvider使用Spring的TransactionAwareDataSourceProx --&gt;</span>
+    <span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">"transactionAwareDataSource"</span>
+          <span class="na">class=</span><span class="s">"org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;constructor-arg</span> <span class="na">ref=</span><span class="s">"dataSource"</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;/bean&gt;</span>
+    <span class="nt">&lt;bean</span> <span class="na">class=</span><span class="s">"org.jooq.impl.DataSourceConnectionProvider"</span> <span class="na">name=</span><span class="s">"connectionProvider"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;constructor-arg</span> <span class="na">ref=</span><span class="s">"transactionAwareDataSource"</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;/bean&gt;</span>
+    <span class="c">&lt;!-- 可选，重写jOOQ异常，抛出Spring Exception --&gt;</span>
+    <span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">"exceptionTranslator"</span> <span class="na">class=</span><span class="s">"test.generated.exception.ExceptionTranslator"</span> <span class="nt">/&gt;</span>
+
+    <span class="nt">&lt;bean</span> <span class="na">class=</span><span class="s">"org.jooq.impl.DefaultConfiguration"</span> <span class="na">name=</span><span class="s">"config"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"SQLDialect"</span><span class="nt">&gt;&lt;value</span> <span class="na">type=</span><span class="s">"org.jooq.SQLDialect"</span><span class="nt">&gt;</span>MYSQL<span class="nt">&lt;/value&gt;&lt;/property&gt;</span>
+        <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"connectionProvider"</span> <span class="na">ref=</span><span class="s">"connectionProvider"</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"executeListenerProvider"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;array&gt;</span>
+                <span class="nt">&lt;bean</span> <span class="na">class=</span><span class="s">"org.jooq.impl.DefaultExecuteListenerProvider"</span><span class="nt">&gt;</span>
+                    <span class="nt">&lt;constructor-arg</span> <span class="na">index=</span><span class="s">"0"</span> <span class="na">ref=</span><span class="s">"exceptionTranslator"</span><span class="nt">/&gt;</span>
+                <span class="nt">&lt;/bean&gt;</span>
+            <span class="nt">&lt;/array&gt;</span>
+        <span class="nt">&lt;/property&gt;</span>
+    <span class="nt">&lt;/bean&gt;</span>
+
+    <span class="c">&lt;!-- 配置jOOQ的dsl对象 --&gt;</span>
+    <span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">"dsl"</span> <span class="na">class=</span><span class="s">"org.jooq.impl.DefaultDSLContext"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;constructor-arg</span> <span class="na">ref=</span><span class="s">"config"</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;/bean&gt;</span>
+
+<span class="nt">&lt;/beans&gt;</span>
+</code></pre></div></div>
+
+<h2 id="四spring-test--junit集成测试">四、Spring Test + JUnit集成测试</h2>
+
+<p><strong>查询测试：</strong></p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">test</span><span class="p">.</span><span class="n">generated</span><span class="p">.</span><span class="n">service</span><span class="p">;</span>
+
+<span class="n">import</span> <span class="n">static</span> <span class="n">java</span><span class="p">.</span><span class="n">util</span><span class="p">.</span><span class="n">Arrays</span><span class="p">.</span><span class="n">asList</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">static</span> <span class="n">org</span><span class="p">.</span><span class="n">jooq</span><span class="p">.</span><span class="n">impl</span><span class="p">.</span><span class="n">DSL</span><span class="p">.</span><span class="n">countDistinct</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">static</span> <span class="n">org</span><span class="p">.</span><span class="n">junit</span><span class="p">.</span><span class="n">Assert</span><span class="p">.</span><span class="n">assertEquals</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">static</span> <span class="n">test</span><span class="p">.</span><span class="n">generated</span><span class="p">.</span><span class="n">Tables</span><span class="p">.*;</span>
+
+<span class="n">import</span> <span class="n">org</span><span class="p">.</span><span class="n">jooq</span><span class="p">.</span><span class="n">DSLContext</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">org</span><span class="p">.</span><span class="n">jooq</span><span class="p">.</span><span class="n">Record3</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">org</span><span class="p">.</span><span class="n">jooq</span><span class="p">.</span><span class="n">Result</span><span class="p">;</span>
+
+<span class="n">import</span> <span class="n">org</span><span class="p">.</span><span class="n">junit</span><span class="p">.</span><span class="n">Test</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">org</span><span class="p">.</span><span class="n">junit</span><span class="p">.</span><span class="n">runner</span><span class="p">.</span><span class="n">RunWith</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">org</span><span class="p">.</span><span class="n">springframework</span><span class="p">.</span><span class="n">beans</span><span class="p">.</span><span class="n">factory</span><span class="p">.</span><span class="n">annotation</span><span class="p">.</span><span class="n">Autowired</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">org</span><span class="p">.</span><span class="n">springframework</span><span class="p">.</span><span class="n">test</span><span class="p">.</span><span class="n">context</span><span class="p">.</span><span class="n">ContextConfiguration</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">org</span><span class="p">.</span><span class="n">springframework</span><span class="p">.</span><span class="n">test</span><span class="p">.</span><span class="n">context</span><span class="p">.</span><span class="n">junit4</span><span class="p">.</span><span class="n">SpringJUnit4ClassRunner</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">test</span><span class="p">.</span><span class="n">generated</span><span class="p">.</span><span class="n">tables</span><span class="p">.</span><span class="n">Author</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">test</span><span class="p">.</span><span class="n">generated</span><span class="p">.</span><span class="n">tables</span><span class="p">.</span><span class="n">Book</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">test</span><span class="p">.</span><span class="n">generated</span><span class="p">.</span><span class="n">tables</span><span class="p">.</span><span class="n">BookStore</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">test</span><span class="p">.</span><span class="n">generated</span><span class="p">.</span><span class="n">tables</span><span class="p">.</span><span class="n">BookToBookStore</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">test</span><span class="p">.</span><span class="n">generated</span><span class="p">.</span><span class="n">tables</span><span class="p">.</span><span class="n">records</span><span class="p">.</span><span class="n">BookRecord</span><span class="p">;</span>
+
+<span class="p">/**</span>
+ <span class="p">*</span> <span class="p">@</span><span class="n">author</span> <span class="n">Lukas</span> <span class="n">Eder</span>
+ <span class="p">*/</span>
+<span class="p">@</span><span class="n">RunWith</span><span class="p">(</span><span class="n">SpringJUnit4ClassRunner</span><span class="p">.</span><span class="n">class</span><span class="p">)</span>
+<span class="p">@</span><span class="n">ContextConfiguration</span><span class="p">(</span><span class="n">locations</span> <span class="p">=</span> <span class="p">{</span><span class="s2">"/jooq-spring.xml"</span><span class="p">})</span>
+<span class="k">public</span> <span class="n">class</span> <span class="n">QueryTest</span> <span class="p">{</span>
+    <span class="p">@</span><span class="n">Autowired</span>
+    <span class="n">DSLContext</span> <span class="nb">create</span><span class="p">;</span>
+
+    <span class="p">@</span><span class="n">Test</span>
+    <span class="k">public</span> <span class="n">void</span> <span class="n">testJoin</span><span class="p">()</span> <span class="n">throws</span> <span class="n">Exception</span> <span class="p">{</span>
+        <span class="p">//</span> <span class="n">All</span> <span class="k">of</span> <span class="n">these</span> <span class="n">tables</span> <span class="n">were</span> <span class="n">generated</span> <span class="n">by</span> <span class="n">jOOQ</span><span class="s1">'s Maven plugin
+        Book b = BOOK.as("b");
+        Author a = AUTHOR.as("a");
+        BookStore s = BOOK_STORE.as("s");
+        BookToBookStore t = BOOK_TO_BOOK_STORE.as("t");
+
+        Result&lt;Record3&lt;String, String, Integer&gt;&gt; result =
+                create.select(a.FIRST_NAME, a.LAST_NAME, countDistinct(s.NAME))
+                        .from(a)
+                        .join(b).on(b.AUTHOR_ID.eq(a.ID))
+                        .join(t).on(t.BOOK_ID.eq(b.ID))
+                        .join(s).on(t.NAME.eq(s.NAME))
+                        .groupBy(a.FIRST_NAME, a.LAST_NAME)
+                        .orderBy(countDistinct(s.NAME).desc())
+                        .fetch();
+
+        assertEquals(2, result.size());
+        assertEquals("Paulo", result.getValue(0, a.FIRST_NAME));
+        assertEquals("George", result.getValue(1, a.FIRST_NAME));
+
+        assertEquals("Coelho", result.getValue(0, a.LAST_NAME));
+        assertEquals("Orwell", result.getValue(1, a.LAST_NAME));
+
+        assertEquals(Integer.valueOf(3), result.getValue(0, countDistinct(s.NAME)));
+        assertEquals(Integer.valueOf(2), result.getValue(1, countDistinct(s.NAME)));
+    }
+
+}
+</span></code></pre></div></div>
+
+<p><strong>数据插入，使用Spring的TransactionManager来显式处理事务：</strong></p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">test</span><span class="p">.</span><span class="n">generated</span><span class="p">.</span><span class="n">service</span><span class="p">;</span>
+
+<span class="n">import</span> <span class="n">static</span> <span class="n">org</span><span class="p">.</span><span class="n">junit</span><span class="p">.</span><span class="n">Assert</span><span class="p">.</span><span class="n">assertEquals</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">static</span> <span class="n">org</span><span class="p">.</span><span class="n">junit</span><span class="p">.</span><span class="n">Assert</span><span class="p">.</span><span class="n">assertTrue</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">static</span> <span class="n">test</span><span class="p">.</span><span class="n">generated</span><span class="p">.</span><span class="n">Tables</span><span class="p">.</span><span class="n">BOOK</span><span class="p">;</span>
+
+<span class="n">import</span> <span class="n">java</span><span class="p">.</span><span class="n">util</span><span class="p">.</span><span class="n">concurrent</span><span class="p">.</span><span class="n">atomic</span><span class="p">.</span><span class="n">AtomicBoolean</span><span class="p">;</span>
+
+<span class="n">import</span> <span class="n">org</span><span class="p">.</span><span class="n">jooq</span><span class="p">.</span><span class="n">DSLContext</span><span class="p">;</span>
+
+<span class="n">import</span> <span class="n">org</span><span class="p">.</span><span class="n">junit</span><span class="p">.</span><span class="n">After</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">org</span><span class="p">.</span><span class="n">junit</span><span class="p">.</span><span class="n">Assert</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">org</span><span class="p">.</span><span class="n">junit</span><span class="p">.</span><span class="n">Test</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">org</span><span class="p">.</span><span class="n">junit</span><span class="p">.</span><span class="n">runner</span><span class="p">.</span><span class="n">RunWith</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">org</span><span class="p">.</span><span class="n">springframework</span><span class="p">.</span><span class="n">beans</span><span class="p">.</span><span class="n">factory</span><span class="p">.</span><span class="n">annotation</span><span class="p">.</span><span class="n">Autowired</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">org</span><span class="p">.</span><span class="n">springframework</span><span class="p">.</span><span class="n">dao</span><span class="p">.</span><span class="n">DataAccessException</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">org</span><span class="p">.</span><span class="n">springframework</span><span class="p">.</span><span class="n">jdbc</span><span class="p">.</span><span class="n">datasource</span><span class="p">.</span><span class="n">DataSourceTransactionManager</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">org</span><span class="p">.</span><span class="n">springframework</span><span class="p">.</span><span class="n">test</span><span class="p">.</span><span class="n">context</span><span class="p">.</span><span class="n">ContextConfiguration</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">org</span><span class="p">.</span><span class="n">springframework</span><span class="p">.</span><span class="n">test</span><span class="p">.</span><span class="n">context</span><span class="p">.</span><span class="n">junit4</span><span class="p">.</span><span class="n">SpringJUnit4ClassRunner</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">org</span><span class="p">.</span><span class="n">springframework</span><span class="p">.</span><span class="n">test</span><span class="p">.</span><span class="n">context</span><span class="p">.</span><span class="n">transaction</span><span class="p">.</span><span class="n">TransactionConfiguration</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">org</span><span class="p">.</span><span class="n">springframework</span><span class="p">.</span><span class="n">transaction</span><span class="p">.</span><span class="n">TransactionStatus</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">org</span><span class="p">.</span><span class="n">springframework</span><span class="p">.</span><span class="n">transaction</span><span class="p">.</span><span class="n">support</span><span class="p">.</span><span class="n">DefaultTransactionDefinition</span><span class="p">;</span>
+
+<span class="p">/**</span>
+ <span class="p">*</span> <span class="p">@</span><span class="n">author</span> <span class="n">Petri</span> <span class="n">Kainulainen</span>
+ <span class="p">*</span> <span class="p">@</span><span class="n">author</span> <span class="n">Lukas</span> <span class="n">Eder</span>
+ <span class="p">*</span>
+ <span class="p">*</span> <span class="p">@</span><span class="n">see</span> <span class="p">&lt;</span><span class="n">a</span>
+ <span class="p">*</span>      <span class="n">href</span><span class="p">=</span><span class="s2">"http://www.petrikainulainen.net/programming/jooq/using-jooq-with-spring-configuration/"</span><span class="p">&gt;</span><span class="n">http</span><span class="p">://</span><span class="n">www</span><span class="p">.</span><span class="n">petrikainulainen</span><span class="p">.</span><span class="n">net</span><span class="p">/</span><span class="n">programming</span><span class="p">/</span><span class="n">jooq</span><span class="p">/</span><span class="n">using</span><span class="p">-</span><span class="n">jooq</span><span class="p">-</span><span class="k">with</span><span class="p">-</span><span class="n">spring</span><span class="p">-</span><span class="n">configuration</span><span class="p">/&lt;/</span><span class="n">a</span><span class="p">&gt;</span>
+ <span class="p">*/</span>
+<span class="p">@</span><span class="n">RunWith</span><span class="p">(</span><span class="n">SpringJUnit4ClassRunner</span><span class="p">.</span><span class="n">class</span><span class="p">)</span>
+<span class="p">@</span><span class="n">ContextConfiguration</span><span class="p">(</span><span class="n">locations</span> <span class="p">=</span> <span class="p">{</span><span class="s2">"/jooq-spring.xml"</span><span class="p">})</span>
+<span class="p">@</span><span class="n">TransactionConfiguration</span><span class="p">(</span><span class="n">transactionManager</span><span class="p">=</span><span class="s2">"transactionManager"</span><span class="p">)</span>
+<span class="k">public</span> <span class="n">class</span> <span class="n">TransactionTest</span> <span class="p">{</span>
+
+    <span class="p">@</span><span class="n">Autowired</span> <span class="n">DSLContext</span>                   <span class="n">dsl</span><span class="p">;</span>
+    <span class="p">@</span><span class="n">Autowired</span> <span class="n">DataSourceTransactionManager</span> <span class="n">txMgr</span><span class="p">;</span>
+
+    <span class="p">@</span><span class="n">Test</span>
+    <span class="k">public</span> <span class="n">void</span> <span class="n">testDelBooks</span><span class="p">()</span> <span class="p">{</span>
+
+        <span class="p">//</span> <span class="n">Delete</span> <span class="n">all</span> <span class="n">books</span> <span class="n">that</span> <span class="n">were</span> <span class="n">created</span> <span class="k">in</span> <span class="n">any</span> <span class="n">test</span>
+        <span class="n">dsl</span><span class="p">.</span><span class="n">delete</span><span class="p">(</span><span class="n">BOOK</span><span class="p">).</span><span class="n">where</span><span class="p">(</span><span class="n">BOOK</span><span class="p">.</span><span class="n">ID</span><span class="p">.</span><span class="n">gt</span><span class="p">(</span><span class="m">4</span><span class="p">)).</span><span class="n">execute</span><span class="p">();</span>
+    <span class="p">}</span>
+
+    <span class="p">@</span><span class="n">Test</span>
+    <span class="k">public</span> <span class="n">void</span> <span class="n">testAddBooks</span><span class="p">()</span> <span class="p">{</span>
+        <span class="n">TransactionStatus</span> <span class="n">tx</span> <span class="p">=</span> <span class="n">txMgr</span><span class="p">.</span><span class="n">getTransaction</span><span class="p">(</span><span class="n">new</span> <span class="n">DefaultTransactionDefinition</span><span class="p">());</span>
+        <span class="n">for</span> <span class="p">(</span><span class="n">int</span> <span class="n">i</span> <span class="p">=</span> <span class="m">1</span><span class="p">;</span> <span class="n">i</span> <span class="p">&lt;=</span> <span class="m">6</span><span class="p">;</span> <span class="n">i</span><span class="p">++)</span>
+            <span class="n">dsl</span><span class="p">.</span><span class="n">insertInto</span><span class="p">(</span><span class="n">BOOK</span><span class="p">)</span>
+                    <span class="p">.</span><span class="k">set</span><span class="p">(</span><span class="n">BOOK</span><span class="p">.</span><span class="n">ID</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+                    <span class="p">.</span><span class="k">set</span><span class="p">(</span><span class="n">BOOK</span><span class="p">.</span><span class="n">PUBLISHED_IN</span><span class="p">,</span> <span class="m">1</span><span class="p">)</span>
+                    <span class="p">.</span><span class="k">set</span><span class="p">(</span><span class="n">BOOK</span><span class="p">.</span><span class="n">LANGUAGE_ID</span><span class="p">,</span> <span class="m">1</span><span class="p">)</span>
+                    <span class="p">.</span><span class="k">set</span><span class="p">(</span><span class="n">BOOK</span><span class="p">.</span><span class="n">AUTHOR_ID</span><span class="p">,</span> <span class="m">1</span><span class="p">)</span>
+                    <span class="p">.</span><span class="k">set</span><span class="p">(</span><span class="n">BOOK</span><span class="p">.</span><span class="n">TITLE</span><span class="p">,</span> <span class="s2">"Book "</span> <span class="p">+</span> <span class="n">i</span><span class="p">)</span>
+                    <span class="p">.</span><span class="n">execute</span><span class="p">();</span>
+        <span class="n">txMgr</span><span class="p">.</span><span class="n">commit</span><span class="p">(</span><span class="n">tx</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="p">@</span><span class="n">Test</span>
+    <span class="k">public</span> <span class="n">void</span> <span class="n">testExplicitTransactions</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">boolean</span> <span class="n">rollback</span> <span class="p">=</span> <span class="nb">false</span><span class="p">;</span>
+
+        <span class="n">TransactionStatus</span> <span class="n">tx</span> <span class="p">=</span> <span class="n">txMgr</span><span class="p">.</span><span class="n">getTransaction</span><span class="p">(</span><span class="n">new</span> <span class="n">DefaultTransactionDefinition</span><span class="p">());</span>
+        <span class="n">try</span> <span class="p">{</span>
+
+            <span class="p">//</span> <span class="n">This</span> <span class="n">is</span> <span class="n">a</span> <span class="s2">"bug"</span><span class="p">.</span> <span class="n">The</span> <span class="n">same</span> <span class="n">book</span> <span class="n">is</span> <span class="n">created</span> <span class="n">twice</span><span class="p">,</span> <span class="n">resulting</span> <span class="k">in</span> <span class="n">a</span>
+            <span class="p">//</span> <span class="n">constraint</span> <span class="n">violation</span> <span class="n">exception</span>
+            <span class="n">for</span> <span class="p">(</span><span class="n">int</span> <span class="n">i</span> <span class="p">=</span> <span class="m">7</span><span class="p">;</span> <span class="n">i</span> <span class="p">&lt;=</span><span class="m">9</span><span class="p">;</span> <span class="n">i</span><span class="p">++)</span>
+                <span class="n">dsl</span><span class="p">.</span><span class="n">insertInto</span><span class="p">(</span><span class="n">BOOK</span><span class="p">)</span>
+                        <span class="p">.</span><span class="k">set</span><span class="p">(</span><span class="n">BOOK</span><span class="p">.</span><span class="n">ID</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+                        <span class="p">.</span><span class="k">set</span><span class="p">(</span><span class="n">BOOK</span><span class="p">.</span><span class="n">AUTHOR_ID</span><span class="p">,</span> <span class="m">1</span><span class="p">)</span>
+                        <span class="p">.</span><span class="k">set</span><span class="p">(</span><span class="n">BOOK</span><span class="p">.</span><span class="n">TITLE</span><span class="p">,</span> <span class="s2">"Book "</span> <span class="p">+</span> <span class="n">i</span><span class="p">)</span>
+                        <span class="p">.</span><span class="n">execute</span><span class="p">();</span>
+
+            <span class="n">Assert</span><span class="p">.</span><span class="n">fail</span><span class="p">();</span>
+        <span class="p">}</span>
+
+        <span class="p">//</span> <span class="n">Upon</span> <span class="n">the</span> <span class="n">constraint</span> <span class="n">violation</span><span class="p">,</span> <span class="n">we</span> <span class="n">explicitly</span> <span class="n">roll</span> <span class="n">back</span> <span class="n">the</span> <span class="n">transaction</span><span class="p">.</span>
+        <span class="n">catch</span> <span class="p">(</span><span class="n">DataAccessException</span> <span class="n">e</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">txMgr</span><span class="p">.</span><span class="n">rollback</span><span class="p">(</span><span class="n">tx</span><span class="p">);</span>
+            <span class="n">rollback</span> <span class="p">=</span> <span class="nb">true</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="n">assertEquals</span><span class="p">(</span><span class="m">4</span><span class="p">,</span> <span class="n">dsl</span><span class="p">.</span><span class="n">fetchCount</span><span class="p">(</span><span class="n">BOOK</span><span class="p">));</span>
+        <span class="n">assertTrue</span><span class="p">(</span><span class="n">rollback</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>【jOOQ中文】教程代码都会放在码云，希望多多宣传给Star(^_−)☆。</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/jooq%E4%B8%AD%E6%96%872jooq%E4%B8%8Espring%E5%92%8Cdruid%E9%9B%86%E6%88%90.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/netty%E5%BC%82%E6%AD%A5%E4%BB%BB%E5%8A%A1channelfuture.html">&laquo; netty 异步任务-ChannelFuture</a>
+  
+  
+  <a class="next" href="/2017/%E4%BD%BF%E7%94%A8jpa%E5%AE%9E%E7%8E%B0%E4%B9%90%E8%A7%82%E9%94%81.html">使用 JPA 实现乐观锁 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>Spring学习之开发环境搭建 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="Spring学习之开发环境搭建" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="其中最重要的Spring的核心容器，是整个Spring的核心基础，其他模块或多或少都是对核心模块的扩展" />
+<meta property="og:description" content="其中最重要的Spring的核心容器，是整个Spring的核心基础，其他模块或多或少都是对核心模块的扩展" />
+<link rel="canonical" href="http://www.jfox.info/2017/spring%E5%AD%A6%E4%B9%A0%E4%B9%8B%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/spring%E5%AD%A6%E4%B9%A0%E4%B9%8B%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:54:48+00:00" />
+<script type="application/ld+json">
+{"description":"其中最重要的Spring的核心容器，是整个Spring的核心基础，其他模块或多或少都是对核心模块的扩展","@type":"BlogPosting","url":"http://www.jfox.info/2017/spring%E5%AD%A6%E4%B9%A0%E4%B9%8B%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA.html","headline":"Spring学习之开发环境搭建","dateModified":"2017-01-01T15:54:48+00:00","datePublished":"2017-01-01T15:54:48+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/spring%E5%AD%A6%E4%B9%A0%E4%B9%8B%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Spring学习之开发环境搭建</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:54:48+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>其中最重要的Spring的核心容器，是整个Spring的核心基础，其他模块或多或少都是对核心模块的扩展</p>
+
+<p>上面提到了Spring的核心容器是Spring的核心基础，这也就是说，配置Spring的开发环境，其实就是配置Spring的核心容器，也就是上面提到的Spring核心容器的组成部分，接下来来搭建一个可运行的，简单的Spring环境</p>
+
+<p>这里使用Maven对项目进行管理，导入对应的依赖，如下所示</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    &lt;dependency&gt;
+        &lt;groupId&gt;org.springframework&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-beans&lt;/artifactId&gt;
+        &lt;version&gt;4.3.7.RELEASE&lt;/version&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.springframework&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-context&lt;/artifactId&gt;
+        &lt;version&gt;4.3.7.RELEASE&lt;/version&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.springframework&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-core&lt;/artifactId&gt;
+        &lt;version&gt;4.3.7.RELEASE&lt;/version&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.springframework&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-expression&lt;/artifactId&gt;
+        &lt;version&gt;4.3.7.RELEASE&lt;/version&gt;
+    &lt;/dependency&gt;
+</code></pre></div></div>
+
+<p>导入依赖之后，接下来通过一个简单的小案例来查看Spring是否配置成功</p>
+
+<p>在类路径下新建一个资源配置文件<code class="highlighter-rouge">beanConfig.xml</code>，内容如下所示</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;beans</span> <span class="na">xmlns=</span><span class="s">"http://www.springframework.org/schema/beans"</span>
+       <span class="na">xmlns:xsi=</span><span class="s">"http://www.w3.org/2001/XMLSchema-instance"</span> 
+       <span class="na">xsi:schemaLocation=</span><span class="s">"http://www.springframework.org/schema/beans 
+       http://www.springframework.org/schema/beans/spring-beans.xsd"</span><span class="nt">&gt;</span>
+
+       <span class="c">&lt;!--编写对应的配置信息--&gt;</span>
+
+<span class="nt">&lt;/beans&gt;</span>
+</code></pre></div></div>
+
+<p>然后新建一POJO对象，<code class="highlighter-rouge">Car.java</code>，具体内容如下所示</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public class Car {
+
+    private String name;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public String toString() {
+        return "Car{" +
+                "name='" + name + ''' +
+                '}';
+    }
+}
+</code></pre></div></div>
+
+<p>新建完成之后，在上面的配置文件中补充响应的信息</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> &lt;bean id="car" class="cn.xuhuanfeng.domain.Car"/&gt;
+ &lt;!--id是所创建对象的名字，class是所创建对象的类对应的全限定名--&gt;
+</code></pre></div></div>
+
+<p>接下来就可以开始测试我们所配置的环境是否正确了，新建一个简单的测试类，如下所示</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public class SpringTest{
+
+    @Test
+    public void testSpring(){
+        // 加载对应的Spring配置信息
+        ApplicationContext context = new ClassPathXmlApplicationContext("beanConfig.xml");
+        // 从容器中获取对象
+        Car car = (Car) context.getBean("car");
+        System.out.println(car);
+    }
+}
+</code></pre></div></div>
+
+<p>如何依赖正确导入，并且配置文件没有填写错误的话，可以看到下面的输出内容</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>七月 08, 2017 8:33:14 上午 org.springframework.context.support.ClassPathXmlApplicationContext prepareRefresh
+信息: Refreshing org.springframework.context.support.ClassPathXmlApplicationContext@68fb2c38: startup date [Sat Jul 08 08:33:14 CST 2017]; root of context hierarchy
+七月 08, 2017 8:33:15 上午 org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+信息: Loading XML bean definitions from class path resource [beanConfig.xml]
+Car{name='null'}
+</code></pre></div></div>
+
+<p>至此，一个最简单的Spring开发环境就搭建完成了。</p>
+
+<p>接下来将完成Spring的学习，努力中…</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/spring%E5%AD%A6%E4%B9%A0%E4%B9%8B%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/ssm%E6%A1%86%E6%9E%B6%E6%90%AD%E5%BB%BA%E4%B8%80jdk%E5%92%8Cmaven%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA.html">&laquo; SSM框架搭建（一） JDK和MAVEN环境搭建</a>
+  
+  
+  <a class="next" href="/2017/stringbuilder%E7%B1%BB%E4%B8%AD%E7%9A%84%E9%87%8D%E8%A6%81%E6%96%B9%E6%B3%95.html">StringBuilder类中的重要方法 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

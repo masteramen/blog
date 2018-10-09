@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>Java for Web学习笔记（七一）：Service和Repository（6）在Spring框架中使用Listener | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="Java for Web学习笔记（七一）：Service和Repository（6）在Spring框架中使用Listener" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="Listener是Servlet的，不属于Spring framework，也就是说我们无法在Listener中主动注入Spring bean。本学习将解决这个问题。" />
+<meta property="og:description" content="Listener是Servlet的，不属于Spring framework，也就是说我们无法在Listener中主动注入Spring bean。本学习将解决这个问题。" />
+<link rel="canonical" href="http://www.jfox.info/2017/javaforweb%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E4%B8%83%E4%B8%80service%E5%92%8Crepository6%E5%9C%A8spring%E6%A1%86%E6%9E%B6%E4%B8%AD%E4%BD%BF%E7%94%A8listener.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/javaforweb%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E4%B8%83%E4%B8%80service%E5%92%8Crepository6%E5%9C%A8spring%E6%A1%86%E6%9E%B6%E4%B8%AD%E4%BD%BF%E7%94%A8listener.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:55:15+00:00" />
+<script type="application/ld+json">
+{"description":"Listener是Servlet的，不属于Spring framework，也就是说我们无法在Listener中主动注入Spring bean。本学习将解决这个问题。","@type":"BlogPosting","url":"http://www.jfox.info/2017/javaforweb%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E4%B8%83%E4%B8%80service%E5%92%8Crepository6%E5%9C%A8spring%E6%A1%86%E6%9E%B6%E4%B8%AD%E4%BD%BF%E7%94%A8listener.html","headline":"Java for Web学习笔记（七一）：Service和Repository（6）在Spring框架中使用Listener","dateModified":"2017-01-01T15:55:15+00:00","datePublished":"2017-01-01T15:55:15+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/javaforweb%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E4%B8%83%E4%B8%80service%E5%92%8Crepository6%E5%9C%A8spring%E6%A1%86%E6%9E%B6%E4%B8%AD%E4%BD%BF%E7%94%A8listener.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Java for Web学习笔记（七一）：Service和Repository（6）在Spring框架中使用Listener</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:55:15+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>Listener是Servlet的，不属于Spring framework，也就是说我们无法在Listener中主动注入Spring bean。本学习将解决这个问题。</p>
+
+<h2 id="进一步了解spring的bean注入">进一步了解Spring的bean注入</h2>
+
+<p>在解决之前，我们先进一步了解Spring的注入机制。在Spring中，我们可以使用@Inject，@Anwired，@Resource等方式实现对自动扫描和自动注入。 同一上下文环境中，bean只实例化一次，在不同类中注入的，都是同一个bean（同一对象） 。我们通常在根上下文中进行扫描，即使我们在不同的类中都进行注入，实际是注入的是同一个对象的。</p>
+
+<p>我们将通过小测试来验证这点。</p>
+
+<h3 id="小测试设置service">小测试：设置Service</h3>
+
+<p>设置一个简单的Service，打印对象地址，同时在构造函数中给出log，看看在哪个阶段进行实例化。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public interface MyTestService {
+    public void whoAmI(String className);
+}
+
+@Service
+public class MyTestServiceImpl implements MyTestService{
+    private static final Logger log = LogManager.getLogger();
+
+    public MyTestServiceImpl(){
+        log.info("MyTestServiceImpl instance is created, address is " + this);
+    }
+
+    @Override
+    public void whoAmI(String className) {
+        log.info("{} : {}" , className,this);        
+    }
+}
+</code></pre></div></div>
+
+<h3 id="小测试注入该service">小测试：注入该Service</h3>
+
+<p>在AuthenticationController中</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>@Controller
+public class AuthenticationController {
+    @Inject private AuthenticationService authenticationService;
+
+    @RequestMapping(value="login",method=RequestMethod.GET)
+    public ModelAndView login(Map&lt;String,Object&gt; model,HttpSession session){
+        myTestService.whoAmI(this.getClass().getName());
+        ... ... 
+    }
+    ... ... 
+}
+</code></pre></div></div>
+
+<p>在TicketController中</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>@Controller
+@RequestMapping("ticket")
+public class TicketController {
+    @Inject private MyTestService myTestService;
+
+    @RequestMapping(value = {"", "list"}, method = RequestMethod.GET)
+    public String list(Map&lt;String,Object&gt; model){
+        this.myTestService.whoAmI(this.getClass().getName());
+        ... ... 
+    }
+}
+</code></pre></div></div>
+
+<p>输出结果：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>14:19:19.985 [localhost-startStop-1] [INFO ] (Spring) ContextLoader - Root WebApplicationContext: initialization started
+... ...
+14:19:20.633 [localhost-startStop-1] [INFO ] (Spring) AutowiredAnnotationBeanPostProcessor - JSR-330 'javax.inject.Inject' annotation found and supported for autowiring
+14:19:20.934 [localhost-startStop-1]  [INFO ] MyTestServiceImpl:12 &lt;init&gt;() - MyTestServiceImpl instance is created, address is cn.wei.flowingflying.customer_support.site.test.MyTestServiceImpl@407cec
+... ...
+六月 23, 2017 2:19:21 下午 org.apache.catalina.core.ApplicationContext log
+信息: Initializing Spring FrameworkServlet 'springDispatcher'
+... ...
+14:19:23.217 [http-nio-8080-exec-5]  [INFO ] MyTestServiceImpl:16 whoAmI() - cn.wei.flowingflying.customer_support.site.AuthenticationController : cn.wei.flowingflying.customer_support.site.test.MyTestServiceImpl@407cec
+... ...
+14:19:36.195 [http-nio-8080-exec-8] wei [INFO ] MyTestServiceImpl:16 whoAmI() - cn.wei.flowingflying.customer_support.site.TicketController : cn.wei.flowingflying.customer_support.site.test.MyTestServiceImpl@407cec
+</code></pre></div></div>
+
+<p>我们看到在AuthenticationController和TicketController中注入的对象实际地址一样，都是407cec，即为同一对象,是在Root Context中被实例化，且只实例化一次。了解这点非常重要，不同Controller对某个注入的Service进行操作，是可能相互影响的。</p>
+
+<h2 id="在listener-中实现注入实例">在Listener 中实现注入实例</h2>
+
+<h3 id="无法直接在listener中自动注入">无法直接在Listener中自动注入</h3>
+
+<p>Listener是Serlvet container的，不是Spring framework的，不是任何的Spring Component，不在自动扫描的范围内，我们在里面标记的任何@Inject不会被注入。</p>
+
+<p>我们创建一个Session Listener作测试</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>@WebListener
+public class WeiTempListener implements HttpSessionListener {
+    private static final Logger log = LogManager.getLogger();
+    @Inject private MyTestService myTestService;
+
+    public WeiTempListener() { }
+
+    public void sessionCreated(HttpSessionEvent se)  { 
+        log.info("------------------------------------");
+        this.myTestService.whoAmI(this.getClass().getName());
+    }
+
+    public void sessionDestroyed(HttpSessionEvent se)  { }
+}
+
+14:50:31.164 [http-nio-8080-exec-4]  [INFO ] WeiTempListener:32 sessionCreated() - ------------------------------------
+六月 23, 2017 2:50:31 下午 org.apache.catalina.session.StandardSession tellNew 
+严重: Session event listener threw exception
+java.lang.NullPointerException
+      at cn.wei.flowingflying.customer_support.site.WeiTempListener.sessionCreated(WeiTempListener.java:33)
+</code></pre></div></div>
+
+<h3 id="实现方式">实现方式</h3>
+
+<p>前面已经看到注入的实例化是在Root Context中进行。我们需要在Listener的初始化过程中，想办法从Root Context中获得实例。我们需要：</p>
+
+<ol>
+  <li>跟踪发现，Listener的初始化是RootContext的初始化之前，这时是无法获取bean的。因此</li>
+</ol>
+
+<ul>
+  <li>删除 @WebListener的标记，否则无法确保初始化的顺序</li>
+  <li>在BootStrap中，在Root Context的初始化后加载Listener，确保能够获取在Root Context中实例化的bean</li>
+</ul>
+
+<ol>
+  <li>HttpSessionListener封装很好，不开放初始化接口，因此需要增加继承ServletContextListener，以便暴露初始化的方法，在初始化中作为bean。</li>
+  <li>
+    <p>使用org.springframework.beans.factory.annotation.Configurable标注对于非Spring管理的bean。</p>
+
+    <p>public class BootStrap implements WebApplicationInitializer{
+     @Override
+     public void onStartup(ServletContext container) throws ServletException {
+         container.getServletRegistration(“default”).addMapping(“/resource/*”);</p>
+
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>     AnnotationConfigWebApplicationContext rootContext =  new AnnotationConfigWebApplicationContext();
+     rootContext.register(RootContextConfiguration.class);
+     container.addListener(new ContextLoaderListener(rootContext));
+     //【1】设置Listener的加载位置，在完成Root Context之后
+     container.addListener(WeiTempListener.class);
+     ... ...
+ }  }
+</code></pre></div>    </div>
+  </li>
+</ol>
+
+<p>我们再看看WeiTempListener</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>//【1】删除@WebListener标记，采用手动在BootStrap中加入
+//【2】增加ServletContextListener接口，以获得初始化入口
+public class WeiTempListener implements HttpSessionListener,ServletContextListener {
+    private static final Logger log = LogManager.getLogger();
+    @Inject private MyTestService myTestService;
+ 
+    public WeiTempListener() {
+        // 这在Root Context初始化之前执行，因此我们不能在构造函数中进行设置
+        log.info("-----------------WeiTempListener-------------------");
+    }
+
+    public void sessionCreated(HttpSessionEvent se)  {         
+        this.myTestService.whoAmI(this.getClass().getName());  // 测试
+    }
+
+    public void sessionDestroyed(HttpSessionEvent se)  {    }
+
+    //【3】在contextInitialized()中获得Spring的rootContext实例
+    @Override
+    public void contextInitialized(ServletContextEvent event) {
+        // 根据BoorStrap的执行顺序，这时RootContext的初始化已经完成，包括Service的实例化，可以注入。
+        // 无法自动注入是因为Listerner并不是Spring的bean（如不是@Controller），我们要想办法手动让Listerner成为bean。
+        // （1）获取Spring的root WebApplicationContext
+        WebApplicationContext rootContext = 
+                    WebApplicationContextUtils.getRequiredWebApplicationContext(event.getServletContext());
+        // （2）获取根上下文扫描和注入bean的factory
+        AutowireCapableBeanFactory factory = rootContext.getAutowireCapableBeanFactory();
+        // （3）无法扫描是因为Listener不是Spring的bean，类上没有加spring的annotation，我们需要手动设置这个对象（this）作为Factory中的一个bean，这样才能对里面的属性进行注入
+        factory.autowireBeanProperties(this, AutowireCapableBeanFactory.AUTOWIRE_BY_TYPE,true);
+        // （4）在factory中对这个新的bean进行初始化。
+        factory.initializeBean(this,"WeiTempListener");
+        log.info(this.myTestService); //测试一下注入情况 
+    }
+
+    public void contextDestroyed(ServletContextEvent sce) { }
+}
+</code></pre></div></div>
+
+<h3 id="限制说明">限制说明</h3>
+
+<p>虽然我们将Listener手动设置为fatory可以认识的bean，但仍不是spring下一个真正意义的bean。其他的bean中不能将其注入，部分地我们可以通过factory的registerSingleton()，将其设置为singleton bean来解决（即确保注入的都是同一的bean），但依然收到限制，有些内容仍无法正常执行，如计划执行，构造后和注销前的回调函数。</p>
+
+<h2 id="sessionlistener的具体应用例子">SessionListener的具体应用例子</h2>
+
+<h3 id="websocket-chat例子">webSocket chat例子</h3>
+
+<p>这个小例子场景，我们在下一学习中继续使用，再此作个说明，用户请求帮助（通过websocket发其chat），客服（另一用户）选择需要帮助的用户（加入chat），双方之间进行通话：</p>
+
+<ul>
+  <li>用户和web app之间创建web socket连接A，客服（另一用户）和web app之间创建web socket连接B，web app关联这两段连接之间的消息收发。</li>
+  <li>web app在web socket中定时向浏览器发送ping消息，并监听响应的pong消息。</li>
+  <li>
+    <p>用户的名字将根据登录信息自动获取，用户退出，chat也将关闭</p>
+  </li>
+  <li>通过SessionRegisterService来维护所有的在线http session</li>
+  <li>将存放在session中的username方在请求的principal中，方便获取</li>
+</ul>
+
+<p>在webSocket chat中我们通过SessionRegisterService打算维护在线的session。对用户退出登录（主动退出，session超时而被删除）时，如果该用户在chat中，需要行chat close动作，可以利用Consumer进行触发。</p>
+
+<h3 id="sessionregisterservice">SessionRegisterService</h3>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public interface SessionRegistryService {
+    public void addSession(HttpSession session);
+    public void updateSessionId(HttpSession session, String oldSessionId);
+    public void removeSession(HttpSession session);
+    /** 注册回调函数 用户开启chat进行回掉函数或者触发函数的注册 */ 
+    public void registerOnRemoveCallback(Consumer&lt;HttpSession&gt; callback);
+    /** 注销回掉函数 用户关闭chat进行注销 */
+    public void deregisterOnRemoveCallback(Consumer&lt;HttpSession&gt; callback);
+}
+</code></pre></div></div>
+
+<h3 id="sessionlistener">SessionListener</h3>
+
+<p>SessionListener没有什么特别：</p>
+
+<ol>
+  <li>允许SessionRegisterService的注入，前面刚刚学习</li>
+  <li>
+    <p>对create/change Id/remove session是调用service的add/update和remove接口</p>
+
+    <p>public class SessionListener implements HttpSessionListener, ServletContextListener {
+     @Inject private SessionRegistryService sessionRegistryService;</p>
+
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> public void sessionCreated(HttpSessionEvent event)  { 
+     this.sessionRegistryService.addSession(event.getSession());
+ }
+
+ public void sessionIdChanged(HttpSessionEvent event, String oldSessionId)  { 
+     this.sessionRegistryService.updateSessionId(event.getSession(), oldSessionId);
+ }
+
+ public void sessionDestroyed(HttpSessionEvent event)  { 
+      this.sessionRegistryService.removeSession(event.getSession());
+ }
+
+ @Override
+ public void contextInitialized(ServletContextEvent event) {
+     .... 见前面 ....
+ }
+ ... ...  }
+</code></pre></div>    </div>
+  </li>
+</ol>
+
+<h3 id="sessionregistryservice的实现">SessionRegistryService的实现</h3>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>@Service
+public class DefaultSessionRegistryService implements SessionRegistryService{
+    private final Map&lt;String, HttpSession&gt; sessions = new Hashtable&lt;&gt;();
+    /** Consumer的具体操作是：如果httpSession相同，则删除，里面已经进行了判断，所以就不需要Predicate */
+    private final Set&lt;Consumer&lt;HttpSession&gt;&gt; callbacks = new HashSet&lt;&gt;();
+    /** callbacksAddesWhileLocked是个比较有意思的处理，需要学习：
+     *  我们几乎同时收到了同一个用户（同一个httpSession）要求退出登录 和 chat申请的两个操作，一般来讲虽然不会如此，多页面的请求有可能会造成几乎同时到达，由或者session到期的瞬间。callbacksAddedWhileLocked用于对这个时间差的session进行处理，即请求加入，然后马上推出登录，即removeSession()和registerOnRemoveCallback()几乎同时操作。理想顺序是有先后，而不是同时进行，但实际多线程运行的顺序无法保证。callbacksAddedWhileLocked来避免同时运行的问题。 */
+    private final Set&lt;Consumer&lt;HttpSession&gt;&gt; callbacksAddedWhileLocked = new HashSet&lt;&gt;();
+
+    @Override
+    public void addSession(HttpSession session) {
+        this.sessions.put(session.getId(), session);        
+    }
+
+    @Override
+    public void updateSessionId(HttpSession session, String oldSessionId) {
+        synchronized(this.sessions) {
+            this.sessions.remove(oldSessionId);
+            addSession(session);
+        }
+    }
+
+    @Override
+    public void removeSession(HttpSession session) {
+        this.sessions.remove(session.getId());
+        synchronized(this.callbacks){
+            this.callbacksAddedWhileLocked.clear();
+            this.callbacks.forEach(c -&gt; c.accept(session));
+            try {
+                this.callbacksAddedWhileLocked.forEach(c -&gt; c.accept(session));
+            } catch(ConcurrentModificationException ignore) { }
+        }        
+    }
+
+    @Override
+    public void registerOnRemoveCallback(Consumer&lt;HttpSession&gt; callback) {
+        this.callbacksAddedWhileLocked.add(callback);
+
+        synchronized(this.callbacks){
+            this.callbacks.add(callback);
+        }        
+    }
+
+    @Override
+    public void deregisterOnRemoveCallback(Consumer&lt;HttpSession&gt; callback) {
+        synchronized(this.callbacks){
+            this.callbacks.remove(callback);
+        }        
+    }
+}
+</code></pre></div></div>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/javaforweb%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E4%B8%83%E4%B8%80service%E5%92%8Crepository6%E5%9C%A8spring%E6%A1%86%E6%9E%B6%E4%B8%AD%E4%BD%BF%E7%94%A8listener.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/java%E7%8E%AF%E5%A2%83%E4%B8%BA%E4%BD%95%E5%A6%82%E6%AD%A4%E9%85%8D%E7%BD%AE.html">&laquo; Java环境为何如此配置？</a>
+  
+  
+  <a class="next" href="/2017/javaforweb%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E4%B8%83%E5%8D%81service%E5%92%8Crepository5%E5%9B%9E%E8%B0%83%E5%A4%84%E7%90%86consumer.html">Java for Web学习笔记（七十）：Service和Repository（5）回调处理Consumer &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

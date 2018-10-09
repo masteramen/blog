@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>java 对象与json互转 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="java 对象与json互转" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="有时为了项目需求，会将对象数据转换成json数据，以下是个人根据项目需求实现的方法。" />
+<meta property="og:description" content="有时为了项目需求，会将对象数据转换成json数据，以下是个人根据项目需求实现的方法。" />
+<link rel="canonical" href="http://www.jfox.info/2017/java%E5%AF%B9%E8%B1%A1%E4%B8%8Ejson%E4%BA%92%E8%BD%AC.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/java%E5%AF%B9%E8%B1%A1%E4%B8%8Ejson%E4%BA%92%E8%BD%AC.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:57:01+00:00" />
+<script type="application/ld+json">
+{"description":"有时为了项目需求，会将对象数据转换成json数据，以下是个人根据项目需求实现的方法。","@type":"BlogPosting","url":"http://www.jfox.info/2017/java%E5%AF%B9%E8%B1%A1%E4%B8%8Ejson%E4%BA%92%E8%BD%AC.html","headline":"java 对象与json互转","dateModified":"2017-01-01T15:57:01+00:00","datePublished":"2017-01-01T15:57:01+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/java%E5%AF%B9%E8%B1%A1%E4%B8%8Ejson%E4%BA%92%E8%BD%AC.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">java 对象与json互转</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:57:01+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>有时为了项目需求，会将对象数据转换成json数据，以下是个人根据项目需求实现的方法。</p>
+
+<p>项目中需要将数据格式：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[{
+    "node": "0",   
+    "index": null,
+    "status": null,
+    "preNode": null,
+    "postNode": [{
+        "node": "xxx_4"
+    },
+    {
+        "node": "xxx_3"
+    },
+    {
+        "node": "xxx_2"
+    },
+    {
+        "node": "xxx_14"
+    }]
+},
+{
+    "node": "xxx_2",
+    "index": "index_1",
+    "status": "表达式1",
+    "preNode": [{
+        "node": "xxx_0"
+    }],
+    "postNode": [{
+        "node": "xxx_5"
+    }]
+},
+{
+    "node": "xxx_14",
+    "index": "index_4",
+    "status": "表达式5",
+    "preNode": [{
+        "node": "xxx_0"
+    }],
+    "postNode": [{
+        "node": "xxx_13"
+    },
+    {
+        "node": "xxx_5"
+    }]
+},
+{
+    "node": "xxx_3",
+    "index": "index_2",
+    "status": "表达式2",
+    "preNode": [{
+        "node": "xxx_0"
+    }],
+    "postNode": [{
+        "node": "xxx_5"
+    }]
+},
+{
+    "node": "xxx_4",
+    "index": "index_3",
+    "status": "表达式3",
+    "preNode": [{
+        "node": "xxx_0"
+    }],
+    "postNode": [{
+        "node": "xxx_12"
+    }]
+},
+{
+    "node": "xxx_5",
+    "index": "index_4",
+    "status": "表达式4",
+    "preNode": [{
+        "node": "xxx_3"
+    },
+    {
+        "node": "xxx_2"
+    },
+    {
+        "node": "xxx_14"
+    }],
+    "postNode": [{
+        "node": "xxx_6"
+    }]
+},
+{
+    "node": "xxx_6",
+    "index": "index_5",
+    "status": "表达式6",
+    "preNode": [{
+        "node": "xxx_5"
+    }],
+    "postNode": [{
+        "node": "xxx_7"
+    }]
+},
+{
+    "node": "xxx_7",
+    "index": "index_6",
+    "status": "表达式7",
+    "preNode": [{
+        "node": "xxx_6"
+    }],
+    "postNode": [{
+        "node": "xxx_8"
+    }]
+},
+{
+    "node": "xxx_8",
+    "index": "index_4",
+    "status": "表达式8",
+    "preNode": [{
+        "node": "xxx_7"
+    }],
+    "postNode": [{
+        "node": "xxx_9"
+    },
+    {
+        "node": "xxx_10"
+    }]
+},
+{
+    "node": "xxx_9",
+    "index": "index_5",
+    "status": "表达式5",
+    "preNode": [{
+        "node": "xxx_8"
+    }],
+    "postNode": [{
+        "node": "xxx_11"
+    }]
+},
+{
+    "node": "xxx_10",
+    "index": "index_7",
+    "status": "表达式6",
+    "preNode": [{
+        "node": "xxx_8"
+    }],
+    "postNode": [{
+        "node": "xxx_11"
+    }]
+},
+{
+    "node": "xxx_11",
+    "index": "index_8",
+    "status": "表达式7",
+    "preNode": [{
+        "node": "xxx_9"
+    },
+    {
+        "node": "xxx_10"
+    }],
+    "postNode": [{
+        "node": "xxx_12"
+    }]
+},
+{
+    "node": "xxx_12",
+    "index": "index_8",
+    "status": "表达式7",
+    "preNode": [{
+        "node": "xxx_11"
+    },
+    {
+        "node": "xxx_4"
+    }],
+    "postNode": [{
+        "node": "xxx_13"
+    }]
+},
+{
+    "node": "xxx_13",
+    "index": "",
+    "status": "",
+    "preNode": [{
+        "node": "xxx_14"
+    },
+    {
+        "node": "xxx_12"
+    }],
+    "postNode": []
+},
+{
+    "node": "9999",
+    "index": null,
+    "status": null,
+    "preNode": [{
+        "node": "xxx_14"
+    },
+    {
+        "node": "xxx_12"
+    }],
+    "postNode": null
+}]
+
+ 项目中list对象内容
+
+ 1 JsonModel{node='xxx_2', preNode='', index='index_1', status='表达式1'}
+ 2 JsonModel{node='xxx_14', preNode='', index='index_4', status='表达式5'}
+ 3 JsonModel{node='xxx_3', preNode='', index='index_2', status='表达式2'}
+ 4 JsonModel{node='xxx_4', preNode='', index='index_3', status='表达式3'}
+ 5 JsonModel{node='xxx_5', preNode='xxx_2', index='index_4', status='表达式4'}
+ 6 JsonModel{node='xxx_5', preNode='xxx_3', index='index_4', status='表达式5'}
+ 7 JsonModel{node='xxx_5', preNode='xxx_14', index='index_4', status='表达式5'}
+ 8 JsonModel{node='xxx_6', preNode='xxx_5', index='index_5', status='表达式6'}
+ 9 JsonModel{node='xxx_7', preNode='xxx_6', index='index_6', status='表达式7'}
+10 JsonModel{node='xxx_8', preNode='xxx_7', index='index_4', status='表达式8'}
+11 JsonModel{node='xxx_9', preNode='xxx_8', index='index_5', status='表达式5'}
+12 JsonModel{node='xxx_10', preNode='xxx_8', index='index_7', status='表达式6'}
+13 JsonModel{node='xxx_11', preNode='xxx_10', index='index_8', status='表达式7'}
+14 JsonModel{node='xxx_11', preNode='xxx_9', index='index_8', status='表达式8'}
+15 JsonModel{node='xxx_12', preNode='xxx_11', index='index_8', status='表达式7'}
+16 JsonModel{node='xxx_12', preNode='xxx_4', index='index_8', status='表达式8'}
+17 JsonModel{node='xxx_13', preNode='xxx_14', index='', status='表达式13'}
+18 JsonModel{node='xxx_13', preNode='xxx_12', index='', status='表达式14'}
+
+publicvoid testJson() throws Exception{
+        List&lt;JsonModel&gt; list=new ArrayList&lt;&gt;();
+        ObjectMapper objectMapper=new ObjectMapper();
+
+        JsonModel jsonModel=new JsonModel("xxx_2","","index_1","表达式1");
+        list.add(jsonModel);
+
+        jsonModel=new JsonModel("xxx_14","","index_4","表达式5");
+        list.add(jsonModel);
+
+        jsonModel=new JsonModel("xxx_3","","index_2","表达式2");
+        list.add(jsonModel);
+
+        jsonModel=new JsonModel("xxx_4","","index_3","表达式3");
+        list.add(jsonModel);
+
+        jsonModel=new JsonModel("xxx_5","xxx_2","index_4","表达式4");
+        list.add(jsonModel);
+
+        jsonModel=new JsonModel("xxx_5","xxx_3","index_4","表达式5");
+        list.add(jsonModel);
+
+        jsonModel=new JsonModel("xxx_5","xxx_14","index_4","表达式5");
+        list.add(jsonModel);
+
+        jsonModel=new JsonModel("xxx_6","xxx_5","index_5","表达式6");
+        list.add(jsonModel);
+
+        jsonModel=new JsonModel("xxx_7","xxx_6","index_6","表达式7");
+        list.add(jsonModel);
+
+        jsonModel=new JsonModel("xxx_8","xxx_7","index_4","表达式8");
+        list.add(jsonModel);
+
+        jsonModel=new JsonModel("xxx_9","xxx_8","index_5","表达式5");
+        list.add(jsonModel);
+
+        jsonModel=new JsonModel("xxx_10","xxx_8","index_7","表达式6");
+        list.add(jsonModel);
+
+        jsonModel=new JsonModel("xxx_11","xxx_10","index_8","表达式7");
+        list.add(jsonModel);
+
+        jsonModel=new JsonModel("xxx_11","xxx_9","index_8","表达式8");
+        list.add(jsonModel);
+
+        jsonModel=new JsonModel("xxx_12","xxx_11","index_8","表达式7");
+        list.add(jsonModel);
+
+        jsonModel=new JsonModel("xxx_12","xxx_4","index_8","表达式8");
+        list.add(jsonModel);
+
+        jsonModel=new JsonModel("xxx_13","xxx_14","","表达式13");
+        list.add(jsonModel);
+
+        jsonModel=new JsonModel("xxx_13","xxx_12","","表达式14");
+        list.add(jsonModel);
+
+        list.forEach(var-&gt;
+                System.out.println(var.toString())
+        );
+        System.out.println();
+
+
+        //将list转成String
+        String str=objectMapper.writeValueAsString(list);
+
+        //将字符串转成JsonNode
+        JsonNode rootNode = objectMapper.readTree(str);
+
+        Set&lt;ChildNode&gt; preNode_set=null;
+        Set&lt;ChildNode&gt; postNode_set=null;
+
+        List&lt;Node&gt; nodeList=new ArrayList&lt;&gt;();
+
+        //寻找第一个indxe 创建一个start节点
+        Node node=new Node();
+        node.setNode("0");
+        Set&lt;ChildNode&gt; childNodeList=new HashSet&lt;&gt;();
+        for(int i=0;i&lt;rootNode.size();i++){
+
+            if("".equals(rootNode.get(i).get("preNode").asText())){
+               childNodeList.add(new ChildNode(rootNode.get(i).get("node").asText()));
+            }
+        }
+        node.setPostNode(childNodeList);
+        nodeList.add(node);
+
+        //这种方式在如果我们只需要一个长json串中某个字段值时非常方便for (int i=0;i&lt;rootNode.size();){
+
+            preNode_set=new HashSet&lt;&gt;();
+            postNode_set=new HashSet&lt;&gt;();
+
+            //直接从rootNode中获取某个键的值，
+            JsonNode nameNode = (rootNode.get(i)).get("node");
+            String name = nameNode.asText();
+
+            String index=rootNode.get(i).get("index").asText();
+            String status=rootNode.get(i).get("status").asText();
+
+            //找出后置节点  post_nodefor(int j=i+1;j&lt;rootNode.size();j++){
+                String names = (rootNode.get(j)).get("preNode").asText();
+
+                if(name.equals(names)){
+
+                    //  if(!"".equals(rootNode.get(j).get("postNode").asText())) {
+                    postNode_set.add(new ChildNode((rootNode.get(j)).get("node").asText()));
+                    //}                }
+            }
+
+            //找前置节点for(int j=0;j&lt;list.size();j++){
+                String names = (rootNode.get(j)).get("node").asText();
+
+                //对于后一个的index相同时  需要跳过if(name.equals(names)){
+
+                        if(!"".equals(rootNode.get(j).get("preNode").asText())){
+                            preNode_set.add(new ChildNode((rootNode.get(j)).get("preNode").asText()));
+                            if(j&gt;i){
+                                ++i;
+                            }else{
+                                i++;
+                            }
+                        }else{
+                            preNode_set.add(new ChildNode("0"));
+                            i++;
+                        }
+                    }
+            }
+
+            Node nodes=new Node();
+
+            nodes.setIndex(index);
+            nodes.setNode(name);
+            nodes.setStatus(status);
+            nodes.setPostNode(postNode_set);
+            nodes.setPreNode(preNode_set);
+
+            nodeList.add(nodes);
+
+        }
+
+        //后置节点
+        Node pre_node=new Node();
+        pre_node.setNode("9999");
+        Set&lt;ChildNode&gt; childNodes=new HashSet&lt;&gt;();
+        for(int i=0;i&lt;rootNode.size();i++){
+
+            //最后一个end 节点的pre_nodeif("".equals(rootNode.get(i).get("index").asText())){
+
+                childNodes.add(new ChildNode(rootNode.get(i).get("preNode").asText()));
+            }
+        }
+        pre_node.setPreNode(childNodes);
+        nodeList.add(pre_node);
+
+        String s = objectMapper.writeValueAsString(nodeList);
+        System.out.println(s);
+
+        System.out.println();
+        jsonTest(s);
+
+    }
+
+    /**
+     * &lt;p&gt;json --&gt; 对象&lt;/p&gt;
+     * @param s
+     * @throws Exception
+     */publicvoid jsonTest(String s) throws Exception{
+        List&lt;Node&gt; nodeList=new ArrayList&lt;&gt;();
+        ObjectMapper objectMapper=new ObjectMapper();
+　　　　　　
+//将字符串用objectMapper转换成jsonNode
+        JsonNode jsonNode=objectMapper.readTree(s);
+
+        List&lt;JsonModel&gt; jsonModels=new ArrayList&lt;&gt;();
+
+        for(int i=1;i&lt;jsonNode.size()-1;i++){
+            String index=jsonNode.get(i).get("index").asText();
+            String status=jsonNode.get(i).get("status").asText();
+            String node=jsonNode.get(i).get("node").asText();
+
+            for(int j=0;j&lt;jsonNode.get(i).get("preNode").size();j++){
+                String childNode= jsonNode.get(i).get("preNode").get(j).get("node").asText();
+                JsonModel jsonModel=new JsonModel(node,childNode,index,status);
+                jsonModels.add(jsonModel);
+            }
+        }
+        jsonModels.forEach(val-&gt;
+                System.out.println(val.toString())
+        );
+    }
+</code></pre></div></div>
+
+<p>以下是所用到的对象实体类
+<img src="f104902.gif" alt="" /><img src="/wp-content/uploads/2017/07/15002903341.gif" alt="" />
+     1package com.yf.af.biz.test;
+     2 3/** 4 * Created by chen on 2017/7/14.
+     5*/ 6publicclass JsonModel {
+     7private String node;
+     8private String preNode;
+     9private String index;
+    10private String status;
+    1112public String getNode() {
+    13return node;
+    14    }
+    1516publicvoid setNode(String node) {
+    17this.node = node;
+    18    }
+    1920public String getPreNode() {
+    21return preNode;
+    22    }
+    2324publicvoid setPreNode(String preNode) {
+    25this.preNode = preNode;
+    26    }
+    2728public String getIndex() {
+    29return index;
+    30    }
+    3132publicvoid setIndex(String index) {
+    33this.index = index;
+    34    }
+    3536public String getStatus() {
+    37return status;
+    38    }
+    3940publicvoid setStatus(String status) {
+    41this.status = status;
+    42    }
+    4344public JsonModel(String node, String preNode, String index, String status) {
+    45this.node = node;
+    46this.preNode = preNode;
+    47this.index = index;
+    48this.status = status;
+    49    }
+    5051public JsonModel() {
+    52    }
+    5354    @Override
+    55public String toString() {
+    56return “JsonModel{“ +
+    57                 “node=’” + node + ‘'’ +
+    58                 “, preNode=’” + preNode + ‘'’ +
+    59                 “, index=’” + index + ‘'’ +
+    60                 “, status=’” + status + ‘'’ +
+    61                 ‘}’;
+    62    }
+    63 }</p>
+
+<p>View Code<img src="f104902.gif" alt="" /><img src="/wp-content/uploads/2017/07/15002903341.gif" alt="" />
+     1package com.yf.af.biz.test;
+     2 3import java.util.List;
+     4import java.util.Set;
+     5 6/** 7 * Created by chen on 2017/7/15.
+     8*/ 9publicclass Node {
+    10private String node;
+    11private String index;
+    12private String status;
+    1314private Set<ChildNode> preNode;
+    1516private Set<ChildNode> postNode;
+    1718public String getNode() {
+    19return node;
+    20    }
+    2122publicvoid setNode(String node) {
+    23this.node = node;
+    24    }
+    2526public String getIndex() {
+    27return index;
+    28    }
+    2930publicvoid setIndex(String index) {
+    31this.index = index;
+    32    }
+    3334public String getStatus() {
+    35return status;
+    36    }
+    3738publicvoid setStatus(String status) {
+    39this.status = status;
+    40    }
+    4142public Set<ChildNode> getPreNode() {
+    43return preNode;
+    44    }
+    4546publicvoid setPreNode(Set<ChildNode> preNode) {
+    47this.preNode = preNode;
+    48    }
+    4950public Set<ChildNode> getPostNode() {
+    51return postNode;
+    52    }
+    5354publicvoid setPostNode(Set<ChildNode> postNode) {
+    55this.postNode = postNode;
+    56    }
+    5758    @Override
+    59public String toString() {
+    60return "Node{" +
+    61                 "node='" + node + '\'' +
+    62                 ", index='" + index + '\'' +
+    63                 ", status='" + status + '\'' +
+    64                 ", preNode=" + preNode +
+    65                 ", postNode=" + postNode +
+    66                 '}';
+    67    }
+    686970public Node() {
+    71    }
+    72 }</ChildNode></ChildNode></ChildNode></ChildNode></ChildNode></ChildNode></p>
+
+<p>View Code<img src="f104902.gif" alt="" /><img src="/wp-content/uploads/2017/07/15002903341.gif" alt="" />
+     1package com.yf.af.biz.test;
+     2 3/** 4 * Created by chen on 2017/7/15.
+     5*/ 6publicclass ChildNode {
+     7private String node;
+     8 9public String getNode() {
+    10return node;
+    11    }
+    1213publicvoid setNode(String node) {
+    14this.node = node;
+    15    }
+    1617public ChildNode(String node) {
+    18this.node = node;
+    19    }
+    2021public ChildNode() {
+    22    }
+    23 }</p>
+
+<p>View Code</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/java%E5%AF%B9%E8%B1%A1%E4%B8%8Ejson%E4%BA%92%E8%BD%AC.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/javaweb%E5%BC%80%E5%8F%91%E4%B9%8B%E6%9D%83%E9%99%90%E7%AE%A1%E7%90%86%E4%BA%8Cshiro%E5%85%A5%E9%97%A8%E8%AF%A6%E8%A7%A3%E4%BB%A5%E5%8F%8A%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95shiro%E8%AE%A4%E8%AF%81.html">&laquo; JAVAWEB开发之权限管理(二)——shiro入门详解以及使用方法、shiro认证与shiro授权</a>
+  
+  
+  <a class="next" href="/2017/java%E4%B9%8B%E5%88%86%E6%94%AF%E5%92%8C%E5%BE%AA%E7%8E%AF.html">Java之分支和循环 » java面试题 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

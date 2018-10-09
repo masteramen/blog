@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>为你的Web程序加个启动画面 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="为你的Web程序加个启动画面" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="为你的Web程序加个启动画面" />
+<meta property="og:description" content="为你的Web程序加个启动画面" />
+<link rel="canonical" href="http://www.jfox.info/2017/%E4%B8%BA%E4%BD%A0%E7%9A%84web%E7%A8%8B%E5%BA%8F%E5%8A%A0%E4%B8%AA%E5%90%AF%E5%8A%A8%E7%94%BB%E9%9D%A2.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/%E4%B8%BA%E4%BD%A0%E7%9A%84web%E7%A8%8B%E5%BA%8F%E5%8A%A0%E4%B8%AA%E5%90%AF%E5%8A%A8%E7%94%BB%E9%9D%A2.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:51:48+00:00" />
+<script type="application/ld+json">
+{"description":"为你的Web程序加个启动画面","@type":"BlogPosting","url":"http://www.jfox.info/2017/%E4%B8%BA%E4%BD%A0%E7%9A%84web%E7%A8%8B%E5%BA%8F%E5%8A%A0%E4%B8%AA%E5%90%AF%E5%8A%A8%E7%94%BB%E9%9D%A2.html","headline":"为你的Web程序加个启动画面","dateModified":"2017-01-01T15:51:48+00:00","datePublished":"2017-01-01T15:51:48+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/%E4%B8%BA%E4%BD%A0%E7%9A%84web%E7%A8%8B%E5%BA%8F%E5%8A%A0%E4%B8%AA%E5%90%AF%E5%8A%A8%E7%94%BB%E9%9D%A2.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">为你的Web程序加个启动画面</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:51:48+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<h1 id="为你的web程序加个启动画面">为你的Web程序加个启动画面</h1>
+
+<p>.Net开发者一定熟悉下面这个画面：</p>
+
+<p>这方面做得最赞的非Adobe旗下的设计类软件莫数了，毕竟是搞艺术出身的啊。博主从PS 8.0用起，每次升级新版本激动的不是新功能，首先是激动新的启动画面。下图是最新CC版PS的Splash Screen。视觉效果</p>
+
+<p>震撼的一逼。。张牙舞爪的，无出其右。</p>
+
+<p>启动画面也不是桌面程序所独有，完全可以在我们的网页中实现。并且随着时间的推移，现在Web应用越来纷繁复杂，加载也是很费时的，一个Splash Screen就显得很有必要了不是么。</p>
+
+<p>比如谷哥的Gmail，要是全屏运行，就一个原生App的感觉。</p>
+
+<p>下面我们就来为我们的Web应用加上Gmail一样的Splash Screen。程序可以很渣，若表面功夫到位了同样可以显得高端大气上档次。</p>
+
+<p><a href="https://www.jfox.info/go.php?url=http://wayou.github.io/splash-screen-example/">效果预览请点我</a><a href="https://www.jfox.info/go.php?url=https://github.com/wayou/splash-screen-example">浏览代码请点我</a></p>
+
+<h1 id="进度的获取">进度的获取</h1>
+
+<p>展示静态图片还好，如果你的启动界面要显示程序进行的进度的话，一个很棘手的问题来了，如何获取进度。经过大量的调研（写过论文的同学都知道，类似’经过大量实验表明…’的表述其实很有可能是只做了一次实</p>
+
+<p>验就开始写结论了）我发现，没有办法获取一个页面的实际下载进度！当然，不排除我孤陋寡闻，如果你知道这样的方法请告诉我。</p>
+
+<p>对于页面中的异步操作，倒是可以监听到进度的。但也得分情况。HTML5规范中，Ajax多了个progress事件，通过它可以获取异步操作的完成情况，但前提是event.lengthComputable属性为真是才管用。也就是说有些</p>
+
+<p>请求的结果我们是可以知道大小的，但更多时候服务器返回的内容的大小是不确定的，这种情况下即使你监听了progress事件也无法获取真实的操作进度。</p>
+
+<p>既然如此，那我们就不要那么死磕，具体进行到百分之几意义不大，我们的目的是提高用户体验，在用户等待的这个过程中有东西可看，或者有一个活着的会动的东西表明程序还在跑而不是出错了卡死了。所以给用户</p>
+
+<p>展示一个会动的进度条即可（我相信大多数带进度条的程序也是这么干的），直到页面全部加载完成时把进度条托到100%。</p>
+
+<p>插曲：在我探索如何获取页面真实下载进度的过程中，研究了<a href="https://www.jfox.info/go.php?url=https://github.com/HubSpot/pace/blob/master/pace.js">pace.js</a>的代码，一个做得非常棒的页面加载进度插件，发现他内部也是这么干的，页面上显示的进度并不真实返回页面加载的实现进度，只是不断的增加而</p>
+
+<p>以，等页面加载完了再拖到100%。当然该库写得比较完善，处理了各种情况比如ajax，web socket等。另外就是Gmail，经过大量（也有可能只有两三次，请不必太认真）的刷新页面尝试之后，我发现个规律，它的进</p>
+
+<p>度条</p>
+
+<p>会一路跑到一个点然后停下来，然后再一路跑到终点！之前的结论。（不过谷歌拥有牛逼烘烘的工程师，不排除他用了啥高科技算法在里面能够精确地返回页面加载的进度。Anyway, 如果我这里的结论错，请别太认真</p>
+
+<p>找我麻烦）</p>
+
+<h1 id="nprogress">Nprogress</h1>
+
+<p>方便起见，这里使用nprogress这个JS库来显示动画。它提供了很方便的几个API可供我们使用。</p>
+
+<p>NProgress.start() — 启动进度条</p>
+
+<p>NProgress.set(0.4) — 将进度设置到具体的百分比位置</p>
+
+<p>NProgress.inc() — 少量增加进度</p>
+
+<p>NProgress.done() — 将进度条标为完成状态</p>
+
+<h1 id="定义我们的splash-screen">定义我们的Splash Screen</h1>
+
+<p>好的，思路出来了下面我们就开始毫无技术含量的施工。</p>
+
+<p>具体来说，首先页面只显示我们预先定义好的Splash Screen，它要占满整个屏幕且z-index设为页面中最高。</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/%E4%B8%BA%E4%BD%A0%E7%9A%84web%E7%A8%8B%E5%BA%8F%E5%8A%A0%E4%B8%AA%E5%90%AF%E5%8A%A8%E7%94%BB%E9%9D%A2.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/c%E5%AE%9E%E7%8E%B0%E8%B0%B7%E6%AD%8C%E7%BF%BB%E8%AF%91api.html">&laquo; C#实现谷歌翻译API</a>
+  
+  
+  <a class="next" href="/2017/%E7%A8%8B%E5%BA%8F%E5%91%98%E4%B8%8E%E6%8A%80%E6%9C%AF%E5%80%BA.html">程序员与技术债 » java面试题 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

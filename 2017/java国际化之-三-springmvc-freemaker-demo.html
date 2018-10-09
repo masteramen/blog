@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>java国际化之(三)—springMVC+Freemaker demo | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="java国际化之(三)—springMVC+Freemaker demo" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="概述" />
+<meta property="og:description" content="概述" />
+<link rel="canonical" href="http://www.jfox.info/2017/java%E5%9B%BD%E9%99%85%E5%8C%96%E4%B9%8B-%E4%B8%89-springmvc-freemaker-demo.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/java%E5%9B%BD%E9%99%85%E5%8C%96%E4%B9%8B-%E4%B8%89-springmvc-freemaker-demo.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:49:34+00:00" />
+<script type="application/ld+json">
+{"description":"概述","@type":"BlogPosting","url":"http://www.jfox.info/2017/java%E5%9B%BD%E9%99%85%E5%8C%96%E4%B9%8B-%E4%B8%89-springmvc-freemaker-demo.html","headline":"java国际化之(三)—springMVC+Freemaker demo","dateModified":"2017-01-01T15:49:34+00:00","datePublished":"2017-01-01T15:49:34+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/java%E5%9B%BD%E9%99%85%E5%8C%96%E4%B9%8B-%E4%B8%89-springmvc-freemaker-demo.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">java国际化之(三)—springMVC+Freemaker demo</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:49:34+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p><strong>概述</strong></p>
+
+<p>前面两章收集了一些java 国际化相关api用法，以及spring MVC对国际化的支持。今天打算采用spring MVC搭建一套支持国际化的demo环境（采用的Spring MVC版本为：4.3.1.RELEASE），代码已经放到github，地址请见文章结尾。</p>
+
+<p>主要整合内容包括：</p>
+
+<p>1、view层采用的Freemaker。</p>
+
+<p>2、使用自定义的formatter，对日期、货币等进行转化。</p>
+
+<p><strong>springMVC 相关配置</strong></p>
+
+<p>web.xml 配置：主要包含三部分，“Spring 容器的配置”、“Spring mvc 配置”、“spring 字符集处理配置”。完整的内容如下：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;web-app version="2.4" xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"&gt;
+    &lt;display-name&gt;locale-demo&lt;/display-name&gt;
+    &lt;!--  step1 Spring 容器启动器 --&gt;
+    &lt;listener&gt;
+        &lt;listener-class&gt;org.springframework.web.context.ContextLoaderListener&lt;/listener-class&gt;
+    &lt;/listener&gt;
+    &lt;!-- spring 容器配置 --&gt;
+    &lt;context-param&gt;
+        &lt;param-name&gt;contextConfigLocation&lt;/param-name&gt;
+        &lt;param-value&gt;classpath:spring-config.xml&lt;/param-value&gt;
+    &lt;/context-param&gt;
+    &lt;!-- step2 Spring mvc 配置 --&gt;
+    &lt;servlet&gt;
+        &lt;servlet-name&gt;springmvc&lt;/servlet-name&gt;
+        &lt;servlet-class&gt;org.springframework.web.servlet.DispatcherServlet&lt;/servlet-class&gt;
+        &lt;init-param&gt;
+            &lt;param-name&gt;contextConfigLocation&lt;/param-name&gt;
+            &lt;param-value&gt;classpath*:spring-mvc.xml&lt;/param-value&gt;
+        &lt;/init-param&gt;
+        &lt;load-on-startup&gt;1&lt;/load-on-startup&gt; &lt;!-- 程序启动时装在该servlet --&gt;
+    &lt;/servlet&gt;
+    &lt;servlet-mapping&gt;
+        &lt;servlet-name&gt;springmvc&lt;/servlet-name&gt;
+        &lt;url-pattern&gt;/&lt;/url-pattern&gt;
+    &lt;/servlet-mapping&gt;
+    &lt;!-- step3 spring character encoding --&gt;
+    &lt;filter&gt;
+        &lt;filter-name&gt;Character Encoding&lt;/filter-name&gt;
+        &lt;filter-class&gt;org.springframework.web.filter.CharacterEncodingFilter&lt;/filter-class&gt;
+        &lt;init-param&gt;
+            &lt;param-name&gt;encoding&lt;/param-name&gt;
+            &lt;param-value&gt;UTF-8&lt;/param-value&gt;
+        &lt;/init-param&gt;
+        &lt;init-param&gt;
+            &lt;param-name&gt;forceEncoding&lt;/param-name&gt;
+            &lt;param-value&gt;true&lt;/param-value&gt;
+        &lt;/init-param&gt;
+    &lt;/filter&gt;
+    &lt;filter-mapping&gt;
+        &lt;filter-name&gt;Character Encoding&lt;/filter-name&gt;
+        &lt;url-pattern&gt;/*&lt;/url-pattern&gt;
+    &lt;/filter-mapping&gt;
+    &lt;welcome-file-list&gt;
+        &lt;welcome-file&gt;index.jsp&lt;/welcome-file&gt;
+    &lt;/welcome-file-list&gt;
+&lt;/web-app&gt;
+</code></pre></div></div>
+
+<p>Spring容器对应的配置文件是：spring-config.xml ，SpringMVC对应的配置文件是spring-mvc.xml。spring-config.xml 可以手动配置bean、指定属性配置文件(.properties)、以及制定其他子配置文件，如：数据库配置文件、工具类配置文件、外部接口配置文件等。本次demo环境，只是整合框架，具体内容根据项目需要再添加。</p>
+
+<p><strong>spring-config.xml</strong><strong>内容如下</strong>：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;?xml version="1.0" encoding="GBK"?&gt;</span>
+<span class="nt">&lt;beans</span> <span class="na">xmlns=</span><span class="s">"http://www.springframework.org/schema/beans"</span>
+       <span class="na">xmlns:xsi=</span><span class="s">"http://www.w3.org/2001/XMLSchema-instance"</span>
+       <span class="na">xsi:schemaLocation=</span><span class="s">"http://www.springframework.org/schema/beans
+                     http://www.springframework.org/schema/beans/spring-beans.xsd"</span>
+       <span class="na">default-autowire=</span><span class="s">"byName"</span><span class="nt">&gt;</span>
+<span class="c">&lt;!-- 加载属性配置文件，主要为spring bean实例化 提供配置支持--&gt;</span>
+    <span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">"propertyPlaceholder"</span> <span class="na">class=</span><span class="s">"org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"locations"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;list&gt;</span>
+                <span class="nt">&lt;value&gt;</span>classpath:spring-locale.properties<span class="nt">&lt;/value&gt;</span>
+            <span class="nt">&lt;/list&gt;</span>
+        <span class="nt">&lt;/property&gt;</span>
+    <span class="nt">&lt;/bean&gt;</span>
+    <span class="c">&lt;!--导入其他所需的配置文件 --&gt;</span>
+    <span class="c">&lt;!-- &lt;import resource="spring/*.xml" /&gt; 配置文件尽量根据模块进行拆分--&gt;</span>
+<span class="nt">&lt;/beans&gt;</span>
+</code></pre></div></div>
+
+<p>在手动注入bean时，往往我们需要一些配置参数，比如：数据库用户名、密码等，这些参数都可以提前配置到属性配置文件spring-locale.properties中。本次demo spring-locale.properties为空，根据业务需要添加。</p>
+
+<p><strong>SpringMVC对应的配置文件spring-mvc.xml</strong>，是本次讲解的重点。整合freemaker、以及国际化支持等都在该配置文件中体现，内容如下：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;?xml version="1.0" encoding="GBK"?&gt;</span>
+<span class="nt">&lt;beans</span> <span class="na">xmlns=</span><span class="s">"http://www.springframework.org/schema/beans"</span>
+       <span class="na">xmlns:xsi=</span><span class="s">"http://www.w3.org/2001/XMLSchema-instance"</span> <span class="na">xmlns:context=</span><span class="s">"http://www.springframework.org/schema/context"</span>
+       <span class="na">xmlns:mvc=</span><span class="s">"http://www.springframework.org/schema/mvc"</span>
+       <span class="na">xsi:schemaLocation=</span><span class="s">"http://www.springframework.org/schema/beans
+                     http://www.springframework.org/schema/beans/spring-beans.xsd
+                                                http://www.springframework.org/schema/context
+                     http://www.springframework.org/schema/context/spring-context.xsd
+                     http://www.springframework.org/schema/mvc
+                     http://www.springframework.org/schema/mvc/spring-mvc.xsd"</span>
+       <span class="na">default-autowire=</span><span class="s">"byName"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;mvc:annotation-driven</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;mvc:default-servlet-handler</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;context:component-scan</span> <span class="na">base-package=</span><span class="s">"com.sky.locale.demo.controller"</span> <span class="nt">&gt;</span>
+        <span class="nt">&lt;context:include-filter</span> <span class="na">type=</span><span class="s">"annotation"</span> <span class="na">expression=</span><span class="s">"org.springframework.stereotype.Controller"</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;/context:component-scan&gt;</span>
+    <span class="nt">&lt;mvc:resources</span> <span class="na">mapping=</span><span class="s">"/css/**"</span> <span class="na">location=</span><span class="s">"/css/"</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;mvc:resources</span> <span class="na">mapping=</span><span class="s">"/*.html"</span> <span class="na">location=</span><span class="s">"/"</span> <span class="nt">/&gt;</span>
+    <span class="c">&lt;!-- Freemarker属性配置--&gt;</span>
+    <span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">"freemarkerConfiguration"</span> <span class="na">class=</span><span class="s">"org.springframework.beans.factory.config.PropertiesFactoryBean"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"location"</span> <span class="na">value=</span><span class="s">"classpath:freemarker.properties"</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;/bean&gt;</span>
+    <span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">"fmXmlEscape"</span> <span class="na">class=</span><span class="s">"freemarker.template.utility.XmlEscape"</span> <span class="nt">/&gt;</span>
+    <span class="c">&lt;!-- Freemarker配置--&gt;</span>
+    <span class="nt">&lt;bean</span> <span class="na">class=</span><span class="s">"org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"freemarkerSettings"</span> <span class="na">ref=</span><span class="s">"freemarkerConfiguration"</span><span class="nt">/&gt;</span>
+        <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"templateLoaderPath"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;value&gt;</span>/WEB-INF/view/<span class="nt">&lt;/value&gt;</span>
+        <span class="nt">&lt;/property&gt;</span>
+        <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"freemarkerVariables"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;map&gt;</span>
+                <span class="nt">&lt;entry</span> <span class="na">key=</span><span class="s">"xml_escape"</span> <span class="na">value-ref=</span><span class="s">"fmXmlEscape"</span> <span class="nt">/&gt;</span>
+            <span class="nt">&lt;/map&gt;</span>
+        <span class="nt">&lt;/property&gt;</span>
+    <span class="nt">&lt;/bean&gt;</span>
+    <span class="c">&lt;!-- 配置freeMarker视图解析器 --&gt;</span>
+    <span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">"viewResolver"</span> <span class="na">class=</span><span class="s">"org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"viewClass"</span> <span class="na">value=</span><span class="s">"org.springframework.web.servlet.view.freemarker.FreeMarkerView"</span><span class="nt">/&gt;</span>
+        <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"contentType"</span> <span class="na">value=</span><span class="s">"text/html; charset=utf-8"</span><span class="nt">/&gt;</span>
+        <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"cache"</span> <span class="na">value=</span><span class="s">"false"</span><span class="nt">/&gt;</span>
+        <span class="nt">&lt;property</span> <span class="na">name =</span> <span class="s">"suffix"</span> <span class="na">value =</span> <span class="s">".ftl"</span><span class="nt">&gt;&lt;/property&gt;</span>
+        <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"exposeRequestAttributes"</span> <span class="na">value=</span><span class="s">"true"</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"exposeSessionAttributes"</span> <span class="na">value=</span><span class="s">"true"</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"exposeSpringMacroHelpers"</span> <span class="na">value=</span><span class="s">"true"</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"requestContextAttribute"</span> <span class="na">value=</span><span class="s">"request"</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;/bean&gt;</span>
+    <span class="c">&lt;!-- 图片上传 处理--&gt;</span>
+    <span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">"multipartResolver"</span> <span class="na">class=</span><span class="s">"org.springframework.web.multipart.commons.CommonsMultipartResolver"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"defaultEncoding"</span> <span class="na">value=</span><span class="s">"utf-8"</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"maxUploadSize"</span> <span class="na">value=</span><span class="s">"10485760000"</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"maxInMemorySize"</span> <span class="na">value=</span><span class="s">"40960"</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;/bean&gt;</span>
+    <span class="c">&lt;!-- 国际化资源文件 --&gt;</span>
+    <span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">"messageSource"</span>
+          <span class="na">class=</span><span class="s">"org.springframework.context.support.ReloadableResourceBundleMessageSource"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"basenames"</span> <span class="nt">&gt;</span>
+            <span class="nt">&lt;list&gt;</span>
+                <span class="nt">&lt;value&gt;</span>/WEB-INF/resource/usermsg<span class="nt">&lt;/value&gt;</span>
+                <span class="nt">&lt;value&gt;</span>/WEB-INF/resource/userlabels<span class="nt">&lt;/value&gt;</span>
+            <span class="nt">&lt;/list&gt;</span>
+        <span class="nt">&lt;/property&gt;</span>
+        <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"defaultEncoding"</span> <span class="na">value=</span><span class="s">"UTF-8"</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;/bean&gt;</span>
+    <span class="c">&lt;!-- 本地化配置 --&gt;</span>
+    <span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">"localeResolver"</span> <span class="na">class=</span><span class="s">"org.springframework.web.servlet.i18n.CookieLocaleResolver"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"cookieName"</span> <span class="na">value=</span><span class="s">"clientlanguage"</span><span class="nt">/&gt;</span>
+        <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"cookieMaxAge"</span> <span class="na">value=</span><span class="s">"94608000"</span><span class="nt">/&gt;</span>
+        <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"defaultLocale"</span> <span class="na">value=</span><span class="s">"en"</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;/bean&gt;</span>
+    <span class="nt">&lt;mvc:annotation-driven</span> <span class="na">conversion-service=</span><span class="s">"formatService"</span> <span class="nt">/&gt;</span>
+    <span class="c">&lt;!-- formatter转换配置 --&gt;</span>
+    <span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">"formatService"</span>
+          <span class="na">class=</span><span class="s">"org.springframework.format.support.FormattingConversionServiceFactoryBean"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"formatters"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;set&gt;</span>
+                <span class="c">&lt;!--&lt;bean class="org.springframework.format.number.CurrencyStyleFormatter"&gt;
+                &lt;/bean&gt;
+                &lt;bean class="org.springframework.format.number.NumberStyleFormatter"&gt;
+                &lt;/bean&gt;
+                &lt;bean class="org.springframework.format.number.PercentStyleFormatter"&gt;
+                &lt;/bean&gt;
+                &lt;bean class="org.springframework.format.datetime.DateFormatter"&gt;
+                &lt;/bean&gt; --&gt;</span>
+                <span class="nt">&lt;bean</span> <span class="na">class=</span><span class="s">"com.sky.locale.demo.formatter.MyDateFormatter"</span> <span class="nt">/&gt;</span>
+                <span class="nt">&lt;bean</span> <span class="na">class=</span><span class="s">"com.sky.locale.demo.formatter.MyCurrencyFormatter"</span> <span class="nt">/&gt;</span>
+            <span class="nt">&lt;/set&gt;</span>
+        <span class="nt">&lt;/property&gt;</span>
+    <span class="nt">&lt;/bean&gt;</span>
+<span class="nt">&lt;/beans&gt;</span>
+</code></pre></div></div>
+
+<p>这里主要说下与Freemaker整合的配置，其他关于国际化的配置说明可以参考上一章<a href="/blog/2378813">《</a><a href="/blog/2378813">java国际化之—springMVC(二)》</a>。</p>
+
+<p>首先看下Freemaker基础配置：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;!-- Freemarker配置--&gt;
+    &lt;bean class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer"&gt;
+        &lt;property name="freemarkerSettings" ref="freemarkerConfiguration"/&gt;
+        &lt;property name="templateLoaderPath"&gt;
+            &lt;value&gt;/WEB-INF/view/&lt;/value&gt;
+        &lt;/property&gt;
+        &lt;property name="freemarkerVariables"&gt;
+            &lt;map&gt;
+                &lt;entry key="xml_escape" value-ref="fmXmlEscape" /&gt;
+            &lt;/map&gt;
+        &lt;/property&gt;
+&lt;/bean&gt;
+</code></pre></div></div>
+
+<p>1、freemarkerSettings属性：设置FreeMarker启动属性配置，可以直接配置，也可以配置到属性文件，这次采用的后者。对应的属性配置为：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;!-- Freemarker属性配置--&gt;
+    &lt;bean id="freemarkerConfiguration" class="org.springframework.beans.factory.config.PropertiesFactoryBean"&gt;
+        &lt;property name="location" value="classpath:freemarker.properties"/&gt;
+    &lt;/bean&gt;
+</code></pre></div></div>
+
+<p>可以看到读取了属性配置文件freemarker.properties，再来看下中的内容：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>#设置标签类型：square_bracket:[]     auto_detect:[]&lt;&gt;
+tag_syntax=auto_detect
+#模版缓存时间，单位：秒
+template_update_delay=0
+default_encoding=UTF-8
+output_encoding=UTF-8
+locale=zh_CN
+#设置数字格式 ，防止出现 000.00
+number_format=#
+#变量为空时，不会报错
+classic_compatible=true
+#这个表示每个freemarker的视图页面都会自动引入这个ftl文件。里面定议的就是一些宏，如text文本框，各种form元素
+#auto_import="/WEB-INF/templates/index.ftl" as do
+auto_import="/common/spring.ftl" as spring
+</code></pre></div></div>
+
+<p>具体根据自己的需要调整，这里特别说下auto_import=”/common/spring.ftl” as spring，spring.ftl是spring MVC针对Freemaker实现的宏，可以用来读取国际化配置信息等。该文件在spring-webmvc-4.3.1.RELEASE.jar中，具体路径如下：</p>
+
+<p>将该文件copy到WEB-INF/common路径下，还可以根据自己需要修改和新增宏命令。</p>
+
+<p>2、templateLoaderPath属性：配置Freemaker模板文件路径前缀，这里配置的/WEB-INF/view/，注意根目录别配置错了。Spring MVC还支持，多种视图一起使用，一般使用二级目录区分，比如：/WEB-INF/vm/对应velocity，/WEB-INF/jsp/ 对应原始jsp 等等。</p>
+
+<p>3、freemarkerVariables属性：配置Freemaker的自定义标签，这里是个map结构，可以配置多个。</p>
+
+<p>再来看下Freemaker的视图配置：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;!-- 配置freeMarker视图解析器 --&gt;
+    &lt;bean id="viewResolver" class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver"&gt;
+        &lt;property name="viewClass" value="org.springframework.web.servlet.view.freemarker.FreeMarkerView"/&gt;
+        &lt;property name="contentType" value="text/html; charset=utf-8"/&gt;
+        &lt;property name="cache" value="false"/&gt;
+        &lt;property name = "suffix" value = ".ftl"&gt;&lt;/property&gt;
+        &lt;property name="exposeRequestAttributes" value="true" /&gt;
+        &lt;property name="exposeSessionAttributes" value="true" /&gt;
+        &lt;property name="exposeSpringMacroHelpers" value="true" /&gt;
+        &lt;property name="requestContextAttribute" value="request"/&gt;
+    &lt;/bean&gt;
+</code></pre></div></div>
+
+<p>如前面所说，你还可以配置多个视图解析器：jsp文件对应的InternalResourceViewResolver解析器，以及velocity对应的VelocityLayoutViewResolver视图解析器，并且Spring MVC允许你配置多个一起使用，根据不同的业务使用不同的视图解析器。</p>
+
+<p>最终配置相关的目录结构如下：</p>
+
+<p>国际化配置文件、以及Freemaker模板文件目录结构如下：</p>
+
+<p>Spring相关配置就说这些吧，关于Freemaker模板文件后面讲解，下面来看看Controller。</p>
+
+<p><strong>Controller控制器代码</strong></p>
+
+<p>Controller相关的代码结构如下：</p>
+
+<p>controller包中对应的是本实例的控制器存放目录，首先来看下UserController，主要处理4类请求：add、save、edit、changelanguage 分别对应：添加用户、保存用户、修改用户、修改语言。具体代码如下：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>@Controller
+public class UserController {
+    @RequestMapping(value="add")
+    public String addUser(Model model) {
+        model.addAttribute(new User());
+        return "/user/UserForm";
+    }
+    @RequestMapping(value="save")
+    public String saveUser(@ModelAttribute User user, BindingResult bindingResult,
+                               Model model) {
+        UserValidator userValidator = new UserValidator();
+        userValidator.validate(user, bindingResult);
+        if (bindingResult.hasErrors()) {
+            FieldError fieldError = bindingResult.getFieldError();
+            System.out.println("Code:" + fieldError.getCode()
+                    + ", field:" + fieldError.getField());
+            return "/user/UserForm";
+        }
+        // save product here
+        model.addAttribute("org.springframework.validation.BindingResult.user",new BindException(bindingResult));
+        return "/user/UserInfo";
+    }
+    /**
+     *
+     * @param model
+     * @return
+     */
+    @RequestMapping(value="edit")
+    public String editUser(Model model) {
+        //省略从数据库中查询代码
+        User user = new User();
+        user.setName("张三");
+        Date now = new Date();
+        user.setBirthday(now);
+        user.setMoney(new BigDecimal("12.12"));
+        model.addAttribute("user",user);
+        return "/user/UserForm";
+    }
+    @RequestMapping(value = "/changelanguage", method = RequestMethod.POST)
+    public void changeLanguage(@RequestParam String new_lang,HttpServletRequest request, HttpServletResponse response)
+    {
+        String msg = "";
+        try
+        {
+            LocaleResolver localeResolver = RequestContextUtils.getLocaleResolver(request);
+            if (localeResolver == null) {
+                throw new IllegalStateException("No LocaleResolver found: not in a DispatcherServlet request?");
+            }
+            LocaleEditor localeEditor = new LocaleEditor();
+            localeEditor.setAsText(new_lang);
+            localeResolver.setLocale(request, response, (Locale)localeEditor.getValue());
+            msg = "Change Language Success!";
+        }
+        catch(Exception ex)
+        {
+            msg = "error";
+            ex.printStackTrace();
+        }
+        response.setCharacterEncoding(CharEncoding.UTF_8);
+        try {
+            response.getWriter().print(msg);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}
+</code></pre></div></div>
+
+<p><strong>View视图</strong></p>
+
+<p>这里采用的是Freemaker视图，模板文件主要有两个：</p>
+
+<p>首先看下UserForm.ftl（UserInfo.ftl文件内容不再累述）：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;!DOCTYPE html&gt;</span>
+<span class="nt">&lt;html&gt;</span>
+<span class="nt">&lt;head&gt;</span>
+    <span class="nt">&lt;title&gt;&lt;</span><span class="err">@</span><span class="na">spring</span><span class="err">.</span><span class="na">message</span> <span class="err">"</span><span class="na">page</span><span class="err">.</span><span class="na">user</span><span class="err">.</span><span class="na">title</span><span class="err">"</span><span class="nt">/&gt;</span> <span class="nt">&lt;/title&gt;</span>
+    <span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">"stylesheet"</span> <span class="na">href=</span><span class="s">"/css/main.css"</span><span class="nt">&gt;</span>
+<span class="nt">&lt;/head&gt;</span>
+<span class="nt">&lt;body&gt;</span>
+<span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">"global"</span><span class="nt">&gt;</span>
+<span class="nt">&lt;</span><span class="err">@</span><span class="na">spring</span><span class="err">.</span><span class="na">message</span> <span class="err">"</span><span class="na">current</span><span class="err">.</span><span class="na">locale</span><span class="err">"</span><span class="nt">/&gt;</span> : ${request.locale}
+    <span class="nt">&lt;br/&gt;</span>
+<span class="nt">&lt;</span><span class="err">@</span><span class="na">spring</span><span class="err">.</span><span class="na">message</span> <span class="err">"</span><span class="na">select</span><span class="err">.</span><span class="na">language</span><span class="err">"</span><span class="nt">/&gt;</span> : <span class="nt">&lt;span&gt;&lt;a</span> <span class="na">href=</span><span class="s">"javascript:void(0)"</span> <span class="na">onclick=</span><span class="s">"changeLanguage('en_GB')"</span><span class="nt">&gt;</span>EN<span class="nt">&lt;/a&gt;&lt;/span&gt;</span>
+    |<span class="nt">&lt;span&gt;&lt;a</span> <span class="na">href=</span><span class="s">"javascript:void(0)"</span> <span class="na">onclick=</span><span class="s">"changeLanguage('zh_CN')"</span><span class="nt">&gt;</span>CN<span class="nt">&lt;/a&gt;&lt;/span&gt;</span>
+    <span class="nt">&lt;form</span> <span class="na">name=</span><span class="s">"user"</span> <span class="na">action=</span><span class="s">"save"</span> <span class="na">method=</span><span class="s">"post"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;fieldset&gt;</span>
+            <span class="nt">&lt;legend&gt;&lt;</span><span class="err">@</span><span class="na">spring</span><span class="err">.</span><span class="na">message</span> <span class="err">"</span><span class="na">user</span><span class="err">.</span><span class="na">form</span><span class="err">.</span><span class="na">name</span><span class="err">"</span><span class="nt">/&gt;&lt;/legend&gt;</span>
+            <span class="nt">&lt;p&gt;</span>
+            <span class="nt">&lt;</span><span class="err">@</span><span class="na">spring</span><span class="err">.</span><span class="na">bind</span> <span class="err">"</span><span class="na">user</span><span class="err">.</span><span class="na">name</span><span class="err">"</span> <span class="nt">/&gt;</span>
+                <span class="nt">&lt;label</span> <span class="na">for=</span><span class="s">"name"</span><span class="nt">&gt;&lt;</span><span class="err">@</span><span class="na">spring</span><span class="err">.</span><span class="na">message</span> <span class="err">"</span><span class="na">label</span><span class="err">.</span><span class="na">userName</span><span class="err">"</span><span class="nt">/&gt;</span>:<span class="nt">&lt;/label&gt;</span>
+                <span class="nt">&lt;input</span> <span class="na">id=</span><span class="s">"name"</span> <span class="na">type=</span><span class="s">"text"</span> <span class="na">name=</span><span class="s">"name"</span> <span class="na">value=</span><span class="s">"${user.name}"</span> <span class="na">cssErrorClass=</span><span class="s">"error"</span><span class="nt">/&gt;</span>
+            <span class="nt">&lt;</span><span class="err">@</span><span class="na">spring</span><span class="err">.</span><span class="na">showErrors</span> <span class="err">"&lt;</span><span class="na">br</span><span class="nt">/&gt;</span>" cssClass="error"/&gt;
+            <span class="nt">&lt;/p&gt;</span>
+            <span class="nt">&lt;p&gt;</span>
+            <span class="nt">&lt;</span><span class="err">@</span><span class="na">spring</span><span class="err">.</span><span class="na">bind</span> <span class="err">"</span><span class="na">user</span><span class="err">.</span><span class="na">birthday</span><span class="err">"</span> <span class="nt">/&gt;</span>
+                <span class="nt">&lt;label</span> <span class="na">for=</span><span class="s">"birthday"</span><span class="nt">&gt;&lt;</span><span class="err">@</span><span class="na">spring</span><span class="err">.</span><span class="na">message</span> <span class="err">"</span><span class="na">label</span><span class="err">.</span><span class="na">birthday</span><span class="err">"</span><span class="nt">/&gt;</span>: <span class="nt">&lt;/label&gt;</span>
+                <span class="nt">&lt;input</span> <span class="na">id=</span><span class="s">"birthday"</span> <span class="na">type=</span><span class="s">"text"</span> <span class="na">name=</span><span class="s">"birthday"</span> <span class="na">value=</span><span class="s">"&lt;#if (user.birthday)??&gt; ${(user.birthday?datetime)} &lt;/#if&gt;"</span> <span class="na">cssErrorClass=</span><span class="s">"error"</span><span class="nt">/&gt;</span>
+            <span class="nt">&lt;</span><span class="err">@</span><span class="na">spring</span><span class="err">.</span><span class="na">showErrors</span> <span class="err">"&lt;</span><span class="na">br</span><span class="nt">/&gt;</span>" cssClass="error"/&gt;
+            <span class="nt">&lt;/p&gt;</span>
+            <span class="nt">&lt;p&gt;</span>
+            <span class="nt">&lt;</span><span class="err">@</span><span class="na">spring</span><span class="err">.</span><span class="na">bind</span> <span class="err">"</span><span class="na">user</span><span class="err">.</span><span class="na">money</span><span class="err">"</span> <span class="nt">/&gt;</span>
+                <span class="nt">&lt;label</span> <span class="na">for=</span><span class="s">"money"</span><span class="nt">&gt;&lt;</span><span class="err">@</span><span class="na">spring</span><span class="err">.</span><span class="na">message</span> <span class="err">"</span><span class="na">label</span><span class="err">.</span><span class="na">money</span><span class="err">"</span><span class="nt">/&gt;</span>: <span class="nt">&lt;/label&gt;</span>
+                <span class="nt">&lt;input</span> <span class="na">id=</span><span class="s">"money"</span> <span class="na">type=</span><span class="s">"text"</span> <span class="na">name=</span><span class="s">"money"</span> <span class="na">value=</span><span class="s">"${(user.money?string.currency)!}"</span> <span class="na">cssErrorClass=</span><span class="s">"error"</span><span class="nt">/&gt;</span>
+            <span class="nt">&lt;</span><span class="err">@</span><span class="na">spring</span><span class="err">.</span><span class="na">showLastError</span> <span class="na">classOrStyle=</span><span class="s">"error"</span><span class="nt">/&gt;</span>
+            <span class="nt">&lt;/p&gt;</span>
+            <span class="nt">&lt;p</span> <span class="na">id=</span><span class="s">"buttons"</span><span class="nt">&gt;</span>
+                <span class="nt">&lt;input</span> <span class="na">id=</span><span class="s">"reset"</span> <span class="na">type=</span><span class="s">"reset"</span> <span class="na">tabindex=</span><span class="s">"4"</span>
+                       <span class="na">value=</span><span class="s">"&lt;@spring.message "</span><span class="na">button</span><span class="err">.</span><span class="na">reset</span><span class="err">"</span><span class="nt">/&gt;</span>"&gt;
+                <span class="nt">&lt;input</span> <span class="na">id=</span><span class="s">"submit"</span> <span class="na">type=</span><span class="s">"submit"</span> <span class="na">tabindex=</span><span class="s">"5"</span>
+                       <span class="na">value=</span><span class="s">"&lt;@spring.message "</span><span class="na">button</span><span class="err">.</span><span class="na">submit</span><span class="err">"</span><span class="nt">/&gt;</span>"&gt;
+            <span class="nt">&lt;/p&gt;</span>
+        <span class="nt">&lt;/fieldset&gt;</span>
+    <span class="nt">&lt;/form&gt;</span>
+<span class="nt">&lt;/div&gt;</span>
+<span class="nt">&lt;/body&gt;</span>
+<span class="nt">&lt;/html&gt;</span>
+<span class="nt">&lt;script </span><span class="na">type=</span><span class="s">"text/javascript"</span> <span class="na">src=</span><span class="s">"//misc.360buyimg.com/jdf/lib/jquery-1.6.4.js?t=1705252218"</span><span class="nt">&gt;&lt;/script&gt;</span>
+<span class="nt">&lt;script </span><span class="na">type=</span><span class="s">"text/javascript"</span><span class="nt">&gt;</span>
+    <span class="kd">function</span> <span class="nx">changeLanguage</span><span class="p">(</span><span class="nx">language</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="nx">$</span><span class="p">.</span><span class="nx">ajax</span><span class="p">({</span>
+            <span class="na">type</span><span class="p">:</span> <span class="s2">"POST"</span><span class="p">,</span>
+            <span class="na">url</span><span class="p">:</span><span class="s2">"/changelanguage"</span><span class="p">,</span>
+            <span class="na">data</span><span class="p">:</span> <span class="s2">"new_lang="</span><span class="o">+</span><span class="nx">language</span><span class="p">,</span>
+            <span class="na">dataType</span><span class="p">:</span><span class="s2">"text"</span><span class="p">,</span>
+            <span class="na">async</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+            <span class="na">error</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">error</span><span class="p">)</span> <span class="p">{</span><span class="nx">alert</span><span class="p">(</span><span class="s2">"change lang error!"</span><span class="p">);</span> <span class="nx">alert</span><span class="p">(</span><span class="nx">error</span><span class="p">)},</span>
+            <span class="na">success</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="nb">window</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">reload</span><span class="p">();</span>
+            <span class="p">}</span>
+        <span class="p">});</span>
+    <span class="p">}</span>
+<span class="nt">&lt;/script&gt;</span>
+</code></pre></div></div>
+
+<p>需要说明以下几点：</p>
+
+<p>1、@spring.message，带有这个标记的标签，表面是本地化消息，这里会根据不同的语言选择不同的国际化配置文件，再根据不同的key选择不同的消息。</p>
+
+<p>比如当前语言为cn_ZH（汉语_中国大陆），对应的配置文件为：usermsg_zh_CN.properties、userlabels_zh_CN.properties。&lt;@spring.message “page.user.title”/&gt;标签中，page.user.title对应的值在userlabels_zh_CN.properties中，配置为：page.user.title=新增用户，该位置的渲染结果即为：“新增用户”。配置文件中的内容，就不贴出来了，感兴趣的可以从文章结尾的github地址中下载。</p>
+
+<p>2、@spring.bind、@spring.showErrors分别为绑定变量，和显示该变量的错误信息。连同1中的@spring.message 这三个标签都是在spring.ftl中定义的。</p>
+
+<p>3、Freemaker国际化支持，${(user.birthday?datetime)}、${(user.money?string.currency)} 会根据不同的语言国家，做不同的格式显示。比如中国，货币显示为：￥12.12；英语英国，货币显示为：￡12.12。</p>
+
+<p>其他关于Freemaker的标签说明，参考其官方文档：<a href="https://www.jfox.info/go.php?url=http://freemarker.org/docs/ref_directive_local.html">http://freemarker.org/docs/ref_directive_local.html</a></p>
+
+<p>日期、货币国际化处理</p>
+
+<p>SpringMVC主要通过定义不同Formatter实现对日期、货币等国际化处理。Springmvc 自带对日期、货币国际化处理Formatter实现，我们也可以根据自己业务定义自己的Formatter。</p>
+
+<p>自定义的日期时间formatter，MyDateFormatter，调用其可以把String格式的日期转换为Date型，比如：可以把英文环境下的“Jun 13, 2017 9:40:57 PM”，以及中文环境下的” 2017-06-13 21:40:57” 转换为相同的Date，实现如下：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public class MyDateFormatter implements Formatter&lt;Date&gt; {
+    @Override
+    public Date parse(String s, Locale locale) throws ParseException{
+        DateFormat df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM, locale);
+        System.out.println("parse");
+        try {
+            return df.parse(s);
+        } catch (ParseException e) {
+            throw new IllegalArgumentException(
+                    "invalid date format.");
+        }
+    }
+    @Override
+    public String print(Date date, Locale locale) {
+        DateFormat df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM, locale);
+        System.out.println("format");
+        return df.format(date);
+}
+}
+</code></pre></div></div>
+
+<p>自定义的货币处理formatter，MyCurrencyFormatter，可以实现把不同国家带符号的价格转换为BigDecimal，实现如下：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public class MyCurrencyFormatter implements Formatter&lt;BigDecimal&gt; {
+    /**
+     * 去掉货币符号，并转换为BigDecimal
+     * @param s
+     * @param locale
+     * @return
+     * @throws ParseException
+     */
+    @Override
+    public BigDecimal parse(String s, Locale locale) throws ParseException {
+        try {
+            NumberFormat curF = NumberFormat.getCurrencyInstance(locale);
+            BigDecimal bd = new BigDecimal(curF.parse(s).toString());//去掉货币符号
+            return bd;
+        } catch (ParseException e) {
+            //如果没有带单位 转换会失败，但是如果是数字可以成功转换成BigDecimal，主要是springMVC做了兼容处理
+            throw new IllegalArgumentException(
+                    "invalid Currency format.");
+        }
+    }
+    /**
+     * 把BigDecimal 转换为对应国家带货币单位的 字符串格式
+     * @param bigDecimal
+     * @param locale
+     * @return
+     */
+    @Override
+    public String print(BigDecimal bigDecimal, Locale locale) {
+        NumberFormat curF = NumberFormat.getCurrencyInstance(locale);
+        return curF.format(bigDecimal);
+}
+}
+</code></pre></div></div>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/java%E5%9B%BD%E9%99%85%E5%8C%96%E4%B9%8B-%E4%B8%89-springmvc-freemaker-demo.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/java%E5%BC%80%E5%8F%91%E6%A1%86%E6%9E%B6%E4%B9%8Bninja.html">&laquo; 【Java开发框架之Ninja】</a>
+  
+  
+  <a class="next" href="/2017/legendshop%E7%94%B5%E5%95%86%E5%95%86%E5%9F%8E%E7%B3%BB%E7%BB%9F%E5%9C%A8%E6%8A%80%E6%9C%AF%E4%B8%8A%E6%9C%89%E4%BA%9B%E4%BB%80%E4%B9%88%E4%BC%98%E5%8A%BF.html">Legendshop电商商城系统在技术上有些什么优势 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>也谈TDD，以及三层架构、设计模式、ORM……：没有免费的午餐 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="也谈TDD，以及三层架构、设计模式、ORM……：没有免费的午餐" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="但再难写也要写啊，要等到“能写好了再写”，怕是黄花菜都凉了——尤其是技术类文章，时效性非常强的。" />
+<meta property="og:description" content="但再难写也要写啊，要等到“能写好了再写”，怕是黄花菜都凉了——尤其是技术类文章，时效性非常强的。" />
+<link rel="canonical" href="http://www.jfox.info/2017/%E4%B9%9F%E8%B0%88tdd%E4%BB%A5%E5%8F%8A%E4%B8%89%E5%B1%82%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8Form%E6%B2%A1%E6%9C%89%E5%85%8D%E8%B4%B9%E7%9A%84%E5%8D%88%E9%A4%90.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/%E4%B9%9F%E8%B0%88tdd%E4%BB%A5%E5%8F%8A%E4%B8%89%E5%B1%82%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8Form%E6%B2%A1%E6%9C%89%E5%85%8D%E8%B4%B9%E7%9A%84%E5%8D%88%E9%A4%90.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:53:27+00:00" />
+<script type="application/ld+json">
+{"description":"但再难写也要写啊，要等到“能写好了再写”，怕是黄花菜都凉了——尤其是技术类文章，时效性非常强的。","@type":"BlogPosting","url":"http://www.jfox.info/2017/%E4%B9%9F%E8%B0%88tdd%E4%BB%A5%E5%8F%8A%E4%B8%89%E5%B1%82%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8Form%E6%B2%A1%E6%9C%89%E5%85%8D%E8%B4%B9%E7%9A%84%E5%8D%88%E9%A4%90.html","headline":"也谈TDD，以及三层架构、设计模式、ORM……：没有免费的午餐","dateModified":"2017-01-01T15:53:27+00:00","datePublished":"2017-01-01T15:53:27+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/%E4%B9%9F%E8%B0%88tdd%E4%BB%A5%E5%8F%8A%E4%B8%89%E5%B1%82%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8Form%E6%B2%A1%E6%9C%89%E5%85%8D%E8%B4%B9%E7%9A%84%E5%8D%88%E9%A4%90.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">也谈TDD，以及三层架构、设计模式、ORM……：没有免费的午餐</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:53:27+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>但再难写也要写啊，要等到“能写好了再写”，怕是黄花菜都凉了——尤其是技术类文章，时效性非常强的。</p>
+
+<p>刚好坛子里这篇博客：<a href="https://www.jfox.info/go.php?url=http://www.cnblogs.com/leading/p/about-notdd.html">关于拒绝测试驱动开发（NoTDD）</a>，看评论争议不小，而这个问题也是我最想写的，所以，蹭个热点，呵呵。</p>
+
+<p>其实我很好奇，博客下面热烈讨论的童鞋，有多少人是真正的在项目中坚持过TDD的。</p>
+
+<p>我公司里的项目，从来没有哪一个项目是要求TDD、能够TDD的；我自己的项目，坚持过TDD一段时间，而且应该是非常久的一段时间，尤其是Entity部分，但现在我基本上都已经放弃了。</p>
+
+<p>为什么呢？</p>
+
+<p>可以洋洋洒洒千言万语，也可以简简单单三个字：<strong>不划算</strong>。</p>
+
+<p>其实不仅仅是TDD，还包括三层架构、设计模式、ORM等等这些东西，存在大量的争论，莫衷一是：说它好的把它捧到了天上去，说它不行的批得它体无完肤，双方都有大牛为其站台，都可以一二三四五的列出长长的清单，而且每一条都很有道理……</p>
+
+<p>当讨论变成了一种辩论，当辩论变成了一种骂战，最后拼的就是谁的态度更坚决，谁的言辞更犀利，谁的声音更大……所以双方的观点更加的偏激、对立，而这其实无助于我们客观冷静的来分析问题。</p>
+
+<p>说理太枯燥了点，还是听飞哥讲故事吧，呵呵。</p>
+
+<p>最早，我刚接触“设计模式”。什么玩意儿啊？！整本书，就一个感觉，“脱了裤子放屁”。明明一个对象，new一下不就OK了么？什么Factory啊Builder啊，搞毛线呢？所以一直是云里雾里的，包括那些开闭原则、依赖倒置，都似懂非懂的，没帮上我什么忙。</p>
+
+<p>直到有一天，也不知是在哪里，我看到了三个字“上下文”，或者说一句话，大意是：只有理解了上下文，理解了设计模式想要解决的“问题”，你才能真正的理解设计模式。不知道是不是那时候积累也差不多了，茅塞顿开恍然大悟！</p>
+
+<p>我在<a href="https://www.jfox.info/go.php?url=http://www.cnblogs.com/freeflying/p/4752415.html">架构之路（一）：目标</a>里说过：<strong>设计模式是药，</strong>看评论其实很多同学没有理解，对照这句话看能不能明白过来：理解了设计模式想要解决的“问题”……？要解决的问题就是“病”，没病就不要乱吃药；同理，没有“问题”，你也不要乱用设计模式。</p>
+
+<p>一通百通。</p>
+
+<p>所以从最基础的面向对象、到三层架构、ORM、以及敏捷开发、TDD……，所有这些概念方法，本质上都是要<strong>解决问题</strong>的，而且基本上也是能够解决问题的。</p>
+
+<p>而你，认为它“没用”，其实最大的原因是：<strong>你还没碰到这方面的问题</strong>。</p>
+
+<p>在这里，大家一定要区分两个概念：“它解决不了问题”和“它（对我）没用”。还是用药做比喻，“这药治不了病”，和“这药（对我）没用”是两个概念。而且尤其要注意的是这两个字：<strong>对我</strong>。</p>
+
+<p>换到项目中，就是这种架构这种开发模式，适不适合这个项目，能不能解决这个项目开发中遇到的问题。</p>
+
+<p>其实之前我也看到过类似的提法，比如：xxx适合“大”项目。但用“大”和“小”来区分项目，毛糙了一些，很多时候，并不见得正确。最正确的做法是：你了解项目的特点，同时也了解各种模式的优劣，从而能够正确的匹配和选择。当然，这是一个非常庞大的话题，这里没办法展开了。</p>
+
+<p>好，上面我们提到了“优劣”，所谓优势和劣势，但其实，这个提法并不准确。优势，大家都可以承认，解决了问题嘛；但劣势……什么叫做劣势？不服……</p>
+
+<p>我更愿意用另一个词：成本。</p>
+
+<p><strong>“天下没有免费的午餐”。</strong></p>
+
+<p>这是一个经济学上的谚语。一提到这话，我就想起我大学的时候坐在教室里听老师讲《西方经济学》……往事历历在目，谁曾想，我会是今天这个样子？</p>
+
+<p>再说点题外话吧。</p>
+
+<p><a href="https://www.jfox.info/go.php?url=http://www.cnblogs.com/freeflying/p/4796369.html">【野生程序员】：优先招聘</a>是意气之作，但并非完全意气用事，在<a href="https://www.jfox.info/go.php?url=http://17help.zyfei.net/Article/4">我该不该转行？（一）野生程序员的优势</a>一文里，我就较为详细的阐述了野生程序员的优势。简单的说：做架构，做项目管理，需要一个更宏大的视野，而不仅仅是二进制和计算机原理。</p>
+
+<p>这里，我们还是回过头来看，什么叫做“天下没有免费的午餐”？不要理解为“做人不要贪心以免上当”之类的哟！你可以理解为：做任何事情都需要<strong>成本</strong>。但我更喜欢另一种说法：<strong>凡是选择，必有代价</strong>。</p>
+
+<p>具体到项目中，不管（注意是不管，无论，随便……）你选择是不是遵循TDD的规范要求，只要你选择了，就必然有代价：</p>
+
+<ul>
+  <li>不使用TDD，就会在代码的重构、维护、健壮性等方面付出代价；</li>
+  <li>使用TDD，就会在测试代码的开发和维护上付出额外的代价。</li>
+</ul>
+
+<p>无论你怎么选，一定是要付出“代价”的。换言之，代码的“低耦合”“可测试”“便于重构”……不可能从天上掉下来，一定是有成本的！</p>
+
+<p>这本来是一个最简单不过的道理。</p>
+
+<p>然而，当我们迫切的想达到一种目标——尤其是这种目标是美妙的、神圣的、寄托了我们某种强烈情感的时候，我们常常会忘记达成这个目标的成本。</p>
+
+<p>就个人而言，就是通宵达旦废寝忘食乐此不疲，这是你自个儿的事；但对于团队，对于项目呢？“不计一切代价”就是一种蛮干就是瞎搞，后果往往是灾难性……</p>
+
+<p>另一个很有意思的现象：我们的舆论，我们的文化，是鼓励“不惜一切代价”是鼓励“克服重重困难”的，这会让我们有一种莫名的冲动、一种热血沸腾的快感。理智和感性天然就是不兼容的？</p>
+
+<p>那么，我是反对TDD的？</p>
+
+<p>如果你心里还有这样的想法，说明你还是没弄明白我在说什么。</p>
+
+<p>无所谓支持和反对，没有这样简单化的答案。</p>
+
+<p>事实上，你需要的，是做一个成本和收益的分析：针对特定的、具体的项目！</p>
+
+<p>没有一个放之四海而皆准的准则。</p>
+
+<p>不同的项目，有不同的要求，应该因地制宜的采取相应的策略。</p>
+
+<p>这样谈下去还是会很空，我以 <a href="https://www.jfox.info/go.php?url=http://www.cnblogs.com/freeflying/p/6091117.html">一起帮</a> 为例。</p>
+
+<p>我为什么要放弃TDD？因为我对这个项目没有太大的信心，我目前最需要的，是尽快的把项目的原型拿出来，放到市场上进行检验：大家喜不喜欢，有没有前景，收集正面的反面的意见反馈……如果大致符合预期，我就继续做下去；否则，就要快速的进行调整。而我现在的人手又非常有限，好吧，其实就我一个人，所有的代码都得我一个人写；好在网站出bug问题不是很大，所有的用户都是种子用户，他们可以直接的给我反馈而不会因为一两个bug离我而去……</p>
+
+<p>所以综合上面种种考虑，我并不需要TDD，至少暂时不需要。也就是说，代码质量差一点就差一点，可以忍受。如果项目击中了用户的痛点，我可以以后花更大的代价来“补”；如果项目针对的是一个“伪需求”，我就应该尽快止损。</p>
+
+<p>你看，并不是TDD不好，并不是TDD没用，而是我现在“用不着”——这才是三观最“正”的，最无懈可击的理由。·</p>
+
+<p>顺便说一下，我现在采取的策略，我把它称之为“懒人策略”：一开始不写unit test，但一旦出现bug，fix bug之前，首先写unit test，然后在fix。<em>（惭愧啊，仔细想想，这一点我都没完全做到，(⊙﹏⊙)b）</em></p>
+
+<p>其实我觉得呀，当然仅仅是“觉得”了，大多数的“大牛”们，其实是明白这一点的——虽然他们从没有像我这样系统明确的表述出来。</p>
+
+<p>我这样推断的原因是：现实中确实没有太多TDD实践的项目。</p>
+
+<p>实践TDD的机会其实是非常渺茫的，就我目前能想到的：</p>
+
+<ol>
+  <li>开发团队，尤其是架构师必须有相当的水平。我在<a href="https://www.jfox.info/go.php?url=http://www.cnblogs.com/freeflying/p/4810647.html">架构之路（三） 单元测试</a>就讲过：<strong>单元测试不是那么好写的！</strong>凡是可（易于）测试的代码，一定是“低耦合”的，模块之间是具有相当大的“独立性”的，不然相互牵连，将非常难以测试。而随着业务逻辑的耦合度（复杂度）越来越高，解耦的难度也就越来越高。反正据我的观察，一般的开发团队根本hold不住。有时候想想，非常之诡异：耦合度不高的项目，其实又没有多大的必要做TDD？</li>
+  <li>项目负责人对项目能够长期存活具有强大的信心。TDD的实践，是前期投资，后期收获。相当长一段时间，你都会觉得写单元测试非常无聊，只有到了后期，业务逻辑越来越复杂，到处都是千丝万缕的联系，牵一发而动全身，经常一改动单元测试就跑不过的时候，你才会觉得“咦？这玩意还真的有用呢！”但是，注意这个但是，项目负责人有没有足够的信心：这个项目能撑到那个时候？！市场朝秦暮楚变化无常，几乎所有人都是走一步看一步，摸着石头过河，哪里能顾得那么长远？</li>
+  <li>项目从一开始就不赶工期，允许使用大量（至少是双倍）的时间来写单元测试。就算是我有信心这个项目没问题，但时间允许不允许？商场上争的就是一个先手，快鱼吃慢鱼，要快，要抢先占领阵地。这就和强行军一样，确实有很多问题，不如步步为营稳妥，没有重武器，会有掉队减员，部队非常虚弱……但只要先到达阵地，其他一切都在所不惜。</li>
+</ol>
+
+<p>所以，我非常好奇，究竟有多少童鞋真正参与过一个严格按TDD模式实施项目？</p>
+
+<p>那么，TDD是不是就不值得学习了呢？</p>
+
+<p>当然不是的！</p>
+
+<p>+++++++++++++++++++++</p>
+
+<p>真的顶不住了！</p>
+
+<p>12点了，超级 =_=</p>
+
+<p>展开写还有很长很长，强写脑力也跟不上了。先这样吧，有时间我们下次再聊，晚安，各位。</p>
+
+<p><img src="fb1af40.png" alt="" /></p>
+
+<p>呵呵，偶然中发现的，小小的一个成就，纪念一下。</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/%E4%B9%9F%E8%B0%88tdd%E4%BB%A5%E5%8F%8A%E4%B8%89%E5%B1%82%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8Form%E6%B2%A1%E6%9C%89%E5%85%8D%E8%B4%B9%E7%9A%84%E5%8D%88%E9%A4%90.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/%E8%AF%91%E8%A7%81%E6%9E%84%E5%BB%BA%E7%94%A8%E6%88%B7%E7%AE%A1%E7%90%86%E5%BE%AE%E6%9C%8D%E5%8A%A1%E4%BA%94%E4%BD%BF%E7%94%A8jwt%E4%BB%A4%E7%89%8C%E5%92%8Cspringsecurity%E6%9D%A5%E5%AE%9E%E7%8E%B0.html">&laquo; 译见｜构建用户管理微服务（五）：使用 JWT 令牌和 Spring Security 来实现身份验证</a>
+  
+  
+  <a class="next" href="/2017/java%E4%B8%AD%E5%BF%85%E7%94%A8%E7%9A%84%E5%B8%B8%E7%94%A8%E7%B1%BB%E5%BE%88%E5%AE%9E%E7%94%A8.html">Java 中必用的常用类（很实用） &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

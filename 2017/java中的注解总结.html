@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>java中的注解总结 » java面试题 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="java中的注解总结 » java面试题" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="注解是java5引入的特性，在代码中插入一种注释化的信息，用于对代码进行说明，可以对包、类、接口、字段、方法参数、局部变量等进行注解。注解也叫元数据（meta data）。这些注解信息可以在编译期使用预编译工具进行处理（pre-compiler tools），也可以在运行期使用 Java 反射机制进行处理。 它主要的作用有以下四方面：" />
+<meta property="og:description" content="注解是java5引入的特性，在代码中插入一种注释化的信息，用于对代码进行说明，可以对包、类、接口、字段、方法参数、局部变量等进行注解。注解也叫元数据（meta data）。这些注解信息可以在编译期使用预编译工具进行处理（pre-compiler tools），也可以在运行期使用 Java 反射机制进行处理。 它主要的作用有以下四方面：" />
+<link rel="canonical" href="http://www.jfox.info/2017/java%E4%B8%AD%E7%9A%84%E6%B3%A8%E8%A7%A3%E6%80%BB%E7%BB%93.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/java%E4%B8%AD%E7%9A%84%E6%B3%A8%E8%A7%A3%E6%80%BB%E7%BB%93.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:50:11+00:00" />
+<script type="application/ld+json">
+{"description":"注解是java5引入的特性，在代码中插入一种注释化的信息，用于对代码进行说明，可以对包、类、接口、字段、方法参数、局部变量等进行注解。注解也叫元数据（meta data）。这些注解信息可以在编译期使用预编译工具进行处理（pre-compiler tools），也可以在运行期使用 Java 反射机制进行处理。 它主要的作用有以下四方面：","@type":"BlogPosting","url":"http://www.jfox.info/2017/java%E4%B8%AD%E7%9A%84%E6%B3%A8%E8%A7%A3%E6%80%BB%E7%BB%93.html","headline":"java中的注解总结 » java面试题","dateModified":"2017-01-01T15:50:11+00:00","datePublished":"2017-01-01T15:50:11+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/java%E4%B8%AD%E7%9A%84%E6%B3%A8%E8%A7%A3%E6%80%BB%E7%BB%93.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">java中的注解总结 » java面试题</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:50:11+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>注解是java5引入的特性，在代码中插入一种注释化的信息，用于对代码进行说明，可以对包、类、接口、字段、方法参数、局部变量等进行注解。注解也叫元数据（meta data）。这些注解信息可以在编译期使用预编译工具进行处理（pre-compiler tools），也可以在运行期使用 Java 反射机制进行处理。
+它主要的作用有以下四方面：</p>
+
+<ul>
+  <li>
+    <p>生成文档，通过代码里标识的元数据生成javadoc文档。</p>
+  </li>
+  <li>
+    <p>编译检查，通过代码里标识的元数据让编译器在编译期间进行检查验证。</p>
+  </li>
+  <li>
+    <p>编译时动态处理，编译时通过代码里标识的元数据动态处理，例如动态生成代码。</p>
+  </li>
+  <li>
+    <p>运行时动态处理，运行时通过代码里标识的元数据动态处理，例如使用反射注入实例。</p>
+  </li>
+</ul>
+
+<p>一般注解可以分为三类：</p>
+
+<ul>
+  <li>
+    <p>一类是Java自带的标准注解，包括<code class="highlighter-rouge">@Override</code>、<code class="highlighter-rouge">@Deprecated</code>和<code class="highlighter-rouge">@SuppressWarnings</code>，分别用于标明重写某个方法、标明某个类或方法过时、标明要忽略的警告，用这些注解标明后编译器就会进行检查。</p>
+  </li>
+  <li>
+    <p>一类为元注解，元注解是用于定义注解的注解，包括<code class="highlighter-rouge">@Retention</code>、<code class="highlighter-rouge">@Target</code>、<code class="highlighter-rouge">@Inherited</code>、<code class="highlighter-rouge">@Documented</code>，<code class="highlighter-rouge">@Retention</code>用于标明注解被保留的阶段，<code class="highlighter-rouge">@Target</code>用于标明注解使用的范围，@Inherited用于标明注解可继承，<code class="highlighter-rouge">@Documented</code>用于标明是否生成javadoc文档。</p>
+  </li>
+  <li>
+    <p>一类为自定义注解，可以根据自己的需求定义注解，并可用元注解对自定义注解进行注解。</p>
+  </li>
+</ul>
+
+<h2 id="2-注解的原理">2. 注解的原理</h2>
+
+<p>为什么在类、方法上加一个注解，就可以通过getAnnotation()获取到申明的注解的值？
+比如：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>@Test("test")
+public class AnnotationTest {
+    public void test(){
+    }
+}
+</code></pre></div></div>
+
+<p>对于注解test就可以在运行时通过AnnotationTest.class.getAnnotation(Test.class)获取注解声明的值。</p>
+
+<ol>
+  <li>
+    <p>注解信息保存在哪儿？</p>
+  </li>
+  <li>
+    <p>注解信息如何获取？</p>
+  </li>
+</ol>
+
+<p>在AnnotationTest类被编译后，在对应的AnnotationTest.class文件中会包含一个RuntimeVisibleAnnotations属性，由于这个注解是作用在类上，所以此属性被添加到类的属性集上。即Test注解的键值对value=test会被记录起来。而当JVM加载AnnotationTest.class文件字节码时，就会将RuntimeVisibleAnnotations属性值保存到AnnotationTest的Class对象中，于是就可以通过AnnotationTest.class.getAnnotation(Test.class)获取到Test注解对象，进而再通过Test注解对象获取到Test里面的属性值。
+这里可能会有疑问，Test注解对象是什么？其实注解被编译后的本质就是一个继承Annotation接口的接口，所以<code class="highlighter-rouge">@Test</code>其实就是“public interface Test extends Annotation”，当我们通过AnnotationTest.class.getAnnotation(Test.class)调用时，JDK会通过动态代理生成一个实现了Test接口的对象，并把将RuntimeVisibleAnnotations属性值设置进此对象中，此对象即为Test注解对象，通过它的value()方法就可以获取到注解值。</p>
+
+<h2 id="3-四种类型注解">3. 四种类型注解</h2>
+
+<p>注解可以通过作用的类型可分为：类注解、方法注解、参数注解、变量注解。</p>
+
+<p><strong>类注解</strong>
+访问类注解的例子：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Class aClass = TheClass.class;
+Annotation[] annotations = aClass.getAnnotations();
+for(Annotation annotation : annotations){
+    if(annotation instanceof MyAnnotation){
+        MyAnnotation myAnnotation = (MyAnnotation) annotation;
+        System.out.println("name: " + myAnnotation.name());
+        System.out.println("value: " + myAnnotation.value());
+    }
+}
+</code></pre></div></div>
+
+<p>此方法获取到的是该类的所有注解，也可指定某一个类：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Class aClass = TheClass.class;
+Annotation annotation = aClass.getAnnotation(MyAnnotation.class);
+if(annotation instanceof MyAnnotation){
+    MyAnnotation myAnnotation = (MyAnnotation) annotation;
+    System.out.println("name: " + myAnnotation.name());
+    System.out.println("value: " + myAnnotation.value());
+}
+</code></pre></div></div>
+
+<p>Spring中的<code class="highlighter-rouge">@Service</code><code class="highlighter-rouge">@Controller</code>即是如此。</p>
+
+<p><strong>方法注解</strong></p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public class TheClass {
+  @MyAnnotation(name="someName",  value = "Hello World")
+  public void doSomething(){}
+}
+</code></pre></div></div>
+
+<p>获取方法对象的指定注解：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Method method = ... // 获取方法对象
+Annotation annotation = method.getAnnotation(MyAnnotation.class);
+if(annotation instanceof MyAnnotation){
+    MyAnnotation myAnnotation = (MyAnnotation) annotation;
+    System.out.println("name: " + myAnnotation.name());
+    System.out.println("value: " + myAnnotation.value());
+}
+</code></pre></div></div>
+
+<p>SpringMVC中的<code class="highlighter-rouge">@RequestMapping</code>即是如此。</p>
+
+<p><strong>参数注解</strong>
+方法的参数也可以添加注解：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public class TheClass {
+  public static void doSomethingElse(
+        @MyAnnotation(name="aName", value="aValue") String parameter){
+  }
+}
+</code></pre></div></div>
+
+<p>访问注解：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Method method = ... //获取方法对象
+Annotation[][] parameterAnnotations = method.getParameterAnnotations();
+Class[] parameterTypes = method.getParameterTypes();
+int i=0;
+for(Annotation[] annotations : parameterAnnotations){
+  Class parameterType = parameterTypes[i++];
+  for(Annotation annotation : annotations){
+    if(annotation instanceof MyAnnotation){
+        MyAnnotation myAnnotation = (MyAnnotation) annotation;
+        System.out.println("param: " + parameterType.getName());
+        System.out.println("name : " + myAnnotation.name());
+        System.out.println("value: " + myAnnotation.value());
+    }
+  }
+}
+</code></pre></div></div>
+
+<p>Mybatis中的<code class="highlighter-rouge">@Param</code>即是如此</p>
+
+<p><strong>变量注解</strong>
+使用注解：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public class TheClass {
+  @MyAnnotation(name="someName",  value = "Hello World")
+  public String myField = null;
+}
+</code></pre></div></div>
+
+<p>获取注解：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Field field = ...//获取方法对象&lt;/pre&gt;
+&lt;pre&gt;
+Annotation annotation = field.getAnnotation(MyAnnotation.class);
+if(annotation instanceof MyAnnotation){
+ MyAnnotation myAnnotation = (MyAnnotation) annotation;
+ System.out.println("name: " + myAnnotation.name());
+ System.out.println("value: " + myAnnotation.value());
+}
+</code></pre></div></div>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/java%E4%B8%AD%E7%9A%84%E6%B3%A8%E8%A7%A3%E6%80%BB%E7%BB%93.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%9E%B6%E6%9E%84-%E5%9F%BA%E4%BA%8E%E5%BE%AE%E6%9C%8D%E5%8A%A1%E5%92%8Cdocker%E5%AE%B9%E5%99%A8%E6%8A%80%E6%9C%AF%E7%9A%84paas%E4%BA%91%E5%B9%B3%E5%8F%B0%E6%9E%B6%E6%9E%84.html">&laquo; 微服务架构：基于微服务和Docker容器技术的PaaS云平台架构设计（微服务架构实施原理）</a>
+  
+  
+  <a class="next" href="/2017/react-%E5%A6%82%E4%BD%95%E8%BD%AC-vue-js.html">React 如何转 Vue.js &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

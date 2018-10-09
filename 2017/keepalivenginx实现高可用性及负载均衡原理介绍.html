@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>【 keepalive + Nginx实现高可用性及负载均衡原理介绍】 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="【 keepalive + Nginx实现高可用性及负载均衡原理介绍】" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="keepalive，是在TCP中一个可以检测死连接的机制。" />
+<meta property="og:description" content="keepalive，是在TCP中一个可以检测死连接的机制。" />
+<link rel="canonical" href="http://www.jfox.info/2017/keepalivenginx%E5%AE%9E%E7%8E%B0%E9%AB%98%E5%8F%AF%E7%94%A8%E6%80%A7%E5%8F%8A%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E5%8E%9F%E7%90%86%E4%BB%8B%E7%BB%8D.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/keepalivenginx%E5%AE%9E%E7%8E%B0%E9%AB%98%E5%8F%AF%E7%94%A8%E6%80%A7%E5%8F%8A%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E5%8E%9F%E7%90%86%E4%BB%8B%E7%BB%8D.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:55:57+00:00" />
+<script type="application/ld+json">
+{"description":"keepalive，是在TCP中一个可以检测死连接的机制。","@type":"BlogPosting","url":"http://www.jfox.info/2017/keepalivenginx%E5%AE%9E%E7%8E%B0%E9%AB%98%E5%8F%AF%E7%94%A8%E6%80%A7%E5%8F%8A%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E5%8E%9F%E7%90%86%E4%BB%8B%E7%BB%8D.html","headline":"【 keepalive + Nginx实现高可用性及负载均衡原理介绍】","dateModified":"2017-01-01T15:55:57+00:00","datePublished":"2017-01-01T15:55:57+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/keepalivenginx%E5%AE%9E%E7%8E%B0%E9%AB%98%E5%8F%AF%E7%94%A8%E6%80%A7%E5%8F%8A%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E5%8E%9F%E7%90%86%E4%BB%8B%E7%BB%8D.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">【 keepalive + Nginx实现高可用性及负载均衡原理介绍】</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:55:57+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>keepalive，是在TCP中一个可以检测死连接的机制。</p>
+
+<p><strong>keepalive原理：</strong></p>
+
+<p>TCP会在空闲了一定时间后发送数据给对方：</p>
+
+<p>1.如果主机可达，对方就会响应ACK应答，就认为是存活的。</p>
+
+<p>2.如果可达，但应用程序退出，对方就发RST应答，发送TCP撤消连接。</p>
+
+<p>3.如果可达，但应用程序崩溃，对方就发FIN消息。</p>
+
+<p>4.如果对方主机不响应ack, rst，继续发送直到超时，就撤消连接。这个时间就是默认</p>
+
+<p>的二个小时。</p>
+
+<p>Keepalived是一个基于VRRP协议来实现的WEB 服务高可用方案，可以利用其来避免单点故障。一个WEB服务至少会有2台服务器运行Keepalived，一台为主服务器（MASTER），一台为备份服务器（BACKUP），但是对外表现为一个虚拟IP，主服务器会发送特定的消息给备份服务器，当备份服务器收不到这个消息的时候，即主服务器宕机的时候，备份服务器就会接管虚拟IP，继续提供服务，从而保证了高可用性。</p>
+
+<p><img src="ed6a18d.png" alt="" /></p>
+
+<p><strong>keepalived理论工作原理</strong></p>
+
+<p>keepalived可提供vrrp以及health-check功能，可以只用它提供双机浮动的vip（vrrp虚拟路由功能），这样可以简单实现一个双机热备高可用功能。</p>
+
+<p>keepalived是一个类似于layer3, 4 &amp; 5交换机制的软件，也就是我们平时说的第3层、第4层和第5层交换。Keepalived的作用是检测web 服务器的状态。 Layer3,4&amp;5工作在IP/TCP协议栈的IP层，TCP层，及应用层,原理分别如下：</p>
+
+<p><strong>Layer3</strong>：Keepalived使用Layer3的方式工作式时，Keepalived会定期向服务器群中的服务器</p>
+
+<p>发送一个ICMP的数据包（既我们平时用的Ping程序）,如果发现某台服务的IP地址没有激活，Keepalived便报告这台服务器失效，并将它从服务器群中剔除，这种情况的典型例子是某台服务器被非法关机。Layer3的方式是以服务器的IP地址是否有效作为服务器工作正常与否的标准。在本文中将采用这种方式。</p>
+
+<p><strong>Layer4:</strong>如果您理解了Layer3的方式，Layer4就容易了。Layer4主要以TCP端口的状态来决定服务器工作正常与否。如web server的服务端口一般是80，如果Keepalived检测到80端口没有启动，则Keepalived将把这台服务器从服务器群中剔除。</p>
+
+<p><strong>Layer5</strong>：Layer5就是工作在具体的应用层了，比Layer3,Layer4要复杂一点，在网络上占用的带宽也要大一些。Keepalived将根据用户的设定检查服务器程序的运行是否正常，如果与用户的设定不相符，则Keepalived将把服务器从服务器群中剔除。</p>
+
+<p>vip即虚拟ip，是附在主机网卡上的，即对主机网卡进行虚拟，此IP仍然是占用了此网段的某个IP。</p>
+
+<p>最简单配置示例：</p>
+
+<p>–全局配置</p>
+
+<p>global_defs {</p>
+
+<p>notification_email {</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> admin@centos.bz
+</code></pre></div></div>
+
+<p>}</p>
+
+<p>notification_email_from keepalived@domain.com</p>
+
+<p>smtp_server 127.0.0.1</p>
+
+<p>smtp_connect_timeout 30</p>
+
+<p>router_id LVS_DEVEL</p>
+
+<p>}</p>
+
+<p>vrrp_script chk_http_port {</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>            script “/opt/nginx_pid.sh”
+
+            interval 2
+
+            weight 2
+</code></pre></div></div>
+
+<p>}</p>
+
+<p>–虚拟示例配置</p>
+
+<p>vrrp_instance VI_1 {</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>state MASTER              ############ 辅机为 BACKUP
+
+interface eth0
+
+virtual_router_id 51      #虚拟路由ID，主备相同
+
+mcast_src_ip 192.168.1.103
+
+priority 102                  # 权值要比 back 高
+
+advert_int 1
+
+authentication {          #口令，主备相同
+
+    auth_type PASS
+
+    auth_pass 1111
+
+}
+</code></pre></div></div>
+
+<p>track_script {</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    chk_http_port ### 执行监控的服务
+
+}
+</code></pre></div></div>
+
+<p>virtual_ipaddress { #VIP 切换漂移的VIP</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   192.168.1.110
+</code></pre></div></div>
+
+<p>}</p>
+
+<p>}</p>
+
+<p>vi /opt/nginx_pid.sh</p>
+
+<p>#!/bin/bash</p>
+
+<p>A=<code class="highlighter-rouge">ps -C nginx –no-header |wc -l</code></p>
+
+<p>if [ $A -eq 0 ];then</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>            /usr/local/nginx/sbin/nginx
+
+            sleep 3
+
+            if [ `ps -C nginx –no-header |wc -l` -eq 0 ];then
+
+                   killall keepalived
+
+            fi
+</code></pre></div></div>
+
+<p>fi</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/keepalivenginx%E5%AE%9E%E7%8E%B0%E9%AB%98%E5%8F%AF%E7%94%A8%E6%80%A7%E5%8F%8A%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E5%8E%9F%E7%90%86%E4%BB%8B%E7%BB%8D.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/java%E8%8E%B7%E5%8F%96%E9%A1%B9%E7%9B%AE%E5%BD%93%E5%89%8D%E8%AF%B7%E6%B1%82%E7%9A%84%E5%85%A8%E9%83%A8urljava%E8%8E%B7%E5%8F%96refererjava%E8%8E%B7%E5%8F%96%E5%AE%8C%E6%95%B4%E9%93%BE%E6%8E%A5.html">&laquo; Java获取项目当前请求的全部URL，Java获取Referer，Java获取完整链接地址URL</a>
+  
+  
+  <a class="next" href="/2017/stringbuilderstringbuffer%E9%98%85%E8%AF%BB%E6%BA%90%E7%A0%81%E4%BB%8Ejdk%E5%BC%80%E5%A7%8B.html">StringBuilder StringBuffer –阅读源码从jdk开始 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

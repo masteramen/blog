@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>redisLock redis分布式锁 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="redisLock redis分布式锁" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="H2M_LI_HEADER redis setnx cmmand H2M_LI_HEADER java object condition queue 条件队列 H2M_LI_HEADER retrycount 带有重试次数限制 H2M_LI_HEADER object wait time 带有超时时间的wait H2M_LI_HEADER delete lock 删除远程锁 H2M_LI_HEADER acquire lock 申请lock H2M_LI_HEADER release lock 释放lock H2M_LI_HEADER demo 演示 H2M_LI_HEADER 锁的粒度问题，锁分解、锁分段 H2M_LI_HEADER github https://github.com/Plen-wang/redis-lock" />
+<meta property="og:description" content="H2M_LI_HEADER redis setnx cmmand H2M_LI_HEADER java object condition queue 条件队列 H2M_LI_HEADER retrycount 带有重试次数限制 H2M_LI_HEADER object wait time 带有超时时间的wait H2M_LI_HEADER delete lock 删除远程锁 H2M_LI_HEADER acquire lock 申请lock H2M_LI_HEADER release lock 释放lock H2M_LI_HEADER demo 演示 H2M_LI_HEADER 锁的粒度问题，锁分解、锁分段 H2M_LI_HEADER github https://github.com/Plen-wang/redis-lock" />
+<link rel="canonical" href="http://www.jfox.info/2017/redislock-redis%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/redislock-redis%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:49:31+00:00" />
+<script type="application/ld+json">
+{"description":"H2M_LI_HEADER redis setnx cmmand H2M_LI_HEADER java object condition queue 条件队列 H2M_LI_HEADER retrycount 带有重试次数限制 H2M_LI_HEADER object wait time 带有超时时间的wait H2M_LI_HEADER delete lock 删除远程锁 H2M_LI_HEADER acquire lock 申请lock H2M_LI_HEADER release lock 释放lock H2M_LI_HEADER demo 演示 H2M_LI_HEADER 锁的粒度问题，锁分解、锁分段 H2M_LI_HEADER github https://github.com/Plen-wang/redis-lock","@type":"BlogPosting","url":"http://www.jfox.info/2017/redislock-redis%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81.html","headline":"redisLock redis分布式锁","dateModified":"2017-01-01T15:49:31+00:00","datePublished":"2017-01-01T15:49:31+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/redislock-redis%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">redisLock redis分布式锁</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:49:31+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>H2M_LI_HEADER redis setnx cmmand
+H2M_LI_HEADER java object condition queue 条件队列
+H2M_LI_HEADER retrycount 带有重试次数限制
+H2M_LI_HEADER object wait time 带有超时时间的wait
+H2M_LI_HEADER delete lock 删除远程锁
+H2M_LI_HEADER acquire lock 申请lock
+H2M_LI_HEADER release lock 释放lock
+H2M_LI_HEADER demo 演示
+H2M_LI_HEADER 锁的粒度问题，锁分解、锁分段
+H2M_LI_HEADER github <a href="https://www.jfox.info/go.php?url=https://github.com/Plen-wang/redis-lock">https://github.com/Plen-wang/redis-lock</a></p>
+
+<h2 id="redis-setnx-命令">redis setnx 命令</h2>
+
+<p>redis setnx 命令特性</p>
+
+<p>当指定key不存在时才设置。也就是说，如果返回1说明你的命令被执行成功了，redis服务器中的key是你之前设置的值。如果返回0，说明你设置的key在redis服务器里已经存在。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>            status = jedis.setnx(lockKey, redisIdentityKey);/**设置 lock key.*/
+            if (status &gt; 0) {
+                expire = jedis.expire(lockKey, lockKeyExpireSecond);/**set  redis key expire time.*/
+            }
+</code></pre></div></div>
+
+<p>如果设置成功了，才进行过期时间设置，防止你的retry lock重复设置这个过期时间，导致永远不过期。</p>
+
+<h2 id="java-object-condition-queue-条件队列">java object condition queue 条件队列</h2>
+
+<p>这里有一个小窍门，可以尽可能的最大化cpu利用率又可以解决公平性问题。</p>
+
+<p>当你频繁retry的时候，要么while(true)死循环，然后加个Thread.sleep，或者CAS。前者存在一定线程上下文切换开销（Thread.sleep是不会释放出当前内置锁），而CAS在不清楚远程锁被占用多久的情况会浪费很多CPU计算周期，有可能一个任务计算个十几分钟，CPU不可能空转这么久。</p>
+
+<p>这里我尝试使用condition queue条件队列特性来实现（当然肯定还有其他更优的方法）。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>if (isWait &amp;&amp; retryCounts &lt; RetryCount) {
+                    retryCounts++;
+                    synchronized (this) {//借助object condition queue 来提高CPU利用率
+                        logger.info(String.
+                                format("t:%s,当前节点：%s,尝试等待获取锁：%s", Thread.currentThread().getId(), getRedisIdentityKey(), lockKey));
+                        this.wait(WaitLockTimeSecond); //未能获取到lock，进行指定时间的wait再重试.
+                    }
+                } else if (retryCounts == RetryCount) {
+                    logger.info(String.
+                            format("t:%s,当前节点：%s,指定时间内获取锁失败：%s", Thread.currentThread().getId(), getRedisIdentityKey(), lockKey));
+                    return false;
+                } else {
+                    return false;//不需要等待，直接退出。
+                }
+</code></pre></div></div>
+
+<p>使用条件队列的好处就是，它虽然释放出了CPU但是也不会持有当前synchronized，这样就可以让其他并发进来的线程也可以获取到当前内置锁，然后形成队列。当wait时间到了被调度唤醒之后才会重新来申请synchronized锁。
+简单讲就是不会再锁上等待而是在队列里等待。java object每一个对象都持有一个条件队列，与当前内置锁配合使用。</p>
+
+<h2 id="retrycount-带有重试次数限制">retrycount 带有重试次数限制</h2>
+
+<p>等待远程redis lock肯定是需要一定重试机制，但是这种重试是需要一定的限制。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    /**
+     * 重试获取锁的次数,可以根据当前任务的执行时间来设置。
+     * 需要时间=RetryCount*(WaitLockTimeSecond/1000)
+     */
+    private static final int RetryCount = 10;
+</code></pre></div></div>
+
+<p>这种等待是需要用户指定的， if (isWait &amp;&amp; retryCounts &lt; RetryCount) ，当isWait为true才会进行重试。</p>
+
+<p>object.wait(timeout),条件队列中的方法wait是需要一个waittime。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    /**
+     * 等待获取锁的时间，可以根据当前任务的执行时间来设置。
+     * 设置的太短，浪费CPU，设置的太长锁就不太公平。
+     */
+    private static final long WaitLockTimeSecond = 2000;
+</code></pre></div></div>
+
+<p>默认2000毫秒。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>this.wait(WaitLockTimeSecond); //未能获取到lock，进行指定时间的wait再重试.
+</code></pre></div></div>
+
+<p>注意：this.wait虽然会blocking住，但是这里的内置锁是会立即释放出来的。所以，有时候我们可以借助这种特性来优化特殊场景。</p>
+
+<h2 id="delete-lock-删除远程锁">delete lock 删除远程锁</h2>
+
+<p>释放redis lock比较简单，直接del key就好了</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>long status = jedis.del(lockKey);
+        if (status &gt; 0) {
+            logger.info(String.
+                    format("t:%s,当前节点：%s,释放锁：%s 成功。", Thread.currentThread().getId(), getRedisIdentityKey(), lockKey));
+            return true;
+        }
+</code></pre></div></div>
+
+<p>一旦delete 之后，首先wait唤醒的线程将会获得锁。</p>
+
+<h2 id="acquire-lock-申请lock">acquire lock 申请lock</h2>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/**
+     * 带超时时间的redis lock.
+     *
+     * @param lockKeyExpireSecond 锁key在redis中的过去时间
+     * @param lockKey             lock key
+     * @param isWait              当获取不到锁时是否需要等待
+     * @throws Exception lockKey is empty throw exception.
+     */
+    public Boolean acquireLockWithTimeout(int lockKeyExpireSecond, String lockKey, Boolean isWait) throws Exception {
+        if (StringUtils.isEmpty(lockKey)) throw new Exception("lockKey is empty.");
+        int retryCounts = 0;
+        while (true) {
+            Long status, expire = 0L;
+            status = jedis.setnx(lockKey, redisIdentityKey);/**设置 lock key.*/
+            if (status &gt; 0) {
+                expire = jedis.expire(lockKey, lockKeyExpireSecond);/**set  redis key expire time.*/
+            }
+            if (status &gt; 0 &amp;&amp; expire &gt; 0) {
+                logger.info(String.
+                        format("t:%s,当前节点：%s,获取到锁：%s", Thread.currentThread().getId(), getRedisIdentityKey(), lockKey));
+                return true;/**获取到lock*/
+            }
+            try {
+                if (isWait &amp;&amp; retryCounts &lt; RetryCount) {
+                    retryCounts++;
+                    synchronized (this) {//借助object condition queue 来提高CPU利用率
+                        logger.info(String.
+                                format("t:%s,当前节点：%s,尝试等待获取锁：%s", Thread.currentThread().getId(), getRedisIdentityKey(), lockKey));
+                        this.wait(WaitLockTimeSecond); //未能获取到lock，进行指定时间的wait再重试.
+                    }
+                } else if (retryCounts == RetryCount) {
+                    logger.info(String.
+                            format("t:%s,当前节点：%s,指定时间内获取锁失败：%s", Thread.currentThread().getId(), getRedisIdentityKey(), lockKey));
+                    return false;
+                } else {
+                    return false;//不需要等待，直接退出。
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+
+## release lock 释放lock
+/**
+     * 释放redis lock。
+     *
+     * @param lockKey lock key
+     * @throws Exception lockKey is empty throw exception.
+     */
+    public Boolean releaseLockWithTimeout(String lockKey) throws Exception {
+        if (StringUtils.isEmpty(lockKey)) throw new Exception("lockKey is empty.");
+        long status = jedis.del(lockKey);
+        if (status &gt; 0) {
+            logger.info(String.format("当前节点：%s,释放锁：%s 成功。", getRedisIdentityKey(), lockKey));
+            return true;
+        }
+        logger.info(String.format("当前节点：%s,释放锁：%s 失败。", getRedisIdentityKey(), lockKey));
+        return false;
+    }
+</code></pre></div></div>
+
+<h2 id="demo-演示">demo 演示</h2>
+
+<p>2017-06-18 13:57:43.867 INFO 1444 — [nio-8080-exec-1] c.plen.opensource.implement.RedisLocker : t:23,当前节点：5f81f482-295a-4394-b8cb-d7282e51dd6e,获取到锁：product:10100101:shopping
+2017-06-18 13:57:47.062 INFO 1444 — [nio-8080-exec-3] c.plen.opensource.implement.RedisLocker : t:25,当前节点：5f81f482-295a-4394-b8cb-d7282e51dd6e,尝试等待获取锁：product:10100101:shopping
+2017-06-18 13:57:49.063 INFO 1444 — [nio-8080-exec-3] c.plen.opensource.implement.RedisLocker : t:25,当前节点：5f81f482-295a-4394-b8cb-d7282e51dd6e,尝试等待获取锁：product:10100101:shopping
+2017-06-18 13:57:51.064 INFO 1444 — [nio-8080-exec-3] c.plen.opensource.implement.RedisLocker : t:25,当前节点：5f81f482-295a-4394-b8cb-d7282e51dd6e,尝试等待获取锁：product:10100101:shopping
+2017-06-18 13:57:53.066 INFO 1444 — [nio-8080-exec-3] c.plen.opensource.implement.RedisLocker : t:25,当前节点：5f81f482-295a-4394-b8cb-d7282e51dd6e,尝试等待获取锁：product:10100101:shopping
+2017-06-18 13:57:55.068 INFO 1444 — [nio-8080-exec-3] c.plen.opensource.implement.RedisLocker : t:25,当前节点：5f81f482-295a-4394-b8cb-d7282e51dd6e,尝试等待获取锁：product:10100101:shopping
+2017-06-18 13:57:57.069 INFO 1444 — [nio-8080-exec-3] c.plen.opensource.implement.RedisLocker : t:25,当前节点：5f81f482-295a-4394-b8cb-d7282e51dd6e,尝试等待获取锁：product:10100101:shopping
+2017-06-18 13:57:59.070 INFO 1444 — [nio-8080-exec-3] c.plen.opensource.implement.RedisLocker : t:25,当前节点：5f81f482-295a-4394-b8cb-d7282e51dd6e,尝试等待获取锁：product:10100101:shopping
+2017-06-18 13:58:01.071 INFO 1444 — [nio-8080-exec-3] c.plen.opensource.implement.RedisLocker : t:25,当前节点：5f81f482-295a-4394-b8cb-d7282e51dd6e,尝试等待获取锁：product:10100101:shopping
+2017-06-18 13:58:03.072 INFO 1444 — [nio-8080-exec-3] c.plen.opensource.implement.RedisLocker : t:25,当前节点：5f81f482-295a-4394-b8cb-d7282e51dd6e,尝试等待获取锁：product:10100101:shopping
+2017-06-18 13:58:05.073 INFO 1444 — [nio-8080-exec-3] c.plen.opensource.implement.RedisLocker : t:25,当前节点：5f81f482-295a-4394-b8cb-d7282e51dd6e,尝试等待获取锁：product:10100101:shopping
+2017-06-18 13:58:07.074 INFO 1444 — [nio-8080-exec-3] c.plen.opensource.implement.RedisLocker : t:25,当前节点：5f81f482-295a-4394-b8cb-d7282e51dd6e,指定时间内获取锁失败：product:10100101:shopping
+2017-06-18 13:58:23.768 INFO 1444 — [nio-8080-exec-6] c.plen.opensource.implement.RedisLocker : t:28,当前节点：5f81f482-295a-4394-b8cb-d7282e51dd6e,尝试等待获取锁：product:10100101:shopping
+2017-06-18 13:58:25.769 INFO 1444 — [nio-8080-exec-6] c.plen.opensource.implement.RedisLocker : t:28,当前节点：5f81f482-295a-4394-b8cb-d7282e51dd6e,尝试等待获取锁：product:10100101:shopping
+2017-06-18 13:58:27.770 INFO 1444 — [nio-8080-exec-6] c.plen.opensource.implement.RedisLocker : t:28,当前节点：5f81f482-295a-4394-b8cb-d7282e51dd6e,尝试等待获取锁：product:10100101:shopping
+2017-06-18 13:58:29.772 INFO 1444 — [nio-8080-exec-6] c.plen.opensource.implement.RedisLocker : t:28,当前节点：5f81f482-295a-4394-b8cb-d7282e51dd6e,尝试等待获取锁：product:10100101:shopping
+2017-06-18 13:58:31.773 INFO 1444 — [nio-8080-exec-6] c.plen.opensource.implement.RedisLocker : t:28,当前节点：5f81f482-295a-4394-b8cb-d7282e51dd6e,尝试等待获取锁：product:10100101:shopping
+2017-06-18 13:58:33.774 INFO 1444 — [nio-8080-exec-6] c.plen.opensource.implement.RedisLocker : t:28,当前节点：5f81f482-295a-4394-b8cb-d7282e51dd6e,尝试等待获取锁：product:10100101:shopping
+2017-06-18 13:58:35.774 INFO 1444 — [nio-8080-exec-6] c.plen.opensource.implement.RedisLocker : t:28,当前节点：5f81f482-295a-4394-b8cb-d7282e51dd6e,获取到锁：product:10100101:shopping</p>
+
+<p>thread 23 优先获取到对商品ID 10100101 进行修改，所以先锁住当前商品。</p>
+
+<p>t:23,当前节点：843d3ec0-9c22-4d8a-bcaa-745dba35b8a4,获取到锁：product:10100101:shopping</p>
+
+<p>紧接着，thread 25也来对当前商品 10100101进行修改，所以在尝试获取锁。</p>
+
+<p>2017-06-18 13:50:11.021 INFO 4616 — [nio-8080-exec-3] c.plen.opensource.implement.RedisLocker : t:25,当前节点：946b7250-29f3-459b-8320-62d31e6f1fc4,尝试等待获取锁：product:10100101:shopping
+2017-06-18 13:50:13.023 INFO 4616 — [nio-8080-exec-3] c.plen.opensource.implement.RedisLocker : t:25,当前节点：946b7250-29f3-459b-8320-62d31e6f1fc4,尝试等待获取锁：product:10100101:shopping
+2017-06-18 13:50:15.026 INFO 4616 — [nio-8080-exec-3] c.plen.opensource.implement.RedisLocker : t:25,当前节点：946b7250-29f3-459b-8320-62d31e6f1fc4,尝试等待获取锁：product:10100101:shopping
+2017-06-18 13:50:17.028 INFO 4616 — [nio-8080-exec-3] c.plen.opensource.implement.RedisLocker : t:25,当前节点：946b7250-29f3-459b-8320-62d31e6f1fc4,尝试等待获取锁：product:10100101:shopping
+2017-06-18 13:50:19.030 INFO 4616 — [nio-8080-exec-3] c.plen.opensource.implement.RedisLocker : t:25,当前节点：946b7250-29f3-459b-8320-62d31e6f1fc4,尝试等待获取锁：product:10100101:shopping
+2017-06-18 13:50:21.031 INFO 4616 — [nio-8080-exec-3] c.plen.opensource.implement.RedisLocker : t:25,当前节点：946b7250-29f3-459b-8320-62d31e6f1fc4,尝试等待获取锁：product:10100101:shopping
+2017-06-18 13:50:23.035 INFO 4616 — [nio-8080-exec-3] c.plen.opensource.implement.RedisLocker : t:25,当前节点：946b7250-29f3-459b-8320-62d31e6f1fc4,尝试等待获取锁：product:10100101:shopping
+2017-06-18 13:50:25.037 INFO 4616 — [nio-8080-exec-3] c.plen.opensource.implement.RedisLocker : t:25,当前节点：946b7250-29f3-459b-8320-62d31e6f1fc4,尝试等待获取锁：product:10100101:shopping
+2017-06-18 13:50:27.041 INFO 4616 — [nio-8080-exec-3] c.plen.opensource.implement.RedisLocker : t:25,当前节点：946b7250-29f3-459b-8320-62d31e6f1fc4,尝试等待获取锁：product:10100101:shopping
+2017-06-18 13:50:29.042 INFO 4616 — [nio-8080-exec-3] c.plen.opensource.implement.RedisLocker : t:25,当前节点：946b7250-29f3-459b-8320-62d31e6f1fc4,尝试等待获取锁：product:10100101:shopping
+2017-06-18 13:50:35.289 INFO 4616 — [nio-8080-exec-3] c.plen.opensource.implement.RedisLocker : t:25,当前节点：946b7250-29f3-459b-8320-62d31e6f1fc4,指定时间内获取锁失败：product:10100101:shopping</p>
+
+<p>在进行了retry10次（2000毫秒，2秒）之后，获取失败，直接返回，等待下次任务调度开始。</p>
+
+<p>2017-06-18 13:58:07.074 INFO 1444 — [nio-8080-exec-3] c.plen.opensource.implement.RedisLocker : t:25,当前节点：5f81f482-295a-4394-b8cb-d7282e51dd6e,指定时间内获取锁失败：product:10100101:shopping
+2017-06-18 13:58:23.768 INFO 1444 — [nio-8080-exec-6] c.plen.opensource.implement.RedisLocker : t:28,当前节点：5f81f482-295a-4394-b8cb-d7282e51dd6e,尝试等待获取锁：product:10100101:shopping
+2017-06-18 13:58:25.769 INFO 1444 — [nio-8080-exec-6] c.plen.opensource.implement.RedisLocker : t:28,当前节点：5f81f482-295a-4394-b8cb-d7282e51dd6e,尝试等待获取锁：product:10100101:shopping
+2017-06-18 13:58:27.770 INFO 1444 — [nio-8080-exec-6] c.plen.opensource.implement.RedisLocker : t:28,当前节点：5f81f482-295a-4394-b8cb-d7282e51dd6e,尝试等待获取锁：product:10100101:shopping
+2017-06-18 13:58:29.772 INFO 1444 — [nio-8080-exec-6] c.plen.opensource.implement.RedisLocker : t:28,当前节点：5f81f482-295a-4394-b8cb-d7282e51dd6e,尝试等待获取锁：product:10100101:shopping
+2017-06-18 13:58:31.773 INFO 1444 — [nio-8080-exec-6] c.plen.opensource.implement.RedisLocker : t:28,当前节点：5f81f482-295a-4394-b8cb-d7282e51dd6e,尝试等待获取锁：product:10100101:shopping
+2017-06-18 13:58:33.774 INFO 1444 — [nio-8080-exec-6] c.plen.opensource.implement.RedisLocker : t:28,当前节点：5f81f482-295a-4394-b8cb-d7282e51dd6e,尝试等待获取锁：product:10100101:shopping
+2017-06-18 13:58:35.774 INFO 1444 — [nio-8080-exec-6] c.plen.opensource.implement.RedisLocker : t:28,当前节点：5f81f482-295a-4394-b8cb-d7282e51dd6e,获取到锁：product:10100101:shopping</p>
+
+<p>thread 28 发起对商品 10100101 进行修改，retry6次之后获取到lock。</p>
+
+<h2 id="锁的粒度问题锁分解锁分段">锁的粒度问题，锁分解、锁分段</h2>
+
+<p>这里的例子比较简单。如果在并发比较大的情况下是需要结合锁分解、锁分段来进行优化的。
+修改商品，没有必要锁住整个商品库，只需要锁住你需要修改的指定ID的商品。也可以借鉴锁分段思路，将数据按照一定维度进行划分，然后加上不同维度的锁，可以提升CPU性能。可以根据商品catagory来设计段锁或者batch来设计段锁。</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/redislock-redis%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/java%E5%9B%BD%E9%99%85%E5%8C%96%E4%B9%8B-%E5%9B%9B-hibernate-validator%E5%9B%BD%E9%99%85%E5%8C%96%E8%A1%A8%E5%8D%95%E9%AA%8C%E8%AF%81.html">&laquo; java国际化之(四)— hibernate-validator国际化表单验证</a>
+  
+  
+  <a class="next" href="/2017/jms-%E4%B9%8B-active-mq%E7%9A%84%E5%AE%89%E5%85%A8%E6%9C%BA%E5%88%B6.html">JMS 之 Active MQ的安全机制 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

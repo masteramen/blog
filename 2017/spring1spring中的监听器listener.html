@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>【Spring】1、Spring 中的监听器 Listener | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="【Spring】1、Spring 中的监听器 Listener" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="1、EventListener" />
+<meta property="og:description" content="1、EventListener" />
+<link rel="canonical" href="http://www.jfox.info/2017/spring1spring%E4%B8%AD%E7%9A%84%E7%9B%91%E5%90%AC%E5%99%A8listener.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/spring1spring%E4%B8%AD%E7%9A%84%E7%9B%91%E5%90%AC%E5%99%A8listener.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:58:50+00:00" />
+<script type="application/ld+json">
+{"description":"1、EventListener","@type":"BlogPosting","url":"http://www.jfox.info/2017/spring1spring%E4%B8%AD%E7%9A%84%E7%9B%91%E5%90%AC%E5%99%A8listener.html","headline":"【Spring】1、Spring 中的监听器 Listener","dateModified":"2017-01-01T15:58:50+00:00","datePublished":"2017-01-01T15:58:50+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/spring1spring%E4%B8%AD%E7%9A%84%E7%9B%91%E5%90%AC%E5%99%A8listener.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">【Spring】1、Spring 中的监听器 Listener</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:58:50+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>1、EventListener</p>
+
+<p>2、HttpSessionAttributeListener   继承EventListener接口</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> HttpSessionAttributeListener是“属性改变监听器”，当在会话对象中加入属性、移除属性或替换属性时，相对应的attributeAdded()、attributeRemoved()与
+
+ attributeReplaced()方法就会被调用，并分别传入HttpSessionBindingEvent。
+</code></pre></div></div>
+
+<p>package javax.servlet.http;</p>
+
+<p>import java.util.EventListener;</p>
+
+<p>public interface HttpSessionAttributeListener extends EventListener {
+public void attributeAdded ( HttpSessionBindingEvent se );
+public void attributeRemoved ( HttpSessionBindingEvent se );
+public void attributeReplaced ( HttpSessionBindingEvent se );</p>
+
+<p>}</p>
+
+<p>如果希望容器在部署应用程序时，实例化实现HttpSessionAttributeListener的类并注册给应用程序，则同样也是在实现类上标注@WebListener：
+…
+@WebListener()
+public class HttpSessionAttrListener
+implements HttpSessionAttributeListener {
+…
+}</p>
+
+<p>另一个方式是在web.xml下进行设置：
+…</p>
+<listener>
+<listener-class>cc.openhome.HttpSessionAttrListener</listener-class>
+</listener>
+
+<p>3、HttpSessionListener    继承EventListener接口</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>publicinterface HttpSessionListener extends EventListener {
+    publicvoid sessionCreated(HttpSessionEvent se);
+    publicvoid sessionDestroyed(HttpSessionEvent se);
+}
+</code></pre></div></div>
+
+<p>在HttpSession对象初始化或结束前，会分别调用sessionCreated()与session- Destroyed()方法，可以通过传入的HttpSessionEvent，使用getSession()取得HttpSession，    以针对会话对象作出相对应的创建或结束处理操作。</p>
+
+<p>4、HttpSessionBindingListener</p>
+
+<p>HttpSessionBindingListener是“对象绑定监听器”，如果有个即将加入HttpSession的属性对象，希望在设置给HttpSession成为属性或从HttpSession中移除时，可以收到HttpSession的通知，则可以让该对象实现HttpSessionBindingListener接口。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">javax</span><span class="p">.</span><span class="n">servlet</span><span class="p">.</span><span class="n">http</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">java</span><span class="p">.</span><span class="n">util</span><span class="p">.</span><span class="n">EventListener</span><span class="p">;</span>
+<span class="n">publicinterface</span> <span class="n">HttpSessionBindingListener</span> <span class="n">extends</span> <span class="n">EventListener</span> <span class="p">{</span>
+    <span class="n">publicvoid</span> <span class="n">valueBound</span><span class="p">(</span><span class="n">HttpSessionBindingEvent</span> <span class="n">event</span><span class="p">);</span>
+    <span class="n">publicvoid</span> <span class="n">valueUnbound</span><span class="p">(</span><span class="n">HttpSessionBindingEvent</span> <span class="n">event</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>当用户输入正确的名称与密码时，首先会以用户名来创建User实例，而后加入HttpSession中作为属性。希望User实例被加入成为HttpSession属性时，可以自动从数据库中加载用户的其他数据，如地址、照片等，或是在日志中记录用户登录的信息，可以让User类实现HttpSessionBindingListener接口。</p>
+
+<ol>
+  <li>HttpSessionActivationListener</li>
+</ol>
+
+<p>HttpSessionActivationListener是“对象迁移监听器”，其定义了两个方法sessionWillPassivate()与sessionDidActivate()。很多情况下，几乎不会使用到HttpSessionActivationListener。在使用到分布式环境时，应用程序的对象可能分散在多个JVM中。当HttpSession要从一个JVM迁移至另一个JVM时，必须先在原本的JVM上序列化(Serialize)所有的属性对象，在这之前若属性对象有实现HttpSessionActivationListener，就会调用sessionWillPassivate()方法，而 HttpSession迁移至另一个JVM后，就会对所有属性对象作反序列化，此时会调用sessionDidActivate()方法。</p>
+
+<p>要可以序列化的对象必须实现Serializable接口。如果HttpSession属性对象中有些类成员无法作序列化，则可以在sessionWillPassivate()方法中做些替代处理来保存该成员状态，而在sessionDidActivate()方法中做些恢复该成员状态的动作。</p>
+
+<p>概述：</p>
+
+<p>Servlet监听器用于监听一些重要事件的发生，监听器对象可以在事情发生前、发生后可以做一些必要的处理。</p>
+
+<p>接口：</p>
+
+<p>目前Servlet2.4和JSP2.0总共有8个监听器接口和6个Event类，其中HttpSessionAttributeListener与</p>
+
+<p>HttpSessionBindingListener 皆使用HttpSessionBindingEvent;HttpSessionListener和 HttpSessionActivationListener则都使用HttpSessionEvent;其余Listener对应的Event如下所示：</p>
+
+<p>Listener接口</p>
+
+<p>Event类</p>
+
+<p>ServletContextListener</p>
+
+<p>ServletContextEvent</p>
+
+<p>ServletContextAttributeListener</p>
+
+<p>ServletContextAttributeEvent</p>
+
+<p>HttpSessionListener</p>
+
+<p>HttpSessionEvent</p>
+
+<p>HttpSessionActivationListener</p>
+
+<p>HttpSessionAttributeListener</p>
+
+<p>HttpSessionBindingEvent</p>
+
+<p>HttpSessionBindingListener</p>
+
+<p>ServletRequestListener</p>
+
+<p>ServletRequestEvent</p>
+
+<p>ServletRequestAttributeListener</p>
+
+<p>ServletRequestAttributeEvent</p>
+
+<p>分别介绍：</p>
+
+<p>一 ServletContext相关监听接口</p>
+
+<p>补充知识：</p>
+
+<p>通过ServletContext 的实例可以存取应用程序的全局对象以及初始化阶段的变量。</p>
+
+<p>在JSP文件中，application 是 ServletContext 的实例，由JSP容器默认创建。Servlet 中调用 getServletContext()方法得到 ServletContext 的实例。</p>
+
+<p>注意：</p>
+
+<p>全局对象即Application范围对象，初始化阶段的变量指在web.xml中，经由<context-param>元素所设定的变量，它的范围也是Application范围，例如：</context-param></p>
+
+<context-param>
+
+<param-name>Name</param-name>
+
+<param-value>browser</param-value>
+
+</context-param>
+
+<p>当容器启动时，会建立一个Application范围的对象，若要在JSP网页中取得此变量时：</p>
+
+<p>String name = (String)application.getInitParameter(“Name”);</p>
+
+<p>或者使用EL时：</p>
+
+<p>${initPara.name}</p>
+
+<p>若是在Servlet中，取得Name的值方法：</p>
+
+<p>String name = (String)ServletContext.getInitParameter(“Name”);</p>
+
+<p>1.ServletContextListener：</p>
+
+<p>用于监听WEB 应用启动和销毁的事件，监听器类需要实现javax.servlet.ServletContextListener 接口。</p>
+
+<p>ServletContextListener 是 ServletContext 的监听者，如果 ServletContext 发生变化，如服务器启动时 ServletContext 被创建，服务器关闭时 ServletContext 将要被销毁。</p>
+
+<p>ServletContextListener接口的方法：</p>
+
+<p>void contextInitialized(ServletContextEvent sce)</p>
+
+<p>通知正在接受的对象，应用程序已经被加载及初始化。</p>
+
+<p>void contextDestroyed(ServletContextEvent sce)</p>
+
+<p>通知正在接受的对象，应用程序已经被载出。</p>
+
+<p>ServletContextEvent中的方法：</p>
+
+<p>ServletContext getServletContext()</p>
+
+<p>取得ServletContext对象</p>
+
+<p>2.ServletContextAttributeListener：用于监听WEB应用属性改变的事件，包括：增加属性、删除属性、修改属性，监听器类需要实现javax.servlet.ServletContextAttributeListener接口。</p>
+
+<p>ServletContextAttributeListener接口方法：</p>
+
+<p>void attributeAdded(ServletContextAttributeEvent scab)</p>
+
+<p>若有对象加入Application的范围，通知正在收听的对象</p>
+
+<p>void attributeRemoved(ServletContextAttributeEvent scab)</p>
+
+<p>若有对象从Application的范围移除，通知正在收听的对象</p>
+
+<p>void attributeReplaced(ServletContextAttributeEvent scab)</p>
+
+<p>若在Application的范围中，有对象取代另一个对象时，通知正在收听的对象</p>
+
+<p>ServletContextAttributeEvent中的方法：</p>
+
+<p>java.lang.String getName()</p>
+
+<p>回传属性的名称</p>
+
+<p>java.lang.Object getValue()</p>
+
+<p>回传属性的值</p>
+
+<p>二、HttpSession相关监听接口</p>
+
+<p>1.HttpSessionBindingListener接口</p>
+
+<p>注意：HttpSessionBindingListener接口是唯一不需要再web.xml中设定的Listener</p>
+
+<p>当我们的类实现了HttpSessionBindingListener接口后，只要对象加入 Session范围（即调用HttpSession对象的setAttribute方法的时候）或从Session范围中移出（即调用HttpSession对象的 removeAttribute方法的时候或Session Time out的时候）时，容器分别会自动调用下列两个方法：</p>
+
+<p>void valueBound(HttpSessionBindingEvent event)</p>
+
+<p>void valueUnbound(HttpSessionBindingEvent event)</p>
+
+<p>思考：如何实现记录网站的客户登录日志， 统计在线人数？</p>
+
+<p>2.HttpSessionAttributeListener接口</p>
+
+<p>HttpSessionAttributeListener监听HttpSession中的属性的操作。</p>
+
+<p>当在Session增加一个属性时，激发attributeAdded(HttpSessionBindingEvent se) 方法；当在Session删除一个属性时，激发attributeRemoved(HttpSessionBindingEvent se)方法；当在Session属性被重新设置时，激发attributeReplaced(HttpSessionBindingEvent se) 方法。这和ServletContextAttributeListener比较类似。</p>
+
+<p>3.HttpSessionListener接口</p>
+
+<p>HttpSessionListener监听 HttpSession的操作。当创建一个Session时，激发session Created(HttpSessionEvent se)方法；当销毁一个Session时，激发sessionDestroyed (HttpSessionEvent se)方法。</p>
+
+<p>4.HttpSessionActivationListener接口</p>
+
+<p>主要用于同一个Session转移至不同的JVM的情形。</p>
+
+<p>四、ServletRequest监听接口</p>
+
+<p>1.ServletRequestListener接口</p>
+
+<p>和ServletContextListener接口类似的，这里由ServletContext改为ServletRequest</p>
+
+<p>2.ServletRequestAttributeListener接口</p>
+
+<p>和ServletContextListener接口类似的，这里由ServletContext改为ServletRequest</p>
+
+<p>有的listener可用于统计网站在线人数及访问量。 如下：</p>
+
+<p>服务器启动时（实现ServletContextListener监听器contextInitialized方法），读取<a href="https://www.jfox.info/go.php?url=http://lib.csdn.net/base/mysql">数据库</a>，并将其用一个计数变量保存在application范围内</p>
+
+<p>session创建时（实现HttpSessionListener监听器sessionCreated方法），读取计数变量加1并重新保存</p>
+
+<p>服务器关闭时（实现ServletContextListener监听器contextDestroyed方法），更新数据库</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/spring1spring%E4%B8%AD%E7%9A%84%E7%9B%91%E5%90%AC%E5%99%A8listener.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/netty%E7%AE%80%E5%8D%95inbound%E4%BF%A1%E9%81%93%E5%A4%84%E7%90%86%E5%99%A8simplechannelinboundhandler.html">&laquo; netty 简单Inbound信道处理器（SimpleChannelInboundHandler）</a>
+  
+  
+  <a class="next" href="/2017/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3java%E8%99%9A%E6%8B%9F%E6%9C%BA%E4%B8%89.html">《深入理解Java虚拟机》（三） &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

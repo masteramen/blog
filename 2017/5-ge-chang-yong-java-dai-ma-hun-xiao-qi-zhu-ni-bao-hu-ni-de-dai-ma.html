@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>5个常用Java 代码混淆器 助你保护你的代码 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="5个常用Java 代码混淆器 助你保护你的代码" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="Java Obfuscator的原理就是将字节码转换为一个逻辑上的对等物，这种转换后的版本极难拆散。即使有人试图去反编译，过程将极其艰难复杂，并很难绕过转换后模糊晦涩的编码。主要的过程如下：" />
+<meta property="og:description" content="Java Obfuscator的原理就是将字节码转换为一个逻辑上的对等物，这种转换后的版本极难拆散。即使有人试图去反编译，过程将极其艰难复杂，并很难绕过转换后模糊晦涩的编码。主要的过程如下：" />
+<link rel="canonical" href="http://www.jfox.info/2017/5-ge-chang-yong-java-dai-ma-hun-xiao-qi-zhu-ni-bao-hu-ni-de-dai-ma.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/5-ge-chang-yong-java-dai-ma-hun-xiao-qi-zhu-ni-bao-hu-ni-de-dai-ma.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:47:19+00:00" />
+<script type="application/ld+json">
+{"description":"Java Obfuscator的原理就是将字节码转换为一个逻辑上的对等物，这种转换后的版本极难拆散。即使有人试图去反编译，过程将极其艰难复杂，并很难绕过转换后模糊晦涩的编码。主要的过程如下：","@type":"BlogPosting","url":"http://www.jfox.info/2017/5-ge-chang-yong-java-dai-ma-hun-xiao-qi-zhu-ni-bao-hu-ni-de-dai-ma.html","headline":"5个常用Java 代码混淆器 助你保护你的代码","dateModified":"2017-01-01T15:47:19+00:00","datePublished":"2017-01-01T15:47:19+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/5-ge-chang-yong-java-dai-ma-hun-xiao-qi-zhu-ni-bao-hu-ni-de-dai-ma.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">5个常用Java 代码混淆器 助你保护你的代码</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:47:19+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>Java Obfuscator的原理就是将字节码转换为一个逻辑上的对等物，这种转换后的版本极难拆散。即使有人试图去反编译，过程将极其艰难复杂，并很难绕过转换后模糊晦涩的编码。主要的过程如下：</p>
+
+<p>用一个常规编译器（比如JDK）编译Java源代码运行混淆器，在受保护的环境下生成编译类文件。最后生成的会是一个不同的输出文档，也许扩展名也会不同。</p>
+
+<p>这个被重命名为.class file的文件在功能上与原字节码是对等的，由于虚拟机仍然可以对其进行解译，因此对性能不会产生影响。</p>
+
+<p>以下是一些可用来混淆（obfuscate）Java字节码的工具：</p>
+
+<p><strong>Zelix KlassMaster</strong></p>
+
+<p>Zelix KlassMaster是一款用Java写的实用工具，能读取和修改Java类文件，可以运行在任何支持1.1.6版Java虚拟机的平台上。
+下载：<a href="/url.php?_src=&amp;isencode=1&amp;content=dGltZT0xNDI3ODUyMzUzMTI1JnVybD1odHRwJTNBJTJGJTJGd3d3LnpkbmV0aW5kaWEuY29tJTJGZG93bmxvYWRzJTJGaW5mbyUyRjg5ODI1NS5odG1s">http://www.zdnetindia.com/downloads/info/898255.html</a></p>
+
+<p><strong>Cinnabar Canner</strong></p>
+
+<p>Canner通过创建一个原生Windows可执行文件（EXE文件）保护你的代码不被逆向工程反编译，这个可执行文件包含了你的应用程序类和资源的全部加密版本，只有在被JVM调用到内存中时才处于非加密状态。
+网站：<a href="/url.php?_src=&amp;isencode=1&amp;content=dGltZT0xNDI3ODUyMzUzMTI2JnVybD1odHRwJTNBJTJGJTJGd3d3LmNpbm5hYmFyc3lzdGVtcy5jb20lMkZjYW5uZXIuaHRtbA==">http://www.cinnabarsystems.com/canner.html</a>
+下载：<a href="/url.php?_src=&amp;isencode=1&amp;content=dGltZT0xNDI3ODUyMzUzMTI2JnVybD1odHRwJTNBJTJGJTJGd3d3LmNpbm5hYmFyc3lzdGVtcy5jb20lMkZkb3dubG9hZC5odG1s">http://www.cinnabarsystems.com/download.html</a></p>
+
+<p><strong>Jmangle Java类粉碎机</strong></p>
+
+<p>Jmangle是用来阻止反编译Java程序，降低盗版的软件，开发者可用其粉碎类文件中的符号。
+网站：<a href="/url.php?_src=&amp;isencode=1&amp;content=dGltZT0xNDI3ODUyMzUzMTI2JnVybD1odHRwJTNBJTJGJTJGd3d3LmVsZWdhbnQtc29mdHdhcmUuY29tJTJGc29mdHdhcmUlMkZqbWFuZ2xlJTJG">http://www.elegant-software.com/software/jmangle/</a>
+下载：<a href="/url.php?_src=&amp;isencode=1&amp;content=dGltZT0xNDI3ODUyMzUzMTI2JnVybD1odHRwJTNBJTJGJTJGd3d3LmVsZWdhbnQtc29mdHdhcmUuY29tJTJGc29mdHdhcmUlMkZqbWFuZ2xlJTJGZG93bmxvYWQuaHRtbA==">http://www.elegant-software.com/software/jmangle/download.html</a></p>
+
+<p><strong>RetroGuard</strong></p>
+
+<p>JavaGuard是一款通用的字节码混淆器，用来无缝融入你的日常构建和测试过程中，使得你辛苦编写宝贵的Java代码更加安全。
+网站：<a href="/url.php?_src=&amp;isencode=1&amp;content=dGltZT0xNDI3ODUyMzUzMTI2JnVybD1odHRwJTNBJTJGJTJGamF2YS1zb3VyY2UubmV0JTJGb3Blbi1zb3VyY2UlMkZvYmZ1c2NhdG9ycyUyRmphdmFndWFyZA==">http://java-source.net/open-source/obfuscators/javaguard</a></p>
+
+<p><strong>JODE</strong></p>
+
+<p>JODE是一款含Java解码器和优化器的java包。
+网站：<a href="/url.php?_src=&amp;isencode=1&amp;content=dGltZT0xNDI3ODUyMzUzMTI2JnVybD1odHRwJTNBJTJGJTJGamF2YS1zb3VyY2UubmV0JTJGb3Blbi1zb3VyY2UlMkZvYmZ1c2NhdG9ycyUyRmpvZGU=">http://java-source.net/open-source/obfuscators/jode</a></p>
+
+<p>最后要说的是，你也可使用其他几款类似的实用工具，这些工具运用许多不同的方法达到了相同的目标。他们也有共同之处，就是允许通过不同的过程转换生成.exe文件，将.class和.jar文件模糊化。Google Directory上有一张它们的综合列表：
+<a href="/url.php?_src=&amp;isencode=1&amp;content=dGltZT0xNDI3ODUyMzUzMTI2JnVybD1odHRwJTNBJTJGJTJGZGlyZWN0b3J5Lmdvb2dsZS5jb20lMkZUb3AlMkZDb21wdXRlcnMlMkZQcm9ncmFtbWluZyUyRkxhbmd1YWdlcyUyRkphdmElMkZEZXZlbG9wbWVudF9Ub29scyUyRk9iZnVzY2F0b3JzJTJG">http://directory.google.com/Top/Computers/Programming/Languages/Java/Development_Tools/Obfuscators/</a>（译/Wilson）</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/5-ge-chang-yong-java-dai-ma-hun-xiao-qi-zhu-ni-bao-hu-ni-de-dai-ma.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/ru-he-yong-java-bian-xie-yi-duan-dai-ma-yin-fa-na-cun-xie-lu.html">&laquo; 如何用Java编写一段代码引发内存泄露</a>
+  
+  
+  <a class="next" href="/2017/windows-xia-de-chcp-ming-ling-geng-gai-gai-kong-zhi-tai-de-huo-dong-kong-zhi-tai-dai-ma-ye.html">Windows下的chcp命令（更改该控制台的活动控制台代码页） &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

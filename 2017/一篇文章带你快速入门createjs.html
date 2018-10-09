@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>一篇文章带你快速入门createjs | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="一篇文章带你快速入门createjs" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="EaselJS：用于 Sprites、动画、向量和位图的绘制，创建 HTML5 Canvas 上的交互体验（包含多点触控）" />
+<meta property="og:description" content="EaselJS：用于 Sprites、动画、向量和位图的绘制，创建 HTML5 Canvas 上的交互体验（包含多点触控）" />
+<link rel="canonical" href="http://www.jfox.info/2017/%E4%B8%80%E7%AF%87%E6%96%87%E7%AB%A0%E5%B8%A6%E4%BD%A0%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8createjs.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/%E4%B8%80%E7%AF%87%E6%96%87%E7%AB%A0%E5%B8%A6%E4%BD%A0%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8createjs.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:51:09+00:00" />
+<script type="application/ld+json">
+{"description":"EaselJS：用于 Sprites、动画、向量和位图的绘制，创建 HTML5 Canvas 上的交互体验（包含多点触控）","@type":"BlogPosting","url":"http://www.jfox.info/2017/%E4%B8%80%E7%AF%87%E6%96%87%E7%AB%A0%E5%B8%A6%E4%BD%A0%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8createjs.html","headline":"一篇文章带你快速入门createjs","dateModified":"2017-01-01T15:51:09+00:00","datePublished":"2017-01-01T15:51:09+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/%E4%B8%80%E7%AF%87%E6%96%87%E7%AB%A0%E5%B8%A6%E4%BD%A0%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8createjs.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">一篇文章带你快速入门createjs</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:51:09+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>EaselJS：用于 Sprites、动画、向量和位图的绘制，创建 HTML5 Canvas 上的交互体验（包含多点触控）</p>
+
+<p>TweenJS：用于做动画效果</p>
+
+<p>SoundJS：音频播放引擎</p>
+
+<p>PreloadJS：网站资源预加载</p>
+
+<p>类似于SoundJS，PreloadJS，如果自己处理起来比较方便的话，也可以自己写，总的来说，它们相当于一个辅助作用，可选可不选。因此，本文章主要讲解EaselJS的使用。</p>
+
+<p><strong>1. EaselJS的大致api</strong></p>
+<ul>
+  <li>画图片用(Bitmap)</li>
+  <li>画图形，比如矩形，圆形等用(Shape) 【类似于改变坐标x，y，增加阴影shadow，透明度alpha，缩小放大scaleX/scaleY都可以做到】</li>
+  <li>画文字，用(Text)</li>
+  <li>还有容器Container的概念，容器可以包含多个显示对象</li>
+</ul>
+
+<p><strong>2. EaselJS绘图的大致流程</strong></p>
+
+<p>大致流程： 
+  创建显示对象→设置一些参数→调用方法绘制→添加到舞台→update()，代码如下：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;script src="easeljs-0.7.1.min.js"&gt;&lt;/script&gt;  //引入相关的js文件&lt;canvas id="canvas"&gt;&lt;/canvas&gt;
+var canvas = document.querySelector('#canvas');
+//创建舞台var stage = new createjs.Stage(canvas);
+//创建一个Shape对象，此处也可以创建文字Text,创建图片Bitmapvar rect = new createjs.Shape();
+//用画笔设置颜色，调用方法画矩形，矩形参数：x,y,w,h
+rect.graphics.beginFill("#f00").drawRect(0, 0, 100, 100);
+//添加到舞台  stage.addChild(rect);
+//刷新舞台
+stage.update();
+</code></pre></div></div>
+
+<p>graphics可以设置一些样式，线条宽度，颜色等等，也可以调用一些方法绘制图形，比如矩形drawRect，圆形drawCircle等等，具体可以自己查看api。</p>
+
+<p>注意：记得一定要把shape对象加到舞台上，否则屏幕上不会显示。</p>
+
+<p><strong>3. Ticker定时器</strong></p>
+
+<p>写createjs肯定会遇到的一个，就是ticker，主要就是定时刷新舞台，理想的帧速率是60FPS</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>createjs.Ticker.setFPS(60);  
+</code></pre></div></div>
+
+<p><strong>4. 控制多个显示对象的层级关系</strong></p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>stage，contain对象有个children属性代表子元素，是一个数组，里面的元素层级像下标一样从0开始，简单来说就是后面的覆盖前面的，addChild方法是添加到显示列表的最后。 
+   
+  
+我们也可以动态改变children的层叠效果。 
+   
+   
+
+
+stage.setChildIndex(red,1);
+</code></pre></div></div>
+
+<p><strong>5.容器 container</strong></p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>它可以包含Text、Bitmap、Shape、Sprite等其他的EaselJS元素，包含在一个Container中方便统一管理。 
+   
+  
+比如一个人物，他由手，脚，头，身体组成，你可以将这几个部分放在同一个container中，统一移动。使用方法也比较简单： 
+   
+   
+
+
+var contain = new createjs.Container(); 
+contain.addChild(bgImg);
+contain.addChild(bitmap);  
+stage.addChild(contain);
+</code></pre></div></div>
+
+<p>蹬蹬蹬～本篇文章的重点，绘制图像并对图像进行处理
+<strong>6. 绘制图片</strong>
+    var bg = new createjs.Bitmap(“./background.png”);
+    stage.addChild(bg);
+    stage.update();</p>
+
+<p>按照上面的EaselJS的正常的绘制流程来说，上面这段代码应该可以正常显示。但是，只是有些情况下可以正常显示的，这个图像资源需要确定加载成功后才可以new，否则不会有图像在画布上，如果有做资源预加载，可以直接使用上面的代码，如果没有，则需要在image加载完成onload之后才进行绘制</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var img = new Image();
+img.src = './img/linkgame_pass@2x.png';
+img.onload = function () {
+ var bg = new createjs.Bitmap("./background.png");
+ stage.addChild(bg);
+ stage.update();
+}
+</code></pre></div></div>
+
+<p>仅仅绘制图片是不够的，createjs提供了几种处理图片的方法：
+<strong>6.1 给图片增加遮罩层</strong></p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>使用mask属性，可以只显示图片和shape相交的区域 
+   
+   
+
+
+stage = new createjs.Stage("gameView");
+bg = new createjs.Bitmap("./img/linkgame_pass@2x.png");
+bg.x = 10;
+bg.y = 10;
+//遮罩图形
+shape = new createjs.Shape();
+shape.graphics.beginFill("#000").drawCircle(0, 0, 100);
+shape.x = 200;
+shape.y = 100;
+bg.mask = shape;     //给图片bg添加遮罩stage.addChild(shape);
+stage.addChild(bg);
+stage.update();
+
+ 
+
+   
+  
+常用应用场景：用来剪裁图片，比如显示圆形的图片等 
+</code></pre></div></div>
+
+<p><img src="0842b96.png" alt="" />
+<strong>6.2 给图片增加滤镜效果</strong></p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var blur = new createjs.BlurFilter(5,5,1);
+bg.filters = [blur];
+
+ 
+
+   
+ 我们发现，图片还是没有变模糊，原因是图片添加了filter后stage立即刷新，filter只能保持一帧的效果，第二帧filter则失效了。而使用图片的cache()方法后，可以使得无论舞台怎么刷新，都可以保持住Filter的效果，添加cache还有很多作用，可以提高FPS，缓存等 
+
+
+ 
+ 
+bg.cache(0,0,bg.image.width,bg.image.height);
+</code></pre></div></div>
+
+<p><strong>6.3 使用Rectangle剪裁图片</strong> 使用EaselJS内置的Rectangle对象来创建一个选取框，显示图片的某各部分。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>stage = new createjs.Stage("gameView");
+bg = new createjs.Bitmap("./img/linkgame_pass@2x.png");
+bg.x = 10;
+bg.y = 10;
+var rect = new createjs.Rectangle(0, 0, 121, 171);
+bg.sourceRect = rect;
+stage.addChild(bg);
+stage.update();
+
+ 
+
+   
+   
+   
+ 适用场景：拼图小游戏，剪裁图片…… 
+</code></pre></div></div>
+
+<p><strong>7. createjs事件</strong>
+easeljs事件默认是不支持touch设备的，需要以下代码才支持：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>createjs.Touch.enable(stage);
+</code></pre></div></div>
+
+<p>对于Bitmap，Shape等对象，都可以直接使用addEventListener进行事件监听</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>bitmap = new createjs.Bitmap('');
+bitmap.addEventListener（‘click’，handle）;
+</code></pre></div></div>
+
+<p><strong>8. CreateJs的渲染模式</strong></p>
+
+<p>CreateJs提供了两种渲染模式，一种是用setTimeout，一种是用requestAnimationFrame，默认是setTimeout，默认的帧数是20，一般的话还没啥，但是如果动画多的话，设置成requestAnimationFrame模式的话，就会感觉到动画如丝般的流畅。</p>
+
+<p><strong>9.适配</strong></p>
+
+<p>在移动端开发中，不得不面对一个多屏幕，多尺寸的问题，所以适配问题显得特别重要。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;canvas id="game" width="1000" height="700"&gt;&lt;/canvas&gt;
+</code></pre></div></div>
+
+<p>注意，以上代码的width，height不同于css中的width，height。</p>
+
+<p>比如，你在canvas内部绘制图片，用x，y轴进行定位，这里的x，y是相对于canvas这个整体。</p>
+
+<p>我们再把canvas当成一整张图片使用css进行适配</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>canvas{
+     width: 100%;
+}
+</code></pre></div></div>
+
+<p>那么，就会有以下的效果，canvas会适配屏幕尺寸，里面的图片也会等比例变大变小。</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/%E4%B8%80%E7%AF%87%E6%96%87%E7%AB%A0%E5%B8%A6%E4%BD%A0%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8createjs.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/%E6%B5%85%E8%B0%88-%E5%AE%88%E6%9C%9B%E5%85%88%E9%94%8B-%E4%B8%AD%E7%9A%84-ecs-%E6%9E%84%E6%9E%B6.html">&laquo; 浅谈《守望先锋》中的 ECS 构架</a>
+  
+  
+  <a class="next" href="/2017/angular%E7%9A%84%E4%BE%9D%E8%B5%96%E6%B3%A8%E5%85%A5%E6%98%AF%E6%80%8E%E4%B9%88%E5%AE%9E%E7%8E%B0%E7%9A%84.html">Angular的依赖注入是怎么实现的？ &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

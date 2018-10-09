@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>oracle数据库优化 oracle执行计划顺序解释 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="oracle数据库优化 oracle执行计划顺序解释" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="关于oracle执行计划，网上很多说法都是，先执行最大缩进的行，如果缩进相同，就先执行上面的行，也就是最右最上原则。" />
+<meta property="og:description" content="关于oracle执行计划，网上很多说法都是，先执行最大缩进的行，如果缩进相同，就先执行上面的行，也就是最右最上原则。" />
+<link rel="canonical" href="http://www.jfox.info/2017/oracle-shu-ju-ku-you-hua-oracle-zhi-xing-ji-hua-shun-xu-jie-shi.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/oracle-shu-ju-ku-you-hua-oracle-zhi-xing-ji-hua-shun-xu-jie-shi.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:48:15+00:00" />
+<script type="application/ld+json">
+{"description":"关于oracle执行计划，网上很多说法都是，先执行最大缩进的行，如果缩进相同，就先执行上面的行，也就是最右最上原则。","@type":"BlogPosting","url":"http://www.jfox.info/2017/oracle-shu-ju-ku-you-hua-oracle-zhi-xing-ji-hua-shun-xu-jie-shi.html","headline":"oracle数据库优化 oracle执行计划顺序解释","dateModified":"2017-01-01T15:48:15+00:00","datePublished":"2017-01-01T15:48:15+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/oracle-shu-ju-ku-you-hua-oracle-zhi-xing-ji-hua-shun-xu-jie-shi.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">oracle数据库优化 oracle执行计划顺序解释</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:48:15+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>关于oracle执行计划，网上很多说法都是，先执行最大缩进的行，如果缩进相同，就先执行上面的行，也就是最右最上原则。</p>
+
+<p>按照这个原则，下面最先执行的是这一行</p>
+
+<p>**INDEX FULL SCAN INDEX (UNIQUE) **SYS.I_USER2 Cost: 1 Bytes: 735 Cardinality: 35</p>
+
+<p><strong>Plan</strong></p>
+
+<p>**SELECT STATEMENT **ALL_ROWS Cost: 49 Bytes: 194,769 Cardinality: 11,457</p>
+
+<p>** <em>**</em>VIEW VIEW **SYS.DBA_OBJECTS Cost: 49 Bytes: 194,769 Cardinality: 11,457</p>
+
+<p>** <strong>**UNION-ALL</strong></p>
+
+<p>**FILTER **</p>
+
+<p>** <em>**</em>HASH JOIN **Cost: 48 Bytes: 1,486,192 Cardinality: 12,812</p>
+
+<p>** <strong>**TABLE ACCESS FULL **</strong>CLUSTER **SYS.USER$ Cost: 2 Bytes: 630 Cardinality: 35</p>
+
+<p>** <em>**</em>HASH JOIN **Cost: 45 Bytes: 1,255,576 Cardinality: 12,812</p>
+
+<p><strong>* **</strong><strong>INDEX FULL SCAN INDEX (UNIQUE) **</strong><strong>SYS.I_USER2 **</strong><em>*Cost: 1 Bytes: 735 Cardinality: 35 **</em></p>
+
+<p>** <strong>**TABLE ACCESS FULL **</strong>TABLE **SYS.OBJ$ Cost: 44 Bytes: 986,524 Cardinality: 12,812</p>
+
+<p>** <em>**</em>TABLE ACCESS BY INDEX ROWID CLUSTER **SYS.IND$ Cost: 2 Bytes: 8 Cardinality: 1</p>
+
+<p>** <em>**</em>INDEX UNIQUE SCAN INDEX (UNIQUE) **SYS.I_IND1 Cost: 1 Cardinality: 1</p>
+
+<p>** <em>**</em>NESTED LOOPS **Cost: 2 Bytes: 28 Cardinality: 1</p>
+
+<p>** <em>**</em>INDEX FULL SCAN INDEX (UNIQUE) **SYS.I_USER2 Cost: 1 Bytes: 19 Cardinality: 1</p>
+
+<p>** <em>**</em>INDEX RANGE SCAN INDEX **SYS.I_OBJ4 Cost: 1 Bytes: 9 Cardinality: 1</p>
+
+<p>** <em>**</em>NESTED LOOPS **Cost: 1 Bytes: 31 Cardinality: 1</p>
+
+<p>** <em>**</em>INDEX FULL SCAN INDEX **SYS.I_LINK1 Cost: 0 Bytes: 13 Cardinality: 1</p>
+
+<p>** <em>**</em>TABLE ACCESS CLUSTER CLUSTER **SYS.USER$ Cost: 1 Bytes: 18 Cardinality: 1</p>
+
+<p>** <em>**</em>INDEX UNIQUE SCAN INDEX (CLUSTER) **SYS.I_USER# Cost: 0 Cardinality: 1</p>
+
+<p>那么实际的执行计划是什么？通过toad来看下，实际最先执行的是</p>
+
+<p><strong><em>1 **</em></strong><em>TABLE ACCESS FULL <strong>**</strong>CLUSTER <strong>**</strong>SYS.USER$ <strong>**</strong>Cost: 2 Bytes: 630 Cardinality: 35 **</em></p>
+
+<p><strong>Plan</strong></p>
+
+<p>**SELECT STATEMENT **ALL_ROWS Cost: 49 Bytes: 194,769 Cardinality: 11,457</p>
+
+<p><strong>17 **</strong>VIEW VIEW **SYS.DBA_OBJECTS Cost: 49 Bytes: 194,769 Cardinality: 11,457</p>
+
+<p><strong>16 **</strong>UNION-ALL **</p>
+
+<p><strong>11 **</strong>FILTER **</p>
+
+<p><strong>5 **</strong>HASH JOIN **Cost: 48 Bytes: 1,486,192 Cardinality: 12,812</p>
+
+<p><strong><em>1 **</em></strong><em>TABLE ACCESS FULL <strong>**</strong>CLUSTER <strong>**</strong>SYS.USER$ <strong>**</strong>Cost: 2 Bytes: 630 Cardinality: 35 **</em></p>
+
+<p><strong>4 **</strong>HASH JOIN **Cost: 45 Bytes: 1,255,576 Cardinality: 12,812</p>
+
+<p><strong>2 **</strong>INDEX FULL SCAN INDEX (UNIQUE) **SYS.I_USER2 Cost: 1 Bytes: 735 Cardinality: 35</p>
+
+<p><strong>3 **</strong>TABLE ACCESS FULL <em>**</em>TABLE **SYS.OBJ$ Cost: 44 Bytes: 986,524 Cardinality: 12,812</p>
+
+<p><strong>7 **</strong>TABLE ACCESS BY INDEX ROWID CLUSTER **SYS.IND$ Cost: 2 Bytes: 8 Cardinality: 1</p>
+
+<p><strong>6 **</strong>INDEX UNIQUE SCAN INDEX (UNIQUE) **SYS.I_IND1 Cost: 1 Cardinality: 1</p>
+
+<p><strong>10 **</strong>NESTED LOOPS **Cost: 2 Bytes: 28 Cardinality: 1</p>
+
+<p><strong>8 **</strong>INDEX FULL SCAN INDEX (UNIQUE) **SYS.I_USER2 Cost: 1 Bytes: 19 Cardinality: 1</p>
+
+<p><strong>9 **</strong>INDEX RANGE SCAN INDEX **SYS.I_OBJ4 Cost: 1 Bytes: 9 Cardinality: 1</p>
+
+<p><strong>15 **</strong>NESTED LOOPS **Cost: 1 Bytes: 31 Cardinality: 1</p>
+
+<p><strong>12 **</strong>INDEX FULL SCAN INDEX **SYS.I_LINK1 Cost: 0 Bytes: 13 Cardinality: 1</p>
+
+<p><strong>14 **</strong>TABLE ACCESS CLUSTER CLUSTER **SYS.USER$ Cost: 1 Bytes: 18 Cardinality: 1</p>
+
+<p><strong>13 **</strong>INDEX UNIQUE SCAN INDEX (CLUSTER) **SYS.I_USER# Cost: 0 Cardinality: 1</p>
+
+<p>在执行过程中，先要执行子步骤，子步骤执行完成之后再执行父步骤</p>
+
+<p>如下面：</p>
+
+<p><strong>5 **</strong>HASH JOIN **Cost: 48 Bytes: 1,486,192 Cardinality: 12,812</p>
+
+<p><strong><em>1 **</em></strong><em>TABLE ACCESS FULL <strong>**</strong>CLUSTER <strong>**</strong>SYS.USER$ <strong>**</strong>Cost: 2 Bytes: 630 Cardinality: 35 **</em></p>
+
+<p><strong>4 **</strong>HASH JOIN **Cost: 45 Bytes: 1,255,576 Cardinality: 12,812</p>
+
+<p><strong>2 **</strong>INDEX FULL SCAN INDEX (UNIQUE) **SYS.I_USER2 Cost: 1 Bytes: 735 Cardinality: 35</p>
+
+<p><strong>3 **</strong>TABLE ACCESS FULL <em>**</em>TABLE **SYS.OBJ$ Cost: 44 Bytes: 986,524 Cardinality: 12,812</p>
+
+<p><strong>5 **</strong>HASH JOIN **Cost: 48 Bytes: 1,486,192 Cardinality: 12,812</p>
+
+<p>他的子步骤是</p>
+
+<p><strong><em>1 **</em></strong><em>TABLE ACCESS FULL <strong>**</strong>CLUSTER <strong>**</strong>SYS.USER$ <strong>**</strong>Cost: 2 Bytes: 630 Cardinality: 35 **</em></p>
+
+<p><strong>4 **</strong>HASH JOIN **Cost: 45 Bytes: 1,255,576 Cardinality: 12,812</p>
+
+<p>这个时候按照最右最上原则，那么，先执行的是</p>
+
+<p><strong><em>1 **</em></strong><em>TABLE ACCESS FULL <strong>**</strong>CLUSTER <strong>**</strong>SYS.USER$ <strong>**</strong>Cost: 2 Bytes: 630 Cardinality: 35 **</em></p>
+
+<p>然后再应该执行</p>
+
+<p><strong>4 **</strong>HASH JOIN **Cost: 45 Bytes: 1,255,576 Cardinality: 12,812</p>
+
+<p>然而，这个父步骤又有子步骤</p>
+
+<p><strong>2 **</strong>INDEX FULL SCAN INDEX (UNIQUE) **SYS.I_USER2 Cost: 1 Bytes: 735 Cardinality: 35</p>
+
+<p><strong>3 **</strong>TABLE ACCESS FULL <em>**</em>TABLE **SYS.OBJ$ Cost: 44 Bytes: 986,524 Cardinality: 12,812</p>
+
+<p>那么，先执行子步骤的原则，先执行</p>
+
+<p><strong>2 **</strong>INDEX FULL SCAN INDEX (UNIQUE) **SYS.I_USER2 Cost: 1 Bytes: 735 Cardinality: 35</p>
+
+<p>然后再执行</p>
+
+<p><strong>3 **</strong>TABLE ACCESS FULL <em>**</em>TABLE **SYS.OBJ$ Cost: 44 Bytes: 986,524 Cardinality: 12,812</p>
+
+<p>至此，oracle执行计划的真正阅读顺序是：</p>
+
+<p><strong>1、  没有父子步骤关系的遵循最右最上原则。</strong></p>
+
+<p>**2、  有父子步骤的，先要执行子步骤，也是按照最右最上原则执行。
+**</p>
+
+<p><a href="https://www.jfox.info/go.php?url=http://www.tanyangxf.net/index.php/oracle-explain-sequence/">原文链接</a></p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/oracle-shu-ju-ku-you-hua-oracle-zhi-xing-ji-hua-shun-xu-jie-shi.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/wei-shi-me-cheng-xu-yuan-de-ye-yu-xiang-mu-da-duo-du-si-liao.html">&laquo; 为什么程序员的业余项目大多都死了？</a>
+  
+  
+  <a class="next" href="/2017/2015-nian-zui-re-men-bian-cheng-yu-yan-gang-wei-xu-qiu-ji-xin-zi-fen-xi.html">2015 年最热门编程语言岗位需求及薪资分析 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

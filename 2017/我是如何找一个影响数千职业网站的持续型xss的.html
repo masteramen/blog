@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>我是如何找一个影响数千职业网站的持续型XSS的 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="我是如何找一个影响数千职业网站的持续型XSS的" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="secist共28719人围观 WEB安全漏洞 我们Detectify Crowdsource平台的安全研究员ak1t4最近在他的个人博客中向我们解释了，关于他是如何发现并报告了Teamtailor上一个影响数千职业网站的持续型XSS漏洞的过程，其中也包括了我们Detectify的职业网站。在提交报告一天后，Teamtailor便修补了该漏洞。在此我代表Crowdsource感谢ak1t4和Teamtailor的积极响应！" />
+<meta property="og:description" content="secist共28719人围观 WEB安全漏洞 我们Detectify Crowdsource平台的安全研究员ak1t4最近在他的个人博客中向我们解释了，关于他是如何发现并报告了Teamtailor上一个影响数千职业网站的持续型XSS漏洞的过程，其中也包括了我们Detectify的职业网站。在提交报告一天后，Teamtailor便修补了该漏洞。在此我代表Crowdsource感谢ak1t4和Teamtailor的积极响应！" />
+<link rel="canonical" href="http://www.jfox.info/2017/%E6%88%91%E6%98%AF%E5%A6%82%E4%BD%95%E6%89%BE%E4%B8%80%E4%B8%AA%E5%BD%B1%E5%93%8D%E6%95%B0%E5%8D%83%E8%81%8C%E4%B8%9A%E7%BD%91%E7%AB%99%E7%9A%84%E6%8C%81%E7%BB%AD%E5%9E%8Bxss%E7%9A%84.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/%E6%88%91%E6%98%AF%E5%A6%82%E4%BD%95%E6%89%BE%E4%B8%80%E4%B8%AA%E5%BD%B1%E5%93%8D%E6%95%B0%E5%8D%83%E8%81%8C%E4%B8%9A%E7%BD%91%E7%AB%99%E7%9A%84%E6%8C%81%E7%BB%AD%E5%9E%8Bxss%E7%9A%84.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:54:20+00:00" />
+<script type="application/ld+json">
+{"description":"secist共28719人围观 WEB安全漏洞 我们Detectify Crowdsource平台的安全研究员ak1t4最近在他的个人博客中向我们解释了，关于他是如何发现并报告了Teamtailor上一个影响数千职业网站的持续型XSS漏洞的过程，其中也包括了我们Detectify的职业网站。在提交报告一天后，Teamtailor便修补了该漏洞。在此我代表Crowdsource感谢ak1t4和Teamtailor的积极响应！","@type":"BlogPosting","url":"http://www.jfox.info/2017/%E6%88%91%E6%98%AF%E5%A6%82%E4%BD%95%E6%89%BE%E4%B8%80%E4%B8%AA%E5%BD%B1%E5%93%8D%E6%95%B0%E5%8D%83%E8%81%8C%E4%B8%9A%E7%BD%91%E7%AB%99%E7%9A%84%E6%8C%81%E7%BB%AD%E5%9E%8Bxss%E7%9A%84.html","headline":"我是如何找一个影响数千职业网站的持续型XSS的","dateModified":"2017-01-01T15:54:20+00:00","datePublished":"2017-01-01T15:54:20+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/%E6%88%91%E6%98%AF%E5%A6%82%E4%BD%95%E6%89%BE%E4%B8%80%E4%B8%AA%E5%BD%B1%E5%93%8D%E6%95%B0%E5%8D%83%E8%81%8C%E4%B8%9A%E7%BD%91%E7%AB%99%E7%9A%84%E6%8C%81%E7%BB%AD%E5%9E%8Bxss%E7%9A%84.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">我是如何找一个影响数千职业网站的持续型XSS的</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:54:20+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p><a href="https://www.jfox.info/go.php?url=http://www.freebuf.com/author/secist">secist</a>共<strong>28719</strong>人围观 <a href="https://www.jfox.info/go.php?url=http://www.freebuf.com/./articles/web">WEB安全</a><a href="https://www.jfox.info/go.php?url=http://www.freebuf.com/./vuls">漏洞</a>
+我们<a href="https://www.jfox.info/go.php?url=https://detectify.com/crowdsource">Detectify Crowdsource</a>平台的安全研究员ak1t4最近在他的个人博客中向我们解释了，关于他是如何发现并报告了Teamtailor上一个影响数千职业网站的持续型XSS漏洞的过程，其中也包括了我们Detectify的职业网站。在提交报告一天后，Teamtailor便修补了该漏洞。在此我代表Crowdsource感谢ak1t4和<a href="https://www.jfox.info/go.php?url=https://www.teamtailor.com/">Teamtailor</a>的积极响应！</p>
+
+<p><strong>注：</strong>这里ak1t4并没有利用持久型XSS访问我们的<a href="https://www.jfox.info/go.php?url=https://cs.detectify.com/">Detectify</a>主站或者用户数据！</p>
+
+<h2 id="关于detectify-crowdsource研究员">关于Detectify Crowdsource研究员</h2>
+
+<p>我叫ak1t4，来自阿根廷。我的专业是网络工程，但直到漏洞赏金计划进入我的生活之前，我从未直接与安全工作有过接触。而如今，我已经成功侵入过Google，Uber，Twitter等知名公司。自2006年12月以来，我便一直是<a href="https://www.jfox.info/go.php?url=https://cs.detectify.com/">Detectify Crowdsource</a>的成员之一。</p>
+
+<p>现在，让我们一起回顾下此次漏洞挖掘的精彩过程。</p>
+
+<h2 id="信息收集"><strong>信息收集：</strong></h2>
+
+<p>这几天让我感到有些无聊，不经意间我又把目光集中在了我的计算机上。当前我正在浏览detectify.com这个网站，突然一股冲动在我脑海中闪现，没错我决定将detectify.com作为我的测试目标。首先我要对目标站点的子域做个扫描，我习惯性的打开了sublister.py脚本，得到的结果如下：</p>
+
+<p>其中一个域名引起了我的注意；“career.detectify.com”，一个指向 – &gt; <a href="https://www.jfox.info/go.php?url=https://medium.com/r/?url=https%3A%2F%2Fdetectify.teamtailor.com">detectify.teamtailor.com</a> 的子域。</p>
+
+<h2 id="什么是teamtailor">什么是Teamtailor？</h2>
+
+<p>Teamtailor是一个可以为你一站式解决招聘需求的职业网站。你可以在这里找到适合与你的职业，或者在这里招聘你所需要的职业人才。</p>
+
+<p>这的确是一个非常好的平台，为此我在Teamtailor.com上也创建了一个帐户，并填写了相关的简历信息。在使用我的帐户和个人资料查看几个小时后，我发现了一个引起我注意的功能 – “share”配置文件功能，其中包含一个这样的URI：<a href="https://www.jfox.info/go.php?url=https://xxxx.teamtailor.com/shares/LZHstXPRuGA0xXb2FOmRzA/151251-ak1t4-haxor">https://xxxx.teamtailor.com/shares/LZHstXPRuGA0xXb2FOmRzA/151251-ak1t4-haxor</a></p>
+
+<p>（在这个URI上，我们可以看到包含了域，路径和哈希字符串，这是用户的页面内容，例如：求职简历。）</p>
+
+<p>我开始研究一些跨域问题，并试图进行利用。经过几次测试，我发现Teamtailor并没有验证域拥有者的共享配置文件。我决定利用这个缺陷，将自己的内容配置文件（哈希）直接注入到<a href="https://www.jfox.info/go.php?url=http://career.detectify.com/">career.detectify.com</a>域中，并且最终我成功的将内容注入到了域中！这意味着现在我可以将自定义的内容，注入到现有所有的职业网站上。</p>
+
+<p>现在，让我们来执行一些javascript脚本</p>
+
+<p>我在配置文件中写入了一些javascript脚本，用于测试目标域是否正常弹框。在这里我对Linkedin URL做了测试，填充的有效载荷内容如下：</p>
+
+<p>“javascript:alert(document.domain);//<a href="https://www.jfox.info/go.php?url=http://someurl.com/">http://someurl.com</a></p>
+
+<p>点击LinkedIn链接后Javascript将被执行，而程序并不会验证该链接是否是一个合法的http(s)的LinkedIn请求。</p>
+
+<p>可以看到我们的JS脚本，在Detectify的职业网站上被成功执行！</p>
+
+<p>这令我感到非常兴奋！与此同时，我也向Detectify的团队提交了漏洞报告！</p>
+
+<p>突然一个新的想法在我脑海浮现，既然career.detectify.com可以被成功利用，那么是不是意味着我还可以利用Teamtailor管理的其他网站？好吧，让我们尝试一下DNS劫持！我随机抽取了一些网站作为测试对象，让我们看看会有什么意外的收获..</p>
+
+<p>哇！ 我们的payload被再次成功执行！所以现在我们可以继续扩大我们的目标范围，我们可以利用Google dork来查找Teamtailor DNS服务器下的站点：</p>
+
+<p>可以看到搜索发动机共为我们查找到了19400条记录！</p>
+
+<h2 id="detectify回应">Detectify回应</h2>
+
+<p>我做的第一件事，是将我的发现在Twitter上展示给了来自Detectify的<a href="https://www.jfox.info/go.php?url=https://twitter.com/fransrosen">Frans Rosén</a>。然后我又通过email联系了Detectify小组，以便他们能快速的处理这个问题，并帮助我联系Teamtailor。</p>
+
+<p>Detectify小组的响应非常积快迅速，在我报告的当天他们就处理了这个问题。</p>
+
+<p>此外，Detectify小组代表了我向Teamtailor提交了报告。Teamtailor的响应也非常的积极，并在一天之内修复了这个问题。</p>
+
+<p>在此，我要感谢Detectify团队对网络安全的积极态度和大力支持！特别感谢FransRosén，Johan和Yasmin，他们都给了我莫大的帮助和支持！</p>
+
+<h2 id="时间线">时间线</h2>
+
+<p>2017年6月4日 – 漏洞发现</p>
+
+<p>2017年6月4日 – 提交报告</p>
+
+<p>2017年6月5日 – Detectify成功修复漏洞</p>
+
+<p>2017年6月5日 – Teamtailor团队漏洞修复及确认</p>
+
+<p>*参考来源：<a href="https://www.jfox.info/go.php?url=https://labs.detectify.com/2017/06/28/how-i-found-a-persistent-xss-affecting-thousands-of-career-sites/">detectify</a>，FB小编 secist 编译，转载请注明来自FreeBuf.COM</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/%E6%88%91%E6%98%AF%E5%A6%82%E4%BD%95%E6%89%BE%E4%B8%80%E4%B8%AA%E5%BD%B1%E5%93%8D%E6%95%B0%E5%8D%83%E8%81%8C%E4%B8%9A%E7%BD%91%E7%AB%99%E7%9A%84%E6%8C%81%E7%BB%AD%E5%9E%8Bxss%E7%9A%84.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/spring%E4%B8%AD%E7%9A%84%E6%87%92%E5%8A%A0%E8%BD%BD%E4%B8%8E%E4%BA%8B%E5%8A%A1%E6%8E%92%E5%9D%91%E8%AE%B0%E5%BD%95.html">&laquo; Spring 中的懒加载与事务 – 排坑记录</a>
+  
+  
+  <a class="next" href="/2017/%E6%B2%A1%E6%9C%89%E5%AE%8F%E7%9A%84patternmatch.html">没有宏的pattern match &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

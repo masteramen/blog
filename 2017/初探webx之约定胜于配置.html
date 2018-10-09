@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>初探Webx之约定胜于配置 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="初探Webx之约定胜于配置" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="在分析之前，我们需要强调 Webx 的一个重要设计理念——约定胜于配置。“约定”即规则，规则是预先定义的，工程师只需要按着规则来做事，就不需要额外的“配置”。对比其它一些框架，往往每增加一个页面，都需要在配置文件中增加若干行内容。" />
+<meta property="og:description" content="在分析之前，我们需要强调 Webx 的一个重要设计理念——约定胜于配置。“约定”即规则，规则是预先定义的，工程师只需要按着规则来做事，就不需要额外的“配置”。对比其它一些框架，往往每增加一个页面，都需要在配置文件中增加若干行内容。" />
+<link rel="canonical" href="http://www.jfox.info/2017/%E5%88%9D%E6%8E%A2webx%E4%B9%8B%E7%BA%A6%E5%AE%9A%E8%83%9C%E4%BA%8E%E9%85%8D%E7%BD%AE.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/%E5%88%9D%E6%8E%A2webx%E4%B9%8B%E7%BA%A6%E5%AE%9A%E8%83%9C%E4%BA%8E%E9%85%8D%E7%BD%AE.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:56:57+00:00" />
+<script type="application/ld+json">
+{"description":"在分析之前，我们需要强调 Webx 的一个重要设计理念——约定胜于配置。“约定”即规则，规则是预先定义的，工程师只需要按着规则来做事，就不需要额外的“配置”。对比其它一些框架，往往每增加一个页面，都需要在配置文件中增加若干行内容。","@type":"BlogPosting","url":"http://www.jfox.info/2017/%E5%88%9D%E6%8E%A2webx%E4%B9%8B%E7%BA%A6%E5%AE%9A%E8%83%9C%E4%BA%8E%E9%85%8D%E7%BD%AE.html","headline":"初探Webx之约定胜于配置","dateModified":"2017-01-01T15:56:57+00:00","datePublished":"2017-01-01T15:56:57+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/%E5%88%9D%E6%8E%A2webx%E4%B9%8B%E7%BA%A6%E5%AE%9A%E8%83%9C%E4%BA%8E%E9%85%8D%E7%BD%AE.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">初探Webx之约定胜于配置</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:56:57+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>在分析之前，我们需要强调 <code class="highlighter-rouge">Webx</code> 的一个重要设计理念——约定胜于配置。“约定”即规则，规则是预先定义的，工程师只需要按着规则来做事，就不需要额外的“配置”。对比其它一些框架，往往每增加一个页面，都需要在配置文件中增加若干行内容。</p>
+
+<p>注意，本篇文章仅用于解答上文提出的两个疑问，更多 <code class="highlighter-rouge">Webx</code> 的设计理念及原理性知识请参阅 <a href="https://www.jfox.info/go.php?url=http://openwebx.org/docs/">官方文档</a> 。</p>
+
+<h2 id="execute为什么会被调用">execute()为什么会被调用？</h2>
+
+<p>本文以解析请求 <code class="highlighter-rouge">http://localhost:8080/webx/simple/say_hi.do</code> 为例来回答第一个问题，在 <code class="highlighter-rouge">SayHi</code> 类中 <code class="highlighter-rouge">execute()</code> 处添加断点，启动 <code class="highlighter-rouge">Tomcat</code> ，程序执行至断点处，查看此时当前线程的函数调用栈，如下图所示（截取了部分）。</p>
+
+<p><img src="1ca80c8.png" alt="" /></p>
+
+<p>想要更好的理解该函数调用栈的信息，需要先从理论上对 <code class="highlighter-rouge">Webx</code> 处理一个 <code class="highlighter-rouge">Web</code> 请求有一个认知。</p>
+
+<ul>
+  <li>首先，增强 <code class="highlighter-rouge">request</code> 、 <code class="highlighter-rouge">response</code> 、 <code class="highlighter-rouge">session</code> 的功能，并把它们打包成更易使用的 <code class="highlighter-rouge">RequestContext</code> 对象。</li>
+  <li>其次，它会调用相应子应用的 <code class="highlighter-rouge">pipeline</code> ，用它来做进一步的处理。</li>
+</ul>
+
+<p><code class="highlighter-rouge">pipeline</code> 是 <code class="highlighter-rouge">Webx</code> 的一种机制，这种机制给予开发者极大的自由来自定制处理请求的流程。 <code class="highlighter-rouge">pipeline</code> 由一系列的 <code class="highlighter-rouge">valve</code> 构成，一个请求在获取响应（ <code class="highlighter-rouge">Module</code> ）前需经历这一系列 <code class="highlighter-rouge">valve</code> 。 <code class="highlighter-rouge">Webx</code> 将 <code class="highlighter-rouge">URL</code> 映射成 <code class="highlighter-rouge">target</code> ，由开发者定制不同类型的 <code class="highlighter-rouge">target</code> 所匹配的 <code class="highlighter-rouge">pipeline</code> 。例如，当前请求的 <code class="highlighter-rouge">target</code> 为 <code class="highlighter-rouge">/simple/say_hi.do</code> ，与之对应的 <code class="highlighter-rouge">pipeline</code> 如下所示。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;when&gt;
+    &lt;!-- 执行不带模板的screen，无layout。 --&gt;
+    &lt;pl-conditions:target-extension-conditionextension="do"/&gt;
+    &lt;pl-valves:performAction/&gt;
+    &lt;pl-valves:performScreen/&gt;
+&lt;/when&gt;
+</code></pre></div></div>
+
+<p>结合 <code class="highlighter-rouge">pipeline</code> 与函数调用栈，在执行 <code class="highlighter-rouge">execute()</code> 之前，请求经历了一系列 <code class="highlighter-rouge">invoke()</code> 与 <code class="highlighter-rouge">invokeNext()</code> 。首先执行 <code class="highlighter-rouge">&lt;pl-valves:performAction /&gt;</code> 对应 <code class="highlighter-rouge">PerformActionValve</code> 中的 <code class="highlighter-rouge">invoke()</code> 与 <code class="highlighter-rouge">invokeNext()</code> ，由于当前请求并不包含表单提交，所以 <code class="highlighter-rouge">PerformActionValve</code> 不做任何操作。接着执行 <code class="highlighter-rouge">&lt;pl-valves:performScreen /&gt;</code> 对应的 <code class="highlighter-rouge">PerformScreenValve</code> 中的 <code class="highlighter-rouge">invoke()</code> ，这也是我们分析的重点，该 <code class="highlighter-rouge">invoke</code> 方法对应的源码如下所示。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public void invoke(PipelineContext pipelineContext)throwsException{
+    TurbineRunData rundata = TurbineUtil.getTurbineRunData(this.request);
+    if(!rundata.isRedirected()) {
+        this.setContentType(rundata);
+        Object result = null;
+
+        try {
+            result = this.performScreenModule(rundata);
+        } finally {
+            this.setOutputValue(pipelineContext, result);
+        }
+    }
+
+    pipelineContext.invokeNext();
+}
+</code></pre></div></div>
+
+<p>进入 <code class="highlighter-rouge">performScreenModule</code> 方法，其源码如下所示（省略部分无关代码）。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>protectedObjectperformScreenModule(TurbineRunData rundata){
+    PerformScreenValve.ModuleFinder finder = new PerformScreenValve.ModuleFinder(rundata.getTarget());
+    rundata.setLayoutEnabled(true);
+    try {
+        Module e = finder.getScreenModule();
+        if(e != null) {
+            ScreenEventUtil.setEventName(rundata.getRequest(), finder.event);
+            Object var4;
+            try {
+                if(!(e instanceof ModuleReturningValue)) {
+                    e.execute();
+                    return null;
+                }
+                var4 = ((ModuleReturningValue)e).executeAndReturn();
+            } finally {
+                ...
+            }
+            return var4;
+        } 
+        ...
+    } 
+    ...
+}
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">performScreenModule</code> 首先根据当前 <code class="highlighter-rouge">target</code> 获取对应的 <code class="highlighter-rouge">Module</code> 。在 <code class="highlighter-rouge">Webx</code> 中， <code class="highlighter-rouge">Module</code> 承担了用户提交数据的接收与处理、请求的控制与转发、处理结果的展示等重要功能。 <code class="highlighter-rouge">Webx</code> 缺省定义了三种类型的 <code class="highlighter-rouge">Module</code> 。</p>
+
+<ul>
+  <li><code class="highlighter-rouge">action</code> ：主要用于处理用户提交的数据，以及请求的控制与转发。</li>
+  <li><code class="highlighter-rouge">screen</code> ：主要用于处理页面的主体内容。</li>
+  <li><code class="highlighter-rouge">control</code> ：主要用于处理页面的部分内容，特别是可重用的内容。</li>
+</ul>
+
+<p>我们接着进入 <code class="highlighter-rouge">finder.getScreenModule()</code> ，源码如下。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>publicModulegetScreenModule()throwsModuleLoaderException{
+    this.moduleName = PerformScreenValve.this.getModuleName(this.target);
+    Module module = PerformScreenValve.this.moduleLoaderService.getModuleQuiet("screen", this.moduleName);
+    if(module != null) {
+        return module;
+    } else {
+        if(this.parseEvent()) {
+            module = PerformScreenValve.this.moduleLoaderService.getModuleQuiet("screen", this.eventModuleName);
+            if(module instanceof ModuleEvent) {
+                return module;
+            }
+        }
+
+        return null;
+    }
+}
+</code></pre></div></div>
+
+<p>打断点一步一步深入下去，进入 <code class="highlighter-rouge">getModuleQuiet()</code> ，源码如下。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>publicModulegetModuleQuiet(String moduleType, String moduleName)throwsModuleLoaderException{
+    ModuleKey moduleKey = new ModuleKey(moduleType, moduleName);
+    moduleType = moduleKey.getModuleType();
+    moduleName = moduleKey.getModuleName();
+    if(this.cacheEnabled.booleanValue()) {
+        Module moduleObject = (Module)this.moduleCache.get(moduleKey);
+        if(moduleObject != null) {
+            return moduleObject;
+        }
+    }
+
+    Object var10 = null;
+    Module module = null;
+    ModuleFactory[] arr$ = this.factories;
+    int len$ = arr$.length;
+
+    int i$;
+    for(i$ = 0; i$ &lt; len$; ++i$) {
+        ModuleFactory adapter = arr$[i$];
+        var10 = adapter.getModule(moduleType, moduleName);
+        if(var10 != null) {
+            break;
+        }
+    }
+
+    if(var10 != null) {
+        if(var10 instanceof Module) {
+            module = (Module)var10;
+        } else {
+            ModuleAdapterFactory[] var11 = this.adapters;
+            len$ = var11.length;
+
+            for(i$ = 0; i$ &lt; len$; ++i$) {
+                ModuleAdapterFactory var12 = var11[i$];
+                module = var12.adapt(moduleType, moduleName, var10);
+                if(module != null) {
+                    break;
+                }
+            }
+        }
+    }
+
+    if(module == null &amp;&amp; var10 != null) {
+        throw new UnadaptableModuleException("Could not adapt object to module: type=" + moduleType + ", name=" + moduleName + ", class=" + var10.getClass());
+    } else {
+        if(this.cacheEnabled.booleanValue() &amp;&amp; module != null) {
+            this.moduleCache.put(moduleKey, module);
+        }
+
+        return module;
+    }
+}
+</code></pre></div></div>
+
+<p>在 <code class="highlighter-rouge">getModuleQuiet()</code> 中，首先根据 <code class="highlighter-rouge">moduleType</code> 和 <code class="highlighter-rouge">moduleName</code> 创建 <code class="highlighter-rouge">modulekey</code> ， <code class="highlighter-rouge">Webx</code> 会对 <code class="highlighter-rouge">Module</code> 进行缓存，因此首先根据 <code class="highlighter-rouge">moduleKey</code> 从缓存中获取 <code class="highlighter-rouge">Module</code> 。如果缓存中还不存在当前 <code class="highlighter-rouge">target</code> 对应的 <code class="highlighter-rouge">Module</code> ，继续深入，进入 <code class="highlighter-rouge">DataBindingAdapterFactory</code> 类的 <code class="highlighter-rouge">adapt</code> 方法，源码如下。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>publicModuleadapt(String type, String name, Object moduleObject){
+    ModuleInfo moduleInfo = new ModuleInfo(type, name);
+    Class moduleClass = moduleObject.getClass();
+    Method executeMethod = this.getMethod(moduleClass, "execute");
+    if(executeMethod != null) {
+        FastClass fc = FastClass.create(moduleClass);
+        FastMethod fm = fc.getMethod(executeMethod);
+        boolean skippable = "action".equalsIgnoreCase(type);
+        return new DataBindingAdapter(moduleObject, this.getMethodInvoker(fm, moduleInfo, skippable));
+    } else {
+        return null;
+    }
+}
+</code></pre></div></div>
+
+<p>在 <code class="highlighter-rouge">adapt</code> 方法中，一切开始变得清晰起来：首先尝试获取 <code class="highlighter-rouge">moduleObject</code> 的 <code class="highlighter-rouge">execute()</code> 方法，若存在，那么当前 <code class="highlighter-rouge">target</code> 对应的Module的最关键部分也就构建完成了。  至此，第一个疑问“为什么 <code class="highlighter-rouge">execute()</code> 会被调用”得到了解答  。</p>
+
+<p>获取了 <code class="highlighter-rouge">Module</code> 之后， <code class="highlighter-rouge">executeAndReturn()</code> 调用 <code class="highlighter-rouge">execute()</code> ，完成页面主体内容的处理。 <code class="highlighter-rouge">executeAndReturn()</code> 源码如下。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>publicObjectexecuteAndReturn()throwsException{
+    return this.executeMethod.invoke(this.moduleObject, this.log);
+}
+</code></pre></div></div>
+
+<h2 id="dochinese为什么会被调用">doChinese()为什么会被调用？</h2>
+
+<p>此时 <code class="highlighter-rouge">Web</code> 请求 <code class="highlighter-rouge">URL</code> 为 <code class="highlighter-rouge">http://localhost:8080/webx/multievent/say_hello_1/chinese.do</code> ，因此相应的 <code class="highlighter-rouge">target</code> 即为 <code class="highlighter-rouge">/multievent/say_hello_1/chinese.do</code> 。与第一个问题的请求处理流程相同， <code class="highlighter-rouge">Webx</code> 首先根据当前 <code class="highlighter-rouge">target</code> 去获取 <code class="highlighter-rouge">Module</code> ，若无法获取，那么认为当前 <code class="highlighter-rouge">target</code> 是由两部分组成： <code class="highlighter-rouge">event</code> 和 <code class="highlighter-rouge">eventModuleName</code> ，解析 <code class="highlighter-rouge">target</code> 的源码如下。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>private boolean parseEvent(){
+    int slashIndex = this.target.lastIndexOf("/");
+    int dotIndex = this.target.lastIndexOf(".");
+    if(slashIndex &gt; 0) {
+        this.event = this.target.substring(slashIndex + 1, dotIndex &gt; slashIndex?dotIndex:this.target.length());
+        this.eventModuleName = PerformScreenValve.this.getModuleName(this.target.substring(0, slashIndex));
+        return true;
+    } else {
+        return false;
+    }
+}
+</code></pre></div></div>
+
+<p>继续打断点深入源码， <code class="highlighter-rouge">Webx</code> 会将 <code class="highlighter-rouge">eventModuleName</code> 作为 <code class="highlighter-rouge">moduleName</code> 获取 <code class="highlighter-rouge">Module</code> 。同样的，首先尝试获取 <code class="highlighter-rouge">execute()</code> ，如果获取不到便获取所有的 <code class="highlighter-rouge">EventHandler</code> ，源码如下。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>privateMap&lt;String, Method&gt;getEventHandlers(Class&lt;?&gt; moduleClass){
+    HashMap handlers = null;
+    Method[] arr$ = moduleClass.getMethods();
+    int len$ = arr$.length;
+
+    for(int i$ = 0; i$ &lt; len$; ++i$) {
+        Method method = arr$[i$];
+        if(this.checkMethod(method)) {
+            String methodName = method.getName();
+            if(methodName.length() &gt; 2 &amp;&amp; methodName.startsWith("do") &amp;&amp; Character.isUpperCase(methodName.charAt(2))) {
+                String eventName = StringUtil.toCamelCase(methodName.substring(2));
+                if("perform".equals(eventName)) {
+                    eventName = null;
+                }
+
+                if(handlers == null) {
+                    handlers = CollectionUtil.createHashMap();
+                }
+
+                handlers.put(eventName, method);
+            }
+        }
+    }
+
+    return handlers;
+}
+</code></pre></div></div>
+
+<p>至此我们理解为什么 <code class="highlighter-rouge">doChinese()</code> 为什么会被调用了：获取当前 <code class="highlighter-rouge">target</code> 对应的 <code class="highlighter-rouge">screen</code> 的类的所有以 <code class="highlighter-rouge">do</code> 开头的方法，构建 <code class="highlighter-rouge">eventName</code> 与 <code class="highlighter-rouge">Method</code> 的映射关系，存储在一个 <code class="highlighter-rouge">Map</code> 中，注意我们的 <code class="highlighter-rouge">target</code> 已被划分为 <code class="highlighter-rouge">event</code> 和 <code class="highlighter-rouge">eventModuleName</code> ，在 <code class="highlighter-rouge">executeAndReturn()</code> 中根据 <code class="highlighter-rouge">event</code> 从 <code class="highlighter-rouge">Map</code> 中获取相应的 <code class="highlighter-rouge">Method</code> 并执行，源码如下（省略部分无关代码）。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>publicObjectexecuteAndReturn()throwsModuleEventException, ModuleEventNotFoundException{
+    Object result = null;
+    String event = this.getEventName(this.request);
+    MethodInvoker handler = null;
+    if(event != null) {
+        handler = (MethodInvoker)this.handlers.get(event);
+    }
+
+    if(handler == null) {
+        handler = (MethodInvoker)this.handlers.get((Object)null);
+    }
+...
+    result = handler.invoke(this.moduleObject, this.log);
+    ...
+}
+</code></pre></div></div>
+
+<h4 id="所以第二个疑问也得到了解答-">所以第二个疑问也得到了解答 😛</h4>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/%E5%88%9D%E6%8E%A2webx%E4%B9%8B%E7%BA%A6%E5%AE%9A%E8%83%9C%E4%BA%8E%E9%85%8D%E7%BD%AE.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/springboot%E7%B3%BB%E5%88%97%E4%BA%94web%E5%BC%80%E5%8F%91thymeleaffreemarker%E6%A8%A1%E6%9D%BF%E5%8F%91%E5%8A%A8%E6%9C%BA-2.html">&laquo; Spring Boot 系列（五）web开发-Thymeleaf、FreeMarker模板发动机</a>
+  
+  
+  <a class="next" href="/2017/%E6%80%8E%E6%A0%B7%E5%86%99%E5%A5%BD%E4%B8%9A%E5%8A%A1%E4%BB%A3%E7%A0%81%E9%82%A3%E4%BA%9B%E5%B9%B4%E9%A2%86%E5%9F%9F%E5%BB%BA%E6%A8%A1%E6%95%99%E4%BC%9A%E6%88%91%E7%9A%84%E4%B8%9C%E8%A5%BF.html">怎样写好业务代码——那些年领域建模教会我的东西 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>窗口管理器 xmonad 教程 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="窗口管理器 xmonad 教程" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="开发者最需要的，就是一个顺手的开发环境。" />
+<meta property="og:description" content="开发者最需要的，就是一个顺手的开发环境。" />
+<link rel="canonical" href="http://www.jfox.info/2017/%E7%AA%97%E5%8F%A3%E7%AE%A1%E7%90%86%E5%99%A8xmonad%E6%95%99%E7%A8%8B.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/%E7%AA%97%E5%8F%A3%E7%AE%A1%E7%90%86%E5%99%A8xmonad%E6%95%99%E7%A8%8B.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:58:21+00:00" />
+<script type="application/ld+json">
+{"description":"开发者最需要的，就是一个顺手的开发环境。","@type":"BlogPosting","url":"http://www.jfox.info/2017/%E7%AA%97%E5%8F%A3%E7%AE%A1%E7%90%86%E5%99%A8xmonad%E6%95%99%E7%A8%8B.html","headline":"窗口管理器 xmonad 教程","dateModified":"2017-01-01T15:58:21+00:00","datePublished":"2017-01-01T15:58:21+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/%E7%AA%97%E5%8F%A3%E7%AE%A1%E7%90%86%E5%99%A8xmonad%E6%95%99%E7%A8%8B.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">窗口管理器 xmonad 教程</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:58:21+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>开发者最需要的，就是一个顺手的开发环境。</p>
+
+<p><img src="1fd3602.jpg" alt="" /></p>
+
+<p>每个人的偏好不一样，我的开发环境是 Fish Shell + Xfce + xmonad + Vim，已经用了好多年，非常满意。</p>
+
+<p>三个月前，我介绍了 <a href="https://www.jfox.info/go.php?url=http://ju.outofmemory.cn/entry/312911"> Fish Shell </a> ，今天就来介绍 <a href="https://www.jfox.info/go.php?url=http://xmonad.org/"> xmonad </a> 。根据本文，读者可以从零开始配置并使用 xmonad。</p>
+
+<p><img src="1b4766d.png" alt="" /></p>
+
+<p>xmonad 的所有操作都通过键盘，只适合命令行的重度用户。如果你喜欢鼠标和图形界面，xmonad 不适合你。另外，它本身也不支持 Windows 系统。</p>
+
+<h2 id="一xmonad-是什么">一、xmonad 是什么？</h2>
+
+<p>xmonad 是一种窗口管理器（window manager），用来管理软件窗口的位置和大小，会自动在桌面上平铺（tiling）窗口。</p>
+
+<p><img src="1cb3dfe.jpg" alt="" /></p>
+
+<p>（图片说明：各种软件窗口）</p>
+
+<p>注意，窗口管理器不是桌面环境（desktop environment）。后者是一套功能完善、集成各种工具的图形用户界面，比如 Gnome 和 KDE。桌面环境肯定包含了窗口管理器，但是（某些）窗口管理器可以不需要桌面环境，独立运行，xmonad 就是这种。</p>
+
+<p><img src="ead8ca6.png" alt="" /></p>
+
+<p>（图片说明：典型的桌面环境）</p>
+
+<p>桌面环境通常很重，窗口管理器就很轻，不仅体积小，资源占用也少，用户可以配置各种细节，释放出系统的最大性能。</p>
+
+<p>Linux 系统允许用户更换窗口管理器，有 <a href="https://www.jfox.info/go.php?url=https://www.slant.co/topics/390/~best-window-managers-for-linux"> 很多种 </a> 可以选择。xmonad 一直是最受欢迎的前三名，它使用 Haskell 语言编写，是世界上使用人数最多的 Haskell 软件。它的特点就是极简化，性能高。</p>
+
+<h2 id="二安装">二、安装</h2>
+
+<p>xmonad 的官网提供 <a href="https://www.jfox.info/go.php?url=http://xmonad.org/download.html"> 二进制包 </a> ，各个发行版都有。如果想自己编译，也可以下载源码。</p>
+
+<p>我的发行版是 Debian，安装就是一行命令。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ sudo apt-get install xmonad
+</code></pre></div></div>
+
+<p>此外，还需要再安装两个小工具。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ sudo apt-get install xmobar dmenu
+</code></pre></div></div>
+
+<p>安装完成后，退出当前对话（session），选择 xmonad 会话重新登录。登录后，你会看到一个完全空白的桌面，什么也没有，这说明 xmonad 起作用了，因为这时还没有任何软件窗口。</p>
+
+<h2 id="三常用命令">三、常用命令</h2>
+
+<h3 id="31-打开终端">3.1 打开终端</h3>
+
+<p>第一步，你需要打开一个窗口。一般来说，总是打开命令行终端窗口。</p>
+
+<p>xmonad 提供一个功能键，称为 ` mod ` 键（modifier 的缩写），所有操作都要使用这个键，默认为 ` alt ` 键，但是一般会把它改掉，比如改成 ` Windows ` 键，具体修改方法请看后文。</p>
+
+<p>打开终端窗口，按下 ` mod + shift + return ` （默认为 ` alt + shift + return ` ）。这会打开一个终端窗口，占据了所有桌面空间。</p>
+
+<p><img src="fb1c712.png" alt="" /></p>
+
+<p>按下 ` mod + shift + return ` ，再打开一个终端窗口。它与第一个窗口水平地平分屏幕，每个窗口占据50%空间。</p>
+
+<p><img src="e9c82fc.png" alt="" /></p>
+
+<p>注意，第二个窗口占据桌面的左边，自动获得焦点，成为当前窗口。这个左边部分就称为”主栏”（master pane），右边部分称为”副栏”，前面打开的第一个窗口自动进入副栏。</p>
+
+<p>再按一次 ` mod + shift + return ` ，打开第三个窗口。</p>
+
+<p><img src="575fc6d.png" alt="" /></p>
+
+<p>这时，第三个窗口就会占据主栏，前两个窗口自动进入副栏。规则就是，新窗口总是独占主栏，旧窗口平分副栏。</p>
+
+<h3 id="32-布局模式">3.2 布局模式</h3>
+
+<p>默认的布局模式是，主栏在左边，副栏在右边。</p>
+
+<p>按下 ` mod + space ` ，布局模式改成主栏在上方，副栏在下方。</p>
+
+<p><img src="1b71bfa.png" alt="" /></p>
+
+<p>再按一次 ` mod + space ` ，就变成独占模式，当前窗口独占整个桌面，其他窗口不可见。</p>
+
+<p><img src="fb1c712.png" alt="" /></p>
+
+<p>再按一次 ` mod + space ` ，就变回默认模式（主栏在左边，副栏在右边）。</p>
+
+<p><img src="575fc6d.png" alt="" /></p>
+
+<p>按下 ` mod + , ` （mod + 逗号），一个副栏窗口会移动到主栏，即主栏变成有两个窗口，副栏变成只有一个窗口。</p>
+
+<p><img src="db88d1d.png" alt="" /></p>
+
+<p>再按一次 ` mod + , ` （mod + 逗号），主栏变成三个窗口，副栏消失。</p>
+
+<p><img src="a2131ce.png" alt="" /></p>
+
+<p>按下 ` mod + . ` （mod + 句号），主栏减少一个窗口，副栏增加一个窗口。</p>
+
+<h3 id="33-移动焦点">3.3 移动焦点</h3>
+
+<p>新窗口总是自动获得焦点，变成当前窗口。按下 ` mod + j ` ，焦点顺时针移动到下一个窗口。</p>
+
+<p>按下 ` mod + k ` ，焦点逆时针移动到上一个窗口。</p>
+
+<p>如果当前窗口在副栏，按下 ` mod + return ` ，会与主栏窗口对调位置。</p>
+
+<h3 id="34-调整窗口顺序">3.4 调整窗口顺序</h3>
+
+<p>按下 ` mod + shift + j ` ，按照顺时针的顺序，当前窗口与下一个窗口交换位置，即当前窗口前进到下一个位置。</p>
+
+<p>按下 ` mod + shift + k ` ，按照逆时针顺序，当前窗口与上一个窗口交换位置。即当前窗口后退到上一个位置。</p>
+
+<h3 id="35-调整栏位大小">3.5 调整栏位大小</h3>
+
+<p>按下 ` mod + l ` ，主栏增加尺寸。</p>
+
+<p>按下 ` mod + h ` ，副栏增加尺寸。</p>
+
+<h3 id="36-浮动窗口">3.6 浮动窗口</h3>
+
+<p>正常情况下，xmonad 决定了窗口的位置和大小，但有时我们希望自己控制。xmonad 允许某个窗口浮动，脱离原有的布局。</p>
+
+<p>按下 ` mod + 鼠标左键 ` 拖动窗口，该窗口就会变成浮动窗口，可以放到屏幕的任何位置。</p>
+
+<p>按下 ` mod + 鼠标右键 ` 可以调整窗口大小。</p>
+
+<p>按下 ` mod + t ` ，当前浮动窗口就会结束浮动，重新回到 xmonad 的布局。</p>
+
+<h3 id="37-关闭窗口">3.7 关闭窗口</h3>
+
+<p>窗口可以自然关闭（比如终端窗口按 ` ctrl + d ` ），也可以让 xmonad 强行关闭它。</p>
+
+<p>按下 ` mod + shift + c ` ，会关闭当前窗口，焦点移到下一个窗口。</p>
+
+<h3 id="38-退出-xmonad">3.8 退出 xmonad</h3>
+
+<p>按下 ` mod + shift + q ` ，将会立刻关闭所有窗口，退出 xmonad，用户需要重新登录。</p>
+
+<h2 id="四工作区">四、工作区</h2>
+
+<p>xmonad 提供9个工作区，相当于提供9个桌面。按下 ` mod + 1 ` 到 ` mod + 9 ` 切换。 xmonad 启动后，默认处于1号工作区 。</p>
+
+<p>如果要将一个窗口移到不同的工作区，先用 ` mod + j ` 或 ` mod + k ` ，将其变成焦点窗口，然后使用 ` mod + shift + 6 ` ，就将其移到了6号工作区。</p>
+
+<p>我的习惯是，1号工作区是终端，2号是浏览器，4号是虚拟机。</p>
+
+<h2 id="五多显示器">五、多显示器</h2>
+
+<p><img src="f40d435.jpg" alt="" /></p>
+
+<p>多显示器需要使用配置工具，我用的是 xrandr。其他工具还有 Xinerama 和 winView，另外 arandr 是 xrandr 的图形界面，也可以用。</p>
+
+<p>下面的命令查看显示器的连接情况。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ xrandr -q
+</code></pre></div></div>
+
+<p>具体的配置教程可以看 <a href="https://www.jfox.info/go.php?url=https://wiki.archlinux.org/index.php/xrandr"> 这里 </a> 。</p>
+
+<p>使用多显示器时，每个显示器会分配到一个工作区。默认情况下，1号工作区显示在主显示器，2号工作区显示在第二个显示器。如果要将4号工作区显示在当前显示器，那么按下 ` mod + 4 ` ，4号工作就会与当前屏幕中的工作区互换位置。</p>
+
+<p><code class="highlighter-rouge"> mod + w </code> 转移焦点到左显示器， ` mod + e ` 转移焦点到右显示器。</p>
+
+<p><code class="highlighter-rouge"> mod + shift + w </code> 将当前窗口移到左显示器， ` mod + shift + e ` 将当前窗口移到右显示器。</p>
+
+<h2 id="六配置文件">六、配置文件</h2>
+
+<p>xmonad 的配置文件是 ` ～/.xmonad/xmonad.hs ` 。该文件需要用户自己新建， <a href="https://www.jfox.info/go.php?url=https://gist.github.com/ruanyf/65893d5d5916bb2ffefd8ea69ff869f7"> 这里 </a> 是一个简单的范例，详细的解释可以看 <a href="https://www.jfox.info/go.php?url=https://wiki.haskell.org/Xmonad/Config_archive/John_Goerzen's_Configuration"> 官网 </a> 。</p>
+
+<p>这个文件里面， ` modMask ` 决定了 ` mod ` 到底是哪一个键。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>modMask = mod4Mask
+</code></pre></div></div>
+
+<p>上面的这行就将 ` mod ` 键设为了 ` Windows ` 键。</p>
+
+<p>修改配置文件以后，按下 ` mod + q ` ，新的配置就会生效。</p>
+
+<h2 id="七xmobar">七、xmobar</h2>
+
+<p>xmonad 的默认桌面，什么也没有，不太方便。xmobar 提供了一个状态栏，将常用信息显示在上面，比如 CPU 和内存的占用情况、天气、时间等等。</p>
+
+<p><img src="d919389.jpg" alt="" /></p>
+
+<p>（图片说明：顶部状态栏就是 xmobar。）</p>
+
+<p>它的配置文件是 ` ~/.xmobarrc ` （教程 <a href="https://www.jfox.info/go.php?url=https://wiki.archlinux.org/index.php/Xmobar"> 1 </a> ， <a href="https://www.jfox.info/go.php?url=http://projects.haskell.org/xmobar/"> 2 </a> ， <a href="https://www.jfox.info/go.php?url=http://beginners-guide-to-xmonad.readthedocs.io/configure_xmobar.html"> 3 </a> ）。 <a href="https://www.jfox.info/go.php?url=https://gist.github.com/ruanyf/9d234b57ad1894d559abe57449fec65c"> 这里 </a> 是一个最简单配置， <a href="https://www.jfox.info/go.php?url=https://gist.github.com/ruanyf/a640a98d41383387d3a6401796f54710"> 这里 </a> 是我的笔记本电脑使用的配置。</p>
+
+<h2 id="八dmenu">八、dmenu</h2>
+
+<p>最后，dmenu 在桌面顶部提供了一个菜单条，可以快速启动应用程序。</p>
+
+<p><img src="b7e8ca4.png" alt="" /></p>
+
+<p>（图片说明：dmenu 显示在屏幕顶部，输入 ` fire ` 会自动显示包含 ` fire ` 的启动命令。）</p>
+
+<p>它从系统变量 ` $PATH ` 指定的路径中，寻找所有的应用程序，根据用户的键入，动态提示最符合的结果。</p>
+
+<p>按下 ` mod + p ` 就会进入 ` dmenu ` 菜单栏，按下 ` ESC ` 键可以退出。方向键用来选择应用程序， ` return ` 键用来启动。</p>
+
+<p>（完）</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/%E7%AA%97%E5%8F%A3%E7%AE%A1%E7%90%86%E5%99%A8xmonad%E6%95%99%E7%A8%8B.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/java%E7%BA%BF%E7%A8%8B%E6%95%B0%E8%BF%87%E9%AB%98%E5%8E%9F%E5%9B%A0%E5%88%86%E6%9E%90.html">&laquo; java线程数过高原因分析</a>
+  
+  
+  <a class="next" href="/2017/%E6%AF%8F%E6%97%A5%E4%B8%80%E5%8D%9Aspringboot%E5%85%A5%E9%97%A8%E5%B1%80%E9%83%A8%E4%B8%8E%E5%85%A8%E5%B1%80%E7%9A%84%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86.html">每日一博 | SpringBoot 入门 — 局部与全局的异常处理 » java面试题 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

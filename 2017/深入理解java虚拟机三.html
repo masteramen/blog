@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>《深入理解Java虚拟机》（三） | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="《深入理解Java虚拟机》（三）" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="《深入理解Java虚拟机》（三）" />
+<meta property="og:description" content="《深入理解Java虚拟机》（三）" />
+<link rel="canonical" href="http://www.jfox.info/2017/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3java%E8%99%9A%E6%8B%9F%E6%9C%BA%E4%B8%89.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3java%E8%99%9A%E6%8B%9F%E6%9C%BA%E4%B8%89.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:58:51+00:00" />
+<script type="application/ld+json">
+{"description":"《深入理解Java虚拟机》（三）","@type":"BlogPosting","url":"http://www.jfox.info/2017/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3java%E8%99%9A%E6%8B%9F%E6%9C%BA%E4%B8%89.html","headline":"《深入理解Java虚拟机》（三）","dateModified":"2017-01-01T15:58:51+00:00","datePublished":"2017-01-01T15:58:51+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3java%E8%99%9A%E6%8B%9F%E6%9C%BA%E4%B8%89.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">《深入理解Java虚拟机》（三）</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:58:51+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<h1 id="深入理解java虚拟机三">《深入理解Java虚拟机》（三）</h1>
+
+<h1 id="垃圾收集器与内存分配策略-详解">垃圾收集器与内存分配策略 详解</h1>
+
+<h2 id="31概述">3.1　概述</h2>
+
+<p>本文参考的是周志明的 《深入理解Java虚拟机》第三章 ，为了整理思路，简单记录一下，方便后期查阅。</p>
+
+<h2 id="32对象已死吗">3.2　对象已死吗</h2>
+
+<p>在垃圾收集器进行回收前，第一件事就是确定这些对象哪些还存活，哪些已经死去。</p>
+
+<h3 id="321引用计数算法">3.2.1　引用计数算法</h3>
+
+<p>在对象中添加一个引用计数器，每当有一个地方引用它时，计数器就加1；当引用失效时，计数器减1；其中计数器为0的对象是不可能再被使用的<strong>已死</strong>对象。</p>
+
+<ul>
+  <li>
+    <p>当两个对象<strong>相互引用</strong>时，这两个对象就不会被回收</p>
+  </li>
+  <li>
+    <p>引用计数算法,<strong>不被主流虚拟机采用</strong>，主要原因是它很难解决对象之间相互循环引用的问题。</p>
+  </li>
+</ul>
+
+<h3 id="322可达性分析算法">3.2.2　可达性分析算法</h3>
+
+<p>通过一系列的称为<code class="highlighter-rouge">GC Roots</code>的对象作为起始点，从这些节点开始向下搜索，搜索所经过
+的路径称为引用链<code class="highlighter-rouge">（Reference Chain）</code>，当一个对象到<code class="highlighter-rouge">GC Roots</code>没有任何引用链相连（在图论中称为对象不可达）时，这个对象就是不可用的。</p>
+
+<p>图片来源于网络如有侵权请私信删除</p>
+
+<p><img src="7f2d83b.png" alt="" /></p>
+
+<p>在java语言中，可作为<code class="highlighter-rouge">GC Roots</code>的对象包括：</p>
+
+<ul>
+  <li>
+    <p><strong>虚拟机栈</strong>（栈帧中的本地变量表）中引用的对象</p>
+  </li>
+  <li>
+    <p>方法区中类<strong>静态属性引用</strong>的对象</p>
+  </li>
+  <li>
+    <p>方法区中<strong>常量引用</strong>的对象</p>
+  </li>
+  <li>
+    <p>本地方法栈中<strong>JNI引用</strong>的对象</p>
+  </li>
+</ul>
+
+<h3 id="323引用的分类">3.2.3　引用的分类</h3>
+
+<p>java的引用可以分为强引用、软引用、弱引用、虚引用：</p>
+
+<ul>
+  <li>
+    <p><strong>强引用</strong>：是指在程序代码中直接存在的引用，<strong>譬如引用<code class="highlighter-rouge">new</code>操作符创建的对象</strong>。只要强引用还存在，垃圾收集器就<strong>永远不会回收掉被引用的对象</strong>。</p>
+  </li>
+  <li>
+    <p><strong>软引用</strong>：还有用但是并非必需的引用，早系统将要发生内存溢出异常之前会把这些对象列进回收范围中<strong>进行二次回收</strong>，若还是没有足够的内存，才会抛出内存溢出异常。</p>
+  </li>
+  <li>
+    <p><strong>弱引用</strong>：非必需的对象，<strong>只能生存到下一次垃圾收集发生之前</strong>。当垃圾收集器工作时，无论内存是否够用都将回收这些对象。</p>
+  </li>
+  <li>
+    <p><strong>虚引用</strong>：一个对象是否有虚引用的存在完全不会对他的生存时间构成影响，也无法通过虚引用来取得一个对象实例。</p>
+  </li>
+</ul>
+
+<p>图片来源于网络如有侵权请私信删除</p>
+
+<p><img src="1cf0da7.png" alt="" /></p>
+
+<h3 id="324宣告一个对象死亡的过程">3.2.4　宣告一个对象死亡的过程</h3>
+
+<p>要真正宣告一个对象死亡，至少要经历两次标记过程：</p>
+
+<ul>
+  <li>
+    <p>若对象在进行可达性分析后发现没有与<code class="highlighter-rouge">GC Roots</code>相连接的引用链，会被 <strong>第一次标记 **并且</strong>进行一次筛选<strong>。筛选的条件是此对象</strong>是否有必要执行<code class="highlighter-rouge">finalize()</code>方法<strong>（如当对象</strong>没有重写<code class="highlighter-rouge">finalize()</code>方法<strong>或者</strong><code class="highlighter-rouge">finalize()</code>方法已经被虚拟机调用过**则认为没有必要执行）。</p>
+  </li>
+  <li>
+    <p>如果<strong>有必要执行则将该对象放置在<code class="highlighter-rouge">F-Queue</code>队列中</strong>，并在稍后由一个由虚拟机自己建立的、<strong>低优先级的<code class="highlighter-rouge">Finalizer</code>线程去执行它</strong>；稍后<code class="highlighter-rouge">GC</code>将<strong>对<code class="highlighter-rouge">F-Queue</code>中的对象进行第二次标记</strong>，如果对象还是没有被引用，则会被回收。</p>
+  </li>
+</ul>
+
+<p>但是作者不建议通过<code class="highlighter-rouge">finalize()</code>方法“拯救”对象，因为它运行代价高、不确定性大、无法保证各个对象的调用顺序。</p>
+
+<p>图片来源于网络如有侵权请私信删除</p>
+
+<p><img src="2f6cbdf.png" alt="" /></p>
+
+<h3 id="325回收方法区">3.2.5　回收方法区</h3>
+
+<p>很多人认为方法区（HotSopt中的永久代）是没有垃圾收集的，java虚拟机规范中也没有要求需要对方法区实现垃圾收集。</p>
+
+<p>永久代（方法区）的垃圾收集主要回收两部分内容：<strong>废弃常量和无用的类</strong></p>
+
+<ul>
+  <li>
+    <p><strong>废弃常量</strong>：假如一个字符串<code class="highlighter-rouge">“abc”</code>已经进入了常量池中，但是当前系统没有任何一个String对象是叫 做<code class="highlighter-rouge">“abc”</code>的，换句话说，就是没有任何String对象引用常量池中的<code class="highlighter-rouge">“abc”</code>常量，也没有其他 – 地方引用了这个字面量，如果这时发生内存回收，而且必要的话，这个<code class="highlighter-rouge">“abc”</code>常量就会被系 – 统清理出常量池。</p>
+  </li>
+  <li>
+    <p><strong>无用的类</strong>：同时满足下面3个条件的类（实例、类加载器被回收，<code class="highlighter-rouge">java.lang.Class</code>对象没有被引用）。</p>
+  </li>
+</ul>
+
+<ol>
+  <li>
+    <p>该类<strong>所有的实例</strong>都已经被回收，也就是Java<strong>堆中不存在该类的任何实例</strong>。</p>
+  </li>
+  <li>
+    <p>加载该类的<strong><code class="highlighter-rouge">ClassLoader</code>已经被回收</strong>。</p>
+  </li>
+  <li>
+    <p>该类对应的<code class="highlighter-rouge">java.lang.Class</code>对象没有在任何地方被引用，无法在任何地方通过反射访问该类的方法。</p>
+  </li>
+</ol>
+
+<h2 id="33垃圾收集算法">3.3　垃圾收集算法</h2>
+
+<h3 id="331标记-清除算法">3.3.1　标记-清除算法</h3>
+
+<p>算法分为两个阶段：标记和清除</p>
+
+<p><strong>标记</strong>：首先标记所有需要回收的对象
+<strong>清除</strong>：在标记完成后统一回收所有被标记的对象</p>
+
+<p><strong>标记过程在上文宣告一个对象死亡过程中提及</strong></p>
+
+<p><strong>缺点</strong></p>
+
+<ul>
+  <li>
+    <p><strong>效率问题</strong>，标记和清除两个过程的效率都不高（回收后空间碎片过多，再次回收（即可达性分析时）有时需要遍历整个内存区域）。</p>
+  </li>
+  <li>
+    <p><strong>空间问题</strong>，标记清除之后会产生大量不连续的内存碎片，空间碎片太多可能会导致以后在程序运行过程中需要分配较大对象时，无法找到足够的连续内存,而不得不提前触发另一次垃圾收集动作。</p>
+  </li>
+</ul>
+
+<p>图片来源于网络如有侵权请私信删除</p>
+
+<p><img src="a276f54.png" alt="" /></p>
+
+<h3 id="332复制算法新生代算法">3.3.2　复制算法（新生代算法）</h3>
+
+<p>思路：将可用内存按容量分为两个块，每次只用其中之一。当这一块内存用完之后，将还存活的对象复制到另一边去，然后清除所有已经使用过的部分。</p>
+
+<p><strong>优点</strong></p>
+
+<ul>
+  <li>每次都是对整个半区进行内存回收，内存分配时也就不用考虑内存碎片等复杂情况，只要移动堆顶指针，按顺序分配内存即可，<strong>实现简单，运行高效</strong>。</li>
+</ul>
+
+<p><strong>缺点</strong></p>
+
+<p><strong>解决方法</strong></p>
+
+<ul>
+  <li>
+    <p>新生代中的对象98%是“朝生夕死”的，所以并不需要按照1:1的比例来划分内存空间，而是将内存分为一块较大的<code class="highlighter-rouge">Eden空间</code>和两块较小的<code class="highlighter-rouge">Survivor空间</code>，每次使用<code class="highlighter-rouge">Eden</code>和其中一块<code class="highlighter-rouge">Survivor</code>。</p>
+  </li>
+  <li>
+    <p>在HotSpot里，考虑到大部分对象存活时间很短将内存分为<code class="highlighter-rouge">Eden</code>和两块<code class="highlighter-rouge">Survivor</code>，默认比例为8:1:1。代价是存在部分内存空间浪费，适合在新生代使用。</p>
+  </li>
+</ul>
+
+<p>图片来源于网络如有侵权请私信删除</p>
+
+<p><img src="0e7cf36.png" alt="" /></p>
+
+<h3 id="333标记-整理算法老年代算法">3.3.3　标记-整理算法（老年代算法）</h3>
+
+<p>标记过程仍然与“标记-清除”算法一样，但后续步骤不是直接对可回收对象进行清理，而是让所有存活的对象都向一端移动，然后直接清理掉端边界以外的内存。</p>
+
+<p>图片来源于网络如有侵权请私信删除</p>
+
+<p><img src="d35ea58.png" alt="" /></p>
+
+<h3 id="334分代收集算法">3.3.4　分代收集算法</h3>
+
+<ul>
+  <li>
+    <p>当前商用虚拟机都采用了这种算法，根据对象的存活周期将内存划分为几块，一般是把Java堆分为<strong>新生代和老生代</strong>，根据<strong>各个年代采用适当的收集算法</strong>。</p>
+  </li>
+  <li>
+    <p>新生代一般采<strong>用复制算法</strong>。</p>
+  </li>
+  <li>
+    <p>老生代一搬采用 <strong>标记-清理 或者标记-整理</strong> 进行回收。</p>
+  </li>
+</ul>
+
+<h2 id="34hotspot的算法实现">3.4　hotspot的算法实现</h2>
+
+<h3 id="341枚举根节点">3.4.1　枚举根节点</h3>
+
+<p><strong>可达性分析的缺点</strong></p>
+
+<p>从<code class="highlighter-rouge">GC Roots</code>节点找引用链这个操作为例，可作为<code class="highlighter-rouge">GC Roots</code>的节点主要在全局性的引用（例如常量或类静态属性）与执行上下文（例如栈帧中的本地变量表）中，现在很多应用仅仅方法区就有数百兆，如果要逐个检查这里面的引用，那么必然会消耗很多时间。</p>
+
+<p>由于要确保在一致性的快照中进行可达性分析，从而导致<code class="highlighter-rouge">GC</code>进行时必须要停顿所有Java执行线程；</p>
+
+<ul>
+  <li>
+    <p>目前主流的Java虚拟机使用的都是准确式<code class="highlighter-rouge">GC</code>，当执行系统停顿下来后并不需要一个不漏的检查完所有执行上下文和全局的引用变量，虚拟机应当<strong>有办法直接得知哪些地方存着对象的引用</strong></p>
+  </li>
+  <li>
+    <p>HotSpot使用一组称为<strong><code class="highlighter-rouge">OopMap的数据结构**</code>来记录哪些地方存着对象的引用</strong></p>
+  </li>
+  <li>
+    <p>在类加载过程中，HotSpot就把对象内什么偏移量上是什么类型的数据计算出来，在<strong><code class="highlighter-rouge">JIT编译</code></strong>过程中会在<strong>特定的位置记录下栈和寄存器中哪些位置是引用</strong></p>
+  </li>
+</ul>
+
+<p><strong>判断对象引用</strong></p>
+
+<ul>
+  <li>
+    <p>类加载时，使用OopMap的数据结构</p>
+  </li>
+  <li>
+    <p>JIT编译时特定记录</p>
+  </li>
+</ul>
+
+<h3 id="342安全点">3.4.2　安全点</h3>
+
+<ul>
+  <li>
+    <p>HotSpot没有为每条指令都生成<code class="highlighter-rouge">OopMap</code>，只是在特定位置记录了这些信息，这些位置称为安全点。</p>
+  </li>
+  <li>
+    <p>即程序执行时并非在所有地方都能停顿下来开始<code class="highlighter-rouge">GC</code>，只有到达安全点时才能暂停。</p>
+  </li>
+  <li>
+    <p>对于安全点基本上是以程序<strong>是否具有让程序长时间执行的特征</strong>（比如方法调用、循环跳转、异常跳转等）为标准进行选定的。</p>
+  </li>
+  <li>
+    <p>另外还需要考虑如果在GC时让所有线程都跑到最近的安全点上，有两种方案：抢先式中断和主动式中断；</p>
+  </li>
+</ul>
+
+<p><strong>抢先式中断</strong></p>
+
+<ul>
+  <li>不需要线程的执行代码主动去配合，在<code class="highlighter-rouge">GC</code>发生时，首先把所有线程全部中断，如果发现有线程中断的地方不在安全点上，就恢复线程，让它“跑”到安全点上。 <strong>现在几乎没有虚拟机实现采用抢先式中断来暂停线程从而响应<code class="highlighter-rouge">GC</code>事件</strong>。</li>
+</ul>
+
+<p><strong>主动式中断</strong></p>
+
+<ul>
+  <li>当<code class="highlighter-rouge">GC</code>需要中断线程的时候，不直接对线程操作，仅仅简单地设置一个<strong>标志</strong>，各个线程执行时主动去轮询这个标志，发现<strong>中断标志为真时就自己中断挂起</strong>。轮询标志的地方和安全点是重合的，另外再加上<strong>创建对象需要分配内存的地方</strong>。</li>
+</ul>
+
+<p><strong>两者的区别在于，抢先式中断是无论如何都进行中断，而主动式中断则是线程执行轮询标志查看是否中断</strong>。</p>
+
+<h3 id="343安全区域">3.4.3　安全区域</h3>
+
+<ul>
+  <li>
+    <p>为了处理<strong>不执行</strong>的程序的安全点问题，提出了安全区域来解决问题。</p>
+  </li>
+  <li>
+    <p>安全区域是指在一段代码片段之中，引用关系不会发生变化，在这个区域内的任何地方进行<code class="highlighter-rouge">GC</code>都是安全的。</p>
+  </li>
+  <li>
+    <p>虚拟机如个具体的进行内存回收是由虚拟机所采用的GC收集器决定的，而通常虚拟机中往往不止有一种<code class="highlighter-rouge">GC</code>收集器。</p>
+  </li>
+  <li>
+    <p>线程执行到安全区域时，首先标识自己已经进入了安全区域，这样<code class="highlighter-rouge">JVM</code>在<code class="highlighter-rouge">GC</code>时就不管这些线程了。</p>
+  </li>
+</ul>
+
+<h2 id="35垃圾收集器">3.5　垃圾收集器</h2>
+
+<ul>
+  <li>
+    <p>如果说收集算法是内存回收的方法论，那么垃圾收集器就是内存回收的具体实现。</p>
+  </li>
+  <li>
+    <p>不同的收集器应用的区域不同，到现在为止没有最好的收集器，也没有万能的收集器。</p>
+  </li>
+</ul>
+
+<h3 id="351serial收集器">3.5.1　serial收集器</h3>
+
+<ul>
+  <li>
+    <p>Serail 收集器是<strong>单线程</strong>的，他在进行垃圾收集时必须暂停其他的所有线程，直到收集结束。</p>
+  </li>
+  <li>
+    <p>随着收集器的发展，用户线程的停顿时间越来越段，但任然无法消除。</p>
+  </li>
+  <li>
+    <p><strong>Serial收集器是虚拟机运行在Client模式下默认的新生代收集器</strong>。</p>
+  </li>
+  <li>
+    <p>对于单个CPU坏境来说，Serial收集器**由于没有线程交互的开销，专心做垃圾收集，可以获得很高的单线程收集效率。</p>
+  </li>
+</ul>
+
+<p>图片来源于网络如有侵权请私信删除</p>
+
+<p><img src="3ce2e37.png" alt="" /></p>
+
+<h3 id="352parnew收集器">3.5.2　parnew收集器</h3>
+
+<ul>
+  <li>
+    <p>ParNew收集器是<code class="highlighter-rouge">Serial</code>收集器的多线程版本</p>
+  </li>
+  <li>
+    <p>ParNew收集器是运行在<code class="highlighter-rouge">Server</code>模式下虚拟机中首选的新生代收集器</p>
+  </li>
+  <li>
+    <p>在垃圾收集器中<strong>并发</strong>与<strong>并行</strong>的概念：</p>
+  </li>
+  <li>
+    <p><strong>并行</strong>：多条垃圾收集线程并行工作，但此时用户线程仍然处于等待状态。</p>
+  </li>
+  <li>
+    <p><strong>并发</strong>：用户线程与垃圾收集线程同时执行（但不一定是并行的，可能会交替执行），用户程序在继续运行，而垃圾收集程序运行在另一个CPU上。</p>
+  </li>
+</ul>
+
+<p>图片来源于网络如有侵权请私信删除</p>
+
+<p><img src="6773a26.png" alt="" /></p>
+
+<h3 id="353parallel-scavenge收集器">3.5.3　parallel scavenge收集器</h3>
+
+<ul>
+  <li>
+    <p>新生代收集器，使用复制算法，并行的多线程收集器；</p>
+  </li>
+  <li>
+    <p>与其他收集器关注于尽可能缩短垃圾收集时用户线程停顿时间不同，它的目标是达到一个可控制的吞吐量。</p>
+  </li>
+  <li>
+    <p>吞吐量就是CPU用于运行用户代码的时间与CPU总消耗时间的比值，即吞吐量=运行用户代码时间/（运行用户代码时间+垃圾收集时间），虚拟机总共运行了100分钟，其中垃圾收集花掉1分钟，那吞吐量就是99%。</p>
+  </li>
+  <li>
+    <p>高吞吐量可以高效的利用CPU时间，尽快得完成程序的运算任务，主要适合在后台运算而不需要太多交互的任务。</p>
+  </li>
+  <li>
+    <p>GC停顿时间的缩短是以牺牲吞吐量和新生代空间来换取的。</p>
+  </li>
+  <li>
+    <p>Parallel Scavenge收集器也经常被称为<strong>吞吐量优先</strong>收集器。</p>
+  </li>
+</ul>
+
+<p>Parallel Scavenge收集器提供了两个参数用于精确控制吞吐量</p>
+
+<ul>
+  <li>
+    <p>控制最大垃圾收集停顿时间的<code class="highlighter-rouge">-XX：MaxGCPauseMillis</code>参数。</p>
+  </li>
+  <li>
+    <p>直接设置吞吐量大小的<code class="highlighter-rouge">-XX：GCTimeRatio</code>参数。</p>
+  </li>
+</ul>
+
+<h3 id="354serial-old收集器">3.5.4　serial old收集器</h3>
+
+<p>Serial Old是Serial收集器的老年代版本，它同样是一个单线程收集器，使用<code class="highlighter-rouge">“标记-整理”</code>算法。</p>
+
+<p>图片来源于网络如有侵权请私信删除</p>
+
+<p><img src="3ce2e37.png" alt="" /></p>
+
+<h3 id="355parallel-old收集器">3.5.5　parallel old收集器</h3>
+
+<p>Serial Old收集器是Serail收集器的老年代版本，是一个单线程收集器，使用标记-整理算法。</p>
+
+<p>图片来源于网络如有侵权请私信删除</p>
+
+<p><img src="3ce2e37.png" alt="" /></p>
+
+<ul>
+  <li>
+    <p>Serail Old收集器主要用于Clinet模式下。</p>
+  </li>
+  <li>
+    <p>Serail Old收集器另一种用途是作为CMS收集器的后备预案。</p>
+  </li>
+</ul>
+
+<p>Parallel Old是<code class="highlighter-rouge">Parallel Scavenge</code>收集器的老年代版本，使用<strong>多线程</strong>和<code class="highlighter-rouge">“标记-整理”</code>算法。</p>
+
+<p>图片来源于网络如有侵权请私信删除</p>
+
+<p><img src="7a0dfef.png" alt="" /></p>
+
+<h3 id="356cms收集器">3.5.6　cms收集器</h3>
+
+<p>CMS收集器是一种以获取最短的回收停顿时间为目标的收集器。</p>
+
+<p>CMS收集器基于标记-清楚算法实现，分为四个步骤：<strong>初始标记、并发标记、重新标记、并发清除</strong>。</p>
+
+<p><strong>步骤详解</strong></p>
+
+<ul>
+  <li>
+    <p><strong>初始标记</strong>：标记一下<code class="highlighter-rouge">GC Roots</code>能直接关联到的对象，速度很快。</p>
+  </li>
+  <li>
+    <p><strong>并发标记</strong>：进行<code class="highlighter-rouge">GC Roots Tracing</code>。</p>
+  </li>
+  <li>
+    <p><strong>重新标记</strong>：是为了修正那些在并发标记期间因用户程序继续运作而导致标记产生变动的那一部分对象的标记记录，在这一阶段的停顿时间会比初始标记阶段稍长一点。</p>
+  </li>
+  <li>
+    <p><strong>并发清除</strong>：<code class="highlighter-rouge">（CMS concurrent sweep）</code>。</p>
+  </li>
+</ul>
+
+<p>图片来源于网络如有侵权请私信删除</p>
+
+<p><img src="7355f67.png" alt="" /></p>
+
+<h3 id="357g1收集器">3.5.7　g1收集器</h3>
+
+<p>G1收集器是一款面向服务端应用的垃圾收集器。
+G1收集器具备以下特点：</p>
+
+<p><strong>并行与并发</strong></p>
+
+<ul>
+  <li>G1能充分利用多CPU、 多核环境下的硬件优势，使用多个CPU（CPU或者CPU核心）来缩短<code class="highlighter-rouge">Stop-The-World</code>停顿的时间，部分其他收集器原本需要停顿Java线程执行的GC动作，G1收集器仍然可以通过并发的方式让Java程序继续执行。</li>
+</ul>
+
+<p><strong>分代收集</strong></p>
+
+<ul>
+  <li>与其他收集器一样，分代概念在<code class="highlighter-rouge">G1</code>中依然得以保留。 虽然<code class="highlighter-rouge">G1</code>可以不需要其他收集器配合就能独立管理整个<code class="highlighter-rouge">GC</code>堆，但它能够采用不同的方式去处理新创建的对象和已经存活了一段时间、 熬过多次<code class="highlighter-rouge">GC</code>的旧对象以获取更好的收集效果。</li>
+</ul>
+
+<p><strong>空间整合</strong></p>
+
+<ul>
+  <li>从整体上来看是基于“标记-整理”算法实现的，在局部上是基于复制算法实现的，但无论如何，这两种算法都意味着G1运作期间不会产生内存空间碎片，收集后能提供规整的可用内存。 这种特性有利于程序长时间运行，分配大对象时不会因为无法找到连续内存空间而提前触发下一次GC。</li>
+</ul>
+
+<p><strong>可预测的停顿</strong></p>
+
+<ul>
+  <li>这是<code class="highlighter-rouge">G1</code>相对于<code class="highlighter-rouge">CMS</code>的另一大优势，降低停顿时间是<code class="highlighter-rouge">G1</code>和<code class="highlighter-rouge">CMS</code>共同的关注点，但<code class="highlighter-rouge">G1</code>除了追求低停顿外，还能建立可预测的停顿时间模型，能让使用者明确指定在一个长度为<code class="highlighter-rouge">M</code>毫秒的时间片段内，消耗在垃圾收集上的时间不得超过N毫秒，这几乎已经是实时<code class="highlighter-rouge">Java（RTSJ）</code>的垃圾收集器的特征了。</li>
+</ul>
+
+<p><code class="highlighter-rouge">G1</code>收集器将整个Java堆划分为多个大小相等的独立区域，虽然还保留有新生代和老生代的概念，但新生代和老生代不再是物理隔的了，他们是一部分<code class="highlighter-rouge">Region</code>的集合。</p>
+
+<p>G1收集器可以有计划地避免在整个Java堆中进行全区域的垃圾收集：跟踪各个<code class="highlighter-rouge">Region</code>里面的垃圾堆积的价值大小，在后台维护一个优先列表，每次根据允许的收集时间，优先回收价值最大的<code class="highlighter-rouge">Region</code>。</p>
+
+<p>在<code class="highlighter-rouge">G1</code>收集器中，使用<code class="highlighter-rouge">Remembered Set</code>来避免全堆扫描</p>
+
+<p><code class="highlighter-rouge">G1</code>收集器的运作大致可划分为以下几个步骤：</p>
+
+<p><strong>初始标记<code class="highlighter-rouge">（Initial Marking）</code></strong></p>
+
+<ul>
+  <li>仅仅只是标记一下<code class="highlighter-rouge">GC Roots</code>能直接关联到的对象，并且修改<code class="highlighter-rouge">TAMS（Next Top at Mark Start）</code>的值，让下一阶段用户程序并发运行时，能在正确可用的Region中创建新对象，这阶段需要停顿线程，但耗时很短。</li>
+</ul>
+
+<p><strong>并发标记<code class="highlighter-rouge">（Concurrent Marking）</code></strong></p>
+
+<ul>
+  <li>从<code class="highlighter-rouge">GC Root</code>开始对堆中对象进行可达性分析，找出存活的对象，这阶段耗时较长，但可与用户程序并发执行。</li>
+</ul>
+
+<p><strong>最终标记<code class="highlighter-rouge">（Final Marking）</code></strong></p>
+
+<ul>
+  <li>为了修正在并发标记期间因用户程序继续运作而导致标记产生变动的那一部分标记记录，虚拟机将这段时间对象变化记录在线<code class="highlighter-rouge">Remembered Set Logs</code>里面，最终标记阶段需要把<code class="highlighter-rouge">Remembered Set Logs</code>的数据合并到<code class="highlighter-rouge">Remembered Set</code>中，这阶段需要停顿线程，但是可并行执行。</li>
+</ul>
+
+<p><strong>筛选回收<code class="highlighter-rouge">（Live Data Counting and Evacuation）</code></strong></p>
+
+<ul>
+  <li>首先对各个<code class="highlighter-rouge">Region</code>的回收价值和成本进行排序，根据用户所期望的<code class="highlighter-rouge">GC</code>停顿时间来制定回收计划</li>
+</ul>
+
+<p>图片来源于网络如有侵权请私信删除
+<img src="cd5ed81.png" alt="" /></p>
+
+<h3 id="358理解gc日志">3.5.8　理解gc日志</h3>
+
+<p>图片来源于网络如有侵权请私信删除</p>
+
+<p><img src="e806d91.png" alt="" /></p>
+
+<ul>
+  <li>
+    <p>最前面的数字代表<code class="highlighter-rouge">GC</code>发生的时间（虚拟机启动以后的秒杀）</p>
+  </li>
+  <li>
+    <p><code class="highlighter-rouge">“[GC”</code>和<code class="highlighter-rouge">“[Full GC”</code>说明停顿类型，有<code class="highlighter-rouge">Full</code>代表的是<code class="highlighter-rouge">Stop-The-World</code>的；</p>
+  </li>
+  <li>
+    <p><code class="highlighter-rouge">“[DefNew”</code>、<code class="highlighter-rouge">“[Tenured”</code>和<code class="highlighter-rouge">“[Perm”</code>表示GC发生的区域；</p>
+  </li>
+  <li>
+    <p>方括号内部的<code class="highlighter-rouge">“3324K -&gt; 152K(3712K)”</code> 含义是 “<code class="highlighter-rouge">GC</code>前该内存已使用容量 -&gt; <code class="highlighter-rouge">GC</code>后该内存区域已使用容量(该区域总容量)”;</p>
+  </li>
+  <li>
+    <p>方括号之外的<code class="highlighter-rouge">“3324K -&gt; 152K(11904)”</code> 含义是 “<code class="highlighter-rouge">GC</code>前Java堆已使用容量 -&gt; <code class="highlighter-rouge">GC</code>后Java堆已使用容量(Java堆总容量)”;</p>
+  </li>
+  <li>
+    <p>再往后<code class="highlighter-rouge">“0.0025925 secs”</code>表示该内存区域<code class="highlighter-rouge">GC</code>所占用的时间；</p>
+  </li>
+</ul>
+
+<h3 id="359垃圾收集器参数总结">3.5.9　垃圾收集器参数总结</h3>
+
+<p><strong>垃圾收集器参数总结</strong></p>
+
+<p><code class="highlighter-rouge">-XX:+&lt;option&gt;</code>启用选项
+<code class="highlighter-rouge">-XX:-&lt;option&gt;</code> 不启用选项
+<code class="highlighter-rouge">-XX:&lt;option&gt;=&lt;number&gt;</code>
+<code class="highlighter-rouge">-XX:&lt;option&gt;=&lt;string&gt;</code>
+参数描述UserSerialGC虚拟机在client模式下的默认值，打开此开关后，用于Serial+Serial Old的收集器组合进行内存回收UserParNewGC打开此开关 使用ParNew + Serial Old收集器组合进行内存回收UseConcMarkSweepGC打开此开关，使用ParNew+CMS+Serial Old收集器组合进行内存回收。Serial Old在CMS收集器出现concurrent Mode Failure 失败后的后备收集器UseParallelGC在server模式下的默认值，打开此开关后使用Scavenge+Serial Old收集器组合进行回收UseParallelOldGC打开此开关后使用 Parallel Scavenge+Parallel Old收集器组合进行内存回收SurvivorRatio新生代中Eden区域与Survivor区域的比值，默认为8，表示Eden:Survivor=8:1PretenureSizeThreshold直接晋升到老年代对象的大小，设置这个参数后大于这个参数的对象直接在老年代中分配MaxTenuringThreshold晋升老年代对象的年龄,每个对象坚持一次MnorGC年龄就加一，当超过这个参数值就进入老年代UseAdaptiveSizePolicy动态调整java堆各个区域的大小以及进入老年代的年龄HandlePromotionFailure是否允许分配担保失败，即老年代剩余空间不足以应付新生代整个对象都存活的特殊情况ParalleGCThreads设置并行GC时进行内存回收的线程数GCTimeratioGC时间占总时间比率，默认值为99，允许1%的GC时间。只在Parallel Seavenge收集器时生效MaxGCPauseMillis设置GC的最大停顿时间，只在Parallel Seavenge收集器时生效CMSInitiatingOccupancyFration设置CMS老年代空间被使用多少后触发GC，默认值为68%，只在CMS收集器时生效UseCMSCompactAtFullCollection设置CMS收集器完成垃圾收集后是否需要进行一次碎片整理，只在CMS垃圾收集器时生效CMSFullGCBeforeCompaction设置CMS收集器进行若干次垃圾收集后再启动一次内存碎片整理，只在CMS垃圾收集器时生效</p>
+<h2 id="36内存分配与回收策略">3.6　内存分配与回收策略</h2>
+
+<p>对象优先在新生代分配
+大对象直接进入老年代
+长期存活的对象将进入老年代</p>
+
+<ul>
+  <li>
+    <p>动态对象年龄判断：如果在Survivor空间中相同年龄所有对象大小总和大于Survivor空间的一半，大于或等于该年龄的对象直接进入老年代。</p>
+  </li>
+  <li>
+    <p>空间分配担保：发生Minor GC前，虚拟机会先检查老年代最大可用连续空间是否大于新生代所有对象总空间，如果不成立，虚拟机会查看HandlePromotionFailure设置值是否允许担保失败，如果允许继续检查老年代最大可用的连续空间是否大于历次晋升到老年代的平均大小，如果大于会尝试进行一次Minor GC；如果小于或者不允许冒险，会进行一次Full GC。</p>
+  </li>
+</ul>
+
+<h3 id="361对象优先在eden分配">3.6.1　对象优先在eden分配</h3>
+
+<p>大多数情况下，对象优先在新生代的Eden区分配。
+当Eden区没有足够的空间时，虚拟机将发起一次Minor GC。
+Minor GC与Full GC。</p>
+
+<ul>
+  <li>
+    <p>Minor GC：新生代GC，非常频繁，回收速度快。</p>
+  </li>
+  <li>
+    <p>Fulll GC：老年代GC，又称为Major GC，经常会伴随一次Minor GC，速度比较慢。</p>
+  </li>
+</ul>
+
+<h3 id="362大对象直接进入老年代">3.6.2　大对象直接进入老年代</h3>
+
+<ul>
+  <li>
+    <p>大对象是指需要大量连续的内存空间的Java对象,最典型的大对象就是那种很长的字符串以及数组。</p>
+  </li>
+  <li>
+    <p>虚拟机提供了一个参数：<code class="highlighter-rouge">PretenureSizeThreshold</code>，大于这个参数的对象将直接在老年代分配。</p>
+  </li>
+</ul>
+
+<h3 id="363长期存活的对象将进入老年代">3.6.3　长期存活的对象将进入老年代</h3>
+
+<ul>
+  <li>虚拟机给每个对象定义了一个对象年龄计数器（Age），对象每经过一次Minor GC后仍然存活，且能被Survivor容纳的话，年龄就 +1 ，当年龄增加到一定程度（默认为15），就会被晋升到老年代中，这个阈值可以通过参数 <code class="highlighter-rouge">MaxTenuringThreshold</code> 来设置。</li>
+</ul>
+
+<p>4.动态对象年龄的判定</p>
+
+<h3 id="364动态对象年龄判定">3.6.4　动态对象年龄判定</h3>
+
+<ul>
+  <li>如果在Survivor空间中相同年龄所有对象大小的总和大于Survivor空间的一半，年龄大于或等于该年龄的对象就可以直接进入老年代。</li>
+</ul>
+
+<h3 id="365空间分配担保">3.6.5　空间分配担保</h3>
+
+<ul>
+  <li>
+    <p>为了更好的适应不同程序的内存状况，对象年龄不是必须到达阈值才会进入老年代。</p>
+  </li>
+  <li>
+    <p>只要老年代的连续空间大于新生代对象总大小或者历次晋升的平均大小就会进行Minor GC，否则将进行Full GC。</p>
+  </li>
+</ul>
+
+<h3 id="问题">问题</h3>
+
+<p>为什么程序要跑到安全点时停下来？</p>
+
+<ul>
+  <li>不设置安全点，而让每一条指令都产生<code class="highlighter-rouge">Oop(Ordinary Object Pointer)</code>会需要大量的额外空间，增大GC的空间成本。设置了合适的安全点，有助于虚拟机得知对象引用所在的地方，因此有利于GC对“即将回收”的对象进行扫描。</li>
+</ul>
+
+<p>最后上一张本章结构图</p>
+
+<p>图片来源于网络如有侵权请私信删除</p>
+
+<p><img src="e19fb78.png" alt="" /></p>
+
+<p><strong>《深入理解Java虚拟机：JVM高级特性与最佳实践_周志明.高清扫描版.pdf》</strong></p>
+
+<p>下载地址：链接：<a href="https://www.jfox.info/go.php?url=http://pan.baidu.com/s/1miBQCBY">http://pan.baidu.com/s/1miBQCBY</a> 密码：9kbn</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3java%E8%99%9A%E6%8B%9F%E6%9C%BA%E4%B8%89.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/spring1spring%E4%B8%AD%E7%9A%84%E7%9B%91%E5%90%AC%E5%99%A8listener.html">&laquo; 【Spring】1、Spring 中的监听器 Listener</a>
+  
+  
+  <a class="next" href="/2017/jpaadvancedmappings%E6%98%A0%E5%B0%84.html">JPA Advanced Mappings(映射) &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

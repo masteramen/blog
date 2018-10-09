@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>自制字幕遮挡器（未完成） | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="自制字幕遮挡器（未完成）" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="自制字幕遮挡器（未完成）" />
+<meta property="og:description" content="自制字幕遮挡器（未完成）" />
+<link rel="canonical" href="http://www.jfox.info/2017/%E8%87%AA%E5%88%B6%E5%AD%97%E5%B9%95%E9%81%AE%E6%8C%A1%E5%99%A8%E6%9C%AA%E5%AE%8C%E6%88%90.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/%E8%87%AA%E5%88%B6%E5%AD%97%E5%B9%95%E9%81%AE%E6%8C%A1%E5%99%A8%E6%9C%AA%E5%AE%8C%E6%88%90.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:54:10+00:00" />
+<script type="application/ld+json">
+{"description":"自制字幕遮挡器（未完成）","@type":"BlogPosting","url":"http://www.jfox.info/2017/%E8%87%AA%E5%88%B6%E5%AD%97%E5%B9%95%E9%81%AE%E6%8C%A1%E5%99%A8%E6%9C%AA%E5%AE%8C%E6%88%90.html","headline":"自制字幕遮挡器（未完成）","dateModified":"2017-01-01T15:54:10+00:00","datePublished":"2017-01-01T15:54:10+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/%E8%87%AA%E5%88%B6%E5%AD%97%E5%B9%95%E9%81%AE%E6%8C%A1%E5%99%A8%E6%9C%AA%E5%AE%8C%E6%88%90.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">自制字幕遮挡器（未完成）</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:54:10+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<h1 id="自制字幕遮挡器未完成">自制字幕遮挡器（未完成）</h1>
+
+<p>实际上，如果百度“字幕遮挡器，很可以找到一些结果，但多半是不透明的，不符合我的使用需要，再者自己写这种小工具是很有趣的学习过程。这个学习过程中有一些心得，不得不记录一二。</p>
+
+<h1 id="程序用途">程序用途</h1>
+
+<ul>
+  <li>
+    <p>对字幕进行遮挡（学习英语用）</p>
+  </li>
+  <li>
+    <p>在网页中对一段文字加上底色，提高阅读时的注意力程度（个人需求）</p>
+  </li>
+</ul>
+
+<p>两种用途如下图所示
+<img src="75f30a2.png" alt="" />
+<img src="9c3ca78.png" alt="" /></p>
+
+<h1 id="功能要求">功能要求</h1>
+
+<p>根据程序的用途可以看出，该程序必须实现以下功能：</p>
+
+<p>后三个功能实际上都是因为无标题，所以需要自己实现。此外，还有一些锦上添花的功能：</p>
+
+<ul>
+  <li>
+    <p>颜色选择（包括不透明度的调节）</p>
+  </li>
+  <li>
+    <p>切换是否总在最前</p>
+  </li>
+  <li>
+    <p>记忆颜色与位置</p>
+  </li>
+  <li>
+    <p>防止窗口缩得过小而无法找到</p>
+  </li>
+</ul>
+
+<p>后来在编程实现的过程中也会按这些功能来描述。</p>
+
+<h1 id="编程实现">编程实现</h1>
+
+<p>语言： Java</p>
+
+<p>程序的功能并不复杂，因此结构上也偷了些懒。一个主类<code class="highlighter-rouge">Cover</code>，其中调用起继承自<code class="highlighter-rouge">JFrame</code>的<code class="highlighter-rouge">CoverFrame</code>。
+这里都是一些很定式的写法，没什么特别的</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public class Cover {
+    public static void main(String[] args) {
+        EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                CoverFrame frame = new CoverFrame();
+                ...
+            }
+        });
+    }
+}
+
+class CoverFrame extends JFrame {
+    ...
+}
+</code></pre></div></div>
+
+<p>程序的各项主要功能基本上是在<code class="highlighter-rouge">CoverFrame</code>中实现的，具体将在后文一一叙述。</p>
+
+<h2 id="半透明窗体">半透明窗体</h2>
+
+<p>半透明窗体的关键是先要去掉窗体的标题和边框，然后给该Frame设置半透明背景色即可。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>class CoverFrame extends JFrame {
+    ...
+    private Color color = new Color(0, 0, 0, 200);  //半透明
+    ...
+
+    public CoverFrame() {
+        ...
+        setUndecorated(true);  //去掉边框
+        ...
+        setBackground(color);
+        ...
+        getContentPane().setBackground(color);
+        }
+}
+</code></pre></div></div>
+
+<p>这部分比较简单，不过值得一说的是，如果窗体将保持半透明，即窗体不会被设置成不透明色的话（因为后面加入了颜色选择，用户完全可能选择完全不透明的颜色），只要对<code class="highlighter-rouge">CoverFrame</code>对象<code class="highlighter-rouge">setBackground(color)</code>即可。
+但一旦选择了完全不透明的颜色（Alpha值为255），窗口则会变为默认的灰色。避免这种情况，就需要把Frame的ContentPane也设置成相同颜色<code class="highlighter-rouge">getContentPane().setBackground(color)</code>。</p>
+
+<h2 id="总在最前">总在最前</h2>
+
+<p>想要窗体总在最前也比较简单，有一个现成的函数<code class="highlighter-rouge">setAlwaysOnTop</code>来控制。要让程序能切换是否总在最前，也只要在CoverFrame中设置一个布尔型的state，作为是否总在最前的开关，并添加一个<code class="highlighter-rouge">JCheckBoxMenuItem</code>到窗口的<code class="highlighter-rouge">JPopupMenu</code>中去。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>class CoverFrame extends JFrame {
+    ...
+    private JPopupMenu popupMenu = new JPopupMenu();   //右键菜单 
+    private Color color = new Color(0, 0, 0, 200);
+    private boolean onTop = true;  //默认总在最前
+    ...
+
+    public CoverFrame() {
+        setAlwaysOnTop(onTop);
+        ...
+        CoverFrame that = this;
+
+
+        // set up popup menus
+        ...
+        JMenuItem topItem = new JCheckBoxMenuItem("Always On Top", true);  //带勾选框，默认勾选
+        topItem.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
+                onTop = !onTop; 
+                setAlwaysOnTop(onTop);  //改变当前状态
+            }
+        });
+        popupMenu.add(topItem);
+        ...
+    }
+}
+</code></pre></div></div>
+
+<h2 id="拖动与大小调整">拖动与大小调整</h2>
+
+<p>这两个功能本来应该是一个窗体固有的，但因为把标题与边框都去掉了，现在都需要自己来实现。因为两个功能的代码犬牙交错，所以放在一起来讲了。
+拖动的原理是，点击时记录点击位置（相对于窗口原点），拖动时获得鼠标在屏幕上的绝对位置，这一位置减去之前记录的相对点击位置，就是新的窗口的位置了，这样就实现了窗口的拖动功能。
+大小调整的思路则是判断点击位置是处于窗口的边缘位置，如果是，改变鼠标指针。如果位置处于左侧或者上方，拖动里改变宽/高，并改变窗口位置，如果在右侧或者正文，拖动时改变窗口的宽/高。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>class CoverFrame extends JFrame {
+    private Point point = new Point(0, 0); //用于保存点击位置
+    ...
+
+    public CoverFrame() {
+        ...
+        addMouseListener(new MouseAdapter() { //监听鼠标点击
+            public void mousePressed(MouseEvent event) {
+                // record the point where you begin to drag
+                point = event.getPoint();  //记录点击位置
+                popupEvent(event);  //右键菜单
+            }
+            public void mouseReleased(MouseEvent event) {
+                popupEvent(event);
+            }
+
+            private void popupEvent(MouseEvent event) {
+                if (event.isPopupTrigger()) {
+                    popupMenu.show(event.getComponent(), event.getX(),
+                            event.getY()); //在右键位置显示菜单
+                }
+            }
+
+        } );
+
+        addMouseMotionListener(new MouseMotionListener() {
+            // 用来标识点击区域（上下左右）
+            private boolean top = false;
+            private boolean down = false;
+            private boolean left = false;
+            private boolean right = false;
+            final private int GAP = 3;
+
+            public void mouseMoved(MouseEvent event) {
+                //窗体的宽高
+                int width = getWidth();
+                int height = getHeight();
+                //点击位置（相对）
+                int x = event.getX();
+                int y = event.getY();
+
+                top = false;
+                down = false;
+                left = false;
+                right = false;
+                if (Math.abs(y) &lt;= GAP) {
+                    top = true;
+                } else if (Math.abs(y-height) &lt;=GAP) {
+                    down = true;
+                }
+
+                if (Math.abs(x) &lt;= GAP) {
+                    left = true;
+                } else if (Math.abs(x-width) &lt;=GAP) {
+                    right = true;
+                }
+                //如果判断在边缘就改变鼠标指针
+                setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+                if (top || down)
+                    setCursor(Cursor.getPredefinedCursor(Cursor.N_RESIZE_CURSOR));
+                if (left || right)
+                    setCursor(Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR));
+                if ((left &amp;&amp; top) || (right &amp;&amp; down))
+                    setCursor(Cursor.getPredefinedCursor(Cursor.NW_RESIZE_CURSOR));
+                if ((right &amp;&amp; top) || (left &amp;&amp; down))
+                    setCursor(Cursor.getPredefinedCursor(Cursor.NE_RESIZE_CURSOR));
+            }
+
+            public void mouseDragged(MouseEvent event) {
+                bounds = getBounds();
+                if (!(top || down || left || right)) {
+                    // 在中间拖动窗口
+                    Point absPoint = event.getLocationOnScreen();
+                    // set the location of window relate to where you click
+                    absPoint.translate(-(int)point.getX(),
+                            -(int)point.getY());
+                    setLocation(absPoint);
+                } else {
+                    //在四角缩放窗体
+                    if (top) {
+                        bounds.setLocation((int)bounds.getX(), (int)bounds.getY() + event.getY());
+                        bounds.setSize((int)bounds.getWidth(), (int)bounds.getHeight() - event.getY());
+                    }
+                    if (down) {
+                        bounds.setSize((int)bounds.getWidth(), event.getY());
+                    }
+                    if (left) {
+                        bounds.setLocation((int)bounds.getX() + event.getX(), (int)bounds.getY());
+                        bounds.setSize((int)bounds.getWidth() - event.getX(), (int)bounds.getHeight());
+                    }
+                    if (right) {
+                        bounds.setSize(event.getX(),(int)bounds.getHeight());
+                    }
+                    validateBounds();
+                    setBounds(bounds);
+                }
+            }
+        } );
+</code></pre></div></div>
+
+<h2 id="关闭与保存设置">关闭与保存设置</h2>
+
+<p>关闭本来其实是没啥说的，就算是没有标题栏，但是因为把颜色和位置信息记录下来，还是有一些要注意的地方。</p>
+
+<p>一般通过按键关闭窗口，会调用<code class="highlighter-rouge">dispose</code>函数，但是这样的话，并不会触发windowClose的事件。要主动发出这一事件才可以。</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/%E8%87%AA%E5%88%B6%E5%AD%97%E5%B9%95%E9%81%AE%E6%8C%A1%E5%99%A8%E6%9C%AA%E5%AE%8C%E6%88%90.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/java%E5%9F%BA%E7%A1%80%E7%B3%BB%E5%88%97calendar%E7%B1%BB-2.html">&laquo; java基础系列–Calendar类</a>
+  
+  
+  <a class="next" href="/2017/jdbc02%E5%88%A9%E7%94%A8jdbc%E8%BF%9E%E6%8E%A5%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BD%BF%E7%94%A8%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9E%E6%8E%A5%E6%B1%A0.html">JDBC02 利用JDBC连接数据库【使用数据库连接池】 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

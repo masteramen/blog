@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>Java Selenium (六) XPath 定位 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="Java Selenium (六) XPath 定位" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="xpath 的定位方法， 非常强大。 使用这种方法几乎可以定位到页面上的任意元素。" />
+<meta property="og:description" content="xpath 的定位方法， 非常强大。 使用这种方法几乎可以定位到页面上的任意元素。" />
+<link rel="canonical" href="http://www.jfox.info/2017/javaselenium%E5%85%ADxpath%E5%AE%9A%E4%BD%8D.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/javaselenium%E5%85%ADxpath%E5%AE%9A%E4%BD%8D.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:53:20+00:00" />
+<script type="application/ld+json">
+{"description":"xpath 的定位方法， 非常强大。 使用这种方法几乎可以定位到页面上的任意元素。","@type":"BlogPosting","url":"http://www.jfox.info/2017/javaselenium%E5%85%ADxpath%E5%AE%9A%E4%BD%8D.html","headline":"Java Selenium (六) XPath 定位","dateModified":"2017-01-01T15:53:20+00:00","datePublished":"2017-01-01T15:53:20+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/javaselenium%E5%85%ADxpath%E5%AE%9A%E4%BD%8D.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Java Selenium (六) XPath 定位</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:53:20+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>xpath 的定位方法， 非常强大。 使用这种方法几乎可以定位到页面上的任意元素。</p>
+
+<h2 id="什么是xpath">什么是xpath</h2>
+
+<p>xpath 是XML Path的简称， 由于HTML文档本身就是一个标准的XML页面，所以我们可以使用Xpath 的用法来定位页面元素。</p>
+
+<h2 id="xpath定位的缺点">xpath定位的缺点</h2>
+
+<p>xpath 这种定位方式， webdriver会将整个页面的所有元素进行扫描以定位我们所需要的元素， 这是个非常费时的操作， 如果脚本中大量使用xpath做元素定位的话， 脚本的执行速度可能会稍慢</p>
+
+<h2 id="testxpathhtml-代码如下">testXpath.html 代码如下</h2>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;html&gt;</span>
+<span class="nt">&lt;head&gt;&lt;title&gt;</span>Test Xpath<span class="nt">&lt;/title&gt;&lt;/head&gt;</span>
+<span class="nt">&lt;body&gt;</span>
+    <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">"div1"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;input</span> <span class="na">name=</span><span class="s">"div1input"</span><span class="nt">&gt;&lt;/input&gt;</span>
+        <span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">"http://www.sogou.com"</span><span class="nt">&gt;</span>搜狗搜索<span class="nt">&lt;/a&gt;</span>
+        <span class="nt">&lt;img</span> <span class="na">alt=</span><span class="s">"div1-img1"</span> <span class="na">src=</span><span class="s">"http://www.sogou.com/images/logo/new/sogou.png"</span> <span class="na">href=</span><span class="s">"http://www.sogou.com"</span><span class="nt">&gt;</span>搜狗图片<span class="nt">&lt;/img&gt;</span>
+        <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">"button"</span> <span class="na">value=</span><span class="s">"查询"</span><span class="nt">&gt;&lt;/input&gt;</span>
+    <span class="nt">&lt;/div&gt;</span>
+    <span class="nt">&lt;br</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;div</span> <span class="na">name=</span><span class="s">"div2"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;input</span> <span class="na">name=</span><span class="s">"div2iniput"</span> <span class="nt">/&gt;&lt;/input&gt;</span>
+        <span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">"http://www.baidu.com"</span><span class="nt">&gt;</span>百度搜索<span class="nt">&lt;/a&gt;</span>
+        <span class="nt">&lt;img</span> <span class="na">alt=</span><span class="s">"div2-img2"</span> <span class="na">src=</span><span class="s">"http://www.baidu.comn/img/bdlogo.png"</span> <span class="na">href=</span><span class="s">"http:/www.baidu.com"</span><span class="nt">&gt;</span>百度图片<span class="nt">&lt;/img&gt;</span>
+    <span class="nt">&lt;/div&gt;</span>
+<span class="nt">&lt;/body&gt;</span>
+<span class="nt">&lt;/html&gt;</span>
+</code></pre></div></div>
+
+<h2 id="绝对路径定位方式">绝对路径定位方式</h2>
+
+<p>在被测试网页中， 查找第一个div标签中的按钮</p>
+
+<p>XPath的表达式</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/html/body/div/input[@value="查询"]
+
+WebElement button = driver.findElement(By.xpath("/html/body/div/input[@value='查询']"));
+</code></pre></div></div>
+
+<h2 id="使用浏览器调试工具可以直接获取xpath语句">使用浏览器调试工具，可以直接获取xpath语句</h2>
+
+<p><img src="06d9d48.png" alt="" /></p>
+
+<h2 id="绝对路径的缺点">绝对路径的缺点</h2>
+
+<ol>
+  <li>一旦页面结构发生改变，改路径也随之失效，必须重新。 所以不推荐使用绝对路径的写法</li>
+</ol>
+
+<h2 id="绝对路径和相对路径的区别">绝对路径和相对路径的区别</h2>
+
+<p>绝对路径 以 “/” 开头， 让xpath 从文档的根节点开始解析</p>
+
+<p>相对路径 以”//” 开头， 让xpath 从文档的任何元素节点开始解析</p>
+
+<h2 id="相对路径定位方式">相对路径定位方式</h2>
+
+<p>在被测试网页中，查找第一个div标签中的按钮</p>
+
+<p>XPath的表达式</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>//input[@value="查询"]
+
+WebElement button = driver.findElement(By.xpath("//input[@value='查询']"));
+</code></pre></div></div>
+
+<h2 id="使用索引号定位">使用索引号定位</h2>
+
+<p>在被测试网页中， 查找第二个div标签中的”查询”按钮</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>//input[2] 
+
+WebElement button = driver.findElement(By.xpath("//input[2]"));
+</code></pre></div></div>
+
+<h2 id="使用页面属性定位">使用页面属性定位</h2>
+
+<p>定位被测试页面中的第一个图片元素</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>//img[@alt='div1-img1']
+
+WebElement button = driver.findElement(By.xpath("//img[@alt='div1-img1']"));
+</code></pre></div></div>
+
+<h2 id="模煳定位starts-with关键字">模煳定位starts-with关键字</h2>
+
+<p>查找图片alt属性开始位置包含’div1′关键字的元素</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>//img[starts-with(@alt,'div')]
+</code></pre></div></div>
+
+<h2 id="模煳定位contains关键字">模煳定位contains关键字</h2>
+
+<p>查找图片alt属性包含’g1′关键字的元素</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>//img[contains(@alt,'g1')]
+</code></pre></div></div>
+
+<h2 id="text-函数-文本定位">text() 函数 文本定位</h2>
+
+<p>查找所有文本为”百度搜索” 的元素</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>driver.findElement(By.xpath("//*[text()='百度搜索']"));
+</code></pre></div></div>
+
+<p>查找所有文本为“搜索” 的超链接</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>driver.findElement(By.xpath("//a[contains(text(),'搜索')]"));
+</code></pre></div></div>
+
+<h2 id="附-selenium-java教程-连载中-敬请期待">附： selenium java教程 (连载中, 敬请期待）</h2>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/javaselenium%E5%85%ADxpath%E5%AE%9A%E4%BD%8D.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/%E4%B8%BA%E4%BB%80%E4%B9%88%E5%9C%A8javascript%E4%B8%AD%E4%BD%BF%E7%94%A8getter%E5%92%8Csetter%E6%98%AF%E4%B8%80%E4%B8%AA%E5%9D%8F%E4%B8%BB%E6%84%8F.html">&laquo; 为什么在 JavaScript 中使用 getter 和 setter 是一个坏主意</a>
+  
+  
+  <a class="next" href="/2017/springmvc%E5%9F%BA%E7%A1%80%E5%8F%8A%E5%BA%94%E7%94%A8%E4%B8%80helloworld.html">SpringMVC 基础及应用（一）–HelloWorld &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

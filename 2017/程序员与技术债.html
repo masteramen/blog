@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>程序员与技术债 » java面试题 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="程序员与技术债 » java面试题" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="最近半年一直在弄一个项目，原来做项目都是基于HTML5+Spring MVC+Mybatis开发的，HTML5也是采用了BootStrap和JQuery，中间还浅尝辄止的用过Angular，不过没感觉到Angular的强大，现在再做新项目的时候，就全部转到Spring Boot了。" />
+<meta property="og:description" content="最近半年一直在弄一个项目，原来做项目都是基于HTML5+Spring MVC+Mybatis开发的，HTML5也是采用了BootStrap和JQuery，中间还浅尝辄止的用过Angular，不过没感觉到Angular的强大，现在再做新项目的时候，就全部转到Spring Boot了。" />
+<link rel="canonical" href="http://www.jfox.info/2017/%E7%A8%8B%E5%BA%8F%E5%91%98%E4%B8%8E%E6%8A%80%E6%9C%AF%E5%80%BA.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/%E7%A8%8B%E5%BA%8F%E5%91%98%E4%B8%8E%E6%8A%80%E6%9C%AF%E5%80%BA.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:51:49+00:00" />
+<script type="application/ld+json">
+{"description":"最近半年一直在弄一个项目，原来做项目都是基于HTML5+Spring MVC+Mybatis开发的，HTML5也是采用了BootStrap和JQuery，中间还浅尝辄止的用过Angular，不过没感觉到Angular的强大，现在再做新项目的时候，就全部转到Spring Boot了。","@type":"BlogPosting","url":"http://www.jfox.info/2017/%E7%A8%8B%E5%BA%8F%E5%91%98%E4%B8%8E%E6%8A%80%E6%9C%AF%E5%80%BA.html","headline":"程序员与技术债 » java面试题","dateModified":"2017-01-01T15:51:49+00:00","datePublished":"2017-01-01T15:51:49+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/%E7%A8%8B%E5%BA%8F%E5%91%98%E4%B8%8E%E6%8A%80%E6%9C%AF%E5%80%BA.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">程序员与技术债 » java面试题</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:51:49+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>最近半年一直在弄一个项目，原来做项目都是基于HTML5+Spring MVC+Mybatis开发的，HTML5也是采用了BootStrap和JQuery，中间还浅尝辄止的用过Angular，不过没感觉到Angular的强大，现在再做新项目的时候，就全部转到Spring Boot了。</p>
+
+<p>Spring Boot说实话，入门非常简单，随便找一篇文档就可以入门了，不过我还是推荐Spring boot的官方文档 http://docs.spring.io/spring-boot/docs/current/reference/html/ ，刚开始阅读的时候有些枯燥，遇到问题，边做边看这个文档，有醍醐灌顶之感，所有与Spring boot有关的中文文档，也基本都是从这个官方文档翻译过来的。</p>
+
+<p>不过，Spring Boot使用的时候，坑还是挺多的，例如，图片文件的上传和图片文件路径的选择，如果Spring boot放在Tomcat里做标准war文件运行，这是没有问题的，与标准J2EE程序文件上传并无任何区别。不过，既然选择了Spring boot，那么单个jar/war文件，嵌入tomcat运行就是首选了。单个war文件嵌入tomcat自运行，就没有上传文件图片路径了，图片是不可能上传到压缩文件里面去的。这个问题想了很久也没好的解决办法，就弄了一个二级域名，单独存放图片文件的路径。</p>
+
+<p>在开发过程当中，原来都是使用SVN做版本控制的，现在也选择了git做版本控制，XX年龄的老男人了，还是要学很多新东西的，我老婆换工作到了一个新的媒体公司，新的媒体公司公司写作风格与我老婆原来写作风格差异甚大，1个月了，一篇合格稿子也没写出来，我老婆对此很焦虑。就像我弄了Spring Boot后，下面肯定就是Spring Cloud了。看了其他大牛的分析，一般不推荐Spring的eureka，而推荐Consul，Consul我断断续续搞了三周，终于把与Spring Boot整合demo调通了，却依然没弄明白怎么把Spring boot做好的服务跟Consul结合起来，供客户端调用。</p>
+
+<p>产品做了一个新版本后，又想着升级改版，把原来的单纯使用JQuery升级到vue框架上，虽然vue对标的是Angular与React。之所以打算选择 vue，是看了vue的demo，觉得学习曲线很低，以前也用过Angular，Angular并没有给自己留下深刻印象。</p>
+
+<p>总之，最近半年，学习了微信服务号的开发，Spring boot、Spring cloud、Consul、Git、vue以及阿里云消息服务。阿里云消息服务也有一个不小的坑，期间还发工单问阿里云技术支持，也没找到答案。期间还接触了Docker、Java8新的表达式，以及看了微服务很多文档，收获满满，也感觉到需要学习的东西太多了，原来一个项目自己就可以搞定，现在需要4-5个人才可以搞定。</p>
+
+<p>有对微信服务号开发的可以加我微信 eesssss 共同探讨微服务新架构下与企业软件的集成以及与微信服务号的集成。</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/%E7%A8%8B%E5%BA%8F%E5%91%98%E4%B8%8E%E6%8A%80%E6%9C%AF%E5%80%BA.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/%E4%B8%BA%E4%BD%A0%E7%9A%84web%E7%A8%8B%E5%BA%8F%E5%8A%A0%E4%B8%AA%E5%90%AF%E5%8A%A8%E7%94%BB%E9%9D%A2.html">&laquo; 为你的Web程序加个启动画面</a>
+  
+  
+  <a class="next" href="/2017/spring-amqp%E4%B8%AD%E6%96%87%E6%96%87%E6%A1%A3.html">Spring AMQP中文文档 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

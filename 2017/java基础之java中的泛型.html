@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>Java基础之Java中的泛型 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="Java基础之Java中的泛型" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="List list = new ArrayList(); list.add(“CSDN_SEU_Cavin”); list.add(100); for (int i = 0; i &lt; list.size(); i++) { String name = (String) list.get(i); //取出Integer时，运行时出现异常 System.out.println(“name:” + name); }" />
+<meta property="og:description" content="List list = new ArrayList(); list.add(“CSDN_SEU_Cavin”); list.add(100); for (int i = 0; i &lt; list.size(); i++) { String name = (String) list.get(i); //取出Integer时，运行时出现异常 System.out.println(“name:” + name); }" />
+<link rel="canonical" href="http://www.jfox.info/2017/java%E5%9F%BA%E7%A1%80%E4%B9%8Bjava%E4%B8%AD%E7%9A%84%E6%B3%9B%E5%9E%8B.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/java%E5%9F%BA%E7%A1%80%E4%B9%8Bjava%E4%B8%AD%E7%9A%84%E6%B3%9B%E5%9E%8B.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:52:50+00:00" />
+<script type="application/ld+json">
+{"description":"List list = new ArrayList(); list.add(“CSDN_SEU_Cavin”); list.add(100); for (int i = 0; i &lt; list.size(); i++) { String name = (String) list.get(i); //取出Integer时，运行时出现异常 System.out.println(“name:” + name); }","@type":"BlogPosting","url":"http://www.jfox.info/2017/java%E5%9F%BA%E7%A1%80%E4%B9%8Bjava%E4%B8%AD%E7%9A%84%E6%B3%9B%E5%9E%8B.html","headline":"Java基础之Java中的泛型","dateModified":"2017-01-01T15:52:50+00:00","datePublished":"2017-01-01T15:52:50+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/java%E5%9F%BA%E7%A1%80%E4%B9%8Bjava%E4%B8%AD%E7%9A%84%E6%B3%9B%E5%9E%8B.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Java基础之Java中的泛型</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:52:50+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>List list = new ArrayList();<br />
+    list.add(“CSDN_SEU_Cavin”);<br />
+    list.add(100);<br />
+    for (int i = 0; i &lt; list.size(); i++) {<br />
+      String name = (String) list.get(i); //取出Integer时，运行时出现异常<br />
+    System.out.println(“name:” + name);<br />
+    }</p>
+
+<p>　本例向list类型集合中加入了一个字符串类型的值和一个Integer类型的值。（这样合法，因为此时list默认的类型为Object类型）。在之后的循环中，由于忘记了之前在list中也加入了Integer类型的值或其他原因，运行时会出现java.lang.ClassCastException异常。为了解决这个问题，泛型应运而生。</p>
+
+<p><strong>2、泛型的使用</strong></p>
+
+<p>泛型让编程人员能够使用类型抽象，通常用于集合里面。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>List&lt;String&gt; list = new ArrayList&lt;String&gt;();
+</code></pre></div></div>
+
+<p>　　这里这样写，上面那段循环取值得方式就不会报错，而且也不需要进行类型的强制转换。通过List<String>，直接限定了list集合中只能含有String类型的元素。</String></p>
+
+<p><strong>3、泛型只在编译期间有效</strong></p>
+
+<p>　　我们在使用泛型的时候也要了解到泛型的编译时怎样的，因此在这里，我们需要特别的注意是：泛型，只是在代码编译成class文件期间有效</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>AyyayList&lt;String&gt; a = new ArrayList&lt;String&gt;();  
+ArrayList b = new ArrayList();  
+Class c1 = a.getClass();  
+Class c2 = b.getClass();  
+System.out.println(a == b); 
+</code></pre></div></div>
+
+<p>　　上面程序的输出结果为true。是因为所有反射的操作都是在运行时进行的，既然为true，就证明了编译之后，程序会采取去泛型化的措施。</p>
+
+<p>　　也就是说Java中的泛型，只在编译阶段有效。在编译过程中，正确检验泛型结果后，会将泛型的相关信息擦出，并且在对象进入和离开方法的边界处添加类型检查和类型转换的方法。也就是说，成功编译过后的class文件中是不包含任何泛型信息的。泛型信息不会进入到运行时阶段。</p>
+
+<p>下面这段代码通过Java的反射机制很好的解释了泛型只在编译期间有效</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ArrayList&lt;String&gt; a = new ArrayList&lt;String&gt;();  
+a.add("CSDN_SEU_Cavin");  
+Class c = a.getClass();  
+try{  
+    Method method = c.getMethod("add",Object.class);  
+    method.invoke(a,100);  
+    System.out.println(a);  //[CSDN_SEU_Cavin, 100]  
+}catch(Exception e){  
+e.printStackTrace();  
+*} *
+</code></pre></div></div>
+
+<p><strong>4、泛型类和泛型方法</strong></p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public static class FX&lt;T&gt; {  
+    private T ob; // 定义泛型成员变量  
+  
+    public FX(T ob) {  
+        this.ob = ob;  
+    }  
+  
+    public T getOb() {  
+        return ob;  
+    }  
+  
+    public void showTyep() {  
+        System.out.println("T的实际类型是: " + ob.getClass().getName());  
+    }  
+}  
+    public static void main(String[] args) {  
+        FX&lt;Integer&gt; intOb = new FX&lt;Integer&gt;(100);  
+        intOb.showTyep();  
+        System.out.println("value= " + intOb.getOb());  //java.lang.Integer  
+        System.out.println("----------------------------------");  
+  
+        FX&lt;String&gt; strOb = new FX&lt;String&gt;("CSDN_SEU_Calvin");  
+        strOb.showTyep();  
+        System.out.println("value= " + strOb.getOb());  //value= 100 
+} 
+</code></pre></div></div>
+
+<p><strong>　　5．泛型的好处</strong></p>
+
+<p>　　　　（1）类型安全。</p>
+
+<p>　　　　　　通过知道使用泛型定义的变量的类型限制，编译器可以更有效地提高Java程序的类型安全。</p>
+
+<p>　　　　（2）消除强制类型转换。</p>
+
+<p>　　　　　　消除源代码中的许多强制类型转换。这使得代码更加可读，并且减少了出错机会。所有的强制转换都是自动和隐式的。</p>
+
+<p>　　　　（3）提高性能</p>
+
+<p><strong>　　6．泛型使用的注意事项</strong></p>
+
+<p>　　　　（1）泛型的类型参数只能是类类型（包括自定义类），不能是简单类型。</p>
+
+<p>　　　　（2）泛型的类型参数可以有多个。</p>
+
+<p>　　　　（3）不能对确切的泛型类型使用instanceof操作。如下面的操作是非法的，编译时会出错。</p>
+
+<p>　　　　（4）不能创建一个确切的泛型类型的数组。</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/java%E5%9F%BA%E7%A1%80%E4%B9%8Bjava%E4%B8%AD%E7%9A%84%E6%B3%9B%E5%9E%8B.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/ejb%E7%B3%BB%E5%88%97ejb%E9%AB%98%E7%BA%A7%E6%A6%82%E5%BF%B5.html">&laquo; EJB系列 – EJB高级概念</a>
+  
+  
+  <a class="next" href="/2017/quartz%E5%AE%9A%E6%97%B6%E6%89%A7%E8%A1%8C%E4%BB%BB%E5%8A%A1%E5%B9%B6%E9%85%8D%E7%BD%AEwebxml.html">quartz定时执行任务，并配置web.xml &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>赢在面试之Java持久层（10） | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="赢在面试之Java持久层（10）" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="91，什么是ORM？对象关系映射（Object-Relational Mapping，简称ORM）是一种为了解决程序的面向对象模型与数据库的关系模型互不匹配问题的技术；" />
+<meta property="og:description" content="91，什么是ORM？对象关系映射（Object-Relational Mapping，简称ORM）是一种为了解决程序的面向对象模型与数据库的关系模型互不匹配问题的技术；" />
+<link rel="canonical" href="http://www.jfox.info/2017/%E8%B5%A2%E5%9C%A8%E9%9D%A2%E8%AF%95%E4%B9%8Bjava%E6%8C%81%E4%B9%85%E5%B1%8210.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/%E8%B5%A2%E5%9C%A8%E9%9D%A2%E8%AF%95%E4%B9%8Bjava%E6%8C%81%E4%B9%85%E5%B1%8210.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:59:53+00:00" />
+<script type="application/ld+json">
+{"description":"91，什么是ORM？对象关系映射（Object-Relational Mapping，简称ORM）是一种为了解决程序的面向对象模型与数据库的关系模型互不匹配问题的技术；","@type":"BlogPosting","url":"http://www.jfox.info/2017/%E8%B5%A2%E5%9C%A8%E9%9D%A2%E8%AF%95%E4%B9%8Bjava%E6%8C%81%E4%B9%85%E5%B1%8210.html","headline":"赢在面试之Java持久层（10）","dateModified":"2017-01-01T15:59:53+00:00","datePublished":"2017-01-01T15:59:53+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/%E8%B5%A2%E5%9C%A8%E9%9D%A2%E8%AF%95%E4%B9%8Bjava%E6%8C%81%E4%B9%85%E5%B1%8210.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">赢在面试之Java持久层（10）</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:59:53+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>91，什么是ORM？对象关系映射（Object-Relational Mapping，简称ORM）是一种为了解决程序的面向对象模型与数据库的关系模型互不匹配问题的技术；</p>
+
+<p>简单的说，ORM是通过使用描述对象和数据库之间映射的元数据（在Java中可以用XML或者是注解），将程序中的对象自动持久化到关系数据库中或者将关系数据库表中的行转换成Java对象，其本质上就是将数据从一种形式转换到另外一种形式。</p>
+
+<p>92，Hibernate中SessionFactory是线程安全的吗？Session是线程安全的吗（两个线程能够共享同一个Session吗）？SessionFactory对应Hibernate的一个数据存储的概念，它是线程安全的，可以被多个线程并发访问。SessionFactory一般只会在启动的时候构建。对于应用程序，最好将SessionFactory通过单例模式进行封装以便于访问。</p>
+
+<p>Session是一个轻量级非线程安全的对象（线程间不能共享session），它表示与数据库进行交互的一个工作单元。Session是由SessionFactory创建的，在任务完成之后它会被关闭。Session是持久层服务对外提供的主要接口。</p>
+
+<p>Session会延迟获取数据库连接（也就是在需要的时候才会获取）。为了避免创建太多的session，可以使用ThreadLocal将session和当前线程绑定在一起，这样可以让同一个线程获得的总是同一个session。Hibernate 3中SessionFactory的getCurrentSession()方法就可以做到。</p>
+
+<p>93，Session的save()、update()、merge()、lock()、saveOrUpdate()和persist()方法分别是做什么的？有什么区别？Hibernate的对象有三种状态：瞬时态（transient）、持久态（persistent）和游离态（detached）。</p>
+
+<p>瞬时态的实例可以通过调用save()、persist()或者saveOrUpdate()方法变成持久态；</p>
+
+<p>游离态的实例可以通过调用 update()、saveOrUpdate()、lock()或者replicate()变成持久态。save()和persist()将会引发SQL的INSERT语句，而update()或merge()会引发UPDATE语句。</p>
+
+<p>save()和update()的区别在于一个是将瞬时态对象变成持久态，一个是将游离态对象变为持久态。merge()方法可以完成save()和update()方法的功能，它的意图是将新的状态合并到已有的持久化对象上或创建新的持久化对象。</p>
+
+<p>对于persist()方法，按照官方文档的说明：</p>
+
+<p>1、persist()方法把一个瞬时态的实例持久化，但是并不保证标识符被立刻填入到持久化实例中，标识符的填入可能被推迟到flush的时间；</p>
+
+<p>2、persist()方法保证当它在一个事务外部被调用的时候并不触发一个INSERT语句，当需要封装一个长会话流程的时候，persist()方法是很有必要的；</p>
+
+<p>3、save()方法不保证第2条，它要返回标识符，所以它会立即执行INSERT语句，不管是在事务内部还是外部。至于lock()方法和update()方法的区别，update()方法是把一个已经更改过的脱管状态的对象变成持久状态；lock()方法是把一个没有更改过的脱管状态的对象变成持久状态。
+<strong>94，阐述Session加载实体对象的过程。</strong>
+1、Session在调用数据库查询功能之前，首先会在一级缓存中通过实体类型和主键进行查找，如果一级缓存查找命中且数据状态合法，则直接返回；</p>
+
+<p>2、如果一级缓存没有命中，接下来Session会在当前NonExists记录（相当于一个查询黑名单，如果出现重复的无效查询可以迅速做出判断，从而提升性能）中进行查找，如果NonExists中存在同样的查询条件，则返回null；</p>
+
+<p>3、如果一级缓存查询失败查询二级缓存，如果二级缓存命中直接返回；</p>
+
+<p>4、如果之前的查询都未命中，则发出SQL语句，如果查询未发现对应记录则将此次查询添加到Session的NonExists中加以记录，并返回null；</p>
+
+<p>5、根据映射配置和SQL语句得到ResultSet，并创建对应的实体对象；</p>
+
+<p>6、将对象纳入Session（一级缓存）的管理；</p>
+
+<p>7、如果有对应的拦截器，则执行拦截器的onLoad方法；</p>
+
+<p>8、如果开启并设置了要使用二级缓存，则将数据对象纳入二级缓存；</p>
+
+<p>9、返回数据对象。</p>
+
+<p>95，MyBatis中使用#和$书写占位符有什么区别？#将传入的数据都当成一个字符串，会对传入的数据自动加上引号；</p>
+
+<p>$将传入的数据直接显示生成在SQL中。</p>
+
+<p>注意：使用$占位符可能会导致SQL注射攻击，能用#的地方就不要使用$，写order by子句的时候应该用$而不是#。</p>
+
+<p>96，解释一下MyBatis中命名空间（namespace）的作用。在大型项目中，可能存在大量的SQL语句，这时候为每个SQL语句起一个唯一的标识（ID）就变得并不容易了。为了解决这个问题，在MyBatis中，可以为每个映射文件起一个唯一的命名空间，这样定义在这个映射文件中的每个SQL语句就成了定义在这个命名空间中的一个ID。只要我们能够保证每个命名空间中这个ID是唯一的，即使在不同映射文件中的语句ID相同，也不会再产生冲突了。 
+<strong>97、MyBatis中的动态SQL是什么意思？</strong>
+对于一些复杂的查询，我们可能会指定多个查询条件，但是这些条件可能存在也可能不存在，如果不使用持久层框架我们可能需要自己拼装SQL语句，不过MyBatis提供了动态SQL的功能来解决这个问题。MyBatis中用于实现动态SQL的元素主要有：</p>
+
+<p><em>– if    – choose / when / otherwise    – trim    – where    – set     – foreach</em></p>
+
+<p>用法举例：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;select id="foo" parameterType="Blog" resultType="Blog"&gt;        
+   select * from t_blog where 1 = 1
+        &lt;if test="title != null"&gt;            
+           and title = #{title}
+        &lt;/if&gt;
+        &lt;if test="content != null"&gt;            
+           and content = #{content}
+        &lt;/if&gt;
+        &lt;if test="owner != null"&gt;            
+           and owner = #{owner}
+        &lt;/if&gt;
+   &lt;/select&gt;
+</code></pre></div></div>
+
+<h2 id="98jdbc编程有哪些不足之处mybatis是如何解决这些问题的">98，JDBC编程有哪些不足之处，MyBatis是如何解决这些问题的？</h2>
+
+<p>1、JDBC：数据库链接创建、释放频繁造成系统资源浪费从而影响系统性能，如果使用数据库链接池可解决此问题。</p>
+
+<p>MyBatis：在SqlMapConfig.xml中配置数据链接池，使用连接池管理数据库链接。</p>
+
+<p>2、JDBC：Sql语句写在代码中造成代码不易维护，实际应用sql变化的可能较大，sql变动需要改变java代码。</p>
+
+<p>MyBatis：将Sql语句配置在XXXXmapper.xml文件中与java代码分离。</p>
+
+<p>3、JDBC：向sql语句传参数麻烦，因为sql语句的where条件不一定，可能多也可能少，占位符需要和参数一一对应。</p>
+
+<p>MyBatis： Mybatis自动将java对象映射至sql语句。</p>
+
+<p>4，JDBC：对结果集解析麻烦，sql变化导致解析代码变化，且解析前需要遍历，如果能将数据库记录封装成pojo对象解析比较方便。</p>
+
+<p>MyBatis：Mybatis自动将sql执行结果映射至java对象。</p>
+
+<h2 id="99mybatis与hibernate有哪些不同">99，MyBatis与Hibernate有哪些不同？</h2>
+
+<p>1、Mybatis和hibernate不同，它不完全是一个ORM框架，因为MyBatis需要程序员自己编写Sql语句，不过mybatis可以通过XML或注解方式灵活配置要运行的sql语句，并将java对象和sql语句映射生成最终执行的sql，最后将sql执行的结果再映射生成java对象。</p>
+
+<p>2、Mybatis学习门槛低，简单易学，程序员直接编写原生态sql，可严格控制sql执行性能，灵活度高，非常适合对关系数据模型要求不高的软件开发，例如互联网软件、企业运营类软件等，因为这类软件需求变化频繁，一但需求变化要求成果输出迅速。但是灵活的前提是mybatis无法做到数据库无关性，如果需要实现支持多种数据库的软件则需要自定义多套sql映射文件，工作量大。                3、Hibernate对象/关系映射能力强，数据库无关性好，对于关系模型要求高的软件（例如需求固定的定制化软件）如果用hibernate开发可以节省很多代码，提高效率。但是Hibernate的缺点是学习门槛高，要精通门槛更高，而且怎么设计O/R映射，在性能和对象模型之间如何权衡，以及怎样用好Hibernate需要具有很强的经验和能力才行。</p>
+
+<p>总之，按照用户的需求在有限的资源环境下只要能做出维护性、扩展性良好的软件架构都是好架构，所以框架只有适合才是最好。</p>
+
+<p>（这里也可以结合自己的理解说，别说的收不住）</p>
+
+<h2 id="100简单的说一下mybatis的一级缓存和二级缓存">100，简单的说一下MyBatis的一级缓存和二级缓存？</h2>
+
+<p>Mybatis首先去缓存中查询结果集，如果没有则查询数据库，如果有则从缓存取出返回结果集就不走数据库。Mybatis内部存储缓存使用一个HashMap，key为hashCode+sqlId+Sql语句。value为从查询出来映射生成的java对象</p>
+
+<p>Mybatis的二级缓存即查询缓存，它的作用域是一个mapper的namespace，即在同一个namespace中查询sql可以从缓存中获取数据。二级缓存是可以跨SqlSession的。</p>
+
+<p>（Java知音收集了几份不错的简历模版，如果您有需要，点击下方的资源库下载吧）</p>
+
+<p>Java知音公众号整理一些各大公司常用的面试笔试题，供大家在每天闲暇之余学习其中几道题目，日积月累，等到出去面试时，一切都水到渠成，面试时就自然会游刃有余了。</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/%E8%B5%A2%E5%9C%A8%E9%9D%A2%E8%AF%95%E4%B9%8Bjava%E6%8C%81%E4%B9%85%E5%B1%8210.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/hashmap%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90java%E6%BA%90%E7%A0%81%E5%89%96%E6%9E%90.html">&laquo; HashMap实现原理分析（Java源码剖析）</a>
+  
+  
+  <a class="next" href="/2017/tomcat%E5%81%9C%E6%9C%BA%E8%BF%87%E7%A8%8B%E5%88%86%E6%9E%90%E5%8F%8A%E7%BA%BF%E7%A8%8B%E5%A4%84%E7%90%86%E6%96%B9%E6%B3%95.html">Tomcat停机过程分析及线程处理方法 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

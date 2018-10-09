@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>【jOOQ中文】1. 七个步骤快速入门 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="【jOOQ中文】1. 七个步骤快速入门" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="jOOQ: The easiest way to write SQL in Java" />
+<meta property="og:description" content="jOOQ: The easiest way to write SQL in Java" />
+<link rel="canonical" href="http://www.jfox.info/2017/jooq%E4%B8%AD%E6%96%871%E4%B8%83%E4%B8%AA%E6%AD%A5%E9%AA%A4%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/jooq%E4%B8%AD%E6%96%871%E4%B8%83%E4%B8%AA%E6%AD%A5%E9%AA%A4%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:58:41+00:00" />
+<script type="application/ld+json">
+{"description":"jOOQ: The easiest way to write SQL in Java","@type":"BlogPosting","url":"http://www.jfox.info/2017/jooq%E4%B8%AD%E6%96%871%E4%B8%83%E4%B8%AA%E6%AD%A5%E9%AA%A4%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8.html","headline":"【jOOQ中文】1. 七个步骤快速入门","dateModified":"2017-01-01T15:58:41+00:00","datePublished":"2017-01-01T15:58:41+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/jooq%E4%B8%AD%E6%96%871%E4%B8%83%E4%B8%AA%E6%AD%A5%E9%AA%A4%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">【jOOQ中文】1. 七个步骤快速入门</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:58:41+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>jOOQ: The easiest way to write SQL in Java</p>
+
+<p>jOOQ是一个基于Java编写SQL的工具包，具有：简单、轻量、函数式编程写SQL等独特优势，非常适合敏捷快速迭代开发。</p>
+
+<h2 id="初见jooq">初见jOOQ</h2>
+
+<p>使用jOOQ，SQL看起来好像是由Java原生支持的，保留SQL原有的简单。</p>
+
+<p><strong>SQL语句：</strong></p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>SELECT AUTHOR.FIRST_NAME, AUTHOR.LAST_NAME, COUNT(*)
+    FROM AUTHOR
+    JOIN BOOK ON AUTHOR.ID = BOOK.AUTHOR_ID
+   WHERE BOOK.LANGUAGE = 'DE'
+     AND BOOK.PUBLISHED &gt; DATE '2008-01-01'
+GROUP BY AUTHOR.FIRST_NAME, AUTHOR.LAST_NAME
+  HAVING COUNT(*) &gt; 5
+ORDER BY AUTHOR.LAST_NAME ASC NULLS FIRST
+   LIMIT 2
+  OFFSET 1
+</code></pre></div></div>
+
+<p><strong>Java代码：</strong></p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>create.select(AUTHOR.FIRST_NAME, AUTHOR.LAST_NAME, count())
+      .from(AUTHOR)
+      .join(BOOK).on(AUTHOR.ID.equal(BOOK.AUTHOR_ID))
+      .where(BOOK.LANGUAGE.eq("DE"))
+      .and(BOOK.PUBLISHED.gt(date("2008-01-01")))
+      .groupBy(AUTHOR.FIRST_NAME, AUTHOR.LAST_NAME)
+      .having(count().gt(5))
+      .orderBy(AUTHOR.LAST_NAME.asc().nullsFirst())
+      .limit(2)
+      .offset(1)
+</code></pre></div></div>
+
+<h2 id="一准备">一、准备</h2>
+
+<p>如果还没有下载，请下载jOOQ：
+<a href="https://www.jfox.info/go.php?url=http://www.jooq.org/download">http://www.jooq.org/download</a>
+或者，可是使用Maven：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;dependency&gt;
+  &lt;groupId&gt;org.jooq&lt;/groupId&gt;
+  &lt;artifactId&gt;jooq&lt;/artifactId&gt;
+  &lt;version&gt;3.9.5&lt;/version&gt;
+&lt;/dependency&gt;
+&lt;dependency&gt;
+  &lt;groupId&gt;org.jooq&lt;/groupId&gt;
+  &lt;artifactId&gt;jooq-meta&lt;/artifactId&gt;
+  &lt;version&gt;3.9.5&lt;/version&gt;
+&lt;/dependency&gt;
+&lt;dependency&gt;
+  &lt;groupId&gt;org.jooq&lt;/groupId&gt;
+  &lt;artifactId&gt;jooq-codegen&lt;/artifactId&gt;
+  &lt;version&gt;3.9.5&lt;/version&gt;
+&lt;/dependency&gt;
+</code></pre></div></div>
+
+<h2 id="二创建数据库">二、创建数据库</h2>
+
+<p>我们要创建一个名为<code class="highlighter-rouge">library</code>的数据库，和一个<code class="highlighter-rouge">author</code>表，在表中插入<code class="highlighter-rouge">zhang3</code>,<code class="highlighter-rouge">li4</code>数据。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>CREATE DATABASE `library`;
+
+USE `library`;
+
+CREATE TABLE `author` (
+  `id` int NOT NULL,
+  `first_name` varchar(255) DEFAULT NULL,
+  `last_name` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+);
+
+INSERT INTO `author` (`id`, `first_name`, `last_name`) VALUES ('1', '3', 'zhang'), ('2', '4', 'li');
+</code></pre></div></div>
+
+<h2 id="三代码生成">三、代码生成</h2>
+
+<p>在这一步中，我们将使用jOOQ的命令行工具生成映射到<code class="highlighter-rouge">author</code>表的Java类。 
+有关jOOQ代码生成器的更详细信息，请参见：
+<a href="https://www.jfox.info/go.php?url=http://www.jooq.org/doc/3.9/manual-single-page/#code-generation">jOOQ manual pages about setting up the code generator</a>
+代码生成的最简单的方法是将<code class="highlighter-rouge">jOOQ的3个jar</code>文件和<code class="highlighter-rouge">MySQL Connector jar</code>文件复制到一个临时目录（本示例中目录是<code class="highlighter-rouge">test-generated</code>）， 然后创建一个如下所示的<code class="highlighter-rouge">library.xml</code><em>（名字随意修改）</em>：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;?xml version="1.0" encoding="UTF-8" standalone="yes"?&gt;</span>
+<span class="nt">&lt;configuration</span> <span class="na">xmlns=</span><span class="s">"http://www.jooq.org/xsd/jooq-codegen-3.9.2.xsd"</span><span class="nt">&gt;</span>
+  <span class="c">&lt;!-- Configure the database connection here --&gt;</span>
+  <span class="nt">&lt;jdbc&gt;</span>
+    <span class="nt">&lt;driver&gt;</span>com.mysql.jdbc.Driver<span class="nt">&lt;/driver&gt;</span>
+    <span class="c">&lt;!-- 数据库url --&gt;</span>
+    <span class="nt">&lt;url&gt;</span>jdbc:mysql://localhost:3306/library?useUnicode=true<span class="ni">&amp;amp;</span>characterEncoding=UTF-8<span class="nt">&lt;/url&gt;</span>
+    <span class="c">&lt;!-- 数据库账号 --&gt;</span>
+    <span class="nt">&lt;user&gt;</span>root<span class="nt">&lt;/user&gt;</span>
+    <span class="c">&lt;!-- 数据库账号密码 --&gt;</span>
+    <span class="nt">&lt;password&gt;</span>123456<span class="nt">&lt;/password&gt;</span>
+  <span class="nt">&lt;/jdbc&gt;</span>
+
+  <span class="nt">&lt;generator&gt;</span>
+    <span class="c">&lt;!-- The default code generator. You can override this one, to generate your own code style.
+         Supported generators:
+         - org.jooq.util.JavaGenerator
+         - org.jooq.util.ScalaGenerator
+         Defaults to org.jooq.util.JavaGenerator --&gt;</span>
+    <span class="nt">&lt;name&gt;</span>org.jooq.util.JavaGenerator<span class="nt">&lt;/name&gt;</span>
+
+    <span class="nt">&lt;database&gt;</span>
+      <span class="c">&lt;!-- The database type. The format here is:
+           org.util.[database].[database]Database --&gt;</span>
+      <span class="nt">&lt;name&gt;</span>org.jooq.util.mysql.MySQLDatabase<span class="nt">&lt;/name&gt;</span>
+
+      <span class="c">&lt;!-- The database schema (or in the absence of schema support, in your RDBMS this
+           can be the owner, user, database name) to be generated --&gt;</span>
+      <span class="nt">&lt;inputSchema&gt;</span>library<span class="nt">&lt;/inputSchema&gt;</span>
+
+      <span class="c">&lt;!-- All elements that are generated from your schema
+           (A Java regular expression. Use the pipe to separate several expressions)
+           Watch out for case-sensitivity. Depending on your database, this might be important! --&gt;</span>
+      <span class="nt">&lt;includes&gt;</span>.*<span class="nt">&lt;/includes&gt;</span>
+
+      <span class="c">&lt;!-- All elements that are excluded from your schema
+           (A Java regular expression. Use the pipe to separate several expressions).
+           Excludes match before includes, i.e. excludes have a higher priority --&gt;</span>
+      <span class="nt">&lt;excludes&gt;&lt;/excludes&gt;</span>
+    <span class="nt">&lt;/database&gt;</span>
+
+    <span class="nt">&lt;target&gt;</span>
+      <span class="c">&lt;!-- The destination package of your generated classes (within the destination directory) --&gt;</span>
+      <span class="c">&lt;!-- 生成的包名，生成的类在此包下 --&gt;</span>
+      <span class="nt">&lt;packageName&gt;</span>test.generated<span class="nt">&lt;/packageName&gt;</span>
+
+      <span class="c">&lt;!-- The destination directory of your generated classes. Using Maven directory layout here --&gt;</span>
+      <span class="c">&lt;!-- 输出的目录 --&gt;</span>
+      <span class="nt">&lt;directory&gt;</span>C:/workspace/jOOQ-User-Manual/jooq-tutorials-1/src/main/java<span class="nt">&lt;/directory&gt;</span>
+    <span class="nt">&lt;/target&gt;</span>
+  <span class="nt">&lt;/generator&gt;</span>
+<span class="nt">&lt;/configuration&gt;</span>
+</code></pre></div></div>
+
+<p>在Windows中，<code class="highlighter-rouge">cd</code>到<code class="highlighter-rouge">test-generated</code>目录，执行以下命令：</p>
+
+<p>注意jar包的版本号与您本地对应上，在这个例子中，jOOQ使用3.9.5，MySQL使用5.1.30。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>java -classpath jooq-3.9.5.jar;jooq-meta-3.9.5.jar;jooq-codegen-3.9.5.jar;mysql-connector-java-5.1.30.jar; org.jooq.util.GenerationTool library.xml
+</code></pre></div></div>
+
+<p>UNIX / Linux / Mac中：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>java -classpath jooq-3.9.5.jar:jooq-meta-3.9.5.jar:jooq-codegen-3.9.5.jar:mysql-connector-java-5.1.30.jar: org.jooq.util.GenerationTool library.xml
+</code></pre></div></div>
+
+<p>如果一切正常，您应该在控制台输出中看到这些信息：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>七月 30, 2017 1:12:51 下午 org.jooq.tools.JooqLogger info
+信息: Initialising properties  : library.xml
+七月 30, 2017 1:12:51 下午 org.jooq.tools.JooqLogger info
+信息: No &lt;inputCatalog/&gt; was provided. Generating ALL available catalogs instead.
+七月 30, 2017 1:12:51 下午 org.jooq.tools.JooqLogger info
+信息: License parameters
+七月 30, 2017 1:12:51 下午 org.jooq.tools.JooqLogger info
+信息: ----------------------------------------------------------
+七月 30, 2017 1:12:51 下午 org.jooq.tools.JooqLogger info
+信息:   Thank you for using jOOQ and jOOQ's code generator
+七月 30, 2017 1:12:51 下午 org.jooq.tools.JooqLogger info
+信息:
+七月 30, 2017 1:12:51 下午 org.jooq.tools.JooqLogger info
+信息: Database parameters
+七月 30, 2017 1:12:51 下午 org.jooq.tools.JooqLogger info
+信息: ----------------------------------------------------------
+七月 30, 2017 1:12:52 下午 org.jooq.tools.JooqLogger info
+信息:   dialect                : MYSQL
+七月 30, 2017 1:12:52 下午 org.jooq.tools.JooqLogger info
+信息:   URL                    : jdbc:mysql://localhost:3306/library?useUnicode=true&amp;characterEncoding=UTF-8
+七月 30, 2017 1:12:52 下午 org.jooq.tools.JooqLogger info
+信息:   target dir             : C:/workspace/jOOQ-User-Manual/jooq-tutorials-1/src/main/java
+七月 30, 2017 1:12:52 下午 org.jooq.tools.JooqLogger info
+信息:   target package         : test.generated
+七月 30, 2017 1:12:52 下午 org.jooq.tools.JooqLogger info
+信息:   includes               : [.*]
+七月 30, 2017 1:12:52 下午 org.jooq.tools.JooqLogger info
+信息:   excludes               : []
+七月 30, 2017 1:12:52 下午 org.jooq.tools.JooqLogger info
+信息:   includeExcludeColumns  : false
+七月 30, 2017 1:12:52 下午 org.jooq.tools.JooqLogger info
+信息: ----------------------------------------------------------
+七月 30, 2017 1:12:52 下午 org.jooq.tools.JooqLogger info
+信息:
+七月 30, 2017 1:12:52 下午 org.jooq.tools.JooqLogger info
+信息: JavaGenerator parameters
+七月 30, 2017 1:12:52 下午 org.jooq.tools.JooqLogger info
+信息: ----------------------------------------------------------
+七月 30, 2017 1:12:52 下午 org.jooq.tools.JooqLogger info
+信息:   strategy               : class org.jooq.util.DefaultGeneratorStrategy
+七月 30, 2017 1:12:52 下午 org.jooq.tools.JooqLogger info
+信息:   deprecated             : true
+七月 30, 2017 1:12:52 下午 org.jooq.tools.JooqLogger info
+信息:   generated annotation   : true
+七月 30, 2017 1:12:52 下午 org.jooq.tools.JooqLogger info
+信息:   JPA annotations        : false
+七月 30, 2017 1:12:52 下午 org.jooq.tools.JooqLogger info
+信息:   validation annotations : false
+七月 30, 2017 1:12:52 下午 org.jooq.tools.JooqLogger info
+信息:   instance fields        : true
+七月 30, 2017 1:12:52 下午 org.jooq.tools.JooqLogger info
+信息:   sequences              : true
+七月 30, 2017 1:12:52 下午 org.jooq.tools.JooqLogger info
+信息:   udts                   : true
+七月 30, 2017 1:12:52 下午 org.jooq.tools.JooqLogger info
+信息:   routines               : true
+七月 30, 2017 1:12:52 下午 org.jooq.tools.JooqLogger info
+信息:   tables                 : true
+七月 30, 2017 1:12:52 下午 org.jooq.tools.JooqLogger info
+信息:   records                : true
+七月 30, 2017 1:12:52 下午 org.jooq.tools.JooqLogger info
+信息:   pojos                  : false
+七月 30, 2017 1:12:52 下午 org.jooq.tools.JooqLogger info
+信息:   immutable pojos        : false
+七月 30, 2017 1:12:52 下午 org.jooq.tools.JooqLogger info
+信息:   interfaces             : false
+七月 30, 2017 1:12:52 下午 org.jooq.tools.JooqLogger info
+信息:   immutable interfaces   : false
+七月 30, 2017 1:12:52 下午 org.jooq.tools.JooqLogger info
+信息:   daos                   : false
+七月 30, 2017 1:12:52 下午 org.jooq.tools.JooqLogger info
+信息:   relations              : true
+七月 30, 2017 1:12:52 下午 org.jooq.tools.JooqLogger info
+信息:   table-valued functions : true
+七月 30, 2017 1:12:52 下午 org.jooq.tools.JooqLogger info
+信息:   global references      : true
+七月 30, 2017 1:12:52 下午 org.jooq.tools.JooqLogger info
+信息: ----------------------------------------------------------
+七月 30, 2017 1:12:52 下午 org.jooq.tools.JooqLogger info
+信息:
+七月 30, 2017 1:12:52 下午 org.jooq.tools.JooqLogger info
+信息: Generation remarks
+七月 30, 2017 1:12:52 下午 org.jooq.tools.JooqLogger info
+信息: ----------------------------------------------------------
+七月 30, 2017 1:12:52 下午 org.jooq.tools.JooqLogger info
+信息:
+七月 30, 2017 1:12:52 下午 org.jooq.tools.JooqLogger info
+信息: ----------------------------------------------------------
+七月 30, 2017 1:12:52 下午 org.jooq.tools.JooqLogger info
+信息: Generating catalogs      : Total: 1
+七月 30, 2017 1:12:52 下午 org.jooq.tools.JooqLogger info
+信息:
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@  @@        @@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@@        @@@@@@@@@@
+@@@@@@@@@@@@@@@@  @@  @@    @@@@@@@@@@
+@@@@@@@@@@  @@@@  @@  @@    @@@@@@@@@@
+@@@@@@@@@@        @@        @@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@@@@@@@@@@        @@        @@@@@@@@@@
+@@@@@@@@@@    @@  @@  @@@@  @@@@@@@@@@
+@@@@@@@@@@    @@  @@  @@@@  @@@@@@@@@@
+@@@@@@@@@@        @@  @  @  @@@@@@@@@@
+@@@@@@@@@@        @@        @@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@@@@@  @@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@  Thank you for using jOOQ 3.9.5
+
+七月 30, 2017 1:12:52 下午 org.jooq.tools.JooqLogger info
+信息: ARRAYs fetched           : 0 (0 included, 0 excluded)
+七月 30, 2017 1:12:52 下午 org.jooq.tools.JooqLogger info
+信息: Enums fetched            : 0 (0 included, 0 excluded)
+七月 30, 2017 1:12:52 下午 org.jooq.tools.JooqLogger info
+信息: Packages fetched         : 0 (0 included, 0 excluded)
+七月 30, 2017 1:12:52 下午 org.jooq.tools.JooqLogger info
+信息: Routines fetched         : 0 (0 included, 0 excluded)
+七月 30, 2017 1:12:52 下午 org.jooq.tools.JooqLogger info
+信息: Tables fetched           : 1 (1 included, 0 excluded)
+七月 30, 2017 1:12:52 下午 org.jooq.tools.JooqLogger info
+信息: No schema version is applied for catalog . Regenerating.
+七月 30, 2017 1:12:52 下午 org.jooq.tools.JooqLogger info
+信息:
+七月 30, 2017 1:12:52 下午 org.jooq.tools.JooqLogger info
+信息: Generating catalog       : DefaultCatalog.java
+七月 30, 2017 1:12:52 下午 org.jooq.tools.JooqLogger info
+信息: ==========================================================
+七月 30, 2017 1:12:52 下午 org.jooq.tools.JooqLogger info
+信息: Generating schemata      : Total: 1
+七月 30, 2017 1:12:52 下午 org.jooq.tools.JooqLogger info
+信息: No schema version is applied for schema library. Regenerating.
+七月 30, 2017 1:12:52 下午 org.jooq.tools.JooqLogger info
+信息: Generating schema        : Library.java
+七月 30, 2017 1:12:52 下午 org.jooq.tools.JooqLogger info
+信息: ----------------------------------------------------------
+七月 30, 2017 1:12:52 下午 org.jooq.tools.JooqLogger info
+信息: Sequences fetched        : 0 (0 included, 0 excluded)
+七月 30, 2017 1:12:52 下午 org.jooq.tools.JooqLogger info
+信息: UDTs fetched             : 0 (0 included, 0 excluded)
+七月 30, 2017 1:12:52 下午 org.jooq.tools.JooqLogger info
+信息: Generating tables
+七月 30, 2017 1:12:52 下午 org.jooq.tools.JooqLogger info
+信息: Synthetic primary keys   : 0 (0 included, 0 excluded)
+七月 30, 2017 1:12:52 下午 org.jooq.tools.JooqLogger info
+信息: Overriding primary keys  : 1 (0 included, 1 excluded)
+七月 30, 2017 1:12:52 下午 org.jooq.tools.JooqLogger info
+信息: Generating table         : Author.java [input=author, output=author, pk=KEY_author_PRIMARY]
+七月 30, 2017 1:12:52 下午 org.jooq.tools.JooqLogger info
+信息: Tables generated         : Total: 819.168ms
+七月 30, 2017 1:12:52 下午 org.jooq.tools.JooqLogger info
+信息: Generating table references
+七月 30, 2017 1:12:52 下午 org.jooq.tools.JooqLogger info
+信息: Table refs generated     : Total: 827.491ms, +8.323ms
+七月 30, 2017 1:12:52 下午 org.jooq.tools.JooqLogger info
+信息: Generating Keys
+七月 30, 2017 1:12:52 下午 org.jooq.tools.JooqLogger info
+信息: Keys generated           : Total: 835.486ms, +7.995ms
+七月 30, 2017 1:12:52 下午 org.jooq.tools.JooqLogger info
+信息: Generating table records
+七月 30, 2017 1:12:52 下午 org.jooq.tools.JooqLogger info
+信息: Generating record        : AuthorRecord.java
+七月 30, 2017 1:12:52 下午 org.jooq.tools.JooqLogger info
+信息: Table records generated  : Total: 854.667ms, +19.18ms
+七月 30, 2017 1:12:52 下午 org.jooq.tools.JooqLogger info
+信息: Domains fetched          : 0 (0 included, 0 excluded)
+七月 30, 2017 1:12:52 下午 org.jooq.tools.JooqLogger info
+信息: Generation finished: library: Total: 860.822ms, +6.155ms
+七月 30, 2017 1:12:52 下午 org.jooq.tools.JooqLogger info
+信息:
+七月 30, 2017 1:12:52 下午 org.jooq.tools.JooqLogger info
+信息: Removing excess files
+</code></pre></div></div>
+
+<h2 id="四连接到您的数据库">四、连接到您的数据库</h2>
+
+<p>我们在工程中编写一个测试类<code class="highlighter-rouge">Main.java</code>：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">test</span><span class="p">.</span><span class="n">generated</span><span class="p">;</span>
+
+<span class="n">import</span> <span class="n">java</span><span class="p">.</span><span class="n">sql</span><span class="p">.</span><span class="n">Connection</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">java</span><span class="p">.</span><span class="n">sql</span><span class="p">.</span><span class="n">DriverManager</span><span class="p">;</span>
+
+<span class="p">/**</span>
+ <span class="p">*</span> <span class="err">测试类</span>
+ <span class="p">*</span> <span class="n">Created</span> <span class="n">by</span> <span class="n">jan</span> <span class="n">on</span> <span class="m">2017</span><span class="p">/</span><span class="m">7</span><span class="p">/</span><span class="m">30.</span>
+ <span class="p">*/</span>
+<span class="k">public</span> <span class="n">class</span> <span class="n">Main</span> <span class="p">{</span>
+    <span class="k">public</span> <span class="n">static</span> <span class="n">void</span> <span class="n">main</span><span class="p">(</span><span class="k">String</span><span class="p">[]</span> <span class="n">args</span><span class="p">)</span> <span class="p">{</span>
+        <span class="p">//</span> <span class="err">用户名</span>
+        <span class="k">String</span> <span class="n">userName</span> <span class="p">=</span> <span class="s2">"root"</span><span class="p">;</span>
+        <span class="p">//</span> <span class="err">密码</span>
+        <span class="k">String</span> <span class="n">password</span> <span class="p">=</span> <span class="s2">"123456"</span><span class="p">;</span>
+        <span class="p">//</span> <span class="n">mysql</span><span class="err">连接</span><span class="n">url</span>
+        <span class="k">String</span> <span class="n">url</span> <span class="p">=</span> <span class="s2">"jdbc:mysql://localhost:3306/library?useUnicode=true&amp;characterEncoding=UTF-8"</span><span class="p">;</span>
+
+        <span class="p">//</span> <span class="n">Connection</span> <span class="n">is</span> <span class="n">the</span> <span class="n">only</span> <span class="n">JDBC</span> <span class="n">resource</span> <span class="n">that</span> <span class="n">we</span> <span class="n">need</span>
+        <span class="p">//</span> <span class="n">PreparedStatement</span> <span class="k">and</span> <span class="n">ResultSet</span> <span class="n">are</span> <span class="n">handled</span> <span class="n">by</span> <span class="n">jOOQ</span><span class="p">,</span> <span class="n">internally</span>
+        <span class="n">try</span> <span class="p">(</span><span class="n">Connection</span> <span class="n">conn</span> <span class="p">=</span> <span class="n">DriverManager</span><span class="p">.</span><span class="n">getConnection</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">userName</span><span class="p">,</span> <span class="n">password</span><span class="p">))</span> <span class="p">{</span>
+            <span class="p">//</span> <span class="p">...</span>
+        <span class="p">}</span>
+
+        <span class="p">//</span> <span class="n">For</span> <span class="n">the</span> <span class="n">sake</span> <span class="k">of</span> <span class="n">this</span> <span class="n">tutorial</span><span class="p">,</span> <span class="n">let</span><span class="s1">'s keep exception handling simple
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+</span></code></pre></div></div>
+
+<p>这是一个标准的JDBC MySQL连接代码。</p>
+
+<h2 id="五查询">五、查询</h2>
+
+<p>我们使用jOOQ的DSL构建出一个简单查询：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>DSLContext create = DSL.using(conn, SQLDialect.MYSQL);
+Result&lt;Record&gt; result = create.select().from(AUTHOR).fetch();
+</code></pre></div></div>
+
+<p>传入<code class="highlighter-rouge">Connection连接对象</code>、<code class="highlighter-rouge">数据方言</code>得到一个<code class="highlighter-rouge">DSLContext</code>的实例，然后使用DSL对象查询得到一个Result对象。</p>
+
+<p>注意：DSLContext不会主动关闭连接，需要我们手动关闭。</p>
+
+<h2 id="六输出结果">六、输出结果</h2>
+
+<p>得到<code class="highlighter-rouge">Result</code>对象后，循环输出结果集：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>for (Record r : result) {
+    Integer id = r.getValue(AUTHOR.ID);
+    String firstName = r.getValue(AUTHOR.FIRST_NAME);
+    String lastName = r.getValue(AUTHOR.LAST_NAME);
+
+    System.out.println("ID: " + id + " first name: " + firstName + " last name: " + lastName);
+}
+</code></pre></div></div>
+
+<p>完成的代码应该是这样的：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">test</span><span class="p">.</span><span class="n">generated</span><span class="p">;</span>
+
+<span class="n">import</span> <span class="n">org</span><span class="p">.</span><span class="n">jooq</span><span class="p">.</span><span class="n">DSLContext</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">org</span><span class="p">.</span><span class="n">jooq</span><span class="p">.</span><span class="k">Record</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">org</span><span class="p">.</span><span class="n">jooq</span><span class="p">.</span><span class="n">Result</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">org</span><span class="p">.</span><span class="n">jooq</span><span class="p">.</span><span class="n">SQLDialect</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">org</span><span class="p">.</span><span class="n">jooq</span><span class="p">.</span><span class="n">impl</span><span class="p">.</span><span class="n">DSL</span><span class="p">;</span>
+
+<span class="n">import</span> <span class="n">java</span><span class="p">.</span><span class="n">sql</span><span class="p">.</span><span class="n">Connection</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">java</span><span class="p">.</span><span class="n">sql</span><span class="p">.</span><span class="n">DriverManager</span><span class="p">;</span>
+
+<span class="n">import</span> <span class="n">static</span> <span class="n">test</span><span class="p">.</span><span class="n">generated</span><span class="p">.</span><span class="n">tables</span><span class="p">.</span><span class="n">Author</span><span class="p">.</span><span class="n">AUTHOR</span><span class="p">;</span>
+
+<span class="p">/**</span>
+ <span class="p">*</span> <span class="err">测试类</span>
+ <span class="p">*</span> <span class="n">Created</span> <span class="n">by</span> <span class="n">jan</span> <span class="n">on</span> <span class="m">2017</span><span class="p">/</span><span class="m">7</span><span class="p">/</span><span class="m">30.</span>
+ <span class="p">*/</span>
+<span class="k">public</span> <span class="n">class</span> <span class="n">Main</span> <span class="p">{</span>
+    <span class="k">public</span> <span class="n">static</span> <span class="n">void</span> <span class="n">main</span><span class="p">(</span><span class="k">String</span><span class="p">[]</span> <span class="n">args</span><span class="p">)</span> <span class="p">{</span>
+        <span class="p">//</span> <span class="err">用户名</span>
+        <span class="k">String</span> <span class="n">userName</span> <span class="p">=</span> <span class="s2">"root"</span><span class="p">;</span>
+        <span class="p">//</span> <span class="err">密码</span>
+        <span class="k">String</span> <span class="n">password</span> <span class="p">=</span> <span class="s2">"123456"</span><span class="p">;</span>
+        <span class="p">//</span> <span class="n">mysql</span><span class="err">连接</span><span class="n">url</span>
+        <span class="k">String</span> <span class="n">url</span> <span class="p">=</span> <span class="s2">"jdbc:mysql://localhost:3306/library?useUnicode=true&amp;characterEncoding=UTF-8"</span><span class="p">;</span>
+
+        <span class="p">//</span> <span class="n">Connection</span> <span class="n">is</span> <span class="n">the</span> <span class="n">only</span> <span class="n">JDBC</span> <span class="n">resource</span> <span class="n">that</span> <span class="n">we</span> <span class="n">need</span>
+        <span class="p">//</span> <span class="n">PreparedStatement</span> <span class="k">and</span> <span class="n">ResultSet</span> <span class="n">are</span> <span class="n">handled</span> <span class="n">by</span> <span class="n">jOOQ</span><span class="p">,</span> <span class="n">internally</span>
+        <span class="n">try</span> <span class="p">(</span><span class="n">Connection</span> <span class="n">conn</span> <span class="p">=</span> <span class="n">DriverManager</span><span class="p">.</span><span class="n">getConnection</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">userName</span><span class="p">,</span> <span class="n">password</span><span class="p">))</span> <span class="p">{</span>
+            <span class="n">DSLContext</span> <span class="nb">create</span> <span class="p">=</span> <span class="n">DSL</span><span class="p">.</span><span class="n">using</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">SQLDialect</span><span class="p">.</span><span class="n">MYSQL</span><span class="p">);</span>
+            <span class="n">Result</span><span class="p">&lt;</span><span class="k">Record</span><span class="p">&gt;</span> <span class="n">result</span> <span class="p">=</span> <span class="nb">create</span><span class="p">.</span><span class="n">select</span><span class="p">().</span><span class="k">from</span><span class="p">(</span><span class="n">AUTHOR</span><span class="p">).</span><span class="n">fetch</span><span class="p">();</span>
+
+            <span class="n">for</span> <span class="p">(</span><span class="k">Record</span> <span class="n">r</span> <span class="p">:</span> <span class="n">result</span><span class="p">)</span> <span class="p">{</span>
+                <span class="k">Integer</span> <span class="n">id</span> <span class="p">=</span> <span class="n">r</span><span class="p">.</span><span class="nf">getValue</span><span class="p">(</span><span class="n">AUTHOR</span><span class="p">.</span><span class="n">ID</span><span class="p">);</span>
+                <span class="k">String</span> <span class="n">firstName</span> <span class="p">=</span> <span class="n">r</span><span class="p">.</span><span class="nf">getValue</span><span class="p">(</span><span class="n">AUTHOR</span><span class="p">.</span><span class="n">FIRST_NAME</span><span class="p">);</span>
+                <span class="k">String</span> <span class="n">lastName</span> <span class="p">=</span> <span class="n">r</span><span class="p">.</span><span class="nf">getValue</span><span class="p">(</span><span class="n">AUTHOR</span><span class="p">.</span><span class="n">LAST_NAME</span><span class="p">);</span>
+
+                <span class="p">/**</span>
+                 <span class="p">*</span> <span class="err">控制台输出</span>
+                 <span class="p">*</span> <span class="n">ID</span><span class="p">:</span> <span class="m">1</span> <span class="n">first</span> <span class="n">name</span><span class="p">:</span> <span class="m">3</span> <span class="n">last</span> <span class="n">name</span><span class="p">:</span> <span class="n">zhang</span>
+                 <span class="p">*</span> <span class="n">ID</span><span class="p">:</span> <span class="m">2</span> <span class="n">first</span> <span class="n">name</span><span class="p">:</span> <span class="m">4</span> <span class="n">last</span> <span class="n">name</span><span class="p">:</span> <span class="n">li</span>
+                 <span class="p">*/</span>
+                <span class="nf">System</span><span class="p">.</span><span class="n">out</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="s2">"ID: "</span> <span class="p">+</span> <span class="n">id</span> <span class="p">+</span> <span class="s2">" first name: "</span> <span class="p">+</span> <span class="n">firstName</span> <span class="p">+</span> <span class="s2">" last name: "</span> <span class="p">+</span> <span class="n">lastName</span><span class="p">);</span>
+            <span class="p">}</span>
+
+            <span class="p">//</span> <span class="err">关闭连接对象</span>
+            <span class="n">conn</span><span class="p">.</span><span class="n">close</span><span class="p">();</span>
+        <span class="p">}</span>
+        <span class="p">//</span> <span class="n">For</span> <span class="n">the</span> <span class="n">sake</span> <span class="k">of</span> <span class="n">this</span> <span class="n">tutorial</span><span class="p">,</span> <span class="n">let</span><span class="s1">'s keep exception handling simple
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+</span></code></pre></div></div>
+
+<p>七、更多示例</p>
+
+<p>jOOQ已经是一个全面的SQL库，更多学习文档请参考：</p>
+
+<p>【jOOQ中文】教程代码都会放在码云，希望多多宣传给Star(^_−)☆。</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/jooq%E4%B8%AD%E6%96%871%E4%B8%83%E4%B8%AA%E6%AD%A5%E9%AA%A4%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/java%E8%99%9A%E6%8B%9F%E6%9C%BA%E5%9B%9E%E5%BF%86%E5%BD%95.html">&laquo; Java虚拟机回忆录 » java面试题</a>
+  
+  
+  <a class="next" href="/2017/springcloud%E5%BE%AE%E6%9C%8D%E5%8A%A1%E5%85%A8%E5%AE%B6%E6%A1%B6%E4%B9%8B%E6%9C%8D%E5%8A%A1%E6%B3%A8%E5%86%8C%E6%9C%8D%E5%8A%A1%E5%8F%91%E7%8E%B0eurekaconsul%E4%BD%9C%E4%B8%BA%E6%9C%8D%E5%8A%A1.html">【Spring Cloud微服务全家桶】之服务注册、服务发现(Eureka、Consul作为服务注册中心) &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

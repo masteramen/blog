@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>RxJava2.X源码解析（四） | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="RxJava2.X源码解析（四）" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="H2M_LI_HEADER 基于RxJava2.1.1 H2M_LI_HEADER 我们在前面的 RxJava2.0使用详解（一）初步分析了RxJava从创建到执行的流程。RxJava2.0使用详解（二) 中分析了RxJava的随意终止Reactive流的能力的来源；也明白了RxJava的onComplete();与onError(t);只有一个会被执行的秘密。RxJava2.X 源码分析（三）中探索了RxJava2调用subscribeOn切换被观察者线程的原理。" />
+<meta property="og:description" content="H2M_LI_HEADER 基于RxJava2.1.1 H2M_LI_HEADER 我们在前面的 RxJava2.0使用详解（一）初步分析了RxJava从创建到执行的流程。RxJava2.0使用详解（二) 中分析了RxJava的随意终止Reactive流的能力的来源；也明白了RxJava的onComplete();与onError(t);只有一个会被执行的秘密。RxJava2.X 源码分析（三）中探索了RxJava2调用subscribeOn切换被观察者线程的原理。" />
+<link rel="canonical" href="http://www.jfox.info/2017/rxjava2x%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E5%9B%9B.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/rxjava2x%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E5%9B%9B.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:57:11+00:00" />
+<script type="application/ld+json">
+{"description":"H2M_LI_HEADER 基于RxJava2.1.1 H2M_LI_HEADER 我们在前面的 RxJava2.0使用详解（一）初步分析了RxJava从创建到执行的流程。RxJava2.0使用详解（二) 中分析了RxJava的随意终止Reactive流的能力的来源；也明白了RxJava的onComplete();与onError(t);只有一个会被执行的秘密。RxJava2.X 源码分析（三）中探索了RxJava2调用subscribeOn切换被观察者线程的原理。","@type":"BlogPosting","url":"http://www.jfox.info/2017/rxjava2x%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E5%9B%9B.html","headline":"RxJava2.X源码解析（四）","dateModified":"2017-01-01T15:57:11+00:00","datePublished":"2017-01-01T15:57:11+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/rxjava2x%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E5%9B%9B.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">RxJava2.X源码解析（四）</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:57:11+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>H2M_LI_HEADER 基于RxJava2.1.1
+H2M_LI_HEADER 
+我们在前面的 <a href="https://www.jfox.info/go.php?url=http://cherylgood.cn/articles/2017/07/10/1499671003613.html">RxJava2.0使用详解（一）</a>初步分析了RxJava从创建到执行的流程。<a href="https://www.jfox.info/go.php?url=http://cherylgood.cn/articles/2017/07/11/1499770780242.html">RxJava2.0使用详解（二) </a>中分析了RxJava的随意终止Reactive流的能力的来源；也明白了<code class="highlighter-rouge">RxJava</code>的<code class="highlighter-rouge">onComplete();</code>与<code class="highlighter-rouge">onError(t);</code>只有一个会被执行的秘密。<a href="https://www.jfox.info/go.php?url=http://cherylgood.cn/articles/2017/07/13/1499925392920.html">RxJava2.X 源码分析（三）</a>中探索了RxJava2调用subscribeOn切换被观察者线程的原理。</p>
+
+<p>H2M_LI_HEADER 
+本次我们将继续探索<code class="highlighter-rouge">RxJava2.x</code>切换观察者的原理，分析<code class="highlighter-rouge">observeOn</code>与<code class="highlighter-rouge">subscribeOn</code>的不同之处。继续实现我们在第一篇中定下的小目标</p>
+
+<h3 id="二从demo到原理">二、从Demo到原理</h3>
+
+<ul>
+  <li>OK，我们的Demo还是上次的demo，忘记了的小伙伴可以点击<a href="https://www.jfox.info/go.php?url=http://cherylgood.cn/articles/2017/07/13/1499925392920.html">RxJava2.X 源码分析（三）</a>，这里就不再重复了哦，我们直接进入正题。</li>
+  <li>Ok，按照套路，我们从<code class="highlighter-rouge">observeOn</code>方法入手。</li>
+  <li>
+    <p>Ok，我点～^_^</p>
+
+    <p>@CheckReturnValue
+  @SchedulerSupport(SchedulerSupport.CUSTOM)
+  public final Observable<T> observeOn(Scheduler scheduler) {
+      //false为默认无延迟发送错误，bufferSize为缓冲区大小
+      return observeOn(scheduler, false, bufferSize());
+  }</T></p>
+  </li>
+  <li>我们继续往下看，我猜套路跟<code class="highlighter-rouge">subscribeOn</code>的逃不多，也是采用装饰者模式，wrapper我们的<code class="highlighter-rouge">Observable</code>和<code class="highlighter-rouge">Observer</code>产生一个中间被观察者和观察中，通过中间被观察者订阅上游被观察者，通过中间观察者接收上游被观察者下发的数据，然后通过线程切换将数据传递给下游观察者。</li>
+  <li>
+    <p>Ok，我们来验证下才想。我觉得就是没完全猜对，也能猜对其中的大部分。</p>
+
+    <p>@CheckReturnValue
+  @SchedulerSupport(SchedulerSupport.CUSTOM)
+  public final Observable<T> observeOn(Scheduler scheduler, boolean delayError, int bufferSize) {
+      ObjectHelper.requireNonNull(scheduler, "scheduler is null");
+      ObjectHelper.verifyPositive(bufferSize, "bufferSize");
+      return RxJavaPlugins.onAssembly(new ObservableObserveOn<T>(this, scheduler, delayError, bufferSize));
+  }</T></T></p>
+  </li>
+  <li>
+    <p>Ok，熟悉的<code class="highlighter-rouge">RxJavaPlugins.onAssembly</code>hook处理，略过，直接看<code class="highlighter-rouge">new ObservableObserveOn&lt;T&gt;(this, scheduler, delayError, bufferSize)</code></p>
+
+    <p>public final class ObservableObserveOn<T> extends AbstractObservableWithUpstream&lt;T, T&gt; {
+      final Scheduler scheduler;
+      final boolean delayError;
+      final int bufferSize;
+      public ObservableObserveOn(ObservableSource<T> source, Scheduler scheduler, boolean delayError, int bufferSize) {
+          super(source);
+          this.scheduler = scheduler;
+          this.delayError = delayError;
+          this.bufferSize = bufferSize;
+      }</T></T></p>
+
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  @Override
+protected void subscribeActual(Observer&lt;? super T&gt; observer) {
+      if (scheduler instanceof TrampolineScheduler) {
+          source.subscribe(observer);
+      } else {
+          Scheduler.Worker w = scheduler.createWorker();
+
+          source.subscribe(new ObserveOnObserver&lt;T&gt;(observer, w, delayError, bufferSize));
+      }
+  }   .....   }
+</code></pre></div>    </div>
+  </li>
+  <li>Ok,果然，熟悉的模式，对我们上游的<code class="highlighter-rouge">Observable</code>,下游的<code class="highlighter-rouge">Observer</code>wrapper一次。
+1、<code class="highlighter-rouge">ObservableObserveOn</code>继承了<code class="highlighter-rouge">AbstractObservableWithUpstream</code>
+2、<code class="highlighter-rouge">source</code>保存上游的<code class="highlighter-rouge">Observable</code>
+3、<code class="highlighter-rouge">scheduler</code>为本次的调度器
+4、在下游调用<code class="highlighter-rouge">subscribe</code>订阅时触发-&gt;<code class="highlighter-rouge">subscribeActual</code>-&gt;Wrapper了下游的<code class="highlighter-rouge">Observer</code></li>
+  <li>
+    <p>然们把<code class="highlighter-rouge">subscribeActual</code>里的代码拿出来分析下。</p>
+
+    <p>@Override
+            protected void subscribeActual(Observer&lt;? super T&gt; observer) {
+                  if (scheduler instanceof TrampolineScheduler) {
+                                          //1、在当前线程调度，但不是立即执行，放入队列中
+                      source.subscribe(observer);
+                  } else {
+                    //2、本次走的是这里
+                      Scheduler.Worker w = scheduler.createWorker();
+                      //3、source为游Observable，下游Observer被wrapper到ObserveOnObserver，发生订阅数件，上游Observable开始执行subscribeActual，调用ObserveOnObserver的onSubscribe以及onNext、onError、onComplete等
+                      source.subscribe(new ObserveOnObserver<T>(observer, w, delayError, bufferSize));
+                  }
+              }</T></p>
+  </li>
+  <li>
+    <p>OK，我们接着看Observer被包装进 ObserveOnObserver的样子，代码有点多，我们分段讲解</p>
+
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>static final class ObserveOnObserver&lt;T&gt; extends BasicIntQueueDisposable&lt;T&gt;
+implements Observer&lt;T&gt;, Runnable {
+
+    private static final long serialVersionUID = 6576896619930983584L;
+    //下游的Observer
+    final Observersuper T&gt; actual;
+    //调度工作者
+    final Scheduler.Worker worker;
+    //是否延迟错误，默认false
+    final boolean delayError;
+    //队列大小
+    final int bufferSize;
+    //存储上游Observable下发的数据队列
+    SimpleQueue&lt;T&gt; queue;
+    //存储下游Observer的Disposable
+    Disposable s;
+    //存储错误信息
+    Throwable error;
+    //校验是否完毕
+    volatile boolean done;
+    //是否被取消
+    volatile boolean cancelled;
+    //存储执行模式，同步或者异步 同步
+    int sourceMode;
+
+    boolean outputFused;
+
+    ObserveOnObserver(Observersuper T&gt; actual, Scheduler.Worker worker, boolean delayError, int bufferSize) {
+        this.actual = actual;
+        this.worker = worker;
+        this.delayError = delayError;
+        this.bufferSize = bufferSize;
+    }
+
+    @Override
+  public void onSubscribe(Disposable s) {
+
+        if (DisposableHelper.validate(this.s, s)) {
+            this.s = s;
+            if (s instanceof QueueDisposable) {
+                @SuppressWarnings("unchecked")
+                QueueDisposable&lt;T&gt; qd = (QueueDisposable&lt;T&gt;) s;
+
+                int m = qd.requestFusion(QueueDisposable.ANY | QueueDisposable.BOUNDARY);
+
+              //1、判断执行模式并调用onSubscribe传递给下游Observer
+                if (m == QueueDisposable.SYNC) {
+                    sourceMode = m;
+                    queue = qd;
+                    //true 后面的onXX方法都不会被调用
+                    done = true;
+                    actual.onSubscribe(this);
+                    //2、同步模式下，直接调用schedule
+                    schedule();
+                    return;
+                }
+                if (m == QueueDisposable.ASYNC) {
+                    sourceMode = m;
+                    queue = qd;
+                    actual.onSubscribe(this);
+                    //2、异步模式下，等待schedule
+                    return;
+                }
+            }
+
+            queue = new SpscLinkedArrayQueue&lt;T&gt;(bufferSize);
+            //判断执行模式并调用onSubscribe传递给下游Observer
+            actual.onSubscribe(this);
+        }
+    }
+</code></pre></div>    </div>
+  </li>
+  <li>OK，执行玩这里之后，就到我们的onXX方法了</li>
+  <li>
+    <p>首先可无限调用的<code class="highlighter-rouge">onNext</code></p>
+
+    <p>@Override
+  public void onNext(T t) {
+       //3、数据源是同步模式或者执行过error / complete 会是true
+      if (done) {
+          return;
+      }
+      //如果数据源不是异步类型，
+      if (sourceMode != QueueDisposable.ASYNC) {
+          //4、上游Observable下发的数据压入queue
+          queue.offer(t);
+      }
+      //5、开始调度
+      schedule();
+  }</p>
+  </li>
+  <li>
+    <p>其次只能触发一次的onError，基本差不多</p>
+
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>@Override
+public void onError(Throwable t) {
+    if (done) {
+        //6、已完成再执行会抛一场
+        RxJavaPlugins.onError(t);
+        return;
+    }
+    //7、记录错误信息
+    error = t;
+    //8、标识已完成
+    done = true;
+    //9、开始调度
+    schedule();
+}
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>同样是只能触发一次的onComplete，同样的套路，就不说了</p>
+
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>@Override
+public void onComplete() {
+    if (done) {
+        return;
+    }
+    done = true;
+    schedule();
+}
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>然后就是我们的关键点<code class="highlighter-rouge">schedule();</code></p>
+
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>//关键点就是直接、简单、里面线程调度工作者调用schedule(this)，传入了this
+void schedule() {
+       //getAndIncrement很关键，他原子性的保证了worker.schedule(this);在调度完之前不会被再次调度
+    if (getAndIncrement() == 0) {
+        worker.schedule(this);
+    }
+}
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>什么？传入了this？那么说明什么呢？(￣∇￣)</p>
+  </li>
+  <li>嗯？this是个<code class="highlighter-rouge">runnable</code>，没错，我们的<code class="highlighter-rouge">ObserveOnObserver</code>实现了<code class="highlighter-rouge">Runnable</code>接口</li>
+  <li>
+    <p>那么，接下来自然是调用<code class="highlighter-rouge">run</code>方法</p>
+
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  @Override
+  public void run() {
+        //outputFused一般是false
+      if (outputFused) {
+          drainFused();
+      } else {
+          drainNormal();
+      }
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>好吧，在看drainNormal前，我们先看一个函数</p>
+
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  //从名字看是检测是否已终止
+boolean checkTerminated(boolean d, boolean empty, Observersuper T&gt; a) {
+    //1、订阅已取消
+    if (cancelled) {
+        //清空队列
+        queue.clear();
+        return true;
+    }
+    //2、d其实是done，
+    if (d) {
+        //done==ture可能的情况onNext刚被调度完，onError或者onCompele被调用，
+        Throwable e = error;
+        if (delayError) {
+            //delayError==true时等到队列为空才调用
+            if (empty) {
+                if (e != null) {
+                    a.onError(e);
+                } else {
+                    a.onComplete();
+                }
+                worker.dispose();
+                return true;
+            }
+        } else {
+            //否则直接调用
+            if (e != null) {
+                queue.clear();
+                a.onError(e);
+                worker.dispose();
+                return true;
+            } else
+ if (empty) {
+                a.onComplete();
+                worker.dispose();
+                return true;
+            }
+        }
+    }
+    //否则未终结
+    return false;
+}
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>true：1、订阅被取消cancelled==true，2、done==true onNext刚被调度完，onError或者onCompele被调用</p>
+  </li>
+  <li>
+    <p>继续看drainNormal</p>
+
+    <p>void drainNormal() {
+      int missed = 1;
+      final SimpleQueue<T> q = queue;
+      final Observersuper T&gt; a = actual;
+      //Ok,死循环，我们来看下有哪些出口
+      for (;;) {
+      //Ok，出口，该方法前面分析的
+      if (checkTerminated(done, q.isEmpty(), a)) {
+              return;
+          }</T></p>
+
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>      //在此死循环
+      for (;;) {
+          boolean d = done;
+          T v;
+          try {
+              //分发数据出队列
+              v = q.poll();
+          } catch (Throwable ex) {
+              //有异常时终止退出
+              Exceptions.throwIfFatal(ex);
+              s.dispose();
+              q.clear();
+              a.onError(ex);
+              //停止worker（线程）
+              worker.dispose();
+              return;
+          }
+          boolean empty = v == null;
+          //判断队列是否为空
+          if (checkTerminated(d, empty, a)) {
+              return;
+          }
+           //没数据退出
+          if (empty) {
+              break;
+          }
+          //数据下发给下游Obsever，这里支付者onNext，onComplete和onError主要放在了checkTerminated里面回调
+          a.onNext(v);
+      }
+   //保证此时确实有一个 worker.schedule(this);正在被执行，
+      missed = addAndGet(-missed);
+   //为何要这样做呢？我的理解是保证drainNormal方法被原子性调用，如果执行了addAndGet之后getAndIncrement() == 0就成立了，此时又一个worker.schedule(this);被调用了，那么就不能执行break了
+      if (missed == 0) {
+          break;
+      }
+  }   }
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<h3 id="总结">总结</h3>
+
+<ul>
+  <li>Ok，看到这里我们基本了解了observeOn的实现流程，同样是老套路，使用装饰者模式，中间Wrapper了我们的Observable和Observer，通过中间增加一个Observable和Observer来实现线程的切换。</li>
+</ul>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/rxjava2x%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E5%9B%9B.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/spring%E6%A0%B8%E5%BF%83ioc%E5%AE%B9%E5%99%A8%E7%9A%84%E5%AE%9E%E7%8E%B0%E4%BA%8C.html">&laquo; Spring核心：IOC容器的实现（二）</a>
+  
+  
+  <a class="next" href="/2017/springmvc%E4%B8%89%E5%8F%82%E6%95%B0%E7%BB%91%E5%AE%9A.html">springmvc(三) 参数绑定、 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

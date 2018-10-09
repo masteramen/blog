@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>CNN压缩：为反向传播添加mask（caffe代码修改） | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="CNN压缩：为反向传播添加mask（caffe代码修改）" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="1void InnerProductLayer::LayerSetUp(const vector&lt;Blob*&gt;&amp; bottom, 2const vector&lt;Blob*&gt;&amp; top) { 3 ... 4this-&gt;blobs_[0].reset(new Blob(weight_shape)); 5this-&gt;blobs_[0]-&gt;Addmask(); 6 ...}" />
+<meta property="og:description" content="1void InnerProductLayer::LayerSetUp(const vector&lt;Blob*&gt;&amp; bottom, 2const vector&lt;Blob*&gt;&amp; top) { 3 ... 4this-&gt;blobs_[0].reset(new Blob(weight_shape)); 5this-&gt;blobs_[0]-&gt;Addmask(); 6 ...}" />
+<link rel="canonical" href="http://www.jfox.info/2017/cnn%E5%8E%8B%E7%BC%A9:%E4%B8%BA%E5%8F%8D%E5%90%91%E4%BC%A0%E6%92%AD%E6%B7%BB%E5%8A%A0mask(caffe%E4%BB%A3%E7%A0%81%E4%BF%AE%E6%94%B9).html" />
+<meta property="og:url" content="http://www.jfox.info/2017/cnn%E5%8E%8B%E7%BC%A9:%E4%B8%BA%E5%8F%8D%E5%90%91%E4%BC%A0%E6%92%AD%E6%B7%BB%E5%8A%A0mask(caffe%E4%BB%A3%E7%A0%81%E4%BF%AE%E6%94%B9).html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:51:12+00:00" />
+<script type="application/ld+json">
+{"description":"1void InnerProductLayer::LayerSetUp(const vector&lt;Blob*&gt;&amp; bottom, 2const vector&lt;Blob*&gt;&amp; top) { 3 ... 4this-&gt;blobs_[0].reset(new Blob(weight_shape)); 5this-&gt;blobs_[0]-&gt;Addmask(); 6 ...}","@type":"BlogPosting","url":"http://www.jfox.info/2017/cnn%E5%8E%8B%E7%BC%A9:%E4%B8%BA%E5%8F%8D%E5%90%91%E4%BC%A0%E6%92%AD%E6%B7%BB%E5%8A%A0mask(caffe%E4%BB%A3%E7%A0%81%E4%BF%AE%E6%94%B9).html","headline":"CNN压缩：为反向传播添加mask（caffe代码修改）","dateModified":"2017-01-01T15:51:12+00:00","datePublished":"2017-01-01T15:51:12+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/cnn%E5%8E%8B%E7%BC%A9:%E4%B8%BA%E5%8F%8D%E5%90%91%E4%BC%A0%E6%92%AD%E6%B7%BB%E5%8A%A0mask(caffe%E4%BB%A3%E7%A0%81%E4%BF%AE%E6%94%B9).html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">CNN压缩：为反向传播添加mask（caffe代码修改）</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:51:12+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>1void InnerProductLayer<Dtype>::LayerSetUp(const vector&lt;Blob<Dtype>*&gt;&amp; bottom,
+    2const vector&lt;Blob<Dtype>*&gt;&amp; top) {
+    3    ...
+    4this-&gt;blobs_[0].reset(new Blob<Dtype>(weight_shape));
+    5this-&gt;blobs_[0]-&gt;Addmask();
+    6     ...}</Dtype></Dtype></Dtype></Dtype></p>
+
+<p>base_conv.cpp:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1 template &lt;typename Dtype&gt;
+2void BaseConvolutionLayer&lt;Dtype&gt;::LayerSetUp(const vector&lt;Blob&lt;Dtype&gt;*&gt;&amp; bottom,
+3const vector&lt;Blob&lt;Dtype&gt;*&gt;&amp; top) {
+4    ...
+5this-&gt;blobs_[0].reset(new Blob&lt;Dtype&gt;(weight_shape));
+6this-&gt;blobs_[0]-&gt;Addmask();
+7     ...}
+</code></pre></div></div>
+
+<p>修改blob.hpp和blob.cpp，添加成员mask_和相关的方法，在[1]文章的评论里作者已给出源代码。</p>
+
+<p>[2]中使用layer结构定义mask，layer是相当于数据的一系列操作，或者说是blob的组合方法。</p>
+
+<p>但是，想要实现在gpu上的操作，数据需要有gpu有关的操作。故此处采用[1]中的方法，<strong>将mask_添加到blob class中，实现mask_属性</strong>。</p>
+
+<p><strong>mask的初始化？</strong></p>
+
+<p>在Caffe框架下，网络的初始化有两种方式，一种是调用filler，按照模型中定义的初始化方式进行初始化，第二种是从已有的caffemodel或者snapshot中读取相应参数矩阵进行初始化[1]。</p>
+
+<p>1、filler的方法</p>
+
+<p>在程序开始时，网络使用net.cpp中的Init()进行初始化，由输入至输出，依次调用各个层的layersetup，建立网络结构。如下所示是caffe中使用xavier方法进行填充的操作。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> 1virtualvoid Fill(Blob&lt;Dtype&gt;* blob) {
+ 2     CHECK(blob-&gt;count());
+ 3int fan_in = blob-&gt;count() / blob-&gt;num();
+ 4int fan_out = blob-&gt;count() / blob-&gt;channels();
+ 5     Dtype n = fan_in;  // default to fan_in 6if (this-&gt;filler_param_.variance_norm() ==
+ 7        FillerParameter_VarianceNorm_AVERAGE) {
+ 8       n = (fan_in + fan_out) / Dtype(2);
+ 9     } elseif (this-&gt;filler_param_.variance_norm() ==
+10        FillerParameter_VarianceNorm_FAN_OUT) {
+11       n = fan_out;
+12    }
+13     Dtype scale = sqrt(Dtype(3) / n);
+14     caffe_rng_uniform&lt;Dtype&gt;(blob-&gt;count(), -scale, scale,
+15         blob-&gt;mutable_cpu_data());
+16//Filler&lt;Dtype&gt;:: FillMask(blob);17     CHECK_EQ(this-&gt;filler_param_.sparse(), -1)
+18          &lt;&lt; "Sparsity not supported by this Filler.";
+19   }
+</code></pre></div></div>
+
+<p>filler的作用是，为建立的网络结构产生随机初始化值。</p>
+
+<p>即使是从snapshot或caffemodel中读入数据，也执行随机填充操作。</p>
+
+<p>2、从snapshot或caffemodel中读入数据</p>
+
+<p>tools/caffe.cpp 中的phase:train可以从snapshot或caffemodel中提取参数，进行finetune。phase:test则可以从提取的参数中建立网络，进行预测过程。</p>
+
+<p>这里笔者的网络结构是在pycaffe中进行稀疏化的，因此读入网络的proto文件是一个连接数不变、存在部分连接权值为零的网络。需要在读入参数的同时初始化mask_。因此修改blob.cpp中的fromproto函数：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> 1 template &lt;typename Dtype&gt;
+ 2void Blob&lt;Dtype&gt;::FromProto(const BlobProto&amp; proto, bool reshape) {
+ 3if (reshape) {
+ 4     vector&lt;int&gt; shape;
+ 5if (proto.has_num() || proto.has_channels() ||
+ 6         proto.has_height() || proto.has_width()) {
+ 7// Using deprecated 4D Blob dimensions --
+ 8// shape is (num, channels, height, width). 9       shape.resize(4);
+10       shape[0] = proto.num();
+11       shape[1] = proto.channels();
+12       shape[2] = proto.height();
+13       shape[3] = proto.width();
+14     } else {
+15      shape.resize(proto.shape().dim_size());
+16for (int i = 0; i &lt; proto.shape().dim_size(); ++i) {
+17         shape[i] = proto.shape().dim(i);
+18      }
+19    }
+20    Reshape(shape);
+21   } else {
+22     CHECK(ShapeEquals(proto)) &lt;&lt; "shape mismatch (reshape not set)";
+23  }
+24// copy data25   Dtype* data_vec = mutable_cpu_data();
+26if (proto.double_data_size() &gt; 0) {
+27    CHECK_EQ(count_, proto.double_data_size());
+28for (int i = 0; i &lt; count_; ++i) {
+29       data_vec[i] = proto.double_data(i);
+30    }
+31   } else {
+32    CHECK_EQ(count_, proto.data_size());
+33for (int i = 0; i &lt; count_; ++i) {
+34       data_vec[i] = proto.data(i);
+35    }
+36  }
+37if (proto.double_diff_size() &gt; 0) {
+38    CHECK_EQ(count_, proto.double_diff_size());
+39     Dtype* diff_vec = mutable_cpu_diff();
+40for (int i = 0; i &lt; count_; ++i) {
+41       diff_vec[i] = proto.double_diff(i);
+42    }
+43   } elseif (proto.diff_size() &gt; 0) {
+44    CHECK_EQ(count_, proto.diff_size());
+45     Dtype* diff_vec = mutable_cpu_diff();
+46for (int i = 0; i &lt; count_; ++i) {
+47       diff_vec[i] = proto.diff(i);
+48    }
+49  }
+50if(shape_.size()==4||shape_.size()==2){
+51     Dtype* mask_vec = mutable_cpu_data();
+52    CHECK(count_);
+53for(int i=0;i&lt;count_;i++)
+54       mask_vec[i]=data_vec[i]?1:0;
+55 }
+</code></pre></div></div>
+
+<p>在读入proto文件的同时，如果层的大小是4D——conv层、或2D——fc层时，初始化mask_为data_vec[i]?1:0。当层的大小是1Ds——pool或relu层时，不进行mask的初始化。</p>
+
+<p><strong>反向传播的修改？</strong></p>
+
+<p>1、修改blob的更新方式，添加math_funcion.hpp头文件。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> 1 template &lt;typename Dtype&gt;
+ 2void Blob&lt;Dtype&gt;::Update() {
+ 3// We will perform update based on where the data is located. 4switch (data_-&gt;head()) {
+ 5case SyncedMemory::HEAD_AT_CPU:
+ 6// perform computation on CPU 7     caffe_axpy&lt;Dtype&gt;(count_, Dtype(-1),
+ 8         static_cast&lt;const Dtype*&gt;(diff_-&gt;cpu_data()),
+ 9         static_cast&lt;Dtype*&gt;(data_-&gt;mutable_cpu_data()));
+10     caffe_mul&lt;Dtype&gt;(count_,
+11       static_cast&lt;const Dtype*&gt;(mask_-&gt;cpu_data()),
+12       static_cast&lt;const Dtype*&gt;(data_-&gt;cpu_data()),
+13       static_cast&lt;Dtype*&gt;(data_-&gt;mutable_cpu_data()));
+14break;
+15case SyncedMemory::HEAD_AT_GPU:
+16case SyncedMemory::SYNCED:
+17#ifndef CPU_ONLY
+18// perform computation on GPU19     caffe_gpu_axpy&lt;Dtype&gt;(count_, Dtype(-1),
+20         static_cast&lt;const Dtype*&gt;(diff_-&gt;gpu_data()),
+21         static_cast&lt;Dtype*&gt;(data_-&gt;mutable_gpu_data()));
+22     caffe_gpu_mul&lt;Dtype&gt;(count_,
+23       static_cast&lt;const Dtype*&gt;(mask_-&gt;gpu_data()),
+24       static_cast&lt;const Dtype*&gt;(data_-&gt;gpu_data()),
+25       static_cast&lt;Dtype*&gt;(data_-&gt;mutable_gpu_data()));
+26#else27    NO_GPU;
+28#endif29break;
+30default:
+31     LOG(FATAL) &lt;&lt; "Syncedmem not initialized.";
+32  }
+33 }
+</code></pre></div></div>
+
+<p>2、为cpu下的计算和gpu下的计算分别添加形如weight[i]*=mask[i];的运算方式。</p>
+
+<p>inner_product_layer.cpp:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> 1void InnerProductLayer&lt;Dtype&gt;::Backward_cpu(const vector&lt;Blob&lt;Dtype&gt;*&gt;&amp; top,
+ 2const vector&lt;bool&gt;&amp; propagate_down,
+ 3const vector&lt;Blob&lt;Dtype&gt;*&gt;&amp; bottom) {
+ 4if (this-&gt;param_propagate_down_[0]) {
+ 5const Dtype* top_diff = top[0]-&gt;cpu_diff();
+ 6const Dtype* bottom_data = bottom[0]-&gt;cpu_data();
+ 7// Gradient with respect to weight 8     Dtype* weight_diff = this-&gt;blobs_[0]-&gt;mutable_cpu_diff();
+ 9     vector&lt;int&gt; weight_shape(2);
+10if (transpose_) {
+11       weight_shape[0] = K_;
+12       weight_shape[1] = N_;
+13     } else {
+14       weight_shape[0] = N_;
+15       weight_shape[1] = K_;
+16    }
+17int count = weight_shape[0]*weight_shape[1];
+18const Dtype* mask = this-&gt;blobs_[0]-&gt;cpu_mask();
+19for(int j=0;j&lt;count;j++)
+20       weight_diff[j]*=mask[j];
+2122if (transpose_) {
+23       caffe_cpu_gemm&lt;Dtype&gt;(CblasTrans, CblasNoTrans,
+24          K_, N_, M_,
+25           (Dtype)1., bottom_data, top_diff,
+26           (Dtype)1., weight_diff);
+27     } else {
+28       caffe_cpu_gemm&lt;Dtype&gt;(CblasTrans, CblasNoTrans,
+29          N_, K_, M_,
+30           (Dtype)1., top_diff, bottom_data,
+31           (Dtype)1., weight_diff);
+32    }
+33  }
+34if (bias_term_ &amp;&amp; this-&gt;param_propagate_down_[1]) {
+35const Dtype* top_diff = top[0]-&gt;cpu_diff();
+36// Gradient with respect to bias37     caffe_cpu_gemv&lt;Dtype&gt;(CblasTrans, M_, N_, (Dtype)1., top_diff,
+38         bias_multiplier_.cpu_data(), (Dtype)1.,
+39this-&gt;blobs_[1]-&gt;mutable_cpu_diff());
+40  }
+41if (propagate_down[0]) {
+42const Dtype* top_diff = top[0]-&gt;cpu_diff();
+43// Gradient with respect to bottom data44if (transpose_) {
+45       caffe_cpu_gemm&lt;Dtype&gt;(CblasNoTrans, CblasTrans,
+46          M_, K_, N_,
+47           (Dtype)1., top_diff, this-&gt;blobs_[0]-&gt;cpu_data(),
+48           (Dtype)0., bottom[0]-&gt;mutable_cpu_diff());
+49     } else {
+50       caffe_cpu_gemm&lt;Dtype&gt;(CblasNoTrans, CblasNoTrans,
+51          M_, K_, N_,
+52           (Dtype)1., top_diff, this-&gt;blobs_[0]-&gt;cpu_data(),
+53           (Dtype)0., bottom[0]-&gt;mutable_cpu_diff());
+54    }
+55  }
+56 }
+</code></pre></div></div>
+
+<p>inner_product_layer.cu:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> 1 template &lt;typename Dtype&gt;
+ 2void InnerProductLayer&lt;Dtype&gt;::Backward_gpu(const vector&lt;Blob&lt;Dtype&gt;*&gt;&amp; top,
+ 3const vector&lt;bool&gt;&amp; propagate_down,
+ 4const vector&lt;Blob&lt;Dtype&gt;*&gt;&amp; bottom) {
+ 5if (this-&gt;param_propagate_down_[0]) {
+ 6const Dtype* top_diff = top[0]-&gt;gpu_diff();
+ 7const Dtype* bottom_data = bottom[0]-&gt;gpu_data();
+ 8     vector&lt;int&gt; weight_shape(2);
+ 9if (transpose_) {
+10       weight_shape[0] = K_;
+11       weight_shape[1] = N_;
+12     } else {
+13       weight_shape[0] = N_;
+14       weight_shape[1] = K_;
+15    }
+16int count = weight_shape[0]*weight_shape[1];
+17     caffe_gpu_mul&lt;Dtype&gt;(count,static_cast&lt;const Dtype*&gt;(this-&gt;blobs_[0]-&gt;mutable_gpu_diff()),static_cast&lt;const Dtype*&gt;(this-&gt;blobs_[0]-&gt;gpu_mask()),static_cast&lt;Dtype*&gt;(this-&gt;blobs_[0]-&gt;mutable_gpu_diff()));
+18     Dtype* weight_diff = this-&gt;blobs_[0]-&gt;mutable_gpu_diff();
+19//for(int j=0;j&lt;count;j++)
+20//weight_diff[j]*=this-&gt;masks_[j];
+21// Gradient with respect to weight22if (transpose_) {
+23       caffe_gpu_gemm&lt;Dtype&gt;(CblasTrans, CblasNoTrans,
+24          K_, N_, M_,
+25           (Dtype)1., bottom_data, top_diff,
+26           (Dtype)1., weight_diff);
+27     } else {
+28       caffe_gpu_gemm&lt;Dtype&gt;(CblasTrans, CblasNoTrans,
+29          N_, K_, M_,
+30           (Dtype)1., top_diff, bottom_data,
+31           (Dtype)1., weight_diff);
+32    }
+33  }
+34if (bias_term_ &amp;&amp; this-&gt;param_propagate_down_[1]) {
+35const Dtype* top_diff = top[0]-&gt;gpu_diff();
+36// Gradient with respect to bias37     caffe_gpu_gemv&lt;Dtype&gt;(CblasTrans, M_, N_, (Dtype)1., top_diff,
+38         bias_multiplier_.gpu_data(), (Dtype)1.,
+39this-&gt;blobs_[1]-&gt;mutable_gpu_diff());
+40  }
+41if (propagate_down[0]) {
+42const Dtype* top_diff = top[0]-&gt;gpu_diff();
+43// Gradient with respect to bottom data44if (transpose_) {
+45       caffe_gpu_gemm&lt;Dtype&gt;(CblasNoTrans, CblasTrans,
+46          M_, K_, N_,
+47           (Dtype)1., top_diff, this-&gt;blobs_[0]-&gt;gpu_data(),
+48           (Dtype)0., bottom[0]-&gt;mutable_gpu_diff());
+49     } else {
+50       caffe_gpu_gemm&lt;Dtype&gt;(CblasNoTrans, CblasNoTrans,
+51          M_, K_, N_,
+52          (Dtype)1., top_diff, this-&gt;blobs_[0]-&gt;gpu_data(),
+53          (Dtype)0., bottom[0]-&gt;mutable_gpu_diff());
+54    }
+55  }
+56 }
+</code></pre></div></div>
+
+<p>至此修改完毕。</p>
+
+<p>另外，caffe在新的版本中已添加sparse_参数，参考 https://github.com/BVLC/caffe/pulls?utf8=%E2%9C%93&amp;q=sparse</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/cnn%E5%8E%8B%E7%BC%A9:%E4%B8%BA%E5%8F%8D%E5%90%91%E4%BC%A0%E6%92%AD%E6%B7%BB%E5%8A%A0mask(caffe%E4%BB%A3%E7%A0%81%E4%BF%AE%E6%94%B9).html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/%E5%9D%9A%E6%8C%81%E5%86%8D%E5%9D%9A%E6%8C%81-%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93-%E5%88%86%E4%BA%AB%E9%A1%B9%E7%9B%AE%E6%BA%90%E7%A0%81-%E6%80%BB%E7%BB%933.html">&laquo; 坚持,再坚持—技术总结 分享项目源码—总结3</a>
+  
+  
+  <a class="next" href="/2017/%E7%A5%9E%E5%A5%87%E7%9A%84%E6%B7%B1%E5%BA%A6%E5%9B%BE-%E5%A4%8D%E6%9D%82%E7%9A%84%E6%95%88%E6%9E%9C-%E4%B8%8D%E5%A4%8D%E6%9D%82%E7%9A%84%E5%8E%9F%E7%90%86.html">神奇的深度图：复杂的效果，不复杂的原理 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

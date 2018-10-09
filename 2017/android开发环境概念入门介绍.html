@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>Android开发环境概念入门介绍 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="Android开发环境概念入门介绍" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="By Lee - Last updated: 星期五, 二月 7, 2014" />
+<meta property="og:description" content="By Lee - Last updated: 星期五, 二月 7, 2014" />
+<link rel="canonical" href="http://www.jfox.info/2017/android%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%A6%82%E5%BF%B5%E5%85%A5%E9%97%A8%E4%BB%8B%E7%BB%8D.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/android%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%A6%82%E5%BF%B5%E5%85%A5%E9%97%A8%E4%BB%8B%E7%BB%8D.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:43:48+00:00" />
+<script type="application/ld+json">
+{"description":"By Lee - Last updated: 星期五, 二月 7, 2014","@type":"BlogPosting","url":"http://www.jfox.info/2017/android%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%A6%82%E5%BF%B5%E5%85%A5%E9%97%A8%E4%BB%8B%E7%BB%8D.html","headline":"Android开发环境概念入门介绍","dateModified":"2017-01-01T15:43:48+00:00","datePublished":"2017-01-01T15:43:48+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/android%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%A6%82%E5%BF%B5%E5%85%A5%E9%97%A8%E4%BB%8B%E7%BB%8D.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Android开发环境概念入门介绍</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:43:48+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>By Lee - Last updated: 星期五, 二月 7, 2014</p>
+
+<p>最近学习Android开发，以前使用C/C++多一些，现在再补点Java知识，不管是哪种语言，都不过是一种工具而已，真的学起来，大同小异，无谓优劣。学习Android编程肯定是要先从环境搭建开始，无论是在Windows、还是Linux、Mac环境都可以，在搭建环境之前，有些概念综合了解一下确有必要，本文即是面向Android初学者的文章，作为天缘博客Android入门的启蒙篇章。鉴于天缘对Android也是刚刚接触，如有错愕或理解不当之处，欢迎指正。</p>
+
+<p>Android是Google主导开发的基于Linux开源智能移动终端操作系统，当然这里说的开源，也不是说Google把所有的接口库源码都会给你共享了，还是有些关键部位我们暂时还看不到的，但就应用程序开发人员而言，已经够用的了，“几乎都是开源的”。Android架构如下（本图来源于Google官方）：</p>
+
+<p><a href="https://www.jfox.info/go.php?url=http://www.jfox.info/wp-content/uploads/2014/02/201106032142496942.jpg"><img src="2fe6496.jpg" alt="201106032142496942" /></a></p>
+
+<p>什么是Android开发环境？Android开发环境当然是用来设计应用于移动设备的系统和软件了，由于Android本身是开源的，那么我们要做的工作就是定制、修改，Android手机厂家工作亦是如此，定制自己的驱动（或称BSP，底层）和应用程序（上层），硬件部分需自己设计这就不用多说了。</p>
+
+<p>开发语言可以使用Java也可以使用C/C++语言，前者Android开发我们称做JDK（Java Development Kit）开发，后者开发我们称之为NDK（Native Development Kit）开发这么看来，Android本身就是C、C-Java和Java的混合体，所以要学习Android编程，C语言是个基础，Java即使不会也能猜出一二，做个DEMO肯定没有问题（要做好还是要潜心好好学习一下Java的各种数据类型、调用方法等等，这是后话）。</p>
+
+<p>Android开发环境可以搭建在目前主流系统（Mac、Windows、Linux）的任何一种上，只因为Android相关开发工具的跨平台特性。</p>
+
+<h3 id="1-java-development-kitjdk">1、 Java Development Kit（JDK）</h3>
+
+<p>Java Development(JDK)是用于开发、编译和测试使用Java语言编写的应用程序、applet 和组件，JDK包含以下几个部分：</p>
+
+<ul>
+  <li>
+    <p>开发工具——指工具和实用程序，可帮助您开发、执行、调试和保存以 Java编程语言编写的程序。</p>
+  </li>
+  <li>
+    <p>运行时环境——由 JDK 使用的 Java Runtime Environment (JRE) 的实现。JRE 包括 Java 虚拟机 (JVM)、类库以及其他支持执行以 Java 编程语言编写的程序的文件。</p>
+  </li>
+  <li>
+    <p>演示 applet 和应用程序——Java 平台的编程示例源码。</p>
+  </li>
+  <li>
+    <p>样例代码——某些 Java API 的编程样例源码。</p>
+  </li>
+  <li>
+    <p>C 头文件——支持使用 Java 本机界面、JVM工具界面以及 JavaTM 平台的其他功能进行本机代码编程的头文件。</p>
+  </li>
+  <li>
+    <p>源代码——组成 Java 核心 API 的所有类的 Java源文件。</p>
+  </li>
+</ul>
+
+<p><strong>相关参考网址：</strong></p>
+
+<p><a href="https://www.jfox.info/go.php?url=http://java.sun.com/">http://java.sun.com/</a>——包含Java 技术、产品信息、新闻和软件特性等。</p>
+
+<p><a href="https://www.jfox.info/go.php?url=http://java.sun.com/docs">http://java.sun.com/docs</a>——JavaT平台文档，包括白皮书、教程以及相关文档。</p>
+
+<p><a href="https://www.jfox.info/go.php?url=http://developer.java.sun.com">http://developer.java.sun.com</a>——开发者服务网站，技术信息、新闻、论坛等。</p>
+
+<p><a href="https://www.jfox.info/go.php?url=http://java.sun.com/products/">http://java.sun.com/products/</a>——Java 技术产品和 API。</p>
+
+<h3 id="2eclipse">2、Eclipse</h3>
+
+<p>Eclipse最初由IBM开发的跨平台集成开发环境（IDE），后来贡献给Apache开源软件基金会。最初主要用于Java语言开发，目前可通过C++、Python、PHP等语言插件支持对应语言开发，所以，Eclipse看起来更像一个框架而已，更多工作都是交给插件或上文的JDK来完成，模块化的设计，让Eclipse的定位更清晰。</p>
+
+<p><a href="https://www.jfox.info/go.php?url=http://www.jfox.info/wp-content/uploads/2014/02/201106041519164224.jpg"><img src="a362817.jpg" alt="201106041519164224" /></a></p>
+
+<p>官方网址：<a href="https://www.jfox.info/go.php?url=http://www.eclipse.org/">http://www.eclipse.org/</a></p>
+
+<p>更多参考：<a href="https://www.jfox.info/go.php?url=http://zh.wikipedia.org/wiki/Eclipse">http://zh.wikipedia.org/wiki/Eclipse</a></p>
+
+<h3 id="3android-development-toolsadt">3、Android Development Tools（ADT）</h3>
+
+<p>Android开发工具(ADT)，作为Eclipse工具插件，让其支持Android快速入门和便捷开发，可通过Eclipse启动菜单（启动Eclipse后，选择Help-&gt;Install New Software）安装。如下图所示。</p>
+
+<p>ADT开发工具，包括Android Dalvik Debug Moniter Server(Android DDMS)和Android Development Tools（ADT），上面的插图中，还有Hierarchy Viewer和TraceView两个查看器，看名称就知道功能了。DDMS可以提供调试设备时为设备截屏，查看线程及内存信息、Logcat、广播信 息、模拟呼叫、接收短消息、文件查看器等功能（该功能在安装完ADT之后，点击Eclipse工具栏右上角的那个带箭头的小窗口图标弹出菜单中打开）。 Android Development Tools（ADT）工具应该是为Eclipse支持Android项目快速编程开发和调试插件而已（也可能不太确切，天缘注）。</p>
+
+<p><a href="https://www.jfox.info/go.php?url=http://www.jfox.info/wp-content/uploads/2014/02/201106032044202644.jpg"><img src="b08cba0.jpg" alt="201106032044202644" /></a></p>
+
+<h3 id="4android-software-development-kitsdk">4、Android Software Development Kit(SDK)</h3>
+
+<p>一般提到SDK就会想到：API接口库、帮助文档和示例源码，Android SDK似乎也不例外，它为开发者提供相关封装API接口库文件、文档资源及一些工具包整合。当然了如果你使用Eclipse作为开发工具，那么只需要安装SDK也可以，ECLIPSE和ADT也一并省略掉。下图是ADK和AVD管理器界面，可从SDK安装目录下执行SDK Manager.exe或在Eclipse中执行Window-&gt;Android SDK and AVD manager看到。</p>
+
+<p><a href="https://www.jfox.info/go.php?url=http://www.jfox.info/wp-content/uploads/2014/02/201106032106597311.jpg"><img src="a1912dd.jpg" alt="201106032106597311" /></a></p>
+
+<p>安装后SDK目录下的帮助文档相当完善，应有尽有（位置在SDK的docs目录下）。此外，Android SDK还包含一个手机模拟器（Virtual Devices），我们开发时就可以先使用模拟器进行模拟仿真，感觉时机成熟时再下载到真机进行测试。</p>
+
+<p>SDK刚下载解压后，一般还需选择安装一些必须的API接口库及平台工具，下面提到的几项都建议下载安装（至于选择哪个版本，需接口您的开发样机支持Android版本）：</p>
+
+<p>Android SDK Tools, revision x</p>
+
+<p>Android SDK Platform-tools, revision x</p>
+
+<p>Documentation for Android SDK, API xx, revision x</p>
+
+<p>SDK Platform Android x.x, API x, revision x</p>
+
+<p>Samples for SDK API x, revision x</p>
+
+<p>Android Compatibility package, revision x</p>
+
+<h3 id="5dalvik虚拟机">5、Dalvik虚拟机</h3>
+
+<p>Dalvik虚拟机是Andriod平台组件的重要组成之一，同传统的Java虚拟机有些不同，可参见：</p>
+
+<p><a href="https://www.jfox.info/go.php?url=http://www.ophonesdn.com/article/show/15">http://www.ophonesdn.com/article/show/15</a>，这边文章写的非常好，天缘暂时还没研究这么深入。</p>
+
+<h3 id="6android-native-development-kitndk">6、Android Native Development Kit(NDK)</h3>
+
+<p>Android原生开发套件，这里的原生似乎就是指开发语言原生，我们知道Android平台基于Linux内核的，所以这里就是指C、C++语言，这对于很多喜欢C/C++的程序员来说或许是个好消息，使用NDK一样可以进行Android开发。</p>
+
+<p>由于NDK开发编译需要GCC编译环境，如果是windows环境，还应该安装Cygwin模拟环境，这天缘稍后会再专门介绍NDK安装过程。这里先看看NDK包含哪些内容：</p>
+
+<ul>
+  <li>
+    <p>提供一种将原生库集成到应用程序包，并部署到Android设备的方法</p>
+  </li>
+  <li>
+    <p>一系列未来Android平台均会支持的原生系统头文件和库文件</p>
+  </li>
+</ul>
+
+<p>本来本文已经写完了，由于时间太长没提交导致SESSION过期被注销，保存失败，全部内容丢失，不得不又重新写了一遍，现在全文浏览过来还是有很多差异，跟写第一遍时的心情完全不同。。。先这么着吧，以后再完善了。</p>
+
+<p>文章来源 <a href="https://www.jfox.info/go.php?url=http://www.jfox.info/url.php?url=http%3A%2F%2Fwww.metsky.com%2Farchives%2F522.html">Android开发入门之环境概念介绍 – 天缘博客</a>.</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/android%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%A6%82%E5%BF%B5%E5%85%A5%E9%97%A8%E4%BB%8B%E7%BB%8D.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/android%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%A6%82%E5%BF%B5%E5%85%A5%E9%97%A8%E4%BB%8B%E7%BB%8D.html">&laquo; Android开发环境概念入门介绍</a>
+  
+  
+  <a class="next" href="/2017/android-%E5%85%A5%E9%97%A8%E5%BC%80%E5%8F%91helloworld%E4%BE%8B%E5%AD%90.html">Android 入门开发Hello,World例子 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

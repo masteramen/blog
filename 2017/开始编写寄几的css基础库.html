@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>开始编写寄几的 CSS 基础库 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="开始编写寄几的 CSS 基础库" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="前言" />
+<meta property="og:description" content="前言" />
+<link rel="canonical" href="http://www.jfox.info/2017/%E5%BC%80%E5%A7%8B%E7%BC%96%E5%86%99%E5%AF%84%E5%87%A0%E7%9A%84css%E5%9F%BA%E7%A1%80%E5%BA%93.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/%E5%BC%80%E5%A7%8B%E7%BC%96%E5%86%99%E5%AF%84%E5%87%A0%E7%9A%84css%E5%9F%BA%E7%A1%80%E5%BA%93.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:58:08+00:00" />
+<script type="application/ld+json">
+{"description":"前言","@type":"BlogPosting","url":"http://www.jfox.info/2017/%E5%BC%80%E5%A7%8B%E7%BC%96%E5%86%99%E5%AF%84%E5%87%A0%E7%9A%84css%E5%9F%BA%E7%A1%80%E5%BA%93.html","headline":"开始编写寄几的 CSS 基础库","dateModified":"2017-01-01T15:58:08+00:00","datePublished":"2017-01-01T15:58:08+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/%E5%BC%80%E5%A7%8B%E7%BC%96%E5%86%99%E5%AF%84%E5%87%A0%E7%9A%84css%E5%9F%BA%E7%A1%80%E5%BA%93.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">开始编写寄几的 CSS 基础库</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:58:08+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p><strong>前言</strong></p>
+
+<p>在现在的互联网业务中，前端开发人员往往需要支持比较多的项目数量。很多公司只有 1-2 名前端开发人员，这其中还不乏规模比较大的公司。这时前端同学就需要独挡一面支持整个公司上下的前端业务，项目如流水一般从手里流过，此时更需要前端开发人员将工作工程化、流水线化。</p>
+
+<p>本博文在发布之后有些争议，有人认为如此书写 css 并不规范。这点我认同，但不少框架也采用了这种方式，提升的开发效率也是明显的。希望大家对这种思想去其糟粕，取其精华，过度使用必然导致可维护性下降，但绝对使用单一类名也不现实。最后祝大家工作顺利。</p>
+
+<p><strong>一个栗子</strong></p>
+
+<p>现在需要编写页面中的一个按钮，结构与样式如下：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;div class='button'&gt;开始&lt;/div&gt;
+</code></pre></div></div>
+
+<p><img src="0c2942e.png" alt="" /></p>
+
+<p>有人说，这有什么难的，不到1分钟就能写好了：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>.button {
+    width: 100px;
+    height: 40px;
+    font-size: 16px;
+    text-align: center;
+    line-height: 40px;
+    color: #fff;
+    background-color: #337ab7;
+    border-radius: 6px;
+    cursor: pointer;
+}
+</code></pre></div></div>
+
+<p>但如果这个项目中有50个大小不一的这样按钮怎么办？有人会说，那把 button 抽象成公共类名的不就好喽，就像下面这样：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;div class="button btn-begin"&gt;&lt;/div&gt; 
+
+.button {
+    font-size: 16px;
+    text-align: center;
+    line-height: 40px;
+    color: #fff;
+    background-color: #337ab7;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.btn-begin {
+    width: 100px;
+    height: 40px;
+}
+</code></pre></div></div>
+
+<p>没错，这种确实是比较普遍的方法。但问题是，下一个项目风格改变，我们用不到 button 的公共样式了。所以这种方式不适合流水线作业，也不在本篇的讨论范畴中。</p>
+
+<p>现在我们编写了一个 base.css，它也就是标题所说的我们寄几的基础 css 库，也是真正意义上的公共样式。假设 base.css 中已经定义好了以下几个样式类：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>.f-16 {
+    font-size: 16px;
+}
+
+.c-white {
+    color: #fff;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.radius-6 {
+    border-radius: 6px;
+}
+
+.cursor {
+    cursor: pointer;
+}
+</code></pre></div></div>
+
+<p>更改结构：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;div class="f-16 c-white text-center radius-6 cursor button"&gt;开始&lt;/div&gt;
+</code></pre></div></div>
+
+<p>这样我们只需写少许 css 就能完成 button 的样式。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>.button {
+    width: 100px;
+    height: 40px;
+    line-height: 40px;
+    background-color: #337ab7;
+}
+</code></pre></div></div>
+
+<p><strong>·</strong> 如上，当公共的样式定义的足够多时，可以极大的增加我们的开发效率，尤其是官网以及 CMS 这样较大的项目，效果更加明显。甚至某些结构只需要通过已有的样式类名进行组合就能完整实现，而不需要另外起名并单独编写 css。</p>
+
+<p><strong>·</strong> 在实际生产中，你还可以动态扩展 base.css，比如项目的设计刚到手上时，发现使用 #c9c9c9 颜色的字体比较多，就可以在 base.css 中加入 .c-c9 { color: #c9c9c9 }。</p>
+
+<p>· 市面上的 css 库数都数不清，为什么还要大家寄几编写呢。主要有以下几点：1. 有人可能会这样想：“我 CSS 基础这么好，让我用别人写的？闹呢！”；2. 别人的库可能有很多冗余的、自己用不到的样式，白白增加项目体积；3. 别人的库需要学习成本，自己写的不仅符合自己的 css 书写习惯，起的类名也是自己最好记的。</p>
+
+<p><strong>抛砖引玉</strong></p>
+
+<p>上面说了那么多，下面列举下我个人在平常用的比较多的公共样式，先付上<a href="https://www.jfox.info/go.php?url=https://github.com/Darylxyx/css-collection/blob/master/base.css">源码</a>。</p>
+
+<p><strong>内外边距初始化</strong></p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>html, body, div, h1, h2, h3, h4, h5, h6, p, span, img, input, textarea, ul, ol, li, hr {
+    margin: 0;
+    padding: 0;
+}
+</code></pre></div></div>
+
+<p>用 * 的同学回炉重造哈，：）</p>
+
+<p><strong>去除 list 默认样式</strong></p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ul, ol {
+    list-style-type: none;
+}
+</code></pre></div></div>
+
+<p><strong>去除 a 标签默认样式</strong></p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>a {
+    text-decoration: none;
+}
+</code></pre></div></div>
+
+<p><strong>左右浮动</strong></p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>.l {
+    float: left;
+}
+
+.r {
+    float: right;
+}
+</code></pre></div></div>
+
+<p><strong>两种常用背景图展示</strong></p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>.bg-img {
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.ic-img {
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+}
+</code></pre></div></div>
+
+<p><strong>不同字号字体（实时扩展）</strong></p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>.f-13 {
+    font-size: 13px;
+}
+
+.f-14 {
+    font-size: 14px;
+}
+
+.f-16 {
+    font-size: 16px;
+}
+
+.f-18 {
+    font-size: 18px;
+}
+
+.f-20 {
+    font-size: 20px;
+}
+</code></pre></div></div>
+
+<p><strong>字体粗细</strong></p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>.f-bold {
+    font-weight: bold;
+}
+
+.f-bolder {
+    font-weight: bolder;
+}
+</code></pre></div></div>
+
+<p><strong>字体颜色（实时扩展）</strong></p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>.c-white {
+    color: #fff;
+}
+
+.c-black {
+    color: #000;
+}
+</code></pre></div></div>
+
+<p><strong>行高（实时扩展）</strong></p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>.lh-100 {
+    line-height: 100%;
+}
+
+.lh-130 {
+    line-height: 130%;
+}
+
+.lh-150 {
+    line-height: 150%;
+}
+
+.lh-170 {
+    line-height: 170%;
+}
+
+.lh-200 {
+    line-height: 200%;
+}
+</code></pre></div></div>
+
+<p><strong>元素类型</strong></p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>.inline {
+    display: inline;
+}
+
+.block {
+    display: block;
+}
+
+.inline-block {
+    display: inline-block;
+}
+</code></pre></div></div>
+
+<p><strong>box-sizing</strong></p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>.border-box {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+</code></pre></div></div>
+
+<p><strong>清除浮动</strong></p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>.clear {
+    clear: both;
+}
+</code></pre></div></div>
+
+<p><strong>超出隐藏</strong></p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>.overflow {
+    overflow: hidden;
+}
+</code></pre></div></div>
+
+<p><strong>字符居左/中/右</strong></p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>.text-left {
+    text-align: left;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.text-right {
+    text-align: right;
+}
+</code></pre></div></div>
+
+<p><strong>字体超出隐藏，以省略号代替</strong></p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>.text-overflow {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+</code></pre></div></div>
+
+<p><strong>首行缩进2字符</strong></p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>.text-indent {
+    text-indent: 2em;
+}
+</code></pre></div></div>
+
+<p><strong>强制文字换行</strong></p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>.text-wrap {
+    word-wrap: break-word;
+    word-break: normal;
+}
+</code></pre></div></div>
+
+<p><strong>常用的3种定位方式</strong></p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>.absolute {
+    position: absolute;
+}
+
+.relative {
+    position: relative;
+}
+
+.fixed {
+    position: fixed;
+}
+</code></pre></div></div>
+
+<p><strong>浮动光标改变</strong></p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>.cusor {
+    cursor: pointer;
+}
+</code></pre></div></div>
+
+<p>上面例举了一部分公共样式，希望能给大家一些启发。命名和抽象方式可以按照自己的喜好来，将平常工作中用到的样式慢慢积累，很快就会拥有自己专属的强大 css 基础库。祝大家都能做好自己业务的工程化，流水化，下一篇博文是跟大家分享寄几的公共 JS。</p>
+
+<p><strong>感谢你的浏览，希望能有所帮助</strong></p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/%E5%BC%80%E5%A7%8B%E7%BC%96%E5%86%99%E5%AF%84%E5%87%A0%E7%9A%84css%E5%9F%BA%E7%A1%80%E5%BA%93.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/%E5%9B%9B%E6%AD%A5%E5%87%86%E5%A4%87android%E9%9D%A2%E8%AF%95.html">&laquo; 四步准备Android面试</a>
+  
+  
+  <a class="next" href="/2017/graysanatomy%E6%BA%90%E7%A0%81%E6%B5%85%E6%9E%90.html">Grays Anatomy源码浅析 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>JavaScript面试问题：事件委托和this | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="JavaScript面试问题：事件委托和this" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="JavaScript不仅门槛低，而且是一门有趣、功能强大和非常重要的语言。各行各业的人发现自己最混乱的选择是JavaSscript编程语言。由于有着各种各样的背景，所以不是每个人都对JavaScript及其基本原理有广泛的认识。" />
+<meta property="og:description" content="JavaScript不仅门槛低，而且是一门有趣、功能强大和非常重要的语言。各行各业的人发现自己最混乱的选择是JavaSscript编程语言。由于有着各种各样的背景，所以不是每个人都对JavaScript及其基本原理有广泛的认识。" />
+<link rel="canonical" href="http://www.jfox.info/2017/javascript-mian-shi-wen-ti-shi-jian-wei-tuo-he-this.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/javascript-mian-shi-wen-ti-shi-jian-wei-tuo-he-this.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:47:58+00:00" />
+<script type="application/ld+json">
+{"description":"JavaScript不仅门槛低，而且是一门有趣、功能强大和非常重要的语言。各行各业的人发现自己最混乱的选择是JavaSscript编程语言。由于有着各种各样的背景，所以不是每个人都对JavaScript及其基本原理有广泛的认识。","@type":"BlogPosting","url":"http://www.jfox.info/2017/javascript-mian-shi-wen-ti-shi-jian-wei-tuo-he-this.html","headline":"JavaScript面试问题：事件委托和this","dateModified":"2017-01-01T15:47:58+00:00","datePublished":"2017-01-01T15:47:58+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/javascript-mian-shi-wen-ti-shi-jian-wei-tuo-he-this.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">JavaScript面试问题：事件委托和this</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:47:58+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>JavaScript不仅门槛低，而且是一门有趣、功能强大和非常重要的语言。各行各业的人发现自己最混乱的选择是JavaSscript编程语言。由于有着各种各样的背景，所以不是每个人都对JavaScript及其基本原理有广泛的认识。</p>
+
+<p>通常来书，除非你去参加工作面试才会去思考为什么或者怎么做，否则JavaScript只是你工作的内容。</p>
+
+<p>这个系类的目标是深入探讨JavaScript的一些概念和理论。主题来自于 Darcy Clarke的JavaScript典型面试问题列表。希望你不仅仅是为了答案而阅读完这篇文章，每一篇文章会让对过去学过的知识有一个新的理解，或者重温你学习的东西，这有利于你用JavaScript实现所有交互。</p>
+
+<h3 id="详解事件委托">详解事件委托</h3>
+
+<p>事件委托是一种由其它元素而非事件目标元素来响应事件产生的行为的思想。用<code class="highlighter-rouge">document</code>元素来处理按钮的点击行为就是事件委托的一个例子，另一种常见情况是，用<code class="highlighter-rouge">ul</code>元素来处理其子元素<code class="highlighter-rouge">li</code>的事件。</p>
+
+<p>有多种方法来处理事件委托。标准方法来源于原生浏览器的功能。浏览器以一种特定的工作流程来处理事件，并支持事件捕获和事件冒泡。W3C关于浏览器怎么支持事件的文档：<a href="/url.php?_src=&amp;isencode=1&amp;content=dGltZT0xNDM1NTY4NjYzNTI5JnVybD1odHRwJTNBJTJGJTJGd3d3LnczLm9yZyUyRlRSJTJGRE9NLUxldmVsLTMtRXZlbnRzJTJGJTIzZG9tLWV2ZW50LWFyY2hpdGVjdHVyZQ==">W3C DOM Level 3 Events</a>。一些JS库和框架公开了其它方式，如发布/订阅模型（将在后文提及）。</p>
+
+<p>事件捕获和事件冒泡是事件流中的两个阶段，任何事件产生时，如点击一个按钮，将从最顶端的容器开始（一般是html的根节点）。浏览器会向下遍历DOM树直到找到触发事件的元素，一旦浏览器找到该元素，事件流就进入事件目标阶段，该阶段完成后，浏览器会沿DOM树向上冒泡直到最顶层容器，看看是否有其它元素需要使用同一个事件。</p>
+
+<p>下面的示例说明了这个过程。点击按钮会导致事件流识别本身在容器下面的文本，每一个元素都接收同样的点击监听代码，由于事件捕获，点击事件会首先触发HTML节点绑定的点击处理程序，然后在事件冒泡阶段的末尾返回到最顶层元素。</p>
+
+<p><a href="/url.php?_src=&amp;isencode=1&amp;content=dGltZT0xNDM1NTY4NjYzNTMwJnVybD1odHRwJTNBJTJGJTJGanNmaWRkbGUubmV0JTJGZHBvc2luJTJGZXh1dWZnN2ElMkY=">View this on JSFiddle</a></p>
+
+<p>大多数现代库使用冒泡监听，而在捕获阶段处理。浏览器包含一个方法来管理事件冒泡。事件处理程序可以调用<code class="highlighter-rouge">stopPropagation</code>告诉DOM事件停止冒泡，第二个方式是调用<code class="highlighter-rouge">stopImmediatePropagation</code>，它不仅停止冒泡，也会阻止这个元素上其它监听当前事件的处理程序触发。然而,停止传播事件时要小心,因为你不知道是否有其它上层的DOM元素可能需要知道当前事件。</p>
+
+<p>还有第三个可以控制元素如何对事件作出回应的方法。所有现代浏览器支持<code class="highlighter-rouge">preventDefault</code>方法，这个方法会阻止浏览器处理事件的默认行为。一个常见示例就是链接，使用链接执行UI操作是一种常见的做法。然而，当我们不希望链接跟普通被激活的链接一样会在新标签页打开一个新页面，就可以使用<code class="highlighter-rouge">preventDefault</code>方法来阻止这个默认行为。</p>
+
+<p>还有其它实现事件委托的方法可以考虑，其中值得一提的就是发布/订阅模型。发布/订阅模型也称为了广播模型，牵涉到两个参与者。通常，两个参与者在DOM中并没有紧密的联系，而且可能是来自兄弟的容器。可以给它们共同的祖先元素设置监听处理程序，但是如果共同的祖先元素在DOM树中处于较高层次（离根节点比较近），就会监听很多同辈元素的事件，会造成意想不到的结果；当然，也可能存在逻辑或结构原因要分开这两个元素。</p>
+
+<p>发布/订阅模型也能自定义事件。发布/订阅模型从一个元素发送消息后并向上遍历，有时也向下遍历，DOM会通知遍历路径上的所有元素事件发生了。在下面的示例中，JQuery通过<code class="highlighter-rouge">trigger</code>方法传递事件。</p>
+
+<p><a href="/url.php?_src=&amp;isencode=1&amp;content=dGltZT0xNDM1NTY4NjYzNTMwJnVybD1odHRwJTNBJTJGJTJGanNmaWRkbGUubmV0JTJGZHBvc2luJTJGNzk4M3Nqazc=">View this on JSFiddle</a></p>
+
+<p>使用事件委托来管理事件流有很多优点，其中最大的优点是改善性能。元素绑定的每一个监听器都会占用一些内存，如果页面上只有少数几个监听器，我们也不会注意到它们之间的区别，然后，如果要监听一个50行5列的表格中的每个单元格，你的Web应用会开始变慢，为了使应用程序最快运行的最好方式是保持尽可能低的内存使用。</p>
+
+<p>使用事件委托能减少监听器数量，在元素的容器上绑定事件意味着只需要一个监听器。这种方法的缺点是,父容器的侦听器可能需要检查事件来选择正确的操作，而元素本身不会是一个监听器。额外处理带来的影响远低于许多存在内存中的监听器。</p>
+
+<p>更少的监听器和更少的DOM交互也易于维护。父容器层次的监听器能处理多种不同的事件操作，这是一种简单的方法来管理相关的事件操作，这些事件通常需要执行相关功能或需要共享数据。</p>
+
+<p>如果父容器是监听器，然后要执行独立的内部操作而并不需要添加或者移除本身的监听器。元素操作在单页应用中是极其常见的，为某部分添加一个按钮这样简单的事情也会为应用程序创建一个潜在的性能块，没有合适的事件委托，就必须手动为每一个按钮添加监听，如果每个侦听器不清理干净,它可能会导致内存泄漏。浏览器不会清理页面，因此在单页应用中，所有从内存中清理不当的碎片都会留在内存中，这些碎片会降低程序性能。</p>
+
+<p>当在页面中添加交互时，仔细考虑一下，是否真的需要去监听元素。</p>
+
+<p>另一篇值得一读的文章：<a href="/url.php?_src=&amp;isencode=1&amp;content=dGltZT0xNDM1NTY4NjYzNTMwJnVybD1odHRwJTNBJTJGJTJGd3d3Lm5jem9ubGluZS5uZXQlMkZibG9nJTJGMjAwOSUyRjA2JTJGMzAlMkZldmVudC1kZWxlZ2F0aW9uLWluLWphdmFzY3JpcHQlMkY=">Event Delegation In JavaScript</a></p>
+
+<h3 id="this在javascript中是怎么工作的">this在JavaScript中是怎么工作的</h3>
+
+<p><code class="highlighter-rouge">this</code> 关键字在JavaScript中的一种常用方法是指代码当前上下文。</p>
+
+<ul>
+  <li>如果<code class="highlighter-rouge">this</code>没有被设置，则默认指向全局对象，其通常是<code class="highlighter-rouge">window</code></li>
+  <li>如果一个函数中运行了一个内联函数，比如一个事件监听器，则<code class="highlighter-rouge">this</code>指向内联函数的源代码。例如,当设置一个按钮的单击处理程序,<code class="highlighter-rouge">this</code>将引用匿名函数内的按钮。</li>
+  <li>如果函数是一个对象的构造函数，<code class="highlighter-rouge">this</code>指向新对象。</li>
+  <li>如果函数被定义在一个对象上,然后调用对象时,<code class="highlighter-rouge">this</code>指向该对象。</li>
+</ul>
+
+<p>在异步编程中，<code class="highlighter-rouge">this</code>可以很容易改变过程中一个功能操作。保持处理程序上下文的一个小技巧是将其设置到闭包内的一个变量，当在上下文改变的地方调用一个函数时，如<code class="highlighter-rouge">setTimeout</code>，你仍然可以通过该变量引用需要的对象。</p>
+
+<p>操作<code class="highlighter-rouge">this</code>的另一种方式是通过<code class="highlighter-rouge">call</code>、<code class="highlighter-rouge">apply</code>和<code class="highlighter-rouge">bind</code>。三种方法都被用于调用一个函数，并能指定<code class="highlighter-rouge">this</code>的上下文，你可以让代码使用你规定的对象，而不是依靠浏览器去计算出<code class="highlighter-rouge">this</code>指向什么。<code class="highlighter-rouge">Call</code>、<code class="highlighter-rouge">apply</code>和<code class="highlighter-rouge">bind</code>本身是相当复杂的,应该有自己的文档记录，我们会把这当做未来待解决问题的一部分。下面是一个改变<code class="highlighter-rouge">this</code>指向方法的示例：</p>
+
+<p><a href="/url.php?_src=&amp;isencode=1&amp;content=dGltZT0xNDM1NTY4NjYzNTMwJnVybD1odHRwJTNBJTJGJTJGanNmaWRkbGUubmV0JTJGZHBvc2luJTJGb2tqcjgxZXY=">View this on JSFiddle</a></p>
+
+<p>事件委托和<code class="highlighter-rouge">this</code>是现代JavaScript中重要的功能，理解它们的工作原理是成功开发产品的关键，并且可以肯定的是，这是应聘JavaScript工程师必须要了解的。</p>
+
+<h4 id="译文出处httpwwwido321com1570html">译文出处：http://www.ido321.com/1570.html</h4>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/javascript-mian-shi-wen-ti-shi-jian-wei-tuo-he-this.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/2015-zhong-guo-cheng-xu-yuan-sheng-cun-xian-zhuang-bao-gao.html">&laquo; 2015中国程序员生存现状报告</a>
+  
+  
+  <a class="next" href="/2017/10-zhong-zi-shi-rang-ni-cheng-wei-yi-ge-niu-bi-cheng-xu-yuan.html">10种姿势，让你成为一个牛逼程序员 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

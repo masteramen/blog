@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>guava eventbus代码分析(一) | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="guava eventbus代码分析(一)" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="分析guava eventbus之前，先看一下传统观察者模式的写法：" />
+<meta property="og:description" content="分析guava eventbus之前，先看一下传统观察者模式的写法：" />
+<link rel="canonical" href="http://www.jfox.info/2017/guava-eventbus%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90-%E4%B8%80.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/guava-eventbus%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90-%E4%B8%80.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:50:13+00:00" />
+<script type="application/ld+json">
+{"description":"分析guava eventbus之前，先看一下传统观察者模式的写法：","@type":"BlogPosting","url":"http://www.jfox.info/2017/guava-eventbus%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90-%E4%B8%80.html","headline":"guava eventbus代码分析(一)","dateModified":"2017-01-01T15:50:13+00:00","datePublished":"2017-01-01T15:50:13+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/guava-eventbus%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90-%E4%B8%80.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">guava eventbus代码分析(一)</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:50:13+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>分析guava eventbus之前，先看一下传统观察者模式的写法：</p>
+
+<p>Subject接口是抽象主题，相当于被观察者，它持有一个监听者observer的列表，attach方法往这个列表里面注册监听者，detach方法注销监听者，notify方法用于事件发生时通知到列表中的监听者</p>
+
+<p>通常在notify的实现方法中会调用监听者的update方法。</p>
+
+<p>Observer是抽象观察者，带一个update方法，update方法被具体主题的notify方法调用。</p>
+
+<p>这是一种传统的针对接口的编程方法。与之不同的是eventbus里面采用“”隐式接口”，一种基于java Annotation的编程方式。</p>
+
+<p>区别在于：这种“隐式接口”的对应关系是在程序运行时产生的，而基于真正意义接口与实现的是在编译时就建立的对应关系，相比之下，“隐式接口”则更加灵活</p>
+
+<p>我们分析下隐式接口以及实现是怎么建立绑定关系的，看代码：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> 1##SubscriberRegistry类的register方法
+ 2void register(Object listener) {
+ 3**Multimap&lt;Class&lt;?&gt;, Subscriber&gt; listenerMethods = findAllSubscribers(listener); ** 4 5for (Map.Entry&lt;Class&lt;?&gt;, Collection&lt;Subscriber&gt;&gt; entry : listenerMethods.asMap().entrySet()) {
+ 6       Class&lt;?&gt; eventType = entry.getKey();
+ 7       Collection&lt;Subscriber&gt; eventMethodsInListener = entry.getValue();
+ 8 9       CopyOnWriteArraySet&lt;Subscriber&gt; eventSubscribers = subscribers.get(eventType);
+1011if (eventSubscribers == null) {
+12         CopyOnWriteArraySet&lt;Subscriber&gt; newSet = new CopyOnWriteArraySet&lt;Subscriber&gt;();
+13         eventSubscribers = MoreObjects.firstNonNull(
+14            subscribers.putIfAbsent(eventType, newSet), newSet);
+15      }
+1617      eventSubscribers.addAll(eventMethodsInListener);
+18    }
+19   }
+</code></pre></div></div>
+
+<p>这个方法中有用的就是第3行，其余的代码大致分析一下，就是便利这个Mutimap,将同一类型的事件的监听者Subsriber添加到对应的set当中，如果当前类型事件的Subsriber的set是空，那么先添加一个空的set.</p>
+
+<p>跟进以上第3行的方法：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> 1/** 2   * Returns all subscribers for the given listener grouped by the type of event they subscribe to.
+ 3*/ 4private Multimap&lt;Class&lt;?&gt;, Subscriber&gt; findAllSubscribers(Object listener) {
+ 5     Multimap&lt;Class&lt;?&gt;, Subscriber&gt; methodsInListener = HashMultimap.create();
+ 6     Class&lt;?&gt; clazz = listener.getClass();
+ 7for (Method method : getAnnotatedMethods(clazz)) {
+ 8       Class&lt;?&gt;[] parameterTypes = method.getParameterTypes();
+ 9       Class&lt;?&gt; eventType = parameterTypes[0];
+10      methodsInListener.put(eventType, Subscriber.create(bus, listener, method));
+11    }
+12return methodsInListener;
+13   }
+</code></pre></div></div>
+
+<p>这个方法中核心的方法是第7行，获取特定class的带Subscribe注解的所有方法，其余代码的意思是拿到这些方法后，放到多值map当中，然后返回。</p>
+
+<p>跟进以上第7行的方法：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1privatestatic ImmutableList&lt;Method&gt; getAnnotatedMethods(Class&lt;?&gt; clazz) {
+2return subscriberMethodsCache.getUnchecked(clazz);
+3   }
+</code></pre></div></div>
+
+<p>跟倒这里后，eclipse没得跟了，怀疑是内部匿名类调用了某个方法相关联（eclipse对内部匿名类的调用链路也显示不全）</p>
+
+<p>我们看看这个</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>subscriberMethodsCache
+
+
+1privatestaticfinal LoadingCache&lt;Class&lt;?&gt;, ImmutableList&lt;Method&gt;&gt; subscriberMethodsCache =
+2      CacheBuilder.newBuilder()
+3          .weakKeys()
+4           .build(new CacheLoader&lt;Class&lt;?&gt;, ImmutableList&lt;Method&gt;&gt;() {
+5            @Override
+6public ImmutableList&lt;Method&gt; load(Class&lt;?&gt; concreteClass) throws Exception {
+7return getAnnotatedMethodsNotCached(concreteClass);
+8            }
+9           });
+</code></pre></div></div>
+
+<p>load方法被调用的时候，调用了 当前类的 getAnnotatedMethodsNOtCached方法，跟进去这个方法：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> 1privatestatic ImmutableList&lt;Method&gt; getAnnotatedMethodsNotCached(Class&lt;?&gt; clazz) {
+ 2     Set&lt;? extends Class&lt;?&gt;&gt; supertypes = TypeToken.of(clazz).getTypes().rawTypes();
+ 3     Map&lt;MethodIdentifier, Method&gt; identifiers = Maps.newHashMap();
+ 4for (Class&lt;?&gt; supertype : supertypes) {
+ 5for (Method method : supertype.getDeclaredMethods()) {
+ 6if (method.isAnnotationPresent(Subscribe.class) &amp;&amp; !method.isSynthetic()) {
+ 7// TODO(cgdecker): Should check for a generic parameter type and error out 8           Class&lt;?&gt;[] parameterTypes = method.getParameterTypes();
+ 9           checkArgument(parameterTypes.length == 1,
+10               "Method %s has @Subscribe annotation but has %s parameters."
+11                   + "Subscriber methods must have exactly 1 parameter.",
+12              method, parameterTypes.length);
+1314           MethodIdentifier ident = new MethodIdentifier(method);
+15if (!identifiers.containsKey(ident)) {
+16            identifiers.put(ident, method);
+17          }
+18        }
+19      }
+20    }
+21return ImmutableList.copyOf(identifiers.values());
+22   }
+</code></pre></div></div>
+
+<p>第2行的意思是拿到当前类自己+当前类的父类货接口 的所有类，放在一个Set中</p>
+
+<p>第4行遍历这个Set</p>
+
+<p>第5行遍历每个类的所有方法</p>
+
+<p>第6行调用Method的isAnnotationPresent方法判断目标方法带有 @Subscribe注解,并且 该方法不能是 “复合方法”</p>
+
+<p>第16行把复合条件的方法放到map中去，并在21行返回！</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/guava-eventbus%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90-%E4%B8%80.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/react-%E5%A6%82%E4%BD%95%E8%BD%AC-vue-js.html">&laquo; React 如何转 Vue.js</a>
+  
+  
+  <a class="next" href="/2017/springmvc%E4%BD%BF%E7%94%A8jsp-include%E5%B5%8C%E5%85%A5%E9%A1%B5%E9%9D%A2%E7%9A%84%E4%B8%A4%E7%A7%8D%E6%96%B9%E5%BC%8F.html">springMVC使用jsp:include嵌入页面的两种方式 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

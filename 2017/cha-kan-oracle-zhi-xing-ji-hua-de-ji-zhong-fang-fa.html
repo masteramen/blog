@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>查看Oracle执行计划的几种方法 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="查看Oracle执行计划的几种方法" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="By Lee - Last updated: 星期五, 十月 25, 2013" />
+<meta property="og:description" content="By Lee - Last updated: 星期五, 十月 25, 2013" />
+<link rel="canonical" href="http://www.jfox.info/2017/cha-kan-oracle-zhi-xing-ji-hua-de-ji-zhong-fang-fa.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/cha-kan-oracle-zhi-xing-ji-hua-de-ji-zhong-fang-fa.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:42:50+00:00" />
+<script type="application/ld+json">
+{"description":"By Lee - Last updated: 星期五, 十月 25, 2013","@type":"BlogPosting","url":"http://www.jfox.info/2017/cha-kan-oracle-zhi-xing-ji-hua-de-ji-zhong-fang-fa.html","headline":"查看Oracle执行计划的几种方法","dateModified":"2017-01-01T15:42:50+00:00","datePublished":"2017-01-01T15:42:50+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/cha-kan-oracle-zhi-xing-ji-hua-de-ji-zhong-fang-fa.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">查看Oracle执行计划的几种方法</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:42:50+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>By Lee - Last updated: 星期五, 十月 25, 2013</p>
+
+<p>关于查看某条SQL语句的执行计划，有三种方法，其分别是：AUTOTRACE，PLAN_TABLE，DBMS_XPLAIN.DISPLAY。下别分别对其使用进行一下总结。</p>
+
+<h2 id="一plan_table">一、Plan_table</h2>
+
+<h3 id="前提表件">前提表件</h3>
+
+<p>因为数据库中没有plan_table表，所以首先需要建立这样一个表来存放执行计划。所以在查看某条SQL语句之前必须要建立plan_table表。运行$ORACLE_HOME/RDBMS/admin/utlxplan.sql. 建立plan_table 表。</p>
+
+<h3 id="执行查看执行计划">执行查看执行计划</h3>
+
+<p>SQL&gt;explain plan for select empno from emp;</p>
+
+<h3 id="查看执行计划">查看执行计划</h3>
+
+<p>上面语句执行的结果会保留在plan_table表中，如果相看内容，则需要运行$ORACLE_HOME/RDBMS/admin/utlxplp.sql 或 utlxpls.sql察看explain plan。</p>
+
+<h2 id="二setautotrace">二、Setautotrace</h2>
+
+<p>因为explain plan并不是真正执行SQL语句的执行计划，如果相查看一条运行SQ的执行计划及统计则可以使用AUTOTRACE，使用下面的命令可以查看执行计划。</p>
+
+<table>
+  <tbody>
+    <tr>
+      <td>SQL&gt;set autotrace on</td>
+      <td>traceonly</td>
+      <td>traceonly explain</td>
+      <td>traceonly statistics</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="三dbms_xplan">三、DBMS_XPLAN</h2>
+
+<p>EXPLAIN PLAN命令的输出结果是解决SQL效率低下问题的最重要的诊断工具之一。此命令加载一个工作表格（默认名称为PLAN_TABLE），表格中带有Oracle优化器为SQL语句计算的执行计划步骤。例如：</p>
+
+<p>EXPLAIN PLAN FOR</p>
+
+<p>SELECT empno, ename</p>
+
+<p>FROM emp</p>
+
+<p>WHERE ename LIKE ‘S%’;</p>
+
+<p>由于PLAN_TABLE中的行形成了一个等级，对其进行查询需要应用SELECT语句中的两个复杂子语句――START WITH与CONNECT BY。第一次在Oracle 9i中出现并在10g中得到扩充的DBMS_XPLAN使格式化及显示执行计划更为容易。</p>
+
+<p>DBMS_XPLAN.DISPLAY是一个表格标值函数，它显示PLAN_TABLE的内容。与常规的纯量函数SUBSTR或总计函数SUM不同的是，表格函数返回一个完整的行集合(rowset)。它们用在SELECT语句的FROM子语句中，前面必须加上TABLE这个词。如：</p>
+
+<p>SELECT * FROM TABLE(DBMS_XPLAN.DISPLAY);</p>
+
+<p>显示的是上述EXPLAIN PLAN语句的结果，并由DBMS_XPLAN.DISPLAY格式化。</p>
+
+<p>值得注意的是，DBMS_XPLAN还能从存储在系统全局区(System Global Area, SGA)内的指针显示“实时”执行计划。通过查看V$SESSION视图，你可以找到执行任务的最后一个SQL ID。这反过来又可输入到DBMS_XPLAN.DISPLAY_CURSOR中，获得指针所使用的执行计划。</p>
+
+<p>最后，DBMS_XPLAN.DISPLAY_AWR函数可用来查寻Oracle 10g的自动负荷信息库(Automatic Workload Repository, AWR)获得的历史SQL语句，并显示它的执行计划。它显示一个你可以访问的含七天历史记录的滚动窗口。</p>
+
+<p>所有这三个函数都是协调SQL语句的强大工具。</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/cha-kan-oracle-zhi-xing-ji-hua-de-ji-zhong-fang-fa.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/cha-kan-oracle-zhi-xing-ji-hua-de-ji-zhong-fang-fa.html">&laquo; 查看Oracle执行计划的几种方法</a>
+  
+  
+  <a class="next" href="/2017/zhi-li-mian-shi-ti-zhi-cheng-liang-yi-ci-ru-he-pan-duan-na-ge-guan-zi-de-yao-bei-wu-ran-le.html">智力面试题：只称量一次，如何判断哪个罐子的药被污染了？ &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

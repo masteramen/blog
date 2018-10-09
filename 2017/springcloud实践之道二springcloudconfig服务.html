@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>Spring cloud实践之道二（Spring cloud Config服务） | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="Spring cloud实践之道二（Spring cloud Config服务）" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="spring cloud config 是一个配置管理工具包，让用户可以集中管理配置。具有中心化，版本控制，支持动态更新，平台独立，语言独立等特性。 为什么我们需要一个配置中心？在单体应用中我们通过配置文件就可以解决配置的问题，但是在微服务的环境下，大量的服务导致了需要大量的配置，每次维护这些配置就成了比较繁琐和容易犯错误的地方。" />
+<meta property="og:description" content="spring cloud config 是一个配置管理工具包，让用户可以集中管理配置。具有中心化，版本控制，支持动态更新，平台独立，语言独立等特性。 为什么我们需要一个配置中心？在单体应用中我们通过配置文件就可以解决配置的问题，但是在微服务的环境下，大量的服务导致了需要大量的配置，每次维护这些配置就成了比较繁琐和容易犯错误的地方。" />
+<link rel="canonical" href="http://www.jfox.info/2017/springcloud%E5%AE%9E%E8%B7%B5%E4%B9%8B%E9%81%93%E4%BA%8Cspringcloudconfig%E6%9C%8D%E5%8A%A1.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/springcloud%E5%AE%9E%E8%B7%B5%E4%B9%8B%E9%81%93%E4%BA%8Cspringcloudconfig%E6%9C%8D%E5%8A%A1.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:55:20+00:00" />
+<script type="application/ld+json">
+{"description":"spring cloud config 是一个配置管理工具包，让用户可以集中管理配置。具有中心化，版本控制，支持动态更新，平台独立，语言独立等特性。 为什么我们需要一个配置中心？在单体应用中我们通过配置文件就可以解决配置的问题，但是在微服务的环境下，大量的服务导致了需要大量的配置，每次维护这些配置就成了比较繁琐和容易犯错误的地方。","@type":"BlogPosting","url":"http://www.jfox.info/2017/springcloud%E5%AE%9E%E8%B7%B5%E4%B9%8B%E9%81%93%E4%BA%8Cspringcloudconfig%E6%9C%8D%E5%8A%A1.html","headline":"Spring cloud实践之道二（Spring cloud Config服务）","dateModified":"2017-01-01T15:55:20+00:00","datePublished":"2017-01-01T15:55:20+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/springcloud%E5%AE%9E%E8%B7%B5%E4%B9%8B%E9%81%93%E4%BA%8Cspringcloudconfig%E6%9C%8D%E5%8A%A1.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Spring cloud实践之道二（Spring cloud Config服务）</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:55:20+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>spring cloud config 是一个配置管理工具包，让用户可以集中管理配置。具有中心化，版本控制，支持动态更新，平台独立，语言独立等特性。
+为什么我们需要一个配置中心？在单体应用中我们通过配置文件就可以解决配置的问题，但是在微服务的环境下，大量的服务导致了需要大量的配置，每次维护这些配置就成了比较繁琐和容易犯错误的地方。</p>
+
+<p>解决的方法：</p>
+
+<ol>
+  <li>一次提取配置：
+将需要配置的信息抽取到配置文件中</li>
+  <li>二次提取配置：
+将所有的配置放置在专门的配置中心进行统一管理</li>
+</ol>
+
+<p>演示用代码：
+<a href="https://www.jfox.info/go.php?url=https://github.com/hutou-workhouse/miscroServiceHello/tree/master/springCloudConfigServer">spring cloud server</a>
+<a href="https://www.jfox.info/go.php?url=https://github.com/hutou-workhouse/miscroServiceHello/tree/master/springCloudConfigClient">spring cloud client</a></p>
+
+<h2 id="使用">使用</h2>
+
+<p>spring boot config支持三种存储方式：本地资源、SVN、GIT
+通过配置文件进行配置，配置文件的命名规则：应用名 + 环境名 + 格式
+例如：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>myservice1-dev.properties
+myservice1-test.properties
+</code></pre></div></div>
+
+<h3 id="本地文件方式服务端">本地文件方式服务端</h3>
+
+<p>进行本地文件的配置方式，我们需要在服务端配置文件中进行如下配置</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>spring.application.name=ConfigServer
+
+# 使用本地文件系统
+spring.profiles.active=native
+
+server.port=8899
+</code></pre></div></div>
+
+<p>根据使用配置的应用的名字，环境，数据进行配置文件的编写。例如：我们希望为<strong>myservice1</strong>这个应用进行配置，环境分别为开发和测试，则需要生产两个配置文件：myservice1-dev.properties，myservice1-test.properties</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code># myservice1-dev.properties
+myenv=dev
+
+# myservice1-test.properties
+myenv=test
+</code></pre></div></div>
+
+<p>修改POM.xml，增加如下依赖</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-cloud-config-server&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+</code></pre></div></div>
+
+<p>修改启动类，增加注解：<strong>@EnableConfigServer</strong></p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>@SpringBootApplication
+@EnableConfigServer
+public class ConfigServer {
+    public static void main(String[] args) {
+        new SpringApplicationBuilder(ConfigServer.class).web(true).run(args);
+    }
+}
+</code></pre></div></div>
+
+<p>当我们启动服务之后，可以通过如下的方式验证一下：<a href="https://www.jfox.info/go.php?url=http://localhost:port/myservice1/dev">http://localhost:port/myservice1/dev</a></p>
+
+<h3 id="客户端">客户端</h3>
+
+<p>在完成了config服务端代码编写之后，我们可以开始进行client端的编写。这里要注意，增加一个<strong>bootstrap.properties</strong>配置文件，关于config相关的配置需要写在这个文件中，不能用在<strong>application.properties</strong>文件里。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code># 这里的应用名在服务端配置过
+spring.application.name=myservice1
+server.port=8888
+# 指定使用哪个环境的配置信息
+spring.cloud.config.profile=dev
+# 配置服务器的地址
+spring.cloud.config.uri=http://localhost:8899/
+</code></pre></div></div>
+
+<p>修改客户端pom.xml文件，增加如下的依赖</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-cloud-starter-config&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+</code></pre></div></div>
+
+<p>修改启动类增加注解： <strong>@EnableDiscoveryClient</strong></p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>@SpringBootApplication
+@EnableDiscoveryClient
+public class ConfigClient {
+    public static void main(String[] args) {
+        new SpringApplicationBuilder(ConfigClient.class).web(true).run(args);
+    }
+}
+</code></pre></div></div>
+
+<p>下面增加一个Controller，通过注解：<strong>@RefreshScope</strong> + <strong>@Value</strong> 使用配置信息</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>@RefreshScope
+@RestController
+public class ConfigController {
+    @Value("${myenv}")
+    private String env;
+
+    @RequestMapping("/config")
+    public String config(){
+        return env;
+    }
+}
+</code></pre></div></div>
+
+<h3 id="git方式服务端">git方式服务端</h3>
+
+<p>上面我们展示了配置文件放置在本地，默认的和推荐的方式都是放置在git服务器上，这样才能实现之前说的：具有中心化，版本控制，支持动态更新，平台独立，语言独立等特性。
+服务器配置文件增加如下的内容：需要注意，我曾经犯过的一个错误，在配置文件目录下不要放置application.properties文件，否则客户端读取配置服务器的时候会读取这个配置文件，可能造成错误。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>spring.cloud.config.server.git.uri=https://github.com/hutou-workhouse/miscroServiceHello/
+spring.cloud.config.server.git.searchPaths=config-repo
+#spring.cloud.config.server.git.username=username
+#spring.cloud.config.server.git.password=password
+</code></pre></div></div>
+
+<p>上面的本地文件方式中有如下配置</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>spring.profiles.active=native
+</code></pre></div></div>
+
+<p>我们可以不修改它，直接在启动服务的时候指定</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>java -jar configServer.jar --spring.profiles.active=git
+</code></pre></div></div>
+
+<p>服务启动之后，我们可以通过如下的方式进行验证</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>http://localhost:8001/myservice1/dev/
+http://localhost:8001/myservice1/test/
+http://localhost:8001/myservice1-test.properties
+</code></pre></div></div>
+
+<p>访问配置信息的URL与配置文件的映射关系如下：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/{application}/{profile}[/{label}]
+/{application}-{profile}.yml
+/{label}/{application}-{profile}.yml
+/{application}-{profile}.properties
+/{label}/{application}-{profile}.properties
+</code></pre></div></div>
+
+<p>上面的url会映射{application}-{profile}.properties对应的配置文件，其中{label}对应Git上不同的分支，默认为master。</p>
+
+<p>至于客户端，是不需要进行任何修改，只要指向config服务器地址即可。</p>
+
+<h2 id="配置集群">配置集群</h2>
+
+<p>通常在生产环境，Config Server与服务注册中心一样，我们也需要将其扩展为高可用的集群。
+Config Server本身就可以看成一个微服务，也可以通过注册在Eureka服务器上被其他的服务发现并调用。
+<img src="c4fdfee.png" alt="" /></p>
+
+<p>配置服务集群框架图(来自网络)</p>
+
+<h3 id="服务端修改">服务端修改</h3>
+
+<ol>
+  <li>
+    <p>修改config server的pom.xml文件，增加eureka server的依赖
+      <dependency>
+          <groupId>org.springframework.cloud</groupId>
+          <artifactId>spring-cloud-starter-eureka</artifactId>
+      </dependency></p>
+  </li>
+  <li>
+    <p>在主类上增加注解：<strong>@EnableDiscoveryClient</strong>
+ @SpringBootApplication
+ @EnableConfigServer
+ @EnableDiscoveryClient
+ public class ConfigServer {
+  public static void main(String[] args) {
+      new SpringApplicationBuilder(ConfigServer.class).web(true).run(args);
+  }
+ }</p>
+  </li>
+  <li>
+    <p>配置文件中增加eureka server的地址
+ # 配置服务注册中心
+ eureka.client.serviceUrl.defaultZone=http://master:8671/eureka/</p>
+  </li>
+</ol>
+
+<p>运行之后可以在erueka server上查看，是否注册成功！可以注册多个config server形成集群</p>
+
+<h3 id="客户端修改">客户端修改</h3>
+
+<p>服务端运行成功，在eureka server上注册服务名：<strong>CONFIGSERVER</strong>
+下面开始修改客户端</p>
+
+<ol>
+  <li>在客户端pom.xm文件中增加erureka依赖
+    <dependency>
+      <groupId>org.springframework.cloud</groupId>
+      <artifactId>spring-cloud-starter-eureka</artifactId>
+  </dependency>
+  </li>
+  <li>修改配置文件bootstrap.properties
+ # 配置服务注册中心
+ eureka.client.serviceUrl.defaultZone=http://master:8671/eureka/
+ # 配置config server名
+ spring.cloud.config.discovery.enabled=true
+ spring.cloud.config.discovery.serviceId=CONFIGSERVER</li>
+</ol>
+
+<h2 id="数据刷新">数据刷新</h2>
+
+<p>当配置文件发生改变的时候，我们访问配置服务器的时候会发现已经改变了，但是服务不能马上更新这个变化。那么怎么更新那</p>
+
+<ol>
+  <li>
+    <p>修改服务的pom.xml文件，增加监控的依赖
+      <dependency>
+          <groupId>org.springframework.boot</groupId>
+          <artifactId>spring-boot-starter-actuator</artifactId>
+      </dependency></p>
+  </li>
+  <li>
+    <p>修改配置文件，允许访问/refresh
+ # 打开安全控制，通过/refresh刷新数据
+ management.security.enabled=false
+ endpoints.enabled=false
+ endpoints.refresh.enabled=true</p>
+  </li>
+  <li>
+    <p>需要刷新数据的时候，需要通过post方法访问/refresh，就可以获得最新的数据了</p>
+  </li>
+</ol>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/springcloud%E5%AE%9E%E8%B7%B5%E4%B9%8B%E9%81%93%E4%BA%8Cspringcloudconfig%E6%9C%8D%E5%8A%A1.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/%E4%B8%8Egooglecloudplatf%E4%B8%8A%E7%9A%84kubernetes%E6%B7%B7%E5%90%88%E4%BD%BF%E7%94%A8.html">&laquo; 与Google Cloud Platf上的Kubernetes混合使用</a>
+  
+  
+  <a class="next" href="/2017/%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BBapachecommonsio.html">源码阅读-Apache.commons.io &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

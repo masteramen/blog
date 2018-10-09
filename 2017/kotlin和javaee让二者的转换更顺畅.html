@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>Kotlin和Java EE: 让二者的转换更顺畅 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="Kotlin和Java EE: 让二者的转换更顺畅" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="翻译：mycstar" />
+<meta property="og:description" content="翻译：mycstar" />
+<link rel="canonical" href="http://www.jfox.info/2017/kotlin%E5%92%8Cjavaee%E8%AE%A9%E4%BA%8C%E8%80%85%E7%9A%84%E8%BD%AC%E6%8D%A2%E6%9B%B4%E9%A1%BA%E7%95%85.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/kotlin%E5%92%8Cjavaee%E8%AE%A9%E4%BA%8C%E8%80%85%E7%9A%84%E8%BD%AC%E6%8D%A2%E6%9B%B4%E9%A1%BA%E7%95%85.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:57:19+00:00" />
+<script type="application/ld+json">
+{"description":"翻译：mycstar","@type":"BlogPosting","url":"http://www.jfox.info/2017/kotlin%E5%92%8Cjavaee%E8%AE%A9%E4%BA%8C%E8%80%85%E7%9A%84%E8%BD%AC%E6%8D%A2%E6%9B%B4%E9%A1%BA%E7%95%85.html","headline":"Kotlin和Java EE: 让二者的转换更顺畅","dateModified":"2017-01-01T15:57:19+00:00","datePublished":"2017-01-01T15:57:19+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/kotlin%E5%92%8Cjavaee%E8%AE%A9%E4%BA%8C%E8%80%85%E7%9A%84%E8%BD%AC%E6%8D%A2%E6%9B%B4%E9%A1%BA%E7%95%85.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Kotlin和Java EE: 让二者的转换更顺畅</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:57:19+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>翻译：mycstar</p>
+
+<p><em>译者注：</em> 这篇文章分析了Kotlin和Java EE的关系，讨论了如何利用Kotlin的运算符，可空性和可选项来优化转换的效果。*</p>
+
+<p>将Java EE应用程序转换为Kotlin开始于框架的战斗，我们成功地超越了java老标准设置的所有障碍。在此过程中，新时代语言Kotlin特定的构造，使的代码更简洁而安全。</p>
+
+<p>如果您没有阅读本系列的前两部分，可以在这里找到：</p>
+
+<p><a href="https://www.jfox.info/go.php?url=https://dzone.com/articles/kotlin-jee-part-one-from-java-to-kotlin">Kotlin和Java EE：第一部分 – 从Java到Kotlin</a></p>
+
+<p><a href="https://www.jfox.info/go.php?url=https://dzone.com/articles/kotlin-and-java-ee-part-2-having-fun-with-plugins">Kotlin和Java EE：第二部分 – 插件的乐趣</a></p>
+
+<p>经过对前面两部分的回顾及修改，这里补充最后一些内容。</p>
+
+<h2 id="已有的转换">已有的转换</h2>
+
+<p>前两部分中的许多结构已经适用与Kotlin了。 下面我们来看看Set的定义：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>private final Set&lt;Class&lt;?&gt;&gt; classes =
+       new HashSet&lt;&gt;(Arrays.asList(KittenRestService.class));
+</code></pre></div></div>
+
+<p>由于Java不支持对象列表中的Set和其他集合的简单构造，我们必须使用Arrays类来创建List，然后将其转换为Set。Kotlin里就变成：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>private val classes = setOf(KittenRestService::class.java)
+</code></pre></div></div>
+
+<p>我们还将Java Bean转换为Kotlin数据类，使得它们简洁了很多。去掉所有的getter和setter，并自动得到了equals（），hashCode（）和toString（）。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>@Entity
+     data class KittenEntity private constructor(
+             @Id
+             var id: Int?,
+             override var name: String,
+             override var cuteness: Int // set Int.MAX_VALUE for Nermal
+     ) : Kitten {
+    constructor(name: String, cuteness: Int) : this(null, name, cuteness)
+    }
+</code></pre></div></div>
+
+<p>这里要感谢编译器插件，可以伪造不变的对象，而不需要无参数的构造函数：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>@Path("kitten")
+    class KittenRestService 
+        @Inject constructor(private val kittenBusinessService: KittenBusinessService) {
+</code></pre></div></div>
+
+<p>用lateinit关键字处理那些由框架初始化的值更容易一些，可以避免不必要的空值检查：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>@Stateless
+   class KittenBusinessService {
+
+       @PersistenceContext
+      private lateinit var entityManager: EntityManager
+      ...
+</code></pre></div></div>
+
+<p>让我们看看还有什么可以改进的。</p>
+
+<h2 id="空值还是可选项">空值还是可选项？</h2>
+
+<p>这是一个非常棘手的问题。 Kotlin对可空值有很好的支持，当您使用第三方库时，这很有帮助。问题是当您有机会选择一个时，该使用什么？这是我们原来的Optional生产者和消费者对：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>fun find(id: Int): Optional&lt;KittenEntity&gt; =
+        Optional.ofNullable(entityManager.find(KittenEntity::class.java, id))
+
+
+    fun find(id: Int): KittenRest = 
+        kittenBusinessService
+           .find(id)
+           .map { kittenEntity -&gt; KittenRest(kittenEntity.name, kittenEntity.cuteness) }
+           .orElseThrow { NotFoundException("ID $id not found") }
+</code></pre></div></div>
+
+<p>Kotlin解决方案将使用空值，所以变成：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>fun find(id: Int): KittenEntity? =
+        entityManager.find(KittenEntity::class.java, id)
+
+    fun find(id: Int) = 
+        kittenBusinessService.find(id)
+            ?.let { KittenRest(it.name, it.cuteness) }
+            ?: throw NotFoundException("ID $id not found")
+</code></pre></div></div>
+
+<p>空值可以出现在调用链的每个步骤中，因此您必须对所有调用使用问号。这解决了可空性问题，但它不漂亮。</p>
+
+<p>然而，如果返回类型为Optional，结果为Optional.empty，则将略过该对象的所有未来单调调用，结果将为Optional.empty。对我来说，这看起来是一个更干净的解决方案，如果您打算从Java调用Kotlin代码，它也是一个更安全的解决方案。对于Java互操作，优先于空值。</p>
+
+<h2 id="运算符">运算符！</h2>
+
+<p>find, add , 和 delete是完全合法的方法名称，但是不是使用运算符更好呢？</p>
+
+<p>Method</p>
+
+<p>Operator
+service.find(id)service[id]service.add(kittenEntity)service += kittenEntity
+ 我发现它不只是更短，而且更可读，因为代码不再是一大堆方法调用。小心只使用知名和易理解的操作符，否则，您将会遇到像Scala库一样大的混乱，然后您将需要一个 <a href="https://www.jfox.info/go.php?url=http://www.flotsam.nl/dispatch-periodic-table.html">操作符周期表</a> 。在数据存储库的情况下，类似MutableMap的接口工作得很好。请注意，我使用“plus assign”（+ =）运算符来持久化一个实体，因为原始集合包含它已经拥有的内容以及一个附加项。</p>
+
+<p>以下是如何声明它们：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>operator fun plusAssign(kitten: KittenEntity) = 
+        entityManager.persist(kitten)
+
+   operator fun get(id: Int): KittenEntity? = 
+        entityManager.find(KittenEntity::class.java, id)
+</code></pre></div></div>
+
+<p>您可能希望保留原始方法，并对操作符进行包装，因为原始方法可以有返回值，而某些操作符则不能返回值。其他类似的选项是是“remove”和“contains”方法，因为它们可以用“minus assign”（ – =）和Kotlin的in运算符表示。其余的就留给你去探索。</p>
+
+<h2 id="结论">结论</h2>
+
+<p>以惯用的方式写Kotlin代码的目的是要有更好的可读性和更安全的代码，我希望所提出的例子成功地实现了这一意图。该系列仅显示了几种方法来改进Java代码，同时使某些部分保持不变。值得探索的特点是：扩展函数，如果可能的话何时扩展，try/catch作为函数。探索一下，找出什么适合你的，玩得开心！</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/kotlin%E5%92%8Cjavaee%E8%AE%A9%E4%BA%8C%E8%80%85%E7%9A%84%E8%BD%AC%E6%8D%A2%E6%9B%B4%E9%A1%BA%E7%95%85.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/%E4%B8%80%E9%A2%97%E7%AE%80%E5%8D%95%E7%9A%84hibernate%E6%A0%97%E5%AD%90.html">&laquo; 一颗简单的hibernate栗子</a>
+  
+  
+  <a class="next" href="/2017/jsp%E5%AE%9E%E7%8E%B0%E4%B8%8A%E4%B8%80%E9%A1%B5%E4%B8%8B%E4%B8%80%E9%A1%B5%E7%BF%BB%E9%A1%B5%E5%8A%9F%E8%83%BD.html">jsp实现上一页下一页翻页功能 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

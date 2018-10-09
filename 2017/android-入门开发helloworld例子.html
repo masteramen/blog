@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>Android 入门开发Hello,World例子 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="Android 入门开发Hello,World例子" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="Hello，Android例子 Hello,World例子" />
+<meta property="og:description" content="Hello，Android例子 Hello,World例子" />
+<link rel="canonical" href="http://www.jfox.info/2017/android-%E5%85%A5%E9%97%A8%E5%BC%80%E5%8F%91helloworld%E4%BE%8B%E5%AD%90.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/android-%E5%85%A5%E9%97%A8%E5%BC%80%E5%8F%91helloworld%E4%BE%8B%E5%AD%90.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:43:49+00:00" />
+<script type="application/ld+json">
+{"description":"Hello，Android例子 Hello,World例子","@type":"BlogPosting","url":"http://www.jfox.info/2017/android-%E5%85%A5%E9%97%A8%E5%BC%80%E5%8F%91helloworld%E4%BE%8B%E5%AD%90.html","headline":"Android 入门开发Hello,World例子","dateModified":"2017-01-01T15:43:49+00:00","datePublished":"2017-01-01T15:43:49+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/android-%E5%85%A5%E9%97%A8%E5%BC%80%E5%8F%91helloworld%E4%BE%8B%E5%AD%90.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Android 入门开发Hello,World例子</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:43:49+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p><strong>Hello，Android例子 Hello,World例子</strong></p>
+
+<p>第一印象很重要，作为一个开发者，你知道获取一个开发框架第一印象的方法就是写一个”Hello,Word!”,那么，在Android中，这很简单，下面就是实现步骤：</p>
+
+<p>·          创建工程</p>
+
+<p>·          构建用户界面</p>
+
+<p>·          运行: Hello, Android 代码</p>
+
+<p>The sections below spell it all out in detail.</p>
+
+<p>下面的部分是详细解释：</p>
+
+<p>·          压缩UI到XML版面</p>
+
+<p>·          调试你的工程</p>
+
+<p>·          不依赖Eclipse创建工程</p>
+
+<p>激动人心的时候到了，赶紧上路吧！</p>
+
+<p><strong>创建工程</strong></p>
+
+<p>创建工程非常简单。一个Eclipse插件可以使Android开发更快捷。你需要安装Eclipse3.3（Europa）或者更高版本，并且你需要安装  Eclipse下的Android插件，一旦你安装了这些程序，马上回来。</p>
+
+<p>First, here’s a high-level summary of how to build “Hello, World!”:</p>
+
+<p>首先，下面是高度概括的关于如何创建”Hello,World!”的描述。</p>
+
+<ol>
+  <li>
+    <p>通过 File&gt;New&gt;New Android Project创建一个新的”Android 工程”.</p>
+  </li>
+  <li>
+    <p>在新的Android工程对话框中填入项目细节。</p>
+  </li>
+  <li>
+    <p>编辑自动生成的源代码模版,显示相关的输出。</p>
+  </li>
+</ol>
+
+<p>接下来，我们一步一步详细描述整个过程。</p>
+
+<p><strong>1.      创建一个新的Android项目</strong></p>
+
+<p>从Eclipse中，选择 File&gt;New&gt;Project菜单项.如果AndroidADT成功安装，这个对话框将由一个命名为 “Android”的文件夹，该文件夹包含一个简单的入口: “Android 工程”。</p>
+
+<p>一旦你选择了“Android 工程”，点击Next 按钮。</p>
+
+<p><strong>2.      填入工程细节</strong></p>
+
+<p>显示出来的窗口允许为你的工程输入相应的资料细节，下面是一个例子：</p>
+
+<p><a href="https://www.jfox.info/go.php?url=http://www.jfox.info/wp-content/uploads/2014/02/NewAndroidProject.jpg"><img src="6ff68c6.jpg" alt="NewAndroidProject" /></a></p>
+
+<p>下面是屏幕显示窗口中每一个域的含义：</p>
+
+<p>工程名
+你希望存放你的工程的计算机路径名。
+<strong>包名</strong>
+包命名空间-和Java程序设计语言类似-你希望你的源代码保存的空间。这个同时也设置了将要生成的原始实体的包名。</p>
+
+<p>在你的应用程序中使用的包名必须不同与所有你的系统中安装包的包名。由于这个原因,为你的应用程序命名一个标准域风格包是非常重要的。在上面的例子中，我们使用包域名为”com.google.android”,对于你的项目组而言，你可以使用一个不同的并且合适的域结构名。
+<strong>实体名</strong>
+实体名是插件生成的原始类的名字。它是Android实体类的子类。一个实体是一个简单的可以运行和工作的类,它可以选择性的创建一个用户界面，或者不创建。
+<strong>应用程序名</strong>
+应用程序具有良好阅读性的标题</p>
+
+<p>” Use default location ”选项框允许你改变生成和保存的项目文件在磁盘上的存储位置。</p>
+
+<p>**3.      编辑自动生成的源代码 **</p>
+
+<p>插件运行后，你将获得类似下面的一个名为HelloAndroid的类。</p>
+
+<p>public class HelloAndroid extends Activity</p>
+
+<p>{</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/** Called when the activity is first created. */
+
+@Override
+
+public void onCreate(Bundle icicle)
+
+{
+
+    super.onCreate(icicle);
+
+    setContentView(R.layout.main);
+
+}
+</code></pre></div></div>
+
+<p>}</p>
+
+<p>下面要做的就是开始对它进行修改！</p>
+
+<p>构建用户界面</p>
+
+<p>一旦你设置好工程之后，接下来的步骤就是在屏幕上输入代码。下面是完成以后的工程-接下来我们会一行一行的分析。</p>
+
+<p>public class HelloAndroid extends Activity {</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/** Called when the activity is first created. */
+
+@Override
+
+public void onCreate(Bundle icicle) {
+
+    super.onCreate(icicle);
+
+    TextView tv = new TextView(this);
+
+    tv.setText(“Hello, Android”);
+
+    setContentView(tv);
+
+}
+</code></pre></div></div>
+
+<p>}</p>
+
+<p>在Android中，用户界面由称作视的类及子类构建而成，一个视就是一个简单的可绘制的对象，比如单选框，动画或者（在我们例子中的）文本标签。这个特定的处理文本的视子类叫做TextView。</p>
+
+<p>下面显示如何构造一个TextView类。</p>
+
+<p>TextView tv = new TextView(this);</p>
+
+<p>Text构造函数的参数是一个Android上下文实例指针.这个上下文是一个简单的系统句柄，它提供处理资源，获取对数据库和参数选择的访问等等。实体类从Context类集成而来.虽然我们的HelloAndroid类是一个实体子类，它也是一个Context类，因此我们可以传递’this’引用到TextView.:</p>
+
+<p>一旦我们构造了TextView，我们需要告诉它显示什么：</p>
+
+<p>tv.setText(“Hello, Android”);</p>
+
+<p>这个没有什么意外。</p>
+
+<p>在这里，我们构造了一个TextView并且告诉它显示什么，最终的步骤就是将TextView和屏幕显示联系起来，如下：</p>
+
+<p>setContentView(tv);</p>
+
+<p>实体中的setContentView()方法将视必须和实体的用户界面关联起来，并显示内容到系统上。如果一个实体没有调用这个方法，系统中将没有UI存在并且系统会显示黑屏。我们希望显示一些文字到屏幕上，所以我们传递context到我们刚创建的TextView中。</p>
+
+<p>这就是Android中的 –“Hello,World”,下一步，当然，赶紧看看运行的效果吧！</p>
+
+<p>注意：生成的代码中需要添加一行代码如下</p>
+
+<p>Import android.widget.TextView;</p>
+
+<p>否则会出现下面的错误提示</p>
+
+<p>TextView can’t be resolved to a type;</p>
+
+<p>运行代码：Hello,Android</p>
+
+<p>Eclipse插件使运行应用程序变得更加容易。从这个菜单入口开始：Run&gt;Run Configure;你将看到如下所示的对话框。</p>
+
+<p><a href="https://www.jfox.info/go.php?url=http://www.jfox.info/wp-content/uploads/2014/02/Run.jpg"><img src="619c3fc.jpg" alt="Run" /></a></p>
+
+<p>下一步，选中”Android Application”，然后点击左上角的图标（显示一页纸并且左上角带一个加号的图标）或者简单的双击一下”Android Applicton”入口，你将看到一个命名为”New_configuration”的启动器。</p>
+
+<p><a href="https://www.jfox.info/go.php?url=http://www.jfox.info/wp-content/uploads/2014/02/run2.jpg"><img src="d944ec7.jpg" alt="run2" /></a>
+将名字改为比较有意义的，比如”Hello,Android”,然后通过点击浏览按钮选择你的工程，(如果你在Eclipse中打开了不止一个Android工程，请确保选择正确的一个.)该插件自动扫描你的工程中的实体子类，并将每一个添加到实体下拉列表中，由于你的”Hello,Android”工程只有一个实体，所以它就是默认的一个,你只需要简单继续就可以.</p>
+
+<p>点击”应用”按钮，下面是例子:</p>
+
+<p>棒极了—你已经全部完成！点击Run按钮，，Android仿真器就会运行。一旦仿真器启动之后，你的应用程序显示出来，让人激动的时候到了，你将看到类似合格的界面：</p>
+
+<p><a href="https://www.jfox.info/go.php?url=http://www.jfox.info/wp-content/uploads/2014/02/simu.jpg"><img src="b45367f.jpg" alt="simu" /></a></p>
+
+<p>这个就是Android的”Hello,World”的例子，非常简单吧？指南接下来的部分将提供更多的细节，当你学习更多关于Android的内容之后，你会发现很多有价值的东西。</p>
+
+<p>参考来源 <a href="https://www.jfox.info/go.php?url=http://www.jfox.info/url.php?url=http%3A%2F%2Fblog.csdn.net%2Flpt19832003%2Farticle%2Fdetails%2F4545193">Android 入门开发指南之一 — Hello,Android例子 – 我在这里 – 博客频道 – CSDN.NET</a>.</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/android-%E5%85%A5%E9%97%A8%E5%BC%80%E5%8F%91helloworld%E4%BE%8B%E5%AD%90.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/android-%E5%85%A5%E9%97%A8%E5%BC%80%E5%8F%91helloworld%E4%BE%8B%E5%AD%90.html">&laquo; Android 入门开发Hello,World例子</a>
+  
+  
+  <a class="next" href="/2017/jquery%E4%B8%AD%E7%9A%84sortable%E6%8E%92%E5%BA%8F%E4%B9%8B%E5%90%8E%E7%9A%84%E4%BF%9D%E5%AD%98%E7%8A%B6%E6%80%81%E5%88%B0%E5%90%8E%E5%8F%B0%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95.html">jquery中的sortable排序之后的保存状态到后台的解决方法 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

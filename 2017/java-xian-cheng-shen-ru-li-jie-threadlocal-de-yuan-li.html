@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>Java线程：深入理解ThreadLocal的原理 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="Java线程：深入理解ThreadLocal的原理" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="By Lee - Last updated: 星期五, 九月 6, 2013" />
+<meta property="og:description" content="By Lee - Last updated: 星期五, 九月 6, 2013" />
+<link rel="canonical" href="http://www.jfox.info/2017/java-xian-cheng-shen-ru-li-jie-threadlocal-de-yuan-li.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/java-xian-cheng-shen-ru-li-jie-threadlocal-de-yuan-li.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:42:30+00:00" />
+<script type="application/ld+json">
+{"description":"By Lee - Last updated: 星期五, 九月 6, 2013","@type":"BlogPosting","url":"http://www.jfox.info/2017/java-xian-cheng-shen-ru-li-jie-threadlocal-de-yuan-li.html","headline":"Java线程：深入理解ThreadLocal的原理","dateModified":"2017-01-01T15:42:30+00:00","datePublished":"2017-01-01T15:42:30+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/java-xian-cheng-shen-ru-li-jie-threadlocal-de-yuan-li.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Java线程：深入理解ThreadLocal的原理</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:42:30+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>By Lee - Last updated: 星期五, 九月 6, 2013</p>
+
+<p>ThreadLocal与线程成员变量还有区别，ThreadLocal该类提供了线程局部变量。这个局部变量与一般的成员变量不一样，ThreadLocal的变量在被多个线程使用时候，每个线程只能拿到该变量的一个副本，这是Java API中的描述，通过阅读API源码，发现并非副本，副本什么概念？克隆品? 或者是别的样子，太模糊。
+准确的说，应该是ThreadLocal类型的变量内部的注册表（Map&lt;Thread,T&gt;）发生了变化，但ThreadLocal类型的变量本身的确是一个，这才是本质！
+下面就做个例子：
+一、标准例子
+定义了MyThreadLocal类，创建它的一个对象tlt，分别给四个线程使用，结果四个线程tlt变量并没有出现共用现象，二是各用各的，这说明，四个线程使用的是tlt的副本（克隆品）。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/**
+*　使用了ThreadLocal的类
+*
+*　@author　leizhimin　2010-1-5　10:35:27
+*/
+public　class　MyThreadLocal　{
+　　　　　　　　 //定义了一个ThreadLocal变量，用来保存int或Integer数据
+　　　　　　　　 private　ThreadLocal　tl　=　new　ThreadLocal()　{
+　　　　　　　　　　　　　　　　 @Override
+　　　　　　　　　　　　　　　　 protected　Integer　initialValue()　{
+　　　　　　　　　　　　　　　　　　　　　　　　 return　0;
+　　　　　　　　　　　　　　　　 }
+　　　　　　　　 };
+　　　　　　　　 public　Integer　getNextNum()　{
+　　　　　　　　　　　　　　　　 //将tl的值获取后加1，并更新设置t1的值
+　　　　　　　　　　　　　　　　 tl.set(tl.get()　+　1);
+　　　　　　　　　　　　　　　　 return　tl.get();
+　　　　　　　　 }
+}
+
+
+/**
+*　测试线程
+*
+*　@author　leizhimin　2010-1-5　10:39:18
+*/
+public　class　TestThread　extends　Thread　{
+　　　　　　　　 private　MyThreadLocal　tlt　=　new　MyThreadLocal();
+　　　　　　　　 public　TestThread(MyThreadLocal　tlt)　{
+　　　　　　　　　　　　　　　　 this.tlt　=　tlt;
+　　　　　　　　 }
+　　　　　　　　 @Override
+　　　　　　　　 public　void　run()　{
+　　　　　　　　　　　　　　　　 for　(int　i　=　0;　i　&lt;　3;　i++)　{
+　　　　　　　　　　　　　　　　　　　　　　　　 System.out.println(Thread.currentThread().getName()　+　"\t"　+　tlt.getNextNum());
+　　　　　　　　　　　　　　　　 }
+　　　　　　　　 }
+}
+
+
+/**
+*　ThreadLocal测试
+*
+*　@author　leizhimin　2010-1-5　10:43:48
+*/
+public　class　Test　{
+　　　　　　　　 public　static　void　main(String[]　args)　{
+　　　　　　　　　　　　　　　　 MyThreadLocal　tlt　=　new　MyThreadLocal();
+　　　　　　　　　　　　　　　　 Thread　t1　=　new　TestThread(tlt);
+　　　　　　　　　　　　　　　　 Thread　t2　=　new　TestThread(tlt);
+　　　　　　　　　　　　　　　　 Thread　t3　=　new　TestThread(tlt);
+　　　　　　　　　　　　　　　　 Thread　t4　=　new　TestThread(tlt);
+　　　　　　　　　　　　　　　　 t1.start();
+　　　　　　　　　　　　　　　　 t2.start();
+　　　　　　　　　　　　　　　　 t3.start();
+　　　　　　　　　　　　　　　　 t4.start();
+　　　　　　　　 }
+}
+</code></pre></div></div>
+
+<p>可以看出，三个线程各自独立编号，互不影响：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Thread-0　　1
+Thread-1　　1
+Thread-0　　2
+Thread-1　　2
+Thread-0　　3
+Thread-1　　3
+Thread-2　　1
+Thread-3　　1
+Thread-2　　2
+Thread-3　　2
+Thread-2　　3
+Thread-3　　3
+Process　finished　with　exit　code　0
+</code></pre></div></div>
+
+<p>tlt对象是一个，废话tl对象也是一个，因为组合关系是一对一的。但是tl对象内部的Map随着线程的增多，会创建很多Integer对象。只是Integer和int已经通用了。所以感觉不到Integer的对象属性。
+二、不用ThreadLocal
+假如不用ThreadLocal，只需要将MyThreadLocal类重新定义为：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/**
+*　使用了ThreadLocal的类
+*
+*　@author　leizhimin　2010-1-5　10:35:27
+*/
+public　class　MyThreadLocal　{
+　　　　　　　　 private　Integer　t1　=　0;
+　　　　　　　　 public　Integer　getNextNum(){
+　　　　　　　　　　　　　　　　 return　t1=t1+1;
+　　　　　　　　 }
+
+//　　　　　　　　//定义了一个ThreadLocal变量，用来保存int或Integer数据
+//　　　　　　　　private　ThreadLocal　tl　=　new　ThreadLocal()　{
+//　　　　　　　　　　　　　　　　@Override
+//　　　　　　　　　　　　　　　　protected　Integer　initialValue()　{
+//　　　　　　　　　　　　　　　　　　　　　　　　return　0;
+//　　　　　　　　　　　　　　　　}
+//　　　　　　　　};
+//
+//　　　　　　　　public　Integer　getNextNum()　{
+//　　　　　　　　　　　　　　　　//将tl的值获取后加1，并更新设置t1的值
+//　　　　　　　　　　　　　　　　tl.set(tl.get()　+　1);
+//　　　　　　　　　　　　　　　　return　tl.get();
+//　　　　　　　　}
+}
+</code></pre></div></div>
+
+<p>然后运行测试：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Thread-2　　1
+Thread-2　　2
+Thread-1　　4
+Thread-1　　6
+Thread-3　　3
+Thread-3　　9
+Thread-3　　10
+Thread-1　　8
+Thread-0　　7
+Thread-0　　11
+Thread-0　　12
+Thread-2　　5　
+Process　finished　with　exit　code　0
+</code></pre></div></div>
+
+<p>从这里可以看出，四个线程共享了tlt变量，结果每个线程都直接修改tlt的属性。</p>
+
+<p>三、自己实现个ThreadLocal</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>import　java.util.Collections;
+import　java.util.HashMap;
+import　java.util.Map;
+/**
+*　使用了ThreadLocal的类
+*
+*/
+public　class　MyThreadLocal　{
+　　　　　　　　 //定义了一个ThreadLocal变量，用来保存int或Integer数据
+　　　　　　　　 private　com.lavasoft.test2.ThreadLocal　tl　=　new　com.lavasoft.test2.ThreadLocal()　{
+　　　　　　　　　　　　　　　　 @Override
+　　　　　　　　　　　　　　　　 protected　Integer　initialValue()　{
+　　　　　　　　　　　　　　　　　　　　　　　　 return　0;
+　　　　　　　　　　　　　　　　 }
+　　　　　　　　 };
+　　　　　　　　 public　Integer　getNextNum()　{
+　　　　　　　　　　　　　　　　 //将tl的值获取后加1，并更新设置t1的值
+　　　　　　　　　　　　　　　　 tl.set(tl.get()　+　1);
+　　　　　　　　　　　　　　　　 return　tl.get();
+　　　　　　　　 }
+}
+class　ThreadLocal　{
+　　　　　　　　 private　Map&lt;Thread,　T&gt;　map　=　Collections.synchronizedMap(new　HashMap&lt;Thread,　T&gt;());
+　　　　　　　　 public　ThreadLocal()　{
+　　　　　　　　 }
+　　　　　　　　 protected　T　initialValue()　{
+　　　　　　　　　　　　　　　　 return　null;
+　　　　　　　　 }
+　　　　　　　　 public　T　get()　{
+　　　　　　　　　　　　　　　　 Thread　t　=　Thread.currentThread();
+　　　　　　　　　　　　　　　　 T　obj　=　map.get(t);
+　　　　　　　　　　　　　　　　 if　(obj　==　null　&amp;&amp;　!map.containsKey(t))　{
+　　　　　　　　　　　　　　　　　　　　　　　　 obj　=　initialValue();
+　　　　　　　　　　　　　　　　　　　　　　　　 map.put(t,　obj);
+　　　　　　　　　　　　　　　　 }
+　　　　　　　　　　　　　　　　 return　obj;
+　　　　　　　　 }
+　　　　　　　　 public　void　set(T　value)　{
+　　　　　　　　　　　　　　　　 map.put(Thread.currentThread(),　value);
+　　　　　　　　 }
+　　　　　　　　 public　void　remove()　{
+　　　　　　　　　　　　　　　　 map.remove(Thread.currentThread());
+　　　　　　　　 }
+}
+</code></pre></div></div>
+
+<p>运行测试：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Thread-0　　1
+Thread-0　　2
+Thread-0　　3
+Thread-2　　1
+Thread-2　　2
+Thread-3　　1
+Thread-2　　3
+Thread-3　　2
+Thread-1　　1
+Thread-3　　3
+Thread-1　　2
+Thread-1　　3
+Process　finished　with　exit　code　0
+</code></pre></div></div>
+
+<p>很意外，这个山寨版的ThreadLocal也同样运行很好，实现了JavaAPI中ThreadLocal的功能。</p>
+
+<p>四、透过现象看本质
+其实从程序角度看，tlt变量的确是一个，毫无疑问的。但是为什么打印出来的数字就互不影响呢？
+是因为使用了Integer吗？—–不是。
+原因是：protected T initialValue()和get()，因为每个线程在调用get()时候，发现Map中不存在就创建。调用它的时候，就创建了一个新变量，类型为T。每次都新建，当然各用个的互不影响了。
+为了看清本质，将Integer换掉，重写部分类：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>import　java.util.Collections;
+import　java.util.HashMap;
+import　java.util.Map;
+/**
+*　使用了ThreadLocal的类
+*
+*/
+public　class　MyThreadLocal　{
+　　　　　　　　 //定义了一个ThreadLocal变量，用来保存int或Integer数据
+　　　　　　　　 //　　　　　　　　private　ThreadLocal　tl　=　new　ThreadLocal()　{
+　　　　　　　　 private　com.lavasoft.test2.ThreadLocal　tl　=　new　com.lavasoft.test2.ThreadLocal()　{
+　　　　　　　　　　　　　　　　 @Override
+　　　　　　　　　　　　　　　　 protected　Bean　initialValue()　{
+　　　　　　　　　　　　　　　　　　　　　　　　 return　new　Bean();
+　　　　　　　　　　　　　　　　 }
+　　　　　　　　 };
+　　　　　　　　 @Override
+　　　　　　　　 public　String　toString()　{
+　　　　　　　　　　　　　　　　 return　"MyThreadLocal{"　+
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　 "tl="　+　tl　+
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　 '}';
+　　　　　　　　 }
+　　　　　　　　 public　Bean　getBean()　{
+　　　　　　　　　　　　　　　　 return　tl.get();
+　　　　　　　　 }
+}
+class　ThreadLocal　{
+　　　　　　　　 private　Map&lt;Thread,　T&gt;　map　=　Collections.synchronizedMap(new　HashMap&lt;Thread,　T&gt;());
+　　　　　　　　 public　ThreadLocal()　{
+　　　　　　　　 }
+　　　　　　　　 protected　T　initialValue()　{
+　　　　　　　　　　　　　　　　 return　null;
+　　　　　　　　 }
+　　　　　　　　 public　T　get()　{
+　　　　　　　　　　　　　　　　 Thread　t　=　Thread.currentThread();
+　　　　　　　　　　　　　　　　 T　obj　=　map.get(t);
+　　　　　　　　　　　　　　　　 if　(obj　==　null　&amp;&amp;　!map.containsKey(t))　{
+　　　　　　　　　　　　　　　　　　　　　　　　 obj　=　initialValue();
+　　　　　　　　　　　　　　　　　　　　　　　　 map.put(t,　obj);
+　　　　　　　　　　　　　　　　 }
+　　　　　　　　　　　　　　　　 return　obj;
+　　　　　　　　 }
+　　　　　　　　 public　void　set(T　value)　{
+　　　　　　　　　　　　　　　　 map.put(Thread.currentThread(),　value);
+　　　　　　　　 }
+　　　　　　　　 public　void　remove()　{
+　　　　　　　　　　　　　　　　 map.remove(Thread.currentThread());
+　　　　　　　　 }
+}
+
+
+/**
+*　测试Bean
+*
+*　@author　leizhimin　2010-1-5　14:18:26
+*/
+public　class　Bean　{
+　　　　　　　　 private　String　id　=　"0";
+　　　　　　　　 private　String　name　=　"none";
+　　　　　　　　 public　Bean()　{
+　　　　　　　　 }
+　　　　　　　　 public　Bean(String　id,　String　name)　{
+　　　　　　　　　　　　　　　　 this.id　=　id;
+　　　　　　　　　　　　　　　　 this.name　=　name;
+　　　　　　　　 }
+　　　　　　　　 public　String　getId()　{
+　　　　　　　　　　　　　　　　 return　id;
+　　　　　　　　 }
+　　　　　　　　 public　void　setId(String　id)　{
+　　　　　　　　　　　　　　　　 this.id　=　id;
+　　　　　　　　 }
+　　　　　　　　 public　String　getName()　{
+　　　　　　　　　　　　　　　　 return　name;
+　　　　　　　　 }
+　　　　　　　　 public　void　setName(String　name)　{
+　　　　　　　　　　　　　　　　 this.name　=　name;
+　　　　　　　　 }
+　　　　　　　　 public　String　showinfo()　{
+　　　　　　　　　　　　　　　　 return　"Bean{"　+
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　 "id='"　+　id　+　'\''　+
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　 ",　name='"　+　name　+　'\''　+
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　 '}';
+　　　　　　　　 }
+}
+
+
+/**
+*　测试线程
+*
+*　@author　leizhimin　2010-1-5　10:39:18
+*/
+public　class　TestThread　extends　Thread　{
+　　　　　　　　 private　MyThreadLocal　tlt　=　new　MyThreadLocal();
+　　　　　　　　 public　TestThread(MyThreadLocal　tlt)　{
+　　　　　　　　　　　　　　　　 this.tlt　=　tlt;
+　　　　　　　　 }
+　　　　　　　　 @Override
+　　　　　　　　 public　void　run()　{
+　　　　　　　　　　　　　　　　 System.out.println("&gt;&gt;&gt;&gt;&gt;:"　+　tlt);
+　　　　　　　　　　　　　　　　 for　(int　i　=　0;　i　&lt;　3;　i++)　{
+　　　　　　　　　　　　　　　　　　　　　　　　 System.out.println(Thread.currentThread().getName()　+　"\t"　+tlt.getBean()+"\t"+tlt.getBean().showinfo());
+　　　　　　　　　　　　　　　　 }
+　　　　　　　　 }
+}
+</code></pre></div></div>
+
+<p>然后运行测试：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&gt;&gt;&gt;&gt;&gt;:MyThreadLocal{tl=com.lavasoft.test2.MyThreadLocal$1@1de3f2d}
+&gt;&gt;&gt;&gt;&gt;:MyThreadLocal{tl=com.lavasoft.test2.MyThreadLocal$1@1de3f2d}
+&gt;&gt;&gt;&gt;&gt;:MyThreadLocal{tl=com.lavasoft.test2.MyThreadLocal$1@1de3f2d}
+&gt;&gt;&gt;&gt;&gt;:MyThreadLocal{tl=com.lavasoft.test2.MyThreadLocal$1@1de3f2d}
+Thread-1　　com.lavasoft.test2.Bean@291aff　　Bean{id='0',　name='none'}
+Thread-2　　com.lavasoft.test2.Bean@fe64b9　　Bean{id='0',　name='none'}
+Thread-3　　com.lavasoft.test2.Bean@186db54　　Bean{id='0',　name='none'}
+Thread-2　　com.lavasoft.test2.Bean@fe64b9　　Bean{id='0',　name='none'}
+Thread-2　　com.lavasoft.test2.Bean@fe64b9　　Bean{id='0',　name='none'}
+Thread-0　　com.lavasoft.test2.Bean@291aff　　Bean{id='0',　name='none'}
+Thread-3　　com.lavasoft.test2.Bean@186db54　　Bean{id='0',　name='none'}
+Thread-3　　com.lavasoft.test2.Bean@186db54　　Bean{id='0',　name='none'}
+Thread-1　　com.lavasoft.test2.Bean@291aff　　Bean{id='0',　name='none'}
+Thread-0　　com.lavasoft.test2.Bean@291aff　　Bean{id='0',　name='none'}
+Thread-0　　com.lavasoft.test2.Bean@291aff　　Bean{id='0',　name='none'}
+Thread-1　　com.lavasoft.test2.Bean@291aff　　Bean{id='0',　name='none'}
+Process　finished　with　exit　code　0
+</code></pre></div></div>
+
+<p>从打印结果很清楚的看到，MyThreadLocal的tlt对象的确是一个，tlt对象里的ThreadLocal的tl对象也是一个，但是，将t1t给每个线程用的时候，线程会重新创建Bean对象加入到ThreadLocal的Map中去使用。</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/java-xian-cheng-shen-ru-li-jie-threadlocal-de-yuan-li.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/java-xian-cheng-shen-ru-li-jie-threadlocal-de-yuan-li.html">&laquo; Java线程：深入理解ThreadLocal的原理</a>
+  
+  
+  <a class="next" href="/2017/mysql-de-quan-biao-sao-miao-zhu-jian-suo-yin-ju-ji-suo-yin-di-yi-suo-yin-fei-zhu-jian-suo-yin-fei-ju-ji-suo-yin-di-er-suo-yin-fu-gai-suo-yin-si-zhong-bu-tong-cha-xun-de-fen-xi.html">MYSQL的全表扫描，主键索引(聚集索引、第一索引)，非主键索引(非聚集索引、第二索引)，覆盖索引四种不同查询的分析 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

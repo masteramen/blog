@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>JAVA nio 简介 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="JAVA nio 简介" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="By Lee - Last updated: 星期四, 二月 20, 2014" />
+<meta property="og:description" content="By Lee - Last updated: 星期四, 二月 20, 2014" />
+<link rel="canonical" href="http://www.jfox.info/2017/java-nio-jieshao.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/java-nio-jieshao.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:44:33+00:00" />
+<script type="application/ld+json">
+{"description":"By Lee - Last updated: 星期四, 二月 20, 2014","@type":"BlogPosting","url":"http://www.jfox.info/2017/java-nio-jieshao.html","headline":"JAVA nio 简介","dateModified":"2017-01-01T15:44:33+00:00","datePublished":"2017-01-01T15:44:33+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/java-nio-jieshao.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">JAVA nio 简介</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:44:33+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>By Lee - Last updated: 星期四, 二月 20, 2014</p>
+
+<p><strong>1.   **基本 **</strong><strong>概念</strong></p>
+
+<p>IO 是主存和外部设备 ( 硬盘、终端和网络等 ) 拷贝数据的过程。 IO 是操作系统的底层功能实现，底层通过 I/O 指令进行完成。</p>
+
+<p>所有语言运行时系统提供执行 I/O 较高级别的工具。 (c 的 printf scanf,java 的面向对象封装 )</p>
+
+<p><strong>2.    **</strong>Java <strong>**标准 io **</strong>回顾**</p>
+
+<p>Java 标准 IO 类库是 io 面向对象的一种抽象。基于本地方法的底层实现，我们无须关注底层实现。 InputStream\OutputStream( 字节流 ) ：一次传送一个字节。 Reader\Writer( 字符流 ) ：一次一个字符。</p>
+
+<p><strong>3.    **</strong>nio <strong>**简介</strong></p>
+
+<p>nio 是 java New IO 的简称，在 jdk1.4 里提供的新 api 。 Sun 官方标榜的特性如下：</p>
+
+<p>–     为所有的原始类型提供 (Buffer) 缓存支持。</p>
+
+<p>–     字符集编码解码解决方案。</p>
+
+<p>–     Channel ：一个新的原始 I/O 抽象。</p>
+
+<p>–     支持锁和内存映射文件的文件访问接口。</p>
+
+<p>–     提供多路 (non-bloking) 非阻塞式的高伸缩性网络 I/O 。</p>
+
+<p>本文将围绕这几个特性进行学习和介绍。</p>
+
+<p><strong>4.   **</strong>Buffer&amp;Chanel**</p>
+
+<p>Channel 和 buffer 是 NIO 是两个最基本的数据类型抽象。</p>
+
+<p>Buffer:</p>
+
+<p>–        是一块连续的内存块。</p>
+
+<p>–        是 NIO 数据读或写的中转地。</p>
+
+<p>Channel:</p>
+
+<p>–        数据的源头或者数据的目的地</p>
+
+<p>–        用于向 buffer 提供数据或者读取 buffer 数据 ,buffer 对象的唯一接口。</p>
+
+<p>–         异步 I/O 支持</p>
+
+<p><a href="https://www.jfox.info/go.php?url=http://www.jfox.info/wp-content/uploads/2014/02/f4a0aefc-127c-3c9e-975f-36cce5173a35.jpg"><img src="1225856.jpg" alt="f4a0aefc-127c-3c9e-975f-36cce5173a35" /></a></p>
+
+<p>图1：channel和buffer关系</p>
+
+<p>** 例子1:CopyFile.java:**</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">sample</span><span class="p">;</span>
+
+<span class="n">import</span> <span class="n">java</span><span class="p">.</span><span class="n">io</span><span class="p">.</span><span class="n">FileInputStream</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">java</span><span class="p">.</span><span class="n">io</span><span class="p">.</span><span class="n">FileOutputStream</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">java</span><span class="p">.</span><span class="n">nio</span><span class="p">.</span><span class="n">ByteBuffer</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">java</span><span class="p">.</span><span class="n">nio</span><span class="p">.</span><span class="n">channels</span><span class="p">.</span><span class="n">FileChannel</span><span class="p">;</span>
+
+<span class="k">public</span> <span class="n">class</span> <span class="n">CopyFile</span> <span class="p">{</span>
+	<span class="k">public</span> <span class="n">static</span> <span class="n">void</span> <span class="n">main</span><span class="p">(</span><span class="k">String</span><span class="p">[]</span> <span class="n">args</span><span class="p">)</span> <span class="n">throws</span> <span class="n">Exception</span> <span class="p">{</span>
+		<span class="k">String</span> <span class="n">infile</span> <span class="p">=</span> <span class="s2">"C:</span><span class="se">\\</span><span class="s2">copy.sql"</span><span class="p">;</span>
+		<span class="k">String</span> <span class="n">outfile</span> <span class="p">=</span> <span class="s2">"C:</span><span class="se">\\</span><span class="s2">copy.txt"</span><span class="p">;</span>
+		<span class="p">//</span> <span class="err">获取源文件和目标文件的输入输出流</span>
+		<span class="n">FileInputStream</span> <span class="n">fin</span> <span class="p">=</span> <span class="n">new</span> <span class="n">FileInputStream</span><span class="p">(</span><span class="n">infile</span><span class="p">);</span>
+		<span class="n">FileOutputStream</span> <span class="n">fout</span> <span class="p">=</span> <span class="n">new</span> <span class="n">FileOutputStream</span><span class="p">(</span><span class="n">outfile</span><span class="p">);</span>
+		<span class="p">//</span> <span class="err">获取输入输出通道</span>
+		<span class="n">FileChannel</span> <span class="n">fcin</span> <span class="p">=</span> <span class="n">fin</span><span class="p">.</span><span class="n">getChannel</span><span class="p">();</span>
+		<span class="n">FileChannel</span> <span class="n">fcout</span> <span class="p">=</span> <span class="n">fout</span><span class="p">.</span><span class="n">getChannel</span><span class="p">();</span>
+		<span class="p">//</span> <span class="err">创建缓冲区</span>
+		<span class="n">ByteBuffer</span> <span class="n">buffer</span> <span class="p">=</span> <span class="n">ByteBuffer</span><span class="p">.</span><span class="n">allocate</span><span class="p">(</span><span class="m">1024</span><span class="p">);</span>
+		<span class="k">while</span> <span class="p">(</span><span class="nb">true</span><span class="p">)</span> <span class="p">{</span>
+			<span class="p">//</span> <span class="n">clear</span><span class="err">方法重设缓冲区，使它可以接受读入的数据</span>
+			<span class="n">buffer</span><span class="p">.</span><span class="n">clear</span><span class="p">();</span>
+			<span class="p">//</span> <span class="err">从输入通道中将数据读到缓冲区</span>
+			<span class="n">int</span> <span class="n">r</span> <span class="p">=</span> <span class="n">fcin</span><span class="p">.</span><span class="nb">read</span><span class="p">(</span><span class="n">buffer</span><span class="p">);</span>
+			<span class="p">//</span> <span class="n">read</span><span class="err">方法返回读取的字节数，可能为零，如果该通道已到达流的末尾，则返回</span><span class="p">-</span><span class="m">1</span>
+			<span class="k">if</span> <span class="p">(</span><span class="n">r</span> <span class="p">==</span> <span class="p">-</span><span class="m">1</span><span class="p">)</span> <span class="p">{</span>
+				<span class="k">break</span><span class="p">;</span>
+			<span class="p">}</span>
+			<span class="p">//</span> <span class="n">flip</span><span class="err">方法让缓冲区可以将新读入的数据写入另一个通道</span>
+			<span class="n">buffer</span><span class="p">.</span><span class="n">flip</span><span class="p">();</span>
+			<span class="p">//</span> <span class="err">从输出通道中将数据写入缓冲区</span>
+			<span class="n">fcout</span><span class="p">.</span><span class="nb">write</span><span class="p">(</span><span class="n">buffer</span><span class="p">);</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+
+
+<span class="k">package</span> <span class="n">sample</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>其中 buffer 内部结构如下 ( 下图拷贝自资料 ):</p>
+
+<p><a href="https://www.jfox.info/go.php?url=http://www.jfox.info/wp-content/uploads/2014/02/d6236f08-e617-34be-81f2-c53c126de3d7.jpg"><img src="31b55cb.jpg" alt="d6236f08-e617-34be-81f2-c53c126de3d7" /></a></p>
+
+<p>图2：buffer内部结构</p>
+
+<p>一个 buffer 主要由 position,limit,capacity 三个变量来控制读写的过程。此三个变量的含义见如下表格：</p>
+
+<p><strong>参数</strong></p>
+
+<p>**写模式   **</p>
+
+<p><strong>读模式</strong></p>
+
+<p>position</p>
+
+<p>当前写入的单位数据数量。</p>
+
+<p>当前读取的单位数据位置。</p>
+
+<p>limit</p>
+
+<p>代表最多能写多少单位数据和容量是一样的。</p>
+
+<p>代表最多能读多少单位数据，和之前写入的单位数据量一致。</p>
+
+<p>capacity</p>
+
+<p>buffer 容量</p>
+
+<p>buffer 容量</p>
+
+<p>Buffer 常见方法：</p>
+
+<p>flip(): 写模式转换成读模式</p>
+
+<p>rewind() ：将 position 重置为 0 ，一般用于重复读。</p>
+
+<p>clear() ：清空 buffer ，准备再次被写入 (position 变成 0 ， limit 变成 capacity) 。</p>
+
+<p>compact(): 将未读取的数据拷贝到 buffer 的头部位。</p>
+
+<p>mark() 、 reset():mark 可以标记一个位置， reset 可以重置到该位置。</p>
+
+<p>Buffer 常见类型： ByteBuffer 、 MappedByteBuffer 、 CharBuffer 、 DoubleBuffer 、 FloatBuffer 、 IntBuffer 、LongBuffer 、 ShortBuffer 。</p>
+
+<p>channel 常见类型 :FileChannel 、 DatagramChannel(UDP) 、 SocketChannel(TCP) 、 ServerSocketChannel(TCP)</p>
+
+<p>在本机上面做了个简单的性能测试。我的笔记本性能一般。 ( 具体代码可以见附件。见 nio.sample.filecopy 包下面的例子 ) 以下是参考数据：</p>
+
+<p>–        场景 1 ： Copy 一个 370M 的文件</p>
+
+<p>–        场景 2: 三个线程同时拷贝，每个线程拷贝一个 370M 文件</p>
+
+<p><strong>场景</strong></p>
+
+<p><strong>FileInputStream+</strong></p>
+
+<p><strong>FileOutputStream</strong></p>
+
+<p><strong>FileInputStream+</strong></p>
+
+<p><strong>BufferedInputStream+</strong></p>
+
+<p><strong>FileOutputStream</strong></p>
+
+<p><strong>ByteBuffer+</strong></p>
+
+<p><strong>FileChannel</strong></p>
+
+<p><strong>MappedByteBuffer</strong></p>
+
+<p><strong>+FileChannel</strong></p>
+
+<p>场景一时间 ( 毫秒)</p>
+
+<p>25155</p>
+
+<p>17500</p>
+
+<p>19000</p>
+
+<p>16500</p>
+
+<p>场景二时间 ( 毫秒 )</p>
+
+<p>69000</p>
+
+<p>67031</p>
+
+<p>74031</p>
+
+<p>71016</p>
+
+<p><strong>5.    **</strong>nio.charset**</p>
+
+<p>字符编码解码 : 字节码本身只是一些数字，放到正确的上下文中被正确被解析。向 ByteBuffer 中存放数据时需要考虑字符集的编码方式，读取展示 ByteBuffer 数据时涉及对字符集解码。</p>
+
+<p>Java.nio.charset 提供了编码解码一套解决方案。</p>
+
+<p>以我们最常见的 http 请求为例，在请求的时候必须对请求进行正确的编码。在得到响应时必须对响应进行正确的解码。</p>
+
+<p>以下代码向 baidu 发一次请求，并获取结果进行显示。例子演示到了 charset 的使用。</p>
+
+<p>例子 2 BaiduReader.java</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">nio</span><span class="p">.</span><span class="n">readpage</span><span class="p">;</span>
+
+<span class="n">import</span> <span class="n">java</span><span class="p">.</span><span class="n">nio</span><span class="p">.</span><span class="n">ByteBuffer</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">java</span><span class="p">.</span><span class="n">nio</span><span class="p">.</span><span class="n">channels</span><span class="p">.</span><span class="n">SocketChannel</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">java</span><span class="p">.</span><span class="n">nio</span><span class="p">.</span><span class="n">charset</span><span class="p">.</span><span class="n">Charset</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">java</span><span class="p">.</span><span class="n">net</span><span class="p">.</span><span class="n">InetSocketAddress</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">java</span><span class="p">.</span><span class="n">io</span><span class="p">.</span><span class="n">IOException</span><span class="p">;</span>
+<span class="k">public</span> <span class="n">class</span> <span class="n">BaiduReader</span> <span class="p">{</span>
+	<span class="n">private</span> <span class="n">Charset</span> <span class="n">charset</span> <span class="p">=</span> <span class="n">Charset</span><span class="p">.</span><span class="n">forName</span><span class="p">(</span><span class="s2">"GBK"</span><span class="p">);//</span> <span class="err">创建</span><span class="n">GBK</span><span class="err">字符集</span>
+	<span class="n">private</span> <span class="n">SocketChannel</span> <span class="n">channel</span><span class="p">;</span>
+	<span class="k">public</span> <span class="n">void</span> <span class="n">readHTMLContent</span><span class="p">()</span> <span class="p">{</span>
+		<span class="n">try</span> <span class="p">{</span>
+			<span class="n">InetSocketAddress</span> <span class="n">socketAddress</span> <span class="p">=</span> <span class="n">new</span> <span class="n">InetSocketAddress</span><span class="p">(</span>
+<span class="s2">"www.baidu.com"</span><span class="p">,</span> <span class="m">80</span><span class="p">);</span>
+<span class="p">//</span><span class="n">step1</span><span class="p">:</span><span class="err">打开连接</span>
+			<span class="n">channel</span> <span class="p">=</span> <span class="n">SocketChannel</span><span class="p">.</span><span class="n">open</span><span class="p">(</span><span class="n">socketAddress</span><span class="p">);</span>
+		<span class="p">//</span><span class="n">step2</span><span class="p">:</span><span class="err">发送请求，使用</span><span class="n">GBK</span><span class="err">编码</span>
+			<span class="n">channel</span><span class="p">.</span><span class="nb">write</span><span class="p">(</span><span class="n">charset</span><span class="p">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">"GET "</span> <span class="p">+</span> <span class="s2">"/ HTTP/1.1"</span> <span class="p">+</span> <span class="s2">"</span><span class="se">\r\n\r\n</span><span class="s2">"</span><span class="p">));</span>
+			<span class="p">//</span><span class="n">step3</span><span class="p">:</span><span class="err">读取数据</span>
+			<span class="n">ByteBuffer</span> <span class="n">buffer</span> <span class="p">=</span> <span class="n">ByteBuffer</span><span class="p">.</span><span class="n">allocate</span><span class="p">(</span><span class="m">1024</span><span class="p">);//</span> <span class="err">创建</span><span class="m">1024</span><span class="err">字节的缓冲</span>
+			<span class="k">while</span> <span class="p">(</span><span class="n">channel</span><span class="p">.</span><span class="nb">read</span><span class="p">(</span><span class="n">buffer</span><span class="p">)</span> <span class="c1">!= -1) {
+</span>				<span class="n">buffer</span><span class="p">.</span><span class="n">flip</span><span class="p">();//</span> <span class="n">flip</span><span class="err">方法在读缓冲区字节操作之前调用。</span>
+				<span class="nf">System</span><span class="p">.</span><span class="n">out</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="n">charset</span><span class="p">.</span><span class="n">decode</span><span class="p">(</span><span class="n">buffer</span><span class="p">));</span>
+				<span class="p">//</span> <span class="err">使用</span><span class="n">Charset</span><span class="p">.</span><span class="n">decode</span><span class="err">方法将字节转换为字符串</span>
+				<span class="n">buffer</span><span class="p">.</span><span class="n">clear</span><span class="p">();//</span> <span class="err">清空缓冲</span>
+			<span class="p">}</span>
+		<span class="p">}</span> <span class="n">catch</span> <span class="p">(</span><span class="n">IOException</span> <span class="n">e</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nf">System</span><span class="p">.</span><span class="n">err</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="n">e</span><span class="p">.</span><span class="n">toString</span><span class="p">());</span>
+		<span class="p">}</span> <span class="n">finally</span> <span class="p">{</span>
+			<span class="k">if</span> <span class="p">(</span><span class="n">channel</span> <span class="c1">!= null) {
+</span>				<span class="n">try</span> <span class="p">{</span>
+					<span class="n">channel</span><span class="p">.</span><span class="n">close</span><span class="p">();</span>
+				<span class="p">}</span> <span class="n">catch</span> <span class="p">(</span><span class="n">IOException</span> <span class="n">e</span><span class="p">)</span> <span class="p">{</span>
+				<span class="p">}</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+	<span class="k">public</span> <span class="n">static</span> <span class="n">void</span> <span class="n">main</span><span class="p">(</span><span class="k">String</span><span class="p">[]</span> <span class="n">args</span><span class="p">)</span> <span class="p">{</span>
+		<span class="n">new</span> <span class="n">BaiduReader</span><span class="p">().</span><span class="n">readHTMLContent</span><span class="p">();</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<ol>
+  <li><strong>6.      **</strong>非阻塞 IO**</li>
+</ol>
+
+<p>关于非阻塞 IO 将从何为阻塞、何为非阻塞、非阻塞原理和异步核心 API 几个方面来理解。</p>
+
+<p><strong>何为阻塞？</strong></p>
+
+<p>一个常见的网络 IO 通讯流程如下 :</p>
+
+<p><a href="https://www.jfox.info/go.php?url=http://www.jfox.info/wp-content/uploads/2014/02/6fb291bd-3b9a-3067-a1e6-41cce3804409.jpg"><img src="4f2ca65.jpg" alt="6fb291bd-3b9a-3067-a1e6-41cce3804409" /></a></p>
+
+<p>图3：网络通讯基本过程</p>
+
+<p>从该网络通讯过程来理解一下何为阻塞 :</p>
+
+<p>在以上过程中若连接还没到来，那么 accept 会阻塞 , 程序运行到这里不得不挂起， CPU 转而执行其他线程。</p>
+
+<p>在以上过程中若数据还没准备好， read 会一样也会阻塞。</p>
+
+<p>阻塞式网络 IO 的特点：多线程处理多个连接。每个线程拥有自己的栈空间并且占用一些 CPU 时间。每个线程遇到外部为准备好的时候，都会阻塞掉。阻塞的结果就是会带来大量的进程上下文切换。且大部分进程上下文切换可能是无意义的。比如假设一个线程监听一个端口，一天只会有几次请求进来，但是该 cpu 不得不为该线程不断做上下文切换尝试，大部分的切换以阻塞告终。</p>
+
+<p><strong>何为非阻塞？</strong></p>
+
+<p>下面有个隐喻：</p>
+
+<p>一辆从 A 开往 B 的公共汽车上，路上有很多点可能会有人下车。司机不知道哪些点会有哪些人会下车，对于需要下车的人，如何处理更好？</p>
+
+<ol>
+  <li>
+    <p>司机过程中定时询问每个乘客是否到达目的地，若有人说到了，那么司机停车，乘客下车。 ( 类似阻塞式 )</p>
+  </li>
+  <li>
+    <p>每个人告诉售票员自己的目的地，然后睡觉，司机只和售票员交互，到了某个点由售票员通知乘客下车。 ( 类似非阻塞 )</p>
+  </li>
+</ol>
+
+<p>很显然，每个人要到达某个目的地可以认为是一个线程，司机可以认为是 CPU 。在阻塞式里面，每个线程需要不断的轮询，上下文切换，以达到找到目的地的结果。而在非阻塞方式里，每个乘客 ( 线程 ) 都在睡觉 ( 休眠 ) ，只在真正外部环境准备好了才唤醒，这样的唤醒肯定不会阻塞。</p>
+
+<p><strong>非阻塞的原理</strong></p>
+
+<p>把整个过程切换成小的任务，通过任务间协作完成。</p>
+
+<p>由一个专门的线程来处理所有的 IO 事件，并负责分发。</p>
+
+<p>事件驱动机制：事件到的时候触发，而不是同步的去监视事件。</p>
+
+<p>线程通讯：线程之间通过 wait,notify 等方式通讯。保证每次上下文切换都是有意义的。减少无谓的进程切换。</p>
+
+<p>以下是异步 IO 的结构：</p>
+
+<p><a href="https://www.jfox.info/go.php?url=http://www.jfox.info/wp-content/uploads/2014/02/7dac568f-b3bf-38f7-8392-f5b6d1fb2b3f.jpg"><img src="72c47e3.jpg" alt="7dac568f-b3bf-38f7-8392-f5b6d1fb2b3f" /></a></p>
+
+<p>图4：非阻塞基本原理</p>
+
+<p>Reactor 就是上面隐喻的售票员角色。每个线程的处理流程大概都是读取数据、解码、计算处理、编码、发送响应。</p>
+
+<p><strong>异步 IO **</strong>核心 API**</p>
+
+<p>Selector</p>
+
+<p>异步 IO 的核心类，它能检测一个或多个通道 (channel) 上的事件，并将事件分发出去。</p>
+
+<p>使用一个 select 线程就能监听多个通道上的事件，并基于事件驱动触发相应的响应。而不需要为每个 channel 去分配一个线程。</p>
+
+<p>SelectionKey</p>
+
+<p>包含了事件的状态信息和时间对应的通道的绑定。</p>
+
+<p>例子 1 单线程实现监听两个端口。 ( 见 nio.asyn 包下面的例子。 )</p>
+
+<p>例子 2 NIO 线程协作实现资源合理利用。 (wait,notify) 。 ( 见 nio.asyn.multithread 下的例子 )</p>
+
+<p><a href="https://www.jfox.info/go.php?url=http://www.jfox.info/wp-content/uploads/2014/02/java-nio-example.rar">java-nio-example.rar</a></p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/java-nio-jieshao.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/java-nio-jieshao.html">&laquo; JAVA nio 简介</a>
+  
+  
+  <a class="next" href="/2017/html5-zai-liu-lang-qi-duan-yong-js-chuang-jian-xia-zai-wen-jian.html">HTML5在浏览器端用JS创建和下载文件 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

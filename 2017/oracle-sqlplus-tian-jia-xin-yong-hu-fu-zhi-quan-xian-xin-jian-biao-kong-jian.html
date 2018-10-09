@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>oracle sqlplus添加新用户、赋值权限、新建表空间 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="oracle sqlplus添加新用户、赋值权限、新建表空间" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="By Lee - Last updated: 星期三, 九月 3, 2014" />
+<meta property="og:description" content="By Lee - Last updated: 星期三, 九月 3, 2014" />
+<link rel="canonical" href="http://www.jfox.info/2017/oracle-sqlplus-tian-jia-xin-yong-hu-fu-zhi-quan-xian-xin-jian-biao-kong-jian.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/oracle-sqlplus-tian-jia-xin-yong-hu-fu-zhi-quan-xian-xin-jian-biao-kong-jian.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:46:26+00:00" />
+<script type="application/ld+json">
+{"description":"By Lee - Last updated: 星期三, 九月 3, 2014","@type":"BlogPosting","url":"http://www.jfox.info/2017/oracle-sqlplus-tian-jia-xin-yong-hu-fu-zhi-quan-xian-xin-jian-biao-kong-jian.html","headline":"oracle sqlplus添加新用户、赋值权限、新建表空间","dateModified":"2017-01-01T15:46:26+00:00","datePublished":"2017-01-01T15:46:26+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/oracle-sqlplus-tian-jia-xin-yong-hu-fu-zhi-quan-xian-xin-jian-biao-kong-jian.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">oracle sqlplus添加新用户、赋值权限、新建表空间</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:46:26+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>By Lee - Last updated: 星期三, 九月 3, 2014</p>
+
+<p>环境变量path如果配置过D:\oracle\product\10.2.0\db_1\bin;</p>
+
+<p>在cmd下可以直接使用sqlplus</p>
+
+<p>无登陆状态进入sqlplus</p>
+
+<p>c:&gt;  sqlplus /nolog</p>
+
+<p>使用system账号以sysdba的身份连接</p>
+
+<p>SQL&gt;  connect system/tukeping as sysdba</p>
+
+<p>查看当前用户</p>
+
+<p>SQL&gt;  show user</p>
+
+<p>新建用户</p>
+
+<p>SQL&gt;  create user tkp1 identified by tkp1;</p>
+
+<p>授权</p>
+
+<p>SQL&gt;  grant connect,resource to tkp1;</p>
+
+<p>退出sqlplus</p>
+
+<p>SQL&gt;  quit</p>
+
+<p>以tkp1用进入到sqlplus</p>
+
+<p>c:&gt;  sqlplus tkp1/tkp1</p>
+
+<p>查看所有用户</p>
+
+<p>SQL&gt; select * from all_users;</p>
+
+<p>退出</p>
+
+<p>SQL&gt;  quit</p>
+
+<p>以sysdba身份进入删除tkp1用户</p>
+
+<p>c:&gt; sqlplus system/tukeping</p>
+
+<p>SQL&gt; drop user tkp1 cascade;</p>
+
+<p>创建表空间</p>
+
+<p>SQL&gt; create tablespace test1 datafile ‘d:\oracle\tablespace\tabletest1.dbf’ size 50M;</p>
+
+<p>创建名为tkp1的用户，其缺省表空间为test1</p>
+
+<p>SQL&gt; create user tkp1 identified by tkp1 default tablespace test1;</p>
+
+<p>查看系统能给的所有权限</p>
+
+<p>SQL&gt;select name from sys.system_privilege_map;</p>
+
+<p>查看当前连接用户的所有权限</p>
+
+<p>SQL&gt; select * from user_sys_privs;</p>
+
+<p>移除tkp1的sysdba权限</p>
+
+<p>SQL&gt; revoke sysdba from tkp1;</p>
+
+<p>SQL&gt;commit;</p>
+
+<p>关闭oracle数据库</p>
+
+<p>SQL&gt;shutdown immediate;</p>
+
+<p>开启oracle数据库</p>
+
+<p>SQL&gt;startup</p>
+
+<p>此外：可以用system账户以dba身份用PL/SQL进入，进行以上所有操作</p>
+
+<p>博外知识：</p>
+
+<p>drop user xxx cascade;(删除用户下面的所有对象，注意关键字cascade)</p>
+
+<p>drop tablespace xxx INCLUDING CONTENTS;(删除表空间）</p>
+
+<p>create user user1 identified by password default tablespace users temporary temp；(创建user1，密码为password,使用的表空间为tablespace)</p>
+
+<p>grant connect,resource,dba to user1;(赋予权限）</p>
+
+<p>connect sys/密码 as sysdba;</p>
+
+<p>ALTER USER “SCOTT” IDENTIFIED BY “<strong>**</strong>*” （修改SCOTT用户密码）</p>
+
+<p>ALTER USER “SCOTT” ACCOUNT UNLOCK（为SCOTT用户解锁）</p>
+
+<p>1.查看所有用户：</p>
+
+<p>select * from dba_user;</p>
+
+<p>select * from all_users;</p>
+
+<p>select * from user_users;</p>
+
+<p>2.查看用户系统权限：</p>
+
+<p>select * from dba_sys_privs;</p>
+
+<p>select * from all_sys_privs;</p>
+
+<p>select * from user_sys_privs;</p>
+
+<p>3.查看用户对象权限：</p>
+
+<p>select * from dba_tab_privs;</p>
+
+<p>select * from all_tab_privs;</p>
+
+<p>select * from user_tab_privs;</p>
+
+<p>4.查看所有角色：</p>
+
+<p>select * from dba_roles;</p>
+
+<p>5.查看用户所拥有的角色：</p>
+
+<p>select * from dba_role_privs;</p>
+
+<p>select * from user_role_privs;</p>
+
+<p>显示当前连接用户:show user;</p>
+
+<p>ALTER   USER   test   DEFAULT   TABLESPACE   users   QUOTA   UNLIMITED   ON   users; (修改用户默认表空间)
+ALTER   USER   test   TEMPORARY   TABLESPACE   temp;(修改用户临时空间)</p>
+
+<p><a href="https://www.jfox.info/go.php?url=http://www.jfox.info/url.php?_v=v4&amp;_src=&amp;isencode=1&amp;content=dGltZT0xNDA5NzE3MzYxNDEyJnVybD1odHRwJTNBJTJGJTJGZ2Vla2FueXdoZXJlLmJsb2cuMTYzLmNvbSUyRmJsb2clMkZzdGF0aWMlMkYxODk5MjAzNzMyMDExNjE4MjIzMTY3MjElMkY=">原文</a></p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/oracle-sqlplus-tian-jia-xin-yong-hu-fu-zhi-quan-xian-xin-jian-biao-kong-jian.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/ru-he-tong-guo-yi-ge-wen-ti-wan-cheng-zui-cheng-gong-de-ji-shu-mian-shi.html">&laquo; 如何通过一个问题，完成最成功的技术面试</a>
+  
+  
+  <a class="next" href="/2017/yi-wei-nv-cheng-xu-yuan-de-zheng-hun-ppt-hen-gan-ren.html">一位女程序员的征婚 PPT，很感人！ &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

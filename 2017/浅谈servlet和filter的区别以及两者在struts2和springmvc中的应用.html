@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>浅谈Servlet和Filter的区别以及两者在Struts2和Springmvc中的应用 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="浅谈Servlet和Filter的区别以及两者在Struts2和Springmvc中的应用" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="在javaweb开发中，Servlet和Filter是很重要的两个概念，我们平时进行javaweb开发的时候，会经常和Servlet和Filter打交道，但我们真的了解Servlet和Filter吗？" />
+<meta property="og:description" content="在javaweb开发中，Servlet和Filter是很重要的两个概念，我们平时进行javaweb开发的时候，会经常和Servlet和Filter打交道，但我们真的了解Servlet和Filter吗？" />
+<link rel="canonical" href="http://www.jfox.info/2017/%E6%B5%85%E8%B0%88servlet%E5%92%8Cfilter%E7%9A%84%E5%8C%BA%E5%88%AB%E4%BB%A5%E5%8F%8A%E4%B8%A4%E8%80%85%E5%9C%A8struts2%E5%92%8Cspringmvc%E4%B8%AD%E7%9A%84%E5%BA%94%E7%94%A8.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/%E6%B5%85%E8%B0%88servlet%E5%92%8Cfilter%E7%9A%84%E5%8C%BA%E5%88%AB%E4%BB%A5%E5%8F%8A%E4%B8%A4%E8%80%85%E5%9C%A8struts2%E5%92%8Cspringmvc%E4%B8%AD%E7%9A%84%E5%BA%94%E7%94%A8.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:59:23+00:00" />
+<script type="application/ld+json">
+{"description":"在javaweb开发中，Servlet和Filter是很重要的两个概念，我们平时进行javaweb开发的时候，会经常和Servlet和Filter打交道，但我们真的了解Servlet和Filter吗？","@type":"BlogPosting","url":"http://www.jfox.info/2017/%E6%B5%85%E8%B0%88servlet%E5%92%8Cfilter%E7%9A%84%E5%8C%BA%E5%88%AB%E4%BB%A5%E5%8F%8A%E4%B8%A4%E8%80%85%E5%9C%A8struts2%E5%92%8Cspringmvc%E4%B8%AD%E7%9A%84%E5%BA%94%E7%94%A8.html","headline":"浅谈Servlet和Filter的区别以及两者在Struts2和Springmvc中的应用","dateModified":"2017-01-01T15:59:23+00:00","datePublished":"2017-01-01T15:59:23+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/%E6%B5%85%E8%B0%88servlet%E5%92%8Cfilter%E7%9A%84%E5%8C%BA%E5%88%AB%E4%BB%A5%E5%8F%8A%E4%B8%A4%E8%80%85%E5%9C%A8struts2%E5%92%8Cspringmvc%E4%B8%AD%E7%9A%84%E5%BA%94%E7%94%A8.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">浅谈Servlet和Filter的区别以及两者在Struts2和Springmvc中的应用</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:59:23+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>在javaweb开发中，Servlet和Filter是很重要的两个概念，我们平时进行javaweb开发的时候，会经常和Servlet和Filter打交道，但我们真的了解Servlet和Filter吗？</p>
+
+<p>一、基本概念</p>
+
+<p>Servlet:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   Servlet 是在WEB服务器上运行的程序。这个词是在 Java applet的环境中创造的，Java applet 是一种当作单独文件跟网页一起发送的小程序，它通常用于在客户端运行，结果得到为用户进行运算或者根据用户互作用定位图形等服务。
+
+   服务器上需要一些程序，常常是根据用户输入访问数据库的程序。这些通常是使用公共网关接口（Common Gateway Interface，CGI）应用程序完成的。然而，在服务器上运行 Java，这种程序可使用 Java 编程语言实现。在通信量大的服务器上，JavaServlet 的优点在于它们的执行速度更快于 CGI 程序。各个用户请求被激活成单个程序中的一个线程，而无需创建单独的进程，这意味着服务器端处理请求的系统开销将明显降低。
+
+    Servlet创建并返回一个包含基于客户请求性质的动态内容的完整的html页面； 创建可嵌入到现有的html页面中的一部分html页面（html片段）； 读取客户端发来的隐藏数据； 读取客户端发来的显示数据； 与其他服务器资源（包括数据库和java的应用程序）进行通信； 通过状态代码和响应头向客户端发送隐藏数据。
+</code></pre></div></div>
+
+<p>Filter:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    filter是一个可以复用的代码片段，可以用来转换HTTP请求、响应和头信息。Filter不像Servlet，它不能产生一个请求或者响应，它只是修改对某一资源的请求，或者修改从某一的响应。
+</code></pre></div></div>
+
+<p>二、生命周期：
+1、servlet：servlet的生命周期始于它被装入web服务器的内存时，并在web服务器终止或重新装入servlet时结束。servlet一旦被装入web服务器，一般不会从web服务器内存中删除，直至web服务器关闭或重新结束。
+(1)、装入：启动服务器时加载Servlet的实例；
+(2)、初始化：web服务器启动时或web服务器接收到请求时，或者两者之间的某个时刻启动。初始化工作有init（）方法负责执行完成；
+(3)、调用：从第一次到以后的多次访问，都是只调用doGet()或doPost()方法；
+(4)、销毁：停止服务器时调用destroy()方法，销毁实例。 
+2、filter：（一定要实现javax.servlet包的Filter接口的三个方法init()、doFilter()、destroy()，空实现也行）
+(1)、启动服务器时加载过滤器的实例，并调用init()方法来初始化实例；
+(2)、每一次请求时都只调用方法doFilter()进行处理；</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    (3)、停止服务器时调用destroy()方法，销毁实例。
+</code></pre></div></div>
+
+<p>三、职责
+1、servlet：
+创建并返回一个包含基于客户请求性质的动态内容的完整的html页面；
+创建可嵌入到现有的html页面中的一部分html页面（html片段）；
+读取客户端发来的隐藏数据；
+读取客户端发来的显示数据；
+与其他服务器资源（包括数据库和java的应用程序）进行通信；
+通过状态代码和响应头向客户端发送隐藏数据。
+2、filter：
+filter能够在一个请求到达servlet之前预处理用户请求，也可以在离开servlet时处理http响应：
+在执行servlet之前，首先执行filter程序，并为之做一些预处理工作；
+根据程序需要修改请求和响应；
+在servlet被调用之后截获servlet的执行</p>
+
+<p>四、区别：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    1,servlet 流程是短的，url传来之后，就对其进行处理，之后返回或转向到某一自己指定的页面。它主要用来在 业务处理之前进行控制. 2,filter 流程是线性的， url传来之后，检查之后，可保持原来的流程继续向下执行，被下一个filter, servlet接收等，而servlet 处理之后，不会继续向下传递。filter功能可用来保持流程继续按照原来的方式进行下去，或者主导流程，而servlet的功能主要用来主导流程。 filter可用来进行字符编码的过滤，检测用户是否登陆的过滤，禁止页面缓存等
+</code></pre></div></div>
+
+<p>五、执行流程图：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>     1、servlet：
+
+           ![](49a7cd0.png)
+
+      2、filter：
+
+       ![](a3633d1.png)
+</code></pre></div></div>
+
+<p>javaweb开发我们常用到的后台框架有Struts2和Springmvc。其中Struts2的入口filter，而Springmvc的入口是servlet;</p>
+
+<p>我们在使用Struts2进行开发时，web.xml中的核心控制器是这样配置的</p>
+
+<filter>
+<filter-name>struts2</filter-name>
+<filter-class>org.apache.struts2.dispatcher.ng.filter.StrutsPrepareAndExecuteFilter</filter-class>
+</filter>
+
+<p>而使用Springmvc进行开发时，其web.xml是这样配置的</p>
+
+<servlet>
+<servlet-name>springmvc</servlet-name>
+<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+</servlet>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/%E6%B5%85%E8%B0%88servlet%E5%92%8Cfilter%E7%9A%84%E5%8C%BA%E5%88%AB%E4%BB%A5%E5%8F%8A%E4%B8%A4%E8%80%85%E5%9C%A8struts2%E5%92%8Cspringmvc%E4%B8%AD%E7%9A%84%E5%BA%94%E7%94%A8.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/rxjava%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%E4%B9%8B%E7%BA%BF%E7%A8%8B%E8%B0%83%E5%BA%A6%E4%B8%80.html">&laquo; RxJava源码分析之线程调度（一）</a>
+  
+  
+  <a class="next" href="/2017/netty%E5%BC%82%E6%AD%A5%E4%BB%BB%E5%8A%A1channelfuture.html">netty 异步任务-ChannelFuture &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

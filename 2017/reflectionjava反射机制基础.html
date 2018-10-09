@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>Reflection：Java反射机制基础 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="Reflection：Java反射机制基础" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="反射机制是在运行状态中，对于任意一个类，都能够知道这个类的所有属性和方法；对于任意一个对象，都能够调用它的任意一个方法和属性；这种动态获取的信息以及动态调用对象的方法的功能称为java语言的反射机制" />
+<meta property="og:description" content="反射机制是在运行状态中，对于任意一个类，都能够知道这个类的所有属性和方法；对于任意一个对象，都能够调用它的任意一个方法和属性；这种动态获取的信息以及动态调用对象的方法的功能称为java语言的反射机制" />
+<link rel="canonical" href="http://www.jfox.info/2017/reflectionjava%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6%E5%9F%BA%E7%A1%80.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/reflectionjava%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6%E5%9F%BA%E7%A1%80.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:53:24+00:00" />
+<script type="application/ld+json">
+{"description":"反射机制是在运行状态中，对于任意一个类，都能够知道这个类的所有属性和方法；对于任意一个对象，都能够调用它的任意一个方法和属性；这种动态获取的信息以及动态调用对象的方法的功能称为java语言的反射机制","@type":"BlogPosting","url":"http://www.jfox.info/2017/reflectionjava%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6%E5%9F%BA%E7%A1%80.html","headline":"Reflection：Java反射机制基础","dateModified":"2017-01-01T15:53:24+00:00","datePublished":"2017-01-01T15:53:24+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/reflectionjava%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6%E5%9F%BA%E7%A1%80.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Reflection：Java反射机制基础</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:53:24+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>反射机制是在运行状态中，对于任意一个类，都能够知道这个类的所有属性和方法；对于任意一个对象，都能够调用它的任意一个方法和属性；这种动态获取的信息以及动态调用对象的方法的功能称为java语言的反射机制</p>
+
+<h3 id="反射机制能做什么">反射机制能做什么</h3>
+
+<p>反射机制主要提供了以下功能：</p>
+
+<ul>
+  <li>
+    <p>在运行时判断任意一个对象所属的类</p>
+  </li>
+  <li>
+    <p>在运行时构造任意一个类的对象</p>
+  </li>
+  <li>
+    <p>在运行时判断任意一个类所具有的成员变量和方法</p>
+  </li>
+  <li>
+    <p>在运行时调用任意一个对象的方法</p>
+  </li>
+  <li>
+    <p>生成动态代理</p>
+  </li>
+</ul>
+
+<h3 id="反射机制的相关api">反射机制的相关API</h3>
+
+<h4 id="通过一个对象获得完整的包名和类名">通过一个对象获得完整的包名和类名</h4>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    @Test
+    public void getReflectionName() {
+        String str = new String();
+        System.out.println(str.getClass().getName()); // java.lang.String
+        System.out.println(str.getClass().getSimpleName()); // String
+    }
+</code></pre></div></div>
+
+<h4 id="实例化class类对象三种方式">实例化Class类对象(三种方式)</h4>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    @Test
+    public void getInitClazz() {
+
+        try {
+            // 方式一：
+            Class&lt;?&gt; clazz_1 = Class.forName("java.lang.String");
+            // 方式二：
+            Class&lt;?&gt; clazz_2 = new String().getClass();
+            // 方式三：
+            Class&lt;?&gt; clazz_3 = String.class;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+</code></pre></div></div>
+
+<h4 id="获取一个对象的父类与实现的接口">获取一个对象的父类与实现的接口</h4>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    @Test
+    public void getParentAndIntefaces() {
+
+        try {
+            Class&lt;?&gt; clazz = Class.forName("java.lang.String");
+            // 取得父类
+            Class&lt;?&gt; parentClass = clazz.getSuperclass();
+            System.out.println("clazz的父类为：" + parentClass.getName());// clazz的父类为： java.lang.Object
+            
+            // 获取所有的接口
+            Class&lt;?&gt; intes[] = clazz.getInterfaces();
+            System.out.println("clazz实现的接口有：");
+            for (int i = 0; i &lt; intes.length; i++) {
+                System.out.println((i + 1) + "：" + intes[i].getName());
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+</code></pre></div></div>
+
+<h4 id="通过反射获取属性">通过反射获取属性</h4>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    @Test
+    public void getFieldsByReflect() {
+
+        try {
+                Class&lt;?&gt; clazz = String.class ;
+                // 取得本类的全部属性
+                Field[] declaredFields = clazz.getDeclaredFields(); 
+                // 取得实现的接口或者父类的属性
+                Field[] fields = clazz.getFields();
+                
+                //遍历本类属性
+                for (Field field : declaredFields) {
+                    // 权限修饰符
+                    int mo = field.getModifiers();
+                    String priv = Modifier.toString(mo);
+                    // 属性类型
+                    Class&lt;?&gt; type = field.getType();
+                    System.out.println(priv + " " + type.getName() + " " + field.getName() + ";");
+                }
+                
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+</code></pre></div></div>
+
+<h4 id="通过反射获取方法函数">通过反射获取方法函数</h4>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    @Test
+    public void getMethodsByReflect() {
+
+        try {
+            Class&lt;?&gt; clazz = String.class ;
+            // 类的所有公用（public）方法包括其继承类的公用方法，当然也包括它所实现接口的方法
+            Method[] methods = clazz.getMethods();
+            // 类或接口声明的所有方法，包括公共、保护、默认（包）访问和私有方法，但不包括继承的方法。当然也包括它所实现接口的方法
+            Method[] declaredMethods = clazz.getDeclaredMethods();
+            
+            //遍历本类属性
+            for (Method method : methods) {
+                // 权限修饰符
+                int mo = method.getModifiers();
+                String priv = Modifier.toString(mo);
+                //返回值
+                Class&lt;?&gt; returnType = method.getReturnType();
+                //方法名
+                String methodName = method.getName();
+                //方法参数类型
+                Class&lt;?&gt;[] parameterTypes = method.getParameterTypes();
+                //抛出的异常
+                Class&lt;?&gt;[] exceptionTypes = method.getExceptionTypes();
+            }
+            
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    }
+</code></pre></div></div>
+
+<h4 id="通过反射获取构造方法">通过反射获取构造方法</h4>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    @Test
+    public void getConstructorsByReflect() {
+
+        try {
+            Class&lt;?&gt; clazz = Class.forName("java.lang.String");
+            
+            //获取构造方法
+            Constructor&lt;?&gt;[] constructors = clazz.getConstructors();
+            for (Constructor constructor : constructors) {
+                
+                //获取构造方法的参数
+                Class[] parameterTypes = constructor.getParameterTypes();
+                for (Class clazzType : parameterTypes) {
+                    System.out.print(clazzType.getSimpleName() + "   ");
+                }
+                System.out.println();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+</code></pre></div></div>
+
+<h4 id="通过反射机制设置属性">通过反射机制设置属性</h4>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    @Test
+    public void oprFieldsByReflect() {
+
+        try {
+            
+            Class&lt;?&gt; clazz = Class.forName("java.lang.String");
+            //实例化对象
+            String str = new String("String");
+            //可以直接对 private 的属性赋值
+            Field field = clazz.getDeclaredField("hash");
+            //改变属性
+            field.setAccessible(true);
+            //调用映射属性
+            field.set(str, 0);
+            
+            System.out.println(field.get(str));
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+</code></pre></div></div>
+
+<h4 id="通过反射机制调用方法">通过反射机制调用方法</h4>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    @Test
+    public void oprMethodsByReflect() {
+
+        try {
+            Class&lt;?&gt; clazz = Class.forName("java.lang.String");
+            //实例化一个对象
+            String str = new String("String");
+            //反射出一个方法
+            Method method =  clazz.getMethod("startsWith", String.class);
+            //调用映射方法
+            Object result = method.invoke(str, "Str");
+            
+            System.out.println(result);
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+</code></pre></div></div>
+
+<h3 id="实例应用">实例应用</h3>
+
+<h4 id="在泛型为integer的arraylist中存放一个string类型的对象">在泛型为Integer的ArrayList中存放一个String类型的对象</h4>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    /**
+     * 在泛型为Integer的ArrayList中存放一个String类型的对象
+     * @throws Exception
+     */
+    @Test
+    public void test() throws Exception {
+           ArrayList&lt;Integer&gt; list = new ArrayList&lt;Integer&gt;();
+            Method method = list.getClass().getMethod("add", Object.class);
+            method.invoke(list, "Java反射机制实例");
+            System.out.println(list.get(0));
+    }
+</code></pre></div></div>
+
+<h4 id="通过反射取得并修改数组的信息">通过反射取得并修改数组的信息</h4>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    /**
+     * 通过反射取得并修改数组的信息
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void test() throws Exception {
+        int[] temp = { 1, 2, 3, 4, 5 };
+        Class&lt;?&gt; demo = temp.getClass().getComponentType();
+        
+        System.out.println("数组类型： " + demo.getName());
+        
+        System.out.println("数组长度  " + Array.getLength(temp));
+        
+        System.out.println("数组的第一个元素: " + Array.get(temp, 0));
+        
+        Array.set(temp, 0, 100);
+        System.out.println("修改之后数组第一个元素为： " + Array.get(temp, 0));
+    }
+</code></pre></div></div>
+
+<h4 id="通过反射机制修改数组的大小">通过反射机制修改数组的大小</h4>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   /**
+     * 通过反射机制修改数组的大小
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void test() throws Exception {
+
+        int[] temp = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+        int[] newTemp = (int[]) arrayInc(temp, 15);
+        print(newTemp);
+        String[] atr = { "a", "b", "c" };
+        String[] str1 = (String[]) arrayInc(atr, 8);
+        print(str1);
+    }
+
+    // 修改数组大小
+    private static Object arrayInc(Object obj, int len) {
+        Class&lt;?&gt; arr = obj.getClass().getComponentType();
+        Object newArr = Array.newInstance(arr, len);
+        int co = Array.getLength(obj);
+        System.arraycopy(obj, 0, newArr, 0, co);
+        return newArr;
+    }
+
+    // 打印
+    private static void print(Object obj) {
+        Class&lt;?&gt; c = obj.getClass();
+        if (!c.isArray()) {
+            return;
+        }
+        System.out.println("数组长度为： " + Array.getLength(obj));
+        for (int i = 0; i &lt; Array.getLength(obj); i++) {
+            System.out.print(Array.get(obj, i) + " ");
+        }
+        System.out.println();
+    }
+</code></pre></div></div>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/reflectionjava%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6%E5%9F%BA%E7%A1%80.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/java%E5%BC%80%E5%8F%91%E7%B3%BB%E7%BB%9F%E5%86%85%E6%A0%B8%E8%AE%A9%E5%86%85%E6%A0%B8%E4%BB%8E%E4%B8%A5%E9%87%8D%E9%94%99%E8%AF%AF%E4%B8%AD%E6%81%A2%E5%A4%8D.html">&laquo; java开发系统内核：让内核从严重错误中恢复</a>
+  
+  
+  <a class="next" href="/2017/scanner%E5%9F%BA%E6%9C%AC%E7%94%A8%E6%B3%95.html">Scanner基本用法 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

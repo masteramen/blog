@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>PHP 程序员如何快速进行 Java 开发 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="PHP 程序员如何快速进行 Java 开发" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="入门不要拿着放大镜去学" />
+<meta property="og:description" content="入门不要拿着放大镜去学" />
+<link rel="canonical" href="http://www.jfox.info/2017/php%E7%A8%8B%E5%BA%8F%E5%91%98%E5%A6%82%E4%BD%95%E5%BF%AB%E9%80%9F%E8%BF%9B%E8%A1%8Cjava%E5%BC%80%E5%8F%91.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/php%E7%A8%8B%E5%BA%8F%E5%91%98%E5%A6%82%E4%BD%95%E5%BF%AB%E9%80%9F%E8%BF%9B%E8%A1%8Cjava%E5%BC%80%E5%8F%91.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:58:13+00:00" />
+<script type="application/ld+json">
+{"description":"入门不要拿着放大镜去学","@type":"BlogPosting","url":"http://www.jfox.info/2017/php%E7%A8%8B%E5%BA%8F%E5%91%98%E5%A6%82%E4%BD%95%E5%BF%AB%E9%80%9F%E8%BF%9B%E8%A1%8Cjava%E5%BC%80%E5%8F%91.html","headline":"PHP 程序员如何快速进行 Java 开发","dateModified":"2017-01-01T15:58:13+00:00","datePublished":"2017-01-01T15:58:13+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/php%E7%A8%8B%E5%BA%8F%E5%91%98%E5%A6%82%E4%BD%95%E5%BF%AB%E9%80%9F%E8%BF%9B%E8%A1%8Cjava%E5%BC%80%E5%8F%91.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">PHP 程序员如何快速进行 Java 开发</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:58:13+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<h2 id="入门不要拿着放大镜去学">入门不要拿着放大镜去学</h2>
+
+<p>就像盲人摸象一样，他要想弄清楚大象的真实面貌可能要摸很久，就好比我们拿着放大镜在学习 java 一样，java 经过这么多年的发展，可以说非常庞大。如果我们要知道大象长什么样，就应该放下手中的放大镜，向后退远点，反而能够非常清晰的看到它的全貌。学习一门新的语言也一样，有很多很多网上的教程，非常的大而全，一般得系统的学习30~60小时之后才能正式的接触项目开发。基础很重要，但是学习了太多的基础会让大家失去学习的乐趣和自信心。很多知识点其实可以项目之后再补。按需去学，反而是自我驱动着去学习的最佳方式。
+<img src="474f8d5.png" alt="" /></p>
+
+<p>比如 hashmap 的哈希分布、哈希碰撞、动态扩容，这些都是我们后期深入提高需要理解的内容，初期，我们只需要知道能拿 hashmap 做什么就行。</p>
+
+<h2 id="以实现自己熟悉的东西为导向">以实现自己熟悉的东西为导向</h2>
+
+<p>比如我们做 Web 后端 api 开发，首先是常用的循环/迭代、条件判断、增删改成。那么能不能快速用 java 实现一遍这些我们用 php 做起来非常顺手的事呢？
+这样有助于我们快速提升自信心。</p>
+
+<h2 id="使用类比的学习方法">使用类比的学习方法</h2>
+
+<p>PHP 里如何实现，重新用 java 实现一遍就行了。</p>
+
+<h2 id="最后深入系统的学习">最后深入系统的学习</h2>
+
+<p>当自己实现了一些小 demo 再去参考别人的项目。如果一开始就直接看别人的项目，可能完全不知道别人在干嘛。比如别人用了<code class="highlighter-rouge">ConcurrentHashMap</code>，就再去思考为什么我用<code class="highlighter-rouge">HashMap</code>他却用<code class="highlighter-rouge">ConcurrentHashMap</code>，带着问题，带着思考去看开源代码。</p>
+
+<p>完成了一些简单的项目了之后就可以再回过头来系统的学习了。这时候就会有不一样的收获。</p>
+
+<p>最后就是当项目需要调优，性能提升的时候，再各个击破，深入学习，更有针对性，更有目标性。</p>
+
+<h2 id="实战开始">实战开始</h2>
+
+<p>我们用 netty 来提供高性能的 web 服务服务。使用简单方便（netty 并不简单），不依赖其他软件。然后思考完成一个简单的 web api 服务器需要哪些必不可少的组成部分。（其实在思考这的时候，你必须要要对做简单的架构必须熟记于心）。
+我简单概括了下：</p>
+
+<ol>
+  <li>
+    <p>java 基础数据类型（php 也有，不怕）</p>
+  </li>
+  <li>
+    <p>java 集合框架（php 有数组，很强大）</p>
+  </li>
+  <li>
+    <p>初识 maven（php 有 composer）</p>
+  </li>
+  <li>
+    <p>反射 （框架路由等地方要用到，php 也有）</p>
+  </li>
+  <li>
+    <p>序列化（数据传输要用到，php 没有复杂的数据结构要简单 N 倍）</p>
+  </li>
+  <li>
+    <p>jdbc （数据库操作要用到，php 有 pdo）</p>
+  </li>
+  <li>
+    <p>大概认识泛型、注解等语法 （可选）</p>
+  </li>
+  <li>
+    <p>使用 netty 实战开发一个 web api 服务（php 有 swoole）</p>
+  </li>
+</ol>
+
+<h3 id="java-基本的数据结构各种基本数据类型包装类">Java 基本的数据结构、各种基本数据类型包装类</h3>
+
+<p><img src="6533a7b.png" alt="" /></p>
+
+<h3 id="java--collections-framework-高频类举例">Java – Collections Framework 高频类举例</h3>
+
+<p><img src="77cc48f.png" alt="" /></p>
+
+<p>HashSet 是一个没有重复元素的集合。它是由HashMap实现的，不保证元素的顺序，也就是说所说元素插入的顺序与输出的顺序不一致。</p>
+
+<p><strong>这其实是我的老朋友了，redis 里经常用，比如咱们可以它来实现一个黑名单，这样查找的速度就非常快，也不用去远程查询 redis 了，直接在当前内存中查询。</strong></p>
+
+<p>ArrayList 基于数组来实现集合的功能，其内部维护了一个可变长的对象数组，集合内所有对象存储于这个数组中，并实现该数组长度的动态伸缩。</p>
+
+<p><strong>这不就是我们的 PHP 里面常用的索引数组么？</strong></p>
+
+<p>HashMap 以哈希表数据结构实现，查找对象时通过哈希函数计算其位置，它是为快速查询而设计的。特点就是快，非线程安全。</p>
+
+<p><strong>这不就是我们的 PHP 里面常用的关联数组么？</strong></p>
+
+<p><a href="https://www.jfox.info/go.php?url=http://www.cnblogs.com/ITtangtang/p/3948786.html">http://www.cnblogs.com/ITtang…</a>
+<a href="https://www.jfox.info/go.php?url=http://www.jianshu.com/p/b54f1df33f84">http://www.jianshu.com/p/b54f…</a>
+<a href="https://www.jfox.info/go.php?url=http://www.cnblogs.com/xiaoxi/p/6089984.html">http://www.cnblogs.com/xiaoxi…</a></p>
+
+<h3 id="初识-maven">初识 maven</h3>
+
+<p>Maven的基本原理很简单，采用远程仓库和本地仓库以及一个核心的配置文件pom.xml，pom.xml中定义的jar文件从远程仓库下载到本地仓库，各个项目使用同一个本地仓库的jar，同一个版本的jar只需下载一次，而且避免每个应用都去拷贝jar。</p>
+
+<p>这和 php 的包管理工具 composer 很像，或者是 composer 是参考着 maven 而设计的。maven 的功能更强大，composer 需要每个项目都要导入一遍，maven 却像 git 一样，有一个本地仓库，第三方包也不会直接引用到项目中，而是在编译的时候才会引入（是不是很方便）。另一方面，maven 不仅仅是包管理工具，而且是一个项目管理工具，集成了编译、打包、单元测试等功能。</p>
+
+<p>下面是最简单的一个演示，依赖了 netty 、junit 两个包。然后使用<code class="highlighter-rouge">maven-compiler-plugin</code>指定了编译时候的版本规则。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;project</span> <span class="na">xmlns=</span><span class="s">"http://maven.apache.org/POM/4.0.0"</span>
+         <span class="na">xmlns:xsi=</span><span class="s">"http://www.w3.org/2001/XMLSchema-instance"</span>
+         <span class="na">xsi:schemaLocation=</span><span class="s">"http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;modelVersion&gt;</span>4.0.0<span class="nt">&lt;/modelVersion&gt;</span>
+
+    <span class="nt">&lt;groupId&gt;</span>mengkang.net<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>demo<span class="nt">&lt;/artifactId&gt;</span>
+    <span class="nt">&lt;version&gt;</span>1.0-SNAPSHOT<span class="nt">&lt;/version&gt;</span>
+
+    <span class="nt">&lt;dependencies&gt;</span>
+        <span class="nt">&lt;dependency&gt;</span>
+            <span class="nt">&lt;groupId&gt;</span>io.netty<span class="nt">&lt;/groupId&gt;</span>
+            <span class="nt">&lt;artifactId&gt;</span>netty-all<span class="nt">&lt;/artifactId&gt;</span>
+            <span class="nt">&lt;version&gt;</span>5.0.0.Alpha2<span class="nt">&lt;/version&gt;</span>
+        <span class="nt">&lt;/dependency&gt;</span>
+        <span class="nt">&lt;dependency&gt;</span>
+            <span class="nt">&lt;groupId&gt;</span>junit<span class="nt">&lt;/groupId&gt;</span>
+            <span class="nt">&lt;artifactId&gt;</span>junit<span class="nt">&lt;/artifactId&gt;</span>
+            <span class="nt">&lt;version&gt;</span>4.7<span class="nt">&lt;/version&gt;</span>
+            <span class="nt">&lt;scope&gt;</span>test<span class="nt">&lt;/scope&gt;</span>
+        <span class="nt">&lt;/dependency&gt;</span>
+    <span class="nt">&lt;/dependencies&gt;</span>
+
+    <span class="nt">&lt;build&gt;</span>
+        <span class="nt">&lt;plugins&gt;</span>
+            <span class="nt">&lt;plugin&gt;</span>
+                <span class="nt">&lt;groupId&gt;</span>org.apache.maven.plugins<span class="nt">&lt;/groupId&gt;</span>
+                <span class="nt">&lt;artifactId&gt;</span>maven-compiler-plugin<span class="nt">&lt;/artifactId&gt;</span>
+                <span class="nt">&lt;version&gt;</span>2.3.2<span class="nt">&lt;/version&gt;</span>
+                <span class="nt">&lt;configuration&gt;</span>
+                    <span class="nt">&lt;source&gt;</span>1.8<span class="nt">&lt;/source&gt;</span>
+                    <span class="nt">&lt;target&gt;</span>1.8<span class="nt">&lt;/target&gt;</span>
+                    <span class="nt">&lt;encoding&gt;</span>UTF-8<span class="nt">&lt;/encoding&gt;</span>
+                <span class="nt">&lt;/configuration&gt;</span>
+            <span class="nt">&lt;/plugin&gt;</span>
+        <span class="nt">&lt;/plugins&gt;</span>
+    <span class="nt">&lt;/build&gt;</span>
+
+<span class="nt">&lt;/project&gt;</span>
+</code></pre></div></div>
+
+<h3 id="使用-netty-构建一个-http-web-服务器">使用 netty 构建一个 http web 服务器</h3>
+
+<p>我复制了 netty 官方的 demo 地址如下：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>https://github.com/zhoumengkang/netty-http-demo/tree/web-server-init
+</code></pre></div></div>
+
+<p>当我们运行<code class="highlighter-rouge">api.mengkang.net.netty.HttpServer.main</code>方法，服务器就跑起来了，当在浏览器里访问 <a href="https://www.jfox.info/go.php?url=http://localhost:9009/">http://localhost:9009/</a> 就会返回<code class="highlighter-rouge">Hello World</code>。</p>
+
+<p>这是第一步，netty 这里就充当了一个 web server 的角色。而我们就可以直接在 netty 提供的接口的基础上做编程，而不需要想 nginx + php-fpm 还需要一次反向代理，性能高了许多。（swoole 的方式就很像 netty 了）。</p>
+
+<h3 id="实现控制器的访问">实现控制器的访问</h3>
+
+<p>具体需求：提供一个 api 可以用户指定用户的信息
+定义接口：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>http://localhost:10000/users/{id}
+http://localhost:10000/?method=user.get&amp;id={id}
+</code></pre></div></div>
+
+<p>可能现在大家早已习惯了前者 restful 的 api 接口。
+因为这里需要一次路由的映射和 http method 的匹配，考虑到学习的成本呢，我没有选择这种方式。
+我们今天的目标是以最简单有效的方式实现我们的功能。
+我们首先从最简单的方式来实现（其实没有路由的 api 反而是最快的，毕竟需要做的判断少嘛）。
+后面大家有兴趣可以参考我写的一个 restful api 的 demo <a href="https://www.jfox.info/go.php?url=https://github.com/zhoumengkang/netty-restful-server">https://github.com/zhoumengka…</a></p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/php%E7%A8%8B%E5%BA%8F%E5%91%98%E5%A6%82%E4%BD%95%E5%BF%AB%E9%80%9F%E8%BF%9B%E8%A1%8Cjava%E5%BC%80%E5%8F%91.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/%E4%BA%8Cgc%E7%9B%B8%E5%85%B3%E4%B9%8Bjava%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B.html">&laquo; 二．GC相关之Java内存模型</a>
+  
+  
+  <a class="next" href="/2017/%E7%AE%80%E8%BF%B0actionservicedao%E5%8A%9F%E8%83%BD.html">简述Action+Service +Dao 功能 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

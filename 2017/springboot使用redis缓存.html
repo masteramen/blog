@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>Spring Boot 使用Redis缓存 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="Spring Boot 使用Redis缓存" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="Spring 提供了很多缓存管理器，例如：" />
+<meta property="og:description" content="Spring 提供了很多缓存管理器，例如：" />
+<link rel="canonical" href="http://www.jfox.info/2017/springboot%E4%BD%BF%E7%94%A8redis%E7%BC%93%E5%AD%98.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/springboot%E4%BD%BF%E7%94%A8redis%E7%BC%93%E5%AD%98.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:58:05+00:00" />
+<script type="application/ld+json">
+{"description":"Spring 提供了很多缓存管理器，例如：","@type":"BlogPosting","url":"http://www.jfox.info/2017/springboot%E4%BD%BF%E7%94%A8redis%E7%BC%93%E5%AD%98.html","headline":"Spring Boot 使用Redis缓存","dateModified":"2017-01-01T15:58:05+00:00","datePublished":"2017-01-01T15:58:05+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/springboot%E4%BD%BF%E7%94%A8redis%E7%BC%93%E5%AD%98.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Spring Boot 使用Redis缓存</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:58:05+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>Spring 提供了很多缓存管理器，例如：</p>
+
+<ul>
+  <li>SimpleCacheManager</li>
+  <li>EhCacheCacheManager</li>
+  <li>CaffeineCacheManager</li>
+  <li>GuavaCacheManager</li>
+  <li>CompositeCacheManager
+这里我们要用的是除了核心的Spring框架之外，Spring Data提供的缓存管理器：<strong>RedisCacheManager</strong></li>
+</ul>
+
+<p>在Spring <a href="mailto:Boot%E4%B8%AD%E9%80%9A%E8%BF%87@enablecaching注解自动化配置合适的缓存管理器">Boot中通过@EnableCaching注解自动化配置合适的缓存管理器</a>（CacheManager），默认情况下Spring Boot根据下面的顺序自动检测缓存提供者：</p>
+
+<ul>
+  <li>Generic</li>
+  <li>JCache (JSR-107)</li>
+  <li>EhCache 2.x</li>
+  <li>Hazelcast</li>
+  <li>Infinispan</li>
+  <li>Redis</li>
+  <li>Guava</li>
+  <li>Simple</li>
+</ul>
+
+<p>但是因为我们之前已经配置了redisTemplate了，Spring Boot无法就无法自动给RedisCacheManager设置redisTemplate了，所以接下来要自己配置CacheManager 。</p>
+
+<ol>
+  <li>
+    <p>首先修改RedisConfig配置类，<a href="mailto:%E6%B7%BB%E5%8A%A0@enablecaching注解">添加@EnableCaching注解</a>，并继承CachingConfigurerSupport，重写CacheManager 方法</p>
+
+    <p>…
+ @Configuration
+ @EnableCaching
+ public class RedisConfig extends CachingConfigurerSupport {</p>
+
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> @Bean
+ public RedisTemplate&lt;String, String&gt; redisTemplate(RedisConnectionFactory factory) {
+     RedisTemplate&lt;String, String&gt; redisTemplate = new RedisTemplate&lt;String, String&gt;();
+     redisTemplate.setConnectionFactory(factory);
+     redisTemplate.afterPropertiesSet();
+     setSerializer(redisTemplate);
+     return redisTemplate;
+ }
+
+ private void setSerializer(RedisTemplate&lt;String, String&gt; template) {
+     Jackson2JsonRedisSerializer jackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer(Object.class);
+     ObjectMapper om = new ObjectMapper();
+     om.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
+     om.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);
+     jackson2JsonRedisSerializer.setObjectMapper(om);
+     template.setKeySerializer(new StringRedisSerializer());
+     template.setValueSerializer(jackson2JsonRedisSerializer);
+ }
+</code></pre></div>    </div>
+
+    <p>@Bean
+     public CacheManager cacheManager(RedisTemplate redisTemplate) {
+         RedisCacheManager rcm = new RedisCacheManager(redisTemplate);
+         // 设置缓存过期时间，秒
+         rcm.setDefaultExpiration(60);
+         return rcm;
+     }
+ …</p>
+  </li>
+</ol>
+
+<p>Spring提供了如下注解来声明缓存规则：</p>
+
+<ul>
+  <li>@Cacheable triggers cache population</li>
+  <li>@CacheEvict triggers cache eviction</li>
+  <li>@CachePut updates the cache without interfering with the method execution</li>
+  <li>@Caching regroups multiple cache operations to be applied on a method</li>
+  <li>@CacheConfig shares some common cache-related settings at class-level</li>
+</ul>
+
+<p>注　　解描　　述@Cacheable表明Spring在调用方法之前，首先应该在缓存中查找方法的返回值。如果这个值能够找到，就会返回缓存的值。否则的话，这个方法就会被调用，返回值会放到缓存之中@CachePut表明Spring应该将方法的返回值放到缓存中。在方法的调用前并不会检查缓存，方法始终都会被调用@CacheEvict表明Spring应该在缓存中清除一个或多个条目@Caching这是一个分组的注解，能够同时应用多个其他的缓存注解@CacheConfig可以在类层级配置一些共用的缓存配置
+@<a href="mailto:Cacheable%E5%92%8C@cacheput有一些共有的属性">Cacheable和@CachePut有一些共有的属性</a>：
+属　　性类　　型描　　述valueString[]要使用的缓存名称conditionStringSpEL表达式，如果得到的值是false的话，不会将缓存应用到方法调用上keyStringSpEL表达式，用来计算自定义的缓存keyunlessStringSpEL表达式，如果得到的值是true的话，返回值不会放到缓存之中</p>
+<ol>
+  <li>
+    <p><a href="mailto:%E5%9C%A8%E4%B8%80%E4%B8%AA%E8%AF%B7%E6%B1%82%E6%96%B9%E6%B3%95%E4%B8%8A%E5%8A%A0%E4%B8%8A@cacheable注解">在一个请求方法上加上@Cacheable注解</a>，测试下效果</p>
+
+    <p>@Cacheable(value=”testallCache”)
+@RequestMapping(value = “/redis/user/{userId}”, method = RequestMethod.GET)
+public User getUser(@PathVariable() Integer userId) {
+    User user = userService.getUserById(userId);
+    return user;
+}</p>
+  </li>
+  <li>
+    <p>然后访问这个请求，控制台就报错啦。</p>
+
+    <p>java.lang.ClassCastException: java.lang.Integer cannot be cast to java.lang.String
+at org.springframework.data.redis.serializer.StringRedisSerializer.serialize(StringRedisSerializer.java:33)
+at org.springframework.data.redis.cache.RedisCacheKey.serializeKeyElement(RedisCacheKey.java:74)
+at org.springframework.data.redis.cache.RedisCacheKey.getKeyBytes(RedisCacheKey.java:49)
+at org.springframework.data.redis.cache.RedisCache$1.doInRedis(RedisCache.java:176)
+at org.springframework.data.redis.cache.RedisCache$1.doInRedis(RedisCache.java:172)
+at org.springframework.data.redis.core.RedisTemplate.execute(RedisTemplate.java:207)</p>
+  </li>
+</ol>
+
+<p>原因如下：
+先看一下Redis缓存默认的Key生成策略</p>
+
+<ul>
+  <li>If no params are given, return SimpleKey.EMPTY.</li>
+  <li>If only one param is given, return that instance.</li>
+  <li>If more the one param is given, return a SimpleKey containing all parameters.</li>
+</ul>
+
+<p>从上面的生成策略可以知道，上面的缓存testallCache使用的key是整形的userId参数，但是我们之前在redisTemplate里设置了template.setKeySerializer(new StringRedisSerializer());，所以导致类型转换错误。虽然也可以使用SpEL表达式生成Key（详见<a href="https://www.jfox.info/go.php?url=http://docs.spring.io/spring/docs/current/spring-framework-reference/html/cache.html#cache-spel-context">这里</a>），但是返回结果还是需要是string类型（比如#root.methodName就是，#root.method就不是），更通用的办法是重写keyGenerator定制Key生成策略。</p>
+
+<ol>
+  <li>
+    <p>修改RedisConfig类，重写keyGenerator方法：</p>
+
+    <p>@Bean
+public KeyGenerator keyGenerator() {
+    return new KeyGenerator() {
+        @Override
+        public Object generate(Object target, Method method, Object… params) {
+            StringBuilder sb = new StringBuilder();
+            sb.append(target.getClass().getName());
+            sb.append(“:” + method.getName());
+            for (Object obj : params) {
+                sb.append(“:” + obj.toString());
+            }
+            return sb.toString();
+        }
+    };
+}</p>
+  </li>
+  <li>
+    <p>再次进行刚才的请求（分别以1,2作为userId参数），浏览器结果如下图：
+<img src="39d8c2f.png" alt="" />
+<img src="0ca9f9a.png" alt="" />
+使用redisclient工具查看下：
+<img src="984e3a7.png" alt="" />
+<img src="479156f.png" alt="" />
+可以看到Redis里保存了：</p>
+  </li>
+</ol>
+
+<ul>
+  <li>两条string类型的键值对：key就是上面方法生成的结果，value就是user对象序列化成json的结果</li>
+  <li>一个有序集合：<a href="其中key为@Cacheable里的value+~keys">其中key为@Cacheable里的value+~keys</a>，分数为0，成员为之前string键值对的key</li>
+</ul>
+
+<p>这时候把userId为1的用户的username改为ansel（原来是ansel1），再次进行https://localhost:8443/redis/user/1 请求，发现浏览器返回结果仍是ansel1，证明确实是从Redis缓存里返回的结果。
+<img src="fb3f51d.png" alt="" />
+<img src="9a3c94e.png" alt="" /></p>
+
+<h2 id="缓存更新与删除">缓存更新与删除</h2>
+
+<ol>
+  <li>
+    <p><a href="更新与删除Redis缓存需要用到@CachePut和@CacheEvict">更新与删除Redis缓存需要用到@CachePut和@CacheEvict</a>。这时候我发现如果使用上面那种key的生成策略，以用户为例：它的增删改查方法无法保证生成同一个key（方法名不同，参数不同），所以修改一下keyGenerator，使其按照缓存名称+userId方式生成key：</p>
+
+    <p>@Bean
+public KeyGenerator keyGenerator() {
+    return new KeyGenerator() {
+        @Override
+        public Object generate(Object target, Method method, Object… params) {
+            StringBuilder sb = new StringBuilder();
+            String[] value = new String[1];
+            // sb.append(target.getClass().getName());
+            // sb.append(“:” + method.getName());
+            Cacheable cacheable = method.getAnnotation(Cacheable.class);
+            if (cacheable != null) {
+                value = cacheable.value();
+            }
+            CachePut cachePut = method.getAnnotation(CachePut.class);
+            if (cachePut != null) {
+                value = cachePut.value();
+            }
+            CacheEvict cacheEvict = method.getAnnotation(CacheEvict.class);
+            if (cacheEvict != null) {
+                value = cacheEvict.value();
+            }
+            sb.append(value[0]);
+            for (Object obj : params) {
+                sb.append(“:” + obj.toString());
+            }
+            return sb.toString();
+        }
+    };
+}</p>
+  </li>
+  <li>
+    <p>接下来编写user的增删改查方法：</p>
+
+    <p>@CachePut(value = “user”, key = “#root.caches[0].name + ‘:’ + #user.userId”)
+@RequestMapping(value = “/redis/user”, method = RequestMethod.POST)
+public User insertUser(@RequestBody User user) {
+    user.setPassword(SystemUtil.MD5(user.getPassword()));
+    userService.insertSelective(user);
+    return user;
+}</p>
+
+    <p>@Cacheable(value = “user”)
+@RequestMapping(value = “/redis/user/{userId}”, method = RequestMethod.GET)
+public User getUser(@PathVariable Integer userId) {
+    User user = userService.getUserById(userId);
+    return user;
+}
+//#root.caches[0].name:当前被调用方法所使用的Cache, 即”user”
+@CachePut(value = “user”, key = “#root.caches[0].name + ‘:’ + #user.userId”)
+@RequestMapping(value = “/redis/user”, method = RequestMethod.PUT)
+public User updateUser(@RequestBody User user) {
+    user.setPassword(SystemUtil.MD5(user.getPassword()));
+    userService.updateByPrimaryKeySelective(user);
+    return user;
+}</p>
+
+    <p>@CacheEvict(value = “user”)
+@RequestMapping(value = “/redis/user/{userId}”, method = RequestMethod.DELETE)
+public void deleteUser(@PathVariable Integer userId) {
+    userService.deleteByPrimaryKey(userId);
+}</p>
+  </li>
+</ol>
+
+<p>因为新增和修改传递的参数为user对象，keyGenerator无法获取到userId，只好使用SpEL显示标明key了。</p>
+
+<h2 id="然后进行测试">然后进行测试：</h2>
+
+<h3 id="进行insert操作">进行insert操作：</h3>
+
+<p><img src="2201823.png" alt="" /></p>
+
+<h3 id="插入后进行get请求">插入后，进行get请求：</h3>
+
+<p><img src="8123aeb.png" alt="" /></p>
+
+<h3 id="查看redis存储">查看Redis存储：</h3>
+
+<p><img src="dd5d860.png" alt="" />
+<img src="26e8aa8.png" alt="" /></p>
+
+<h3 id="进行update操作">进行update操作：</h3>
+
+<p><img src="e39d04b.png" alt="" /></p>
+
+<h3 id="更新后进行get请求">更新后，进行get请求：</h3>
+
+<p><img src="c7f4c0d.png" alt="" /></p>
+
+<h3 id="查看redis存储-1">查看Redis存储：</h3>
+
+<p><img src="dabbd4d.png" alt="" /></p>
+
+<h3 id="进行delete操作">进行delete操作：</h3>
+
+<p><img src="76c1235.png" alt="" /></p>
+
+<h3 id="查看redis存储-2">查看Redis存储：</h3>
+
+<p><img src="3bdbd37.png" alt="" />
+发现user:3的记录已经没有了，只剩user:1，user:2了</p>
+
+<p>一直很想知道网上很多用之前那种keyGenerator方法的，他们是怎么进行缓存更新和删除的，有知道的可以告知下。</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/springboot%E4%BD%BF%E7%94%A8redis%E7%BC%93%E5%AD%98.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/%E6%96%87%E4%BB%B6%E5%90%84%E7%A7%8D%E4%B8%8A%E4%BC%A0%E7%A6%BB%E4%B8%8D%E5%BC%80%E7%9A%84%E8%A1%A8%E5%8D%95.html">&laquo; 文件各种上传，离不开的表单</a>
+  
+  
+  <a class="next" href="/2017/quartz2d%E4%BA%8C%E7%BB%B4%E7%BB%98%E5%9B%BE%E5%8F%91%E5%8A%A8%E6%9C%BA%E4%B8%80.html">Quartz2D –> 二维绘图发动机(一) &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

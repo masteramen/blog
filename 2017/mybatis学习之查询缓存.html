@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>mybatis学习之查询缓存 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="mybatis学习之查询缓存" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="什么是查询缓存？" />
+<meta property="og:description" content="什么是查询缓存？" />
+<link rel="canonical" href="http://www.jfox.info/2017/mybatis%E5%AD%A6%E4%B9%A0%E4%B9%8B%E6%9F%A5%E8%AF%A2%E7%BC%93%E5%AD%98.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/mybatis%E5%AD%A6%E4%B9%A0%E4%B9%8B%E6%9F%A5%E8%AF%A2%E7%BC%93%E5%AD%98.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:50:29+00:00" />
+<script type="application/ld+json">
+{"description":"什么是查询缓存？","@type":"BlogPosting","url":"http://www.jfox.info/2017/mybatis%E5%AD%A6%E4%B9%A0%E4%B9%8B%E6%9F%A5%E8%AF%A2%E7%BC%93%E5%AD%98.html","headline":"mybatis学习之查询缓存","dateModified":"2017-01-01T15:50:29+00:00","datePublished":"2017-01-01T15:50:29+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/mybatis%E5%AD%A6%E4%B9%A0%E4%B9%8B%E6%9F%A5%E8%AF%A2%E7%BC%93%E5%AD%98.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">mybatis学习之查询缓存</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:50:29+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<h3 id="什么是查询缓存">什么是查询缓存？</h3>
+
+<p>mybatis提供查询缓存，用于减轻数据压力，提高数据库性能</p>
+
+<p>mybatis提供一级缓存和二级缓存</p>
+
+<p><strong>一级缓存是SQLSession的缓存</strong></p>
+
+<p>在操作数据库时需要构造SQLSession对象，在对象中有一个数据结构（HashMap）用于存储缓存数据</p>
+
+<p>不同的SQLSession之间的缓存数据区域（HashMap）是互相不影响的</p>
+
+<p><strong>二级缓存是mapper级别的缓存</strong></p>
+
+<p>多个SqlSession，操作同一个mapper的SQL语句，多个SqlSession可以共用二级缓存，二级缓存是跨SQLSession的</p>
+
+<h3 id="为什么要用缓存">为什么要用缓存?</h3>
+
+<p>如果缓存中有数据就不用从数据库中获取，大大提高系统的性能。</p>
+
+<h3 id="一级缓存">一级缓存</h3>
+
+<h4 id="1工作原理">1、工作原理</h4>
+
+<p>第一次发起查询用户Id为1的用户信息，先去找缓存中是否有id为1的用户信息，如果没有就从数据库查询用户信息 得到用户的信息后，将用户信息存到一级缓存中去</p>
+
+<p>如果SQLSession去执行commit操作（执行插入，更新，删除）,清空SQLSession中的一级缓存，这样做的目的为了让缓存中存储的是最新的信息，避免脏读</p>
+
+<p>第二次发起查询用户id为1的用户信息，先去找缓存中是否有id为1的用户信息，缓存中有，直接从缓存中获取用户信息</p>
+
+<h4 id="2一级缓存测试">2、一级缓存测试</h4>
+
+<p>mybatis默认是支持一级缓存的，不需要从配置文件中开启缓存开关。</p>
+
+<p>按照上面的一级缓存的原理步骤去测试。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    //一级缓存测试
+    @Test
+    public void testCache1() throws Exception{
+        //创建SqlSession
+        SqlSession sqlSession = sqlSessionFactory.openSession();
+        UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
+        //第一次发起请求，查询ID为29的用户
+        User user1 = userMapper.findUserById(29);
+        System.out.println(user1);
+        //如果sqlSession执行commit操作，是否会清空一级缓存
+        //更新user1的信息,清空缓存
+        user1.setUsername("一级缓存已更新");
+        userMapper.updateUser(user1);
+        //执行commit才会清空缓存
+        sqlSession.commit();
+        //第二次发起请求，查询ID为29的用户
+        User user2 = userMapper.findUserById(29);
+        System.out.println(user2);
+        sqlSession.close();
+    }
+</code></pre></div></div>
+
+<p>输出结果为：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>DEBUG [main] - Logging initialized using 'class org.apache.ibatis.logging.slf4j.Slf4jImpl' adapter.
+DEBUG [main] - Class not found: org.jboss.vfs.VFS
+DEBUG [main] - JBoss 6 VFS API is not available in this environment.
+DEBUG [main] - Class not found: org.jboss.vfs.VirtualFile
+DEBUG [main] - VFS implementation org.apache.ibatis.io.JBoss6VFS is not valid in this environment.
+DEBUG [main] - Using VFS adapter org.apache.ibatis.io.DefaultVFS
+DEBUG [main] - Find JAR URL: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/pojo
+DEBUG [main] - Not a JAR: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/pojo
+DEBUG [main] - Reader entry: Items.class
+DEBUG [main] - Reader entry: Order.class
+DEBUG [main] - Reader entry: OrderCustom.class
+DEBUG [main] - Reader entry: OrderDetail.class
+DEBUG [main] - Reader entry: User.class
+DEBUG [main] - Reader entry: UserCustom.class
+DEBUG [main] - Reader entry: UserQueryVo.class
+DEBUG [main] - Listing file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/pojo
+DEBUG [main] - Find JAR URL: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/pojo/Items.class
+DEBUG [main] - Not a JAR: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/pojo/Items.class
+DEBUG [main] - Reader entry: ����   4 W
+DEBUG [main] - Find JAR URL: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/pojo/Order.class
+DEBUG [main] - Not a JAR: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/pojo/Order.class
+DEBUG [main] - Reader entry: ����   4 f
+DEBUG [main] - Find JAR URL: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/pojo/OrderCustom.class
+DEBUG [main] - Not a JAR: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/pojo/OrderCustom.class
+DEBUG [main] - Reader entry: ����   4 "
+DEBUG [main] - Find JAR URL: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/pojo/OrderDetail.class
+DEBUG [main] - Not a JAR: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/pojo/OrderDetail.class
+DEBUG [main] - Reader entry: ����   4 J
+DEBUG [main] - Find JAR URL: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/pojo/User.class
+DEBUG [main] - Not a JAR: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/pojo/User.class
+DEBUG [main] - Reader entry: ����   4 [
+DEBUG [main] - Find JAR URL: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/pojo/UserCustom.class
+DEBUG [main] - Not a JAR: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/pojo/UserCustom.class
+DEBUG [main] - Reader entry: ����   4 
+DEBUG [main] - Find JAR URL: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/pojo/UserQueryVo.class
+DEBUG [main] - Not a JAR: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/pojo/UserQueryVo.class
+DEBUG [main] - Reader entry: ����   4 %
+DEBUG [main] - Checking to see if class pojo.Items matches criteria [is assignable to Object]
+DEBUG [main] - Checking to see if class pojo.Order matches criteria [is assignable to Object]
+DEBUG [main] - Checking to see if class pojo.OrderCustom matches criteria [is assignable to Object]
+DEBUG [main] - Checking to see if class pojo.OrderDetail matches criteria [is assignable to Object]
+DEBUG [main] - Checking to see if class pojo.User matches criteria [is assignable to Object]
+DEBUG [main] - Checking to see if class pojo.UserCustom matches criteria [is assignable to Object]
+DEBUG [main] - Checking to see if class pojo.UserQueryVo matches criteria [is assignable to Object]
+DEBUG [main] - PooledDataSource forcefully closed/removed all connections.
+DEBUG [main] - PooledDataSource forcefully closed/removed all connections.
+DEBUG [main] - PooledDataSource forcefully closed/removed all connections.
+DEBUG [main] - PooledDataSource forcefully closed/removed all connections.
+DEBUG [main] - Find JAR URL: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/mapper
+DEBUG [main] - Not a JAR: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/mapper
+DEBUG [main] - Reader entry: OrderMapperCustom.class
+DEBUG [main] - Reader entry: OrderMapperCustom.xml
+DEBUG [main] - Reader entry: UserMapper.class
+DEBUG [main] - Reader entry: UserMapper.xml
+DEBUG [main] - Listing file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/mapper
+DEBUG [main] - Find JAR URL: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/mapper/OrderMapperCustom.class
+DEBUG [main] - Not a JAR: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/mapper/OrderMapperCustom.class
+DEBUG [main] - Reader entry: ����   4    
+DEBUG [main] - Find JAR URL: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/mapper/OrderMapperCustom.xml
+DEBUG [main] - Not a JAR: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/mapper/OrderMapperCustom.xml
+DEBUG [main] - Reader entry: &lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+DEBUG [main] - Find JAR URL: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/mapper/UserMapper.class
+DEBUG [main] - Not a JAR: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/mapper/UserMapper.class
+DEBUG [main] - Reader entry: ����   4    findUserByIdResultMap (I)Lpojo/User; 
+DEBUG [main] - Find JAR URL: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/mapper/UserMapper.xml
+DEBUG [main] - Not a JAR: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/mapper/UserMapper.xml
+DEBUG [main] - Reader entry: &lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+DEBUG [main] - Checking to see if class mapper.OrderMapperCustom matches criteria [is assignable to Object]
+DEBUG [main] - Checking to see if class mapper.UserMapper matches criteria [is assignable to Object]
+DEBUG [main] - Opening JDBC Connection
+DEBUG [main] - Created connection 439904756.
+DEBUG [main] - Setting autocommit to false on JDBC Connection [com.mysql.jdbc.JDBC4Connection@1a3869f4]
+DEBUG [main] - ==&gt;  Preparing: SELECT * FROM USER WHERE id = ? 
+DEBUG [main] - ==&gt; Parameters: 29(Integer)
+DEBUG [main] - &lt;==      Total: 1
+User{id=29, username='测试测试1', sex='1', birthday=Mon Jun 19 00:00:00 CST 2017, address='湖南益阳', orderList=null}
+DEBUG [main] - ==&gt;  Preparing: UPDATE user SET username = ? , birthday = ? , sex = ? , address = ? where id = ? 
+DEBUG [main] - ==&gt; Parameters: 一级缓存已更新(String), 2017-06-19 00:00:00.0(Timestamp), 1(String), 湖南益阳(String), 29(Integer)
+DEBUG [main] - &lt;==    Updates: 1
+DEBUG [main] - Committing JDBC Connection [com.mysql.jdbc.JDBC4Connection@1a3869f4]
+DEBUG [main] - ==&gt;  Preparing: SELECT * FROM USER WHERE id = ? 
+DEBUG [main] - ==&gt; Parameters: 29(Integer)
+DEBUG [main] - &lt;==      Total: 1
+User{id=29, username='一级缓存已更新', sex='1', birthday=Mon Jun 19 00:00:00 CST 2017, address='湖南益阳', orderList=null}
+DEBUG [main] - Resetting autocommit to true on JDBC Connection [com.mysql.jdbc.JDBC4Connection@1a3869f4]
+DEBUG [main] - Closing JDBC Connection [com.mysql.jdbc.JDBC4Connection@1a3869f4]
+DEBUG [main] - Returned connection 439904756 to pool.
+Process finished with exit code 0
+</code></pre></div></div>
+
+<p>对比</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    //一级缓存测试
+    @Test
+    public void testCache1() throws Exception{
+        //创建SqlSession
+        SqlSession sqlSession = sqlSessionFactory.openSession();
+        UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
+        //第一次发起请求，查询ID为29的用户
+        User user1 = userMapper.findUserById(29);
+        System.out.println(user1);
+        //第二次发起请求，查询ID为29的用户
+        User user2 = userMapper.findUserById(29);
+        System.out.println(user2);
+        sqlSession.close();
+    }
+</code></pre></div></div>
+
+<p>输出结果为：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>DEBUG [main] - Logging initialized using 'class org.apache.ibatis.logging.slf4j.Slf4jImpl' adapter.
+DEBUG [main] - Class not found: org.jboss.vfs.VFS
+DEBUG [main] - JBoss 6 VFS API is not available in this environment.
+DEBUG [main] - Class not found: org.jboss.vfs.VirtualFile
+DEBUG [main] - VFS implementation org.apache.ibatis.io.JBoss6VFS is not valid in this environment.
+DEBUG [main] - Using VFS adapter org.apache.ibatis.io.DefaultVFS
+DEBUG [main] - Find JAR URL: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/pojo
+DEBUG [main] - Not a JAR: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/pojo
+DEBUG [main] - Reader entry: Items.class
+DEBUG [main] - Reader entry: Order.class
+DEBUG [main] - Reader entry: OrderCustom.class
+DEBUG [main] - Reader entry: OrderDetail.class
+DEBUG [main] - Reader entry: User.class
+DEBUG [main] - Reader entry: UserCustom.class
+DEBUG [main] - Reader entry: UserQueryVo.class
+DEBUG [main] - Listing file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/pojo
+DEBUG [main] - Find JAR URL: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/pojo/Items.class
+DEBUG [main] - Not a JAR: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/pojo/Items.class
+DEBUG [main] - Reader entry: ����   4 W
+DEBUG [main] - Find JAR URL: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/pojo/Order.class
+DEBUG [main] - Not a JAR: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/pojo/Order.class
+DEBUG [main] - Reader entry: ����   4 f
+DEBUG [main] - Find JAR URL: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/pojo/OrderCustom.class
+DEBUG [main] - Not a JAR: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/pojo/OrderCustom.class
+DEBUG [main] - Reader entry: ����   4 "
+DEBUG [main] - Find JAR URL: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/pojo/OrderDetail.class
+DEBUG [main] - Not a JAR: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/pojo/OrderDetail.class
+DEBUG [main] - Reader entry: ����   4 J
+DEBUG [main] - Find JAR URL: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/pojo/User.class
+DEBUG [main] - Not a JAR: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/pojo/User.class
+DEBUG [main] - Reader entry: ����   4 [
+DEBUG [main] - Find JAR URL: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/pojo/UserCustom.class
+DEBUG [main] - Not a JAR: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/pojo/UserCustom.class
+DEBUG [main] - Reader entry: ����   4 
+DEBUG [main] - Find JAR URL: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/pojo/UserQueryVo.class
+DEBUG [main] - Not a JAR: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/pojo/UserQueryVo.class
+DEBUG [main] - Reader entry: ����   4 %
+DEBUG [main] - Checking to see if class pojo.Items matches criteria [is assignable to Object]
+DEBUG [main] - Checking to see if class pojo.Order matches criteria [is assignable to Object]
+DEBUG [main] - Checking to see if class pojo.OrderCustom matches criteria [is assignable to Object]
+DEBUG [main] - Checking to see if class pojo.OrderDetail matches criteria [is assignable to Object]
+DEBUG [main] - Checking to see if class pojo.User matches criteria [is assignable to Object]
+DEBUG [main] - Checking to see if class pojo.UserCustom matches criteria [is assignable to Object]
+DEBUG [main] - Checking to see if class pojo.UserQueryVo matches criteria [is assignable to Object]
+DEBUG [main] - PooledDataSource forcefully closed/removed all connections.
+DEBUG [main] - PooledDataSource forcefully closed/removed all connections.
+DEBUG [main] - PooledDataSource forcefully closed/removed all connections.
+DEBUG [main] - PooledDataSource forcefully closed/removed all connections.
+DEBUG [main] - Find JAR URL: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/mapper
+DEBUG [main] - Not a JAR: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/mapper
+DEBUG [main] - Reader entry: OrderMapperCustom.class
+DEBUG [main] - Reader entry: OrderMapperCustom.xml
+DEBUG [main] - Reader entry: UserMapper.class
+DEBUG [main] - Reader entry: UserMapper.xml
+DEBUG [main] - Listing file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/mapper
+DEBUG [main] - Find JAR URL: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/mapper/OrderMapperCustom.class
+DEBUG [main] - Not a JAR: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/mapper/OrderMapperCustom.class
+DEBUG [main] - Reader entry: ����   4    
+DEBUG [main] - Find JAR URL: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/mapper/OrderMapperCustom.xml
+DEBUG [main] - Not a JAR: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/mapper/OrderMapperCustom.xml
+DEBUG [main] - Reader entry: &lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+DEBUG [main] - Find JAR URL: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/mapper/UserMapper.class
+DEBUG [main] - Not a JAR: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/mapper/UserMapper.class
+DEBUG [main] - Reader entry: ����   4    findUserByIdResultMap (I)Lpojo/User; 
+DEBUG [main] - Find JAR URL: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/mapper/UserMapper.xml
+DEBUG [main] - Not a JAR: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/mapper/UserMapper.xml
+DEBUG [main] - Reader entry: &lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+DEBUG [main] - Checking to see if class mapper.OrderMapperCustom matches criteria [is assignable to Object]
+DEBUG [main] - Checking to see if class mapper.UserMapper matches criteria [is assignable to Object]
+DEBUG [main] - Opening JDBC Connection
+DEBUG [main] - Created connection 439904756.
+DEBUG [main] - Setting autocommit to false on JDBC Connection [com.mysql.jdbc.JDBC4Connection@1a3869f4]
+DEBUG [main] - ==&gt;  Preparing: SELECT * FROM USER WHERE id = ? 
+DEBUG [main] - ==&gt; Parameters: 29(Integer)
+DEBUG [main] - &lt;==      Total: 1
+User{id=29, username='一级缓存已更新', sex='1', birthday=Mon Jun 19 00:00:00 CST 2017, address='湖南益阳', orderList=null}
+User{id=29, username='一级缓存已更新', sex='1', birthday=Mon Jun 19 00:00:00 CST 2017, address='湖南益阳', orderList=null}
+DEBUG [main] - Resetting autocommit to true on JDBC Connection [com.mysql.jdbc.JDBC4Connection@1a3869f4]
+DEBUG [main] - Closing JDBC Connection [com.mysql.jdbc.JDBC4Connection@1a3869f4]
+DEBUG [main] - Returned connection 439904756 to pool.
+Process finished with exit code 0
+</code></pre></div></div>
+
+<p>可见后一种方法，第二次查询并没有执行sql语句，而第一种方法在执行了commit操作后，清空了一级缓存，所以就再次查询了一遍</p>
+
+<h4 id="3一级缓存的应用">3、一级缓存的应用</h4>
+
+<p>正式开发，是将mybatis和spring进行整合开发，事物控制在service中，一个services方法中包括很多mapper方法的调用</p>
+
+<p>service{</p>
+
+<p>//在开始执行时，开启事物，创建sqlsession对象</p>
+
+<p>//第一次调用mapper的方法findUserById（1）</p>
+
+<p>//第二次调用mapper的方法findUserById（1）,从一级缓存中获取数据</p>
+
+<p>//方法结束，sqlsession关闭</p>
+
+<p>}</p>
+
+<p><strong>如果是执行两次service的调用，查询相同的用户信息，不走一级缓存，因为service方法结束，spring AOP控制sqlsession关闭，一级缓存就清空了</strong></p>
+<h3 id="二级缓存">二级缓存</h3>
+
+<h4 id="1原理">1、原理</h4>
+
+<p>首先需要开启mybatis的二级缓存</p>
+
+<p>SQLSession1去查询用户ID为1的用户信息，查询到用户信息会将查询数据存储到二级缓存区域中</p>
+
+<p>如果sqlsession3去执行相同mapper下的sql，执行commt提交 ，会清空该mapper下的二级缓存区域的数据</p>
+
+<p>SQLSession2去查询用户ID为1的用户信息，去缓存中找是否存在数据，如果存在就直接从缓存中取出数据</p>
+
+<p>二级缓存与一级缓存的区别在于，二级缓存的范围更大，多个SqlSession可以共享一个UserMapper的二级缓存区域</p>
+
+<p>UserMapper有一个二级缓存区域（按照namespace分），其他的Mapper也有自己的二级缓存区域（按照namespace分）。</p>
+
+<p>每一个namespace的mapper，都有一个二级缓存区域。两个mapper的namespace如果相同，那么这两个mapper执行sql查询到的数据会存储在相同的二级缓存区域中。</p>
+
+<h4 id="2开启二级缓存">2、开启二级缓存</h4>
+
+<p>mybatis的二级缓存是mapper范围级别，除了在SqlMapConfig.xml中设置二级缓存的总开关，还要在具体的mapper.xml中开启二级缓存。</p>
+
+<p>在核心配置文件SqlMapConfig.xml中加入</p>
+
+<p>&lt;settingname=“cacheEnabled”value=“true“/&gt;</p>
+
+<p>描述</p>
+
+<p>允许值</p>
+
+<p>默认值</p>
+
+<p>cacheEnabled</p>
+
+<p>对在此配置文件下的所有cache 进行全局性开/关设置。</p>
+
+<p>true false</p>
+
+<p>true</p>
+
+<p>在UserMapper.xml中开启二级缓存,这个mapper下的sql执行完成后会存储到它的缓存区域（hashmap）</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;!--开启本mapper的namespace下的二级缓存 --&gt;
+&lt;cache /&gt;
+</code></pre></div></div>
+
+<h4 id="3调用pojo类实现序列化接口">3、调用pojo类实现序列化接口</h4>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public class User implements Serializable{
+    //属性名和数据库表的字段一一对应
+    private Integer id;
+    private String username;// 用户姓名
+    private String sex;// 性别
+    private Date birthday;// 生日
+    private String address;// 地址
+</code></pre></div></div>
+
+<p>为了将缓存数据取出，执行反序列化操作，因为二级缓存数据存储介质多种多样，不一定在内存中。</p>
+
+<h4 id="4测试方法">4、测试方法</h4>
+<p>未执行提交操作，不同SQLSession查询同一个mapper的sql，二级缓存测试：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    //二级缓存测试
+    @Test
+    public void testCache2() throws Exception{
+        //创建SqlSession1与SqlSession2
+        SqlSession sqlSession1 = sqlSessionFactory.openSession();
+        SqlSession sqlSession2 = sqlSessionFactory.openSession();
+        SqlSession sqlSession3 = sqlSessionFactory.openSession();
+        UserMapper userMapper1 = sqlSession1.getMapper(UserMapper.class);
+        UserMapper userMapper2 = sqlSession2.getMapper(UserMapper.class);
+        UserMapper userMapper3 = sqlSession3.getMapper(UserMapper.class);
+        //第一次发起请求，查询ID为29的用户
+        User user1 = userMapper1.findUserById(29);
+        System.out.println(user1);
+        //执行关闭操作，将sqlSession的数据写到二级缓存区域
+        sqlSession1.close();
+        //第二次发起请求，查询ID为29的用户
+        User user2 = userMapper2.findUserById(29);
+        System.out.println(user2);
+        //执行关闭操作，将sqlSession的数据写到二级缓存区域
+        sqlSession2.close();
+        //第三次发起请求，执行commit操作
+//        User user3 = userMapper3.findUserById(29);
+//        System.out.println(user3);
+//        //执行关闭操作，将sqlSession的数据写到二级缓存区域
+//        sqlSession3.close();
+    }
+</code></pre></div></div>
+
+<p>测试结果：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>DEBUG [main] - Logging initialized using 'class org.apache.ibatis.logging.slf4j.Slf4jImpl' adapter.
+DEBUG [main] - Class not found: org.jboss.vfs.VFS
+DEBUG [main] - JBoss 6 VFS API is not available in this environment.
+DEBUG [main] - Class not found: org.jboss.vfs.VirtualFile
+DEBUG [main] - VFS implementation org.apache.ibatis.io.JBoss6VFS is not valid in this environment.
+DEBUG [main] - Using VFS adapter org.apache.ibatis.io.DefaultVFS
+DEBUG [main] - Find JAR URL: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/pojo
+DEBUG [main] - Not a JAR: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/pojo
+DEBUG [main] - Reader entry: Items.class
+DEBUG [main] - Reader entry: Order.class
+DEBUG [main] - Reader entry: OrderCustom.class
+DEBUG [main] - Reader entry: OrderDetail.class
+DEBUG [main] - Reader entry: User.class
+DEBUG [main] - Reader entry: UserCustom.class
+DEBUG [main] - Reader entry: UserQueryVo.class
+DEBUG [main] - Listing file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/pojo
+DEBUG [main] - Find JAR URL: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/pojo/Items.class
+DEBUG [main] - Not a JAR: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/pojo/Items.class
+DEBUG [main] - Reader entry: ����   4 W
+DEBUG [main] - Find JAR URL: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/pojo/Order.class
+DEBUG [main] - Not a JAR: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/pojo/Order.class
+DEBUG [main] - Reader entry: ����   4 f
+DEBUG [main] - Find JAR URL: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/pojo/OrderCustom.class
+DEBUG [main] - Not a JAR: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/pojo/OrderCustom.class
+DEBUG [main] - Reader entry: ����   4 "
+DEBUG [main] - Find JAR URL: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/pojo/OrderDetail.class
+DEBUG [main] - Not a JAR: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/pojo/OrderDetail.class
+DEBUG [main] - Reader entry: ����   4 J
+DEBUG [main] - Find JAR URL: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/pojo/User.class
+DEBUG [main] - Not a JAR: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/pojo/User.class
+DEBUG [main] - Reader entry: ����   4 ]
+DEBUG [main] - Find JAR URL: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/pojo/UserCustom.class
+DEBUG [main] - Not a JAR: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/pojo/UserCustom.class
+DEBUG [main] - Reader entry: ����   4 
+DEBUG [main] - Find JAR URL: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/pojo/UserQueryVo.class
+DEBUG [main] - Not a JAR: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/pojo/UserQueryVo.class
+DEBUG [main] - Reader entry: ����   4 %
+DEBUG [main] - Checking to see if class pojo.Items matches criteria [is assignable to Object]
+DEBUG [main] - Checking to see if class pojo.Order matches criteria [is assignable to Object]
+DEBUG [main] - Checking to see if class pojo.OrderCustom matches criteria [is assignable to Object]
+DEBUG [main] - Checking to see if class pojo.OrderDetail matches criteria [is assignable to Object]
+DEBUG [main] - Checking to see if class pojo.User matches criteria [is assignable to Object]
+DEBUG [main] - Checking to see if class pojo.UserCustom matches criteria [is assignable to Object]
+DEBUG [main] - Checking to see if class pojo.UserQueryVo matches criteria [is assignable to Object]
+DEBUG [main] - PooledDataSource forcefully closed/removed all connections.
+DEBUG [main] - PooledDataSource forcefully closed/removed all connections.
+DEBUG [main] - PooledDataSource forcefully closed/removed all connections.
+DEBUG [main] - PooledDataSource forcefully closed/removed all connections.
+DEBUG [main] - Find JAR URL: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/mapper
+DEBUG [main] - Not a JAR: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/mapper
+DEBUG [main] - Reader entry: OrderMapperCustom.class
+DEBUG [main] - Reader entry: OrderMapperCustom.xml
+DEBUG [main] - Reader entry: UserMapper.class
+DEBUG [main] - Reader entry: UserMapper.xml
+DEBUG [main] - Listing file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/mapper
+DEBUG [main] - Find JAR URL: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/mapper/OrderMapperCustom.class
+DEBUG [main] - Not a JAR: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/mapper/OrderMapperCustom.class
+DEBUG [main] - Reader entry: ����   4    
+DEBUG [main] - Find JAR URL: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/mapper/OrderMapperCustom.xml
+DEBUG [main] - Not a JAR: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/mapper/OrderMapperCustom.xml
+DEBUG [main] - Reader entry: &lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+DEBUG [main] - Find JAR URL: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/mapper/UserMapper.class
+DEBUG [main] - Not a JAR: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/mapper/UserMapper.class
+DEBUG [main] - Reader entry: ����   4    findUserByIdResultMap (I)Lpojo/User; 
+DEBUG [main] - Find JAR URL: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/mapper/UserMapper.xml
+DEBUG [main] - Not a JAR: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/mapper/UserMapper.xml
+DEBUG [main] - Reader entry: &lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+DEBUG [main] - Checking to see if class mapper.OrderMapperCustom matches criteria [is assignable to Object]
+DEBUG [main] - Checking to see if class mapper.UserMapper matches criteria [is assignable to Object]
+DEBUG [main] - Cache Hit Ratio [mapper.UserMapper]: 0.0
+DEBUG [main] - Opening JDBC Connection
+DEBUG [main] - Created connection 1780132728.
+DEBUG [main] - Setting autocommit to false on JDBC Connection [com.mysql.jdbc.JDBC4Connection@6a1aab78]
+DEBUG [main] - ==&gt;  Preparing: SELECT * FROM USER WHERE id = ? 
+DEBUG [main] - ==&gt; Parameters: 29(Integer)
+DEBUG [main] - &lt;==      Total: 1
+User{id=29, username='一级缓存已更新', sex='1', birthday=Mon Jun 19 00:00:00 CST 2017, address='湖南益阳', orderList=null}
+DEBUG [main] - Resetting autocommit to true on JDBC Connection [com.mysql.jdbc.JDBC4Connection@6a1aab78]
+DEBUG [main] - Closing JDBC Connection [com.mysql.jdbc.JDBC4Connection@6a1aab78]
+DEBUG [main] - Returned connection 1780132728 to pool.
+DEBUG [main] - Cache Hit Ratio [mapper.UserMapper]: 0.5
+User{id=29, username='一级缓存已更新', sex='1', birthday=Mon Jun 19 00:00:00 CST 2017, address='湖南益阳', orderList=null}
+Process finished with exit code 0
+</code></pre></div></div>
+
+<p>可以看到这里第一次执行查询了数据库，第二次执行时，没有查询，Cache Hit Ratio 命中率由0 变为了0.5，含义为，查询了两次，命中一次，为百分之50</p>
+
+<p>执行提交操作：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    //二级缓存测试
+    @Test
+    public void testCache2() throws Exception{
+        //创建SqlSession1与SqlSession2
+        SqlSession sqlSession1 = sqlSessionFactory.openSession();
+        SqlSession sqlSession2 = sqlSessionFactory.openSession();
+        SqlSession sqlSession3 = sqlSessionFactory.openSession();
+        UserMapper userMapper1 = sqlSession1.getMapper(UserMapper.class);
+        UserMapper userMapper2 = sqlSession2.getMapper(UserMapper.class);
+        UserMapper userMapper3 = sqlSession3.getMapper(UserMapper.class);
+        //第一次发起请求，查询ID为29的用户
+        User user1 = userMapper1.findUserById(29);
+        System.out.println(user1);
+        //执行关闭操作，将sqlSession的数据写到二级缓存区域
+        sqlSession1.close();
+        //第三次发起请求，执行commit操作
+        User user3 = userMapper3.findUserById(29);
+        user3.setUsername("二级缓存已更新");
+        userMapper3.updateUser(user3);
+        //执行提交操作，清空UserMapper下的二级缓存
+        sqlSession3.commit();
+        //执行关闭操作，将sqlSession的数据写到二级缓存区域
+        sqlSession3.close();
+        //第二次发起请求，查询ID为29的用户
+        User user2 = userMapper2.findUserById(29);
+        System.out.println(user2);
+        //执行关闭操作，将sqlSession的数据写到二级缓存区域
+        sqlSession2.close();
+    }
+</code></pre></div></div>
+
+<p>结果：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>DEBUG [main] - Logging initialized using 'class org.apache.ibatis.logging.slf4j.Slf4jImpl' adapter.
+DEBUG [main] - Class not found: org.jboss.vfs.VFS
+DEBUG [main] - JBoss 6 VFS API is not available in this environment.
+DEBUG [main] - Class not found: org.jboss.vfs.VirtualFile
+DEBUG [main] - VFS implementation org.apache.ibatis.io.JBoss6VFS is not valid in this environment.
+DEBUG [main] - Using VFS adapter org.apache.ibatis.io.DefaultVFS
+DEBUG [main] - Find JAR URL: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/pojo
+DEBUG [main] - Not a JAR: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/pojo
+DEBUG [main] - Reader entry: Items.class
+DEBUG [main] - Reader entry: Order.class
+DEBUG [main] - Reader entry: OrderCustom.class
+DEBUG [main] - Reader entry: OrderDetail.class
+DEBUG [main] - Reader entry: User.class
+DEBUG [main] - Reader entry: UserCustom.class
+DEBUG [main] - Reader entry: UserQueryVo.class
+DEBUG [main] - Listing file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/pojo
+DEBUG [main] - Find JAR URL: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/pojo/Items.class
+DEBUG [main] - Not a JAR: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/pojo/Items.class
+DEBUG [main] - Reader entry: ����   4 W
+DEBUG [main] - Find JAR URL: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/pojo/Order.class
+DEBUG [main] - Not a JAR: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/pojo/Order.class
+DEBUG [main] - Reader entry: ����   4 f
+DEBUG [main] - Find JAR URL: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/pojo/OrderCustom.class
+DEBUG [main] - Not a JAR: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/pojo/OrderCustom.class
+DEBUG [main] - Reader entry: ����   4 "
+DEBUG [main] - Find JAR URL: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/pojo/OrderDetail.class
+DEBUG [main] - Not a JAR: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/pojo/OrderDetail.class
+DEBUG [main] - Reader entry: ����   4 J
+DEBUG [main] - Find JAR URL: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/pojo/User.class
+DEBUG [main] - Not a JAR: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/pojo/User.class
+DEBUG [main] - Reader entry: ����   4 ]
+DEBUG [main] - Find JAR URL: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/pojo/UserCustom.class
+DEBUG [main] - Not a JAR: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/pojo/UserCustom.class
+DEBUG [main] - Reader entry: ����   4 
+DEBUG [main] - Find JAR URL: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/pojo/UserQueryVo.class
+DEBUG [main] - Not a JAR: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/pojo/UserQueryVo.class
+DEBUG [main] - Reader entry: ����   4 %
+DEBUG [main] - Checking to see if class pojo.Items matches criteria [is assignable to Object]
+DEBUG [main] - Checking to see if class pojo.Order matches criteria [is assignable to Object]
+DEBUG [main] - Checking to see if class pojo.OrderCustom matches criteria [is assignable to Object]
+DEBUG [main] - Checking to see if class pojo.OrderDetail matches criteria [is assignable to Object]
+DEBUG [main] - Checking to see if class pojo.User matches criteria [is assignable to Object]
+DEBUG [main] - Checking to see if class pojo.UserCustom matches criteria [is assignable to Object]
+DEBUG [main] - Checking to see if class pojo.UserQueryVo matches criteria [is assignable to Object]
+DEBUG [main] - PooledDataSource forcefully closed/removed all connections.
+DEBUG [main] - PooledDataSource forcefully closed/removed all connections.
+DEBUG [main] - PooledDataSource forcefully closed/removed all connections.
+DEBUG [main] - PooledDataSource forcefully closed/removed all connections.
+DEBUG [main] - Find JAR URL: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/mapper
+DEBUG [main] - Not a JAR: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/mapper
+DEBUG [main] - Reader entry: OrderMapperCustom.class
+DEBUG [main] - Reader entry: OrderMapperCustom.xml
+DEBUG [main] - Reader entry: UserMapper.class
+DEBUG [main] - Reader entry: UserMapper.xml
+DEBUG [main] - Listing file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/mapper
+DEBUG [main] - Find JAR URL: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/mapper/OrderMapperCustom.class
+DEBUG [main] - Not a JAR: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/mapper/OrderMapperCustom.class
+DEBUG [main] - Reader entry: ����   4    
+DEBUG [main] - Find JAR URL: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/mapper/OrderMapperCustom.xml
+DEBUG [main] - Not a JAR: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/mapper/OrderMapperCustom.xml
+DEBUG [main] - Reader entry: &lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+DEBUG [main] - Find JAR URL: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/mapper/UserMapper.class
+DEBUG [main] - Not a JAR: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/mapper/UserMapper.class
+DEBUG [main] - Reader entry: ����   4    findUserByIdResultMap (I)Lpojo/User; 
+DEBUG [main] - Find JAR URL: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/mapper/UserMapper.xml
+DEBUG [main] - Not a JAR: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/mapper/UserMapper.xml
+DEBUG [main] - Reader entry: &lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+DEBUG [main] - Checking to see if class mapper.OrderMapperCustom matches criteria [is assignable to Object]
+DEBUG [main] - Checking to see if class mapper.UserMapper matches criteria [is assignable to Object]
+DEBUG [main] - Cache Hit Ratio [mapper.UserMapper]: 0.0
+DEBUG [main] - Opening JDBC Connection
+DEBUG [main] - Created connection 1780132728.
+DEBUG [main] - Setting autocommit to false on JDBC Connection [com.mysql.jdbc.JDBC4Connection@6a1aab78]
+DEBUG [main] - ==&gt;  Preparing: SELECT * FROM USER WHERE id = ? 
+DEBUG [main] - ==&gt; Parameters: 29(Integer)
+DEBUG [main] - &lt;==      Total: 1
+User{id=29, username='一级缓存已更新', sex='1', birthday=Mon Jun 19 00:00:00 CST 2017, address='湖南益阳', orderList=null}
+DEBUG [main] - Resetting autocommit to true on JDBC Connection [com.mysql.jdbc.JDBC4Connection@6a1aab78]
+DEBUG [main] - Closing JDBC Connection [com.mysql.jdbc.JDBC4Connection@6a1aab78]
+DEBUG [main] - Returned connection 1780132728 to pool.
+DEBUG [main] - Cache Hit Ratio [mapper.UserMapper]: 0.5
+DEBUG [main] - Opening JDBC Connection
+DEBUG [main] - Checked out connection 1780132728 from pool.
+DEBUG [main] - Setting autocommit to false on JDBC Connection [com.mysql.jdbc.JDBC4Connection@6a1aab78]
+DEBUG [main] - ==&gt;  Preparing: UPDATE user SET username = ? , birthday = ? , sex = ? , address = ? where id = ? 
+DEBUG [main] - ==&gt; Parameters: 二级缓存已更新(String), 2017-06-19 00:00:00.0(Timestamp), 1(String), 湖南益阳(String), 29(Integer)
+DEBUG [main] - &lt;==    Updates: 1
+DEBUG [main] - Committing JDBC Connection [com.mysql.jdbc.JDBC4Connection@6a1aab78]
+DEBUG [main] - Resetting autocommit to true on JDBC Connection [com.mysql.jdbc.JDBC4Connection@6a1aab78]
+DEBUG [main] - Closing JDBC Connection [com.mysql.jdbc.JDBC4Connection@6a1aab78]
+DEBUG [main] - Returned connection 1780132728 to pool.
+DEBUG [main] - Cache Hit Ratio [mapper.UserMapper]: 0.3333333333333333
+DEBUG [main] - Opening JDBC Connection
+DEBUG [main] - Checked out connection 1780132728 from pool.
+DEBUG [main] - Setting autocommit to false on JDBC Connection [com.mysql.jdbc.JDBC4Connection@6a1aab78]
+DEBUG [main] - ==&gt;  Preparing: SELECT * FROM USER WHERE id = ? 
+DEBUG [main] - ==&gt; Parameters: 29(Integer)
+DEBUG [main] - &lt;==      Total: 1
+User{id=29, username='二级缓存已更新', sex='1', birthday=Mon Jun 19 00:00:00 CST 2017, address='湖南益阳', orderList=null}
+DEBUG [main] - Resetting autocommit to true on JDBC Connection [com.mysql.jdbc.JDBC4Connection@6a1aab78]
+DEBUG [main] - Closing JDBC Connection [com.mysql.jdbc.JDBC4Connection@6a1aab78]
+DEBUG [main] - Returned connection 1780132728 to pool.
+Process finished with exit code 0
+</code></pre></div></div>
+
+<p>可以看到此处，在我们执行了SQLSession3的commit操作后，该mapper的二级缓存就被清空了，当SQLSession2再次执行查询操作时，请求了数据库。</p>
+
+<h4 id="5usercache配置">5、userCache配置</h4>
+
+<p>在statement中设置useCache=false可以禁用当前select语句的二级缓存，即每次查询都会发出sql去查询，<strong>默认情况是true，即该sql使用二级缓存。</strong></p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;select id="findOrderListResultMap" resultMap="ordersUserMap" useCache="false"&gt; 
+</code></pre></div></div>
+
+<p>总结：针对每次查询都需要最新的数据sql，要设置成useCache=false，禁用二级缓存。</p>
+
+<h4 id="6刷新缓存就是清空缓存">6、刷新缓存（就是清空缓存）</h4>
+
+<p>在mapper的同一个namespace中，如果有其它insert、update、delete操作数据后需要刷新缓存，如果不执行刷新缓存会出现脏读。</p>
+
+<p>设置statement配置中的flushCache=”true” 属性，<strong>默认情况下为true即刷新缓存</strong>，如果改成false则不会刷新。使用缓存时如果手动修改数据库表中的查询数据会出现脏读。</p>
+
+<p>如下：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;insert id="insertUser" parameterType="cn.itcast.mybatis.po.User" flushCache="true"&gt;
+</code></pre></div></div>
+
+<p>总结：一般下执行完commit操作都需要刷新缓存，flushCache=true表示刷新缓存，这样可以避免数据库脏读。不需要更改该设置</p>
+
+<h3 id="mybatis整合ehcache">mybatis整合ehcache</h3>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> EhCache是一个纯Java的进程内缓存框架， 是一种广泛使用的开源Java分布式缓存，具有快速、精干等特点，是Hibernate中默认的CacheProvider 
+
+   
+ EhCache是一个分布式的缓存框架。 
+</code></pre></div></div>
+
+<h4 id="1分布式缓存">1、分布式缓存</h4>
+
+<p>我们的系统为了提高系统并发、性能们一般对系统进行分布式部署（集群部署方式）</p>
+
+<p>不使用分布式缓存，缓存的数据在各个服务器中单独存储。不方便系统开发。所以要使用分布式缓存对缓存数据进行集中管理。</p>
+
+<p>mybatis无法实现分布式缓存，需要和其他分布式缓存框架进行整合。</p>
+
+<h4 id="2整合方法掌握">2、整合方法（掌握）</h4>
+
+<p>mybaits提供了一个cache接口，如果要实现自己的缓存逻辑，实现cache接口开发即可。</p>
+
+<p>mybatis要个echcache整合时，mybatis和ehcache整合包中提供了一个cache接口的实现类。</p>
+
+<p>mybatis默认实现的cache类：</p>
+
+<h4 id="3加入ehcache包">3、加入ehcache包</h4>
+
+<h4 id="4整合ehcache掌握">4、整合ehcache（掌握）</h4>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>编写mapper.xml，配置tyoe为ehcache对cache接口的实现类型 
+   
+   
+   
+    &lt;!--
+    开启本mapper的namespace下的二级缓存
+    type:指定cache接口的实现类的类型，默认使用PerpetualCache，要和EhCache整合，需要配置type为ehcache实现cache接口的类型
+     --&gt;
+    &lt;cache type="org.mybatis.caches.ehcache.EhcacheCache" /&gt;
+</code></pre></div></div>
+
+<h4 id="5加入ehcache配置文件">5、加入EhCache配置文件</h4>
+
+<p>classpath下添加：ehcache.xml</p>
+
+<p>内容如下：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="../config/ehcache.xsd"&gt;
+	&lt;diskStore path="F:developehcache" /&gt;
+	&lt;defaultCache 
+		maxElementsInMemory="1000" 
+		maxElementsOnDisk="10000000"
+		eternal="false" 
+		overflowToDisk="false" 
+		timeToIdleSeconds="120"
+		timeToLiveSeconds="120" 
+		diskExpiryThreadIntervalSeconds="120"
+		memoryStoreEvictionPolicy="LRU"&gt;
+	&lt;/defaultCache&gt;
+&lt;/ehcache&gt;
+</code></pre></div></div>
+
+<h4 id="6测试代码">6、测试代码</h4>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> 以上面的二级缓存测试代码为例： 
+ 
+   
+   //二级缓存测试
+    @Test
+    public void testCache2() throws Exception{
+        //创建SqlSession1与SqlSession2
+        SqlSession sqlSession1 = sqlSessionFactory.openSession();
+        SqlSession sqlSession2 = sqlSessionFactory.openSession();
+        SqlSession sqlSession3 = sqlSessionFactory.openSession();
+        UserMapper userMapper1 = sqlSession1.getMapper(UserMapper.class);
+        UserMapper userMapper2 = sqlSession2.getMapper(UserMapper.class);
+        UserMapper userMapper3 = sqlSession3.getMapper(UserMapper.class);
+        //第一次发起请求，查询ID为29的用户
+        User user1 = userMapper1.findUserById(29);
+        System.out.println(user1);
+        //执行关闭操作，将sqlSession的数据写到二级缓存区域
+        sqlSession1.close();
+        //第三次发起请求，执行commit操作
+        User user3 = userMapper3.findUserById(29);
+        user3.setUsername("二级缓存已更新");
+        userMapper3.updateUser(user3);
+        //执行提交操作，清空UserMapper下的二级缓存
+        sqlSession3.commit();
+        //执行关闭操作，将sqlSession的数据写到二级缓存区域
+        sqlSession3.close();
+        //第二次发起请求，查询ID为29的用户
+        User user2 = userMapper2.findUserById(29);
+        System.out.println(user2);
+        //执行关闭操作，将sqlSession的数据写到二级缓存区域
+        sqlSession2.close();
+    }
+</code></pre></div></div>
+
+<h4 id="7运行结果">7、运行结果</h4>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>DEBUG [main] - Logging initialized using 'class org.apache.ibatis.logging.slf4j.Slf4jImpl' adapter.
+DEBUG [main] - Class not found: org.jboss.vfs.VFS
+DEBUG [main] - JBoss 6 VFS API is not available in this environment.
+DEBUG [main] - Class not found: org.jboss.vfs.VirtualFile
+DEBUG [main] - VFS implementation org.apache.ibatis.io.JBoss6VFS is not valid in this environment.
+DEBUG [main] - Using VFS adapter org.apache.ibatis.io.DefaultVFS
+DEBUG [main] - Find JAR URL: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/pojo
+DEBUG [main] - Not a JAR: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/pojo
+DEBUG [main] - Reader entry: Items.class
+DEBUG [main] - Reader entry: Order.class
+DEBUG [main] - Reader entry: OrderCustom.class
+DEBUG [main] - Reader entry: OrderDetail.class
+DEBUG [main] - Reader entry: User.class
+DEBUG [main] - Reader entry: UserCustom.class
+DEBUG [main] - Reader entry: UserQueryVo.class
+DEBUG [main] - Listing file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/pojo
+DEBUG [main] - Find JAR URL: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/pojo/Items.class
+DEBUG [main] - Not a JAR: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/pojo/Items.class
+DEBUG [main] - Reader entry: ����   4 W
+DEBUG [main] - Find JAR URL: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/pojo/Order.class
+DEBUG [main] - Not a JAR: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/pojo/Order.class
+DEBUG [main] - Reader entry: ����   4 f
+DEBUG [main] - Find JAR URL: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/pojo/OrderCustom.class
+DEBUG [main] - Not a JAR: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/pojo/OrderCustom.class
+DEBUG [main] - Reader entry: ����   4 "
+DEBUG [main] - Find JAR URL: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/pojo/OrderDetail.class
+DEBUG [main] - Not a JAR: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/pojo/OrderDetail.class
+DEBUG [main] - Reader entry: ����   4 J
+DEBUG [main] - Find JAR URL: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/pojo/User.class
+DEBUG [main] - Not a JAR: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/pojo/User.class
+DEBUG [main] - Reader entry: ����   4 ]
+DEBUG [main] - Find JAR URL: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/pojo/UserCustom.class
+DEBUG [main] - Not a JAR: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/pojo/UserCustom.class
+DEBUG [main] - Reader entry: ����   4 
+DEBUG [main] - Find JAR URL: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/pojo/UserQueryVo.class
+DEBUG [main] - Not a JAR: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/pojo/UserQueryVo.class
+DEBUG [main] - Reader entry: ����   4 %
+DEBUG [main] - Checking to see if class pojo.Items matches criteria [is assignable to Object]
+DEBUG [main] - Checking to see if class pojo.Order matches criteria [is assignable to Object]
+DEBUG [main] - Checking to see if class pojo.OrderCustom matches criteria [is assignable to Object]
+DEBUG [main] - Checking to see if class pojo.OrderDetail matches criteria [is assignable to Object]
+DEBUG [main] - Checking to see if class pojo.User matches criteria [is assignable to Object]
+DEBUG [main] - Checking to see if class pojo.UserCustom matches criteria [is assignable to Object]
+DEBUG [main] - Checking to see if class pojo.UserQueryVo matches criteria [is assignable to Object]
+DEBUG [main] - PooledDataSource forcefully closed/removed all connections.
+DEBUG [main] - PooledDataSource forcefully closed/removed all connections.
+DEBUG [main] - PooledDataSource forcefully closed/removed all connections.
+DEBUG [main] - PooledDataSource forcefully closed/removed all connections.
+DEBUG [main] - Find JAR URL: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/mapper
+DEBUG [main] - Not a JAR: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/mapper
+DEBUG [main] - Reader entry: OrderMapperCustom.class
+DEBUG [main] - Reader entry: OrderMapperCustom.xml
+DEBUG [main] - Reader entry: UserMapper.class
+DEBUG [main] - Reader entry: UserMapper.xml
+DEBUG [main] - Listing file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/mapper
+DEBUG [main] - Find JAR URL: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/mapper/OrderMapperCustom.class
+DEBUG [main] - Not a JAR: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/mapper/OrderMapperCustom.class
+DEBUG [main] - Reader entry: ����   4    
+DEBUG [main] - Find JAR URL: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/mapper/OrderMapperCustom.xml
+DEBUG [main] - Not a JAR: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/mapper/OrderMapperCustom.xml
+DEBUG [main] - Reader entry: &lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+DEBUG [main] - Find JAR URL: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/mapper/UserMapper.class
+DEBUG [main] - Not a JAR: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/mapper/UserMapper.class
+DEBUG [main] - Reader entry: ����   4    findUserByIdResultMap (I)Lpojo/User; 
+DEBUG [main] - Find JAR URL: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/mapper/UserMapper.xml
+DEBUG [main] - Not a JAR: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/mapper/UserMapper.xml
+DEBUG [main] - Reader entry: &lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+DEBUG [main] - Checking to see if class mapper.OrderMapperCustom matches criteria [is assignable to Object]
+DEBUG [main] - Checking to see if class mapper.UserMapper matches criteria [is assignable to Object]
+DEBUG [main] - Configuring ehcache from ehcache.xml found in the classpath: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/ehcache.xml
+DEBUG [main] - Configuring ehcache from URL: file:/E:/%e5%a4%a7%e5%ad%a6%e9%a1%b9%e7%9b%ae/IDEA%20Project/mybatis/out/production/mybatis/ehcache.xml
+DEBUG [main] - Configuring ehcache from InputStream
+DEBUG [main] - Ignoring ehcache attribute xmlns:xsi
+DEBUG [main] - Ignoring ehcache attribute xsi:noNamespaceSchemaLocation
+DEBUG [main] - Disk Store Path: F:developehcache
+DEBUG [main] - Creating new CacheManager with default config
+DEBUG [main] - propertiesString is null.
+DEBUG [main] - No CacheManagerEventListenerFactory class specified. Skipping...
+DEBUG [main] - No BootstrapCacheLoaderFactory class specified. Skipping...
+DEBUG [main] - CacheWriter factory not configured. Skipping...
+DEBUG [main] - No CacheExceptionHandlerFactory class specified. Skipping...
+DEBUG [main] - Initialized net.sf.ehcache.store.NotifyingMemoryStore for mapper.UserMapper
+DEBUG [main] - Initialised cache: mapper.UserMapper
+DEBUG [main] - CacheDecoratorFactory not configured for defaultCache. Skipping for 'mapper.UserMapper'.
+DEBUG [main] - Cache Hit Ratio [mapper.UserMapper]: 0.0
+DEBUG [main] - Opening JDBC Connection
+DEBUG [main] - Created connection 631659383.
+DEBUG [main] - Setting autocommit to false on JDBC Connection [com.mysql.jdbc.JDBC4Connection@25a65b77]
+DEBUG [main] - ==&gt;  Preparing: SELECT * FROM USER WHERE id = ? 
+DEBUG [main] - ==&gt; Parameters: 29(Integer)
+DEBUG [main] - &lt;==      Total: 1
+User{id=29, username='二级缓存已更新', sex='1', birthday=Mon Jun 19 00:00:00 CST 2017, address='湖南益阳', orderList=null}
+DEBUG [main] - Resetting autocommit to true on JDBC Connection [com.mysql.jdbc.JDBC4Connection@25a65b77]
+DEBUG [main] - Closing JDBC Connection [com.mysql.jdbc.JDBC4Connection@25a65b77]
+DEBUG [main] - Returned connection 631659383 to pool.
+DEBUG [main] - Cache Hit Ratio [mapper.UserMapper]: 0.5
+DEBUG [main] - Opening JDBC Connection
+DEBUG [main] - Checked out connection 631659383 from pool.
+DEBUG [main] - Setting autocommit to false on JDBC Connection [com.mysql.jdbc.JDBC4Connection@25a65b77]
+DEBUG [main] - ==&gt;  Preparing: UPDATE user SET username = ? , birthday = ? , sex = ? , address = ? where id = ? 
+DEBUG [main] - ==&gt; Parameters: 二级缓存已更新(String), 2017-06-19 00:00:00.0(Timestamp), 1(String), 湖南益阳(String), 29(Integer)
+DEBUG [main] - &lt;==    Updates: 1
+DEBUG [main] - Committing JDBC Connection [com.mysql.jdbc.JDBC4Connection@25a65b77]
+DEBUG [main] - Resetting autocommit to true on JDBC Connection [com.mysql.jdbc.JDBC4Connection@25a65b77]
+DEBUG [main] - Closing JDBC Connection [com.mysql.jdbc.JDBC4Connection@25a65b77]
+DEBUG [main] - Returned connection 631659383 to pool.
+DEBUG [main] - Cache Hit Ratio [mapper.UserMapper]: 0.3333333333333333
+DEBUG [main] - Opening JDBC Connection
+DEBUG [main] - Checked out connection 631659383 from pool.
+DEBUG [main] - Setting autocommit to false on JDBC Connection [com.mysql.jdbc.JDBC4Connection@25a65b77]
+DEBUG [main] - ==&gt;  Preparing: SELECT * FROM USER WHERE id = ? 
+DEBUG [main] - ==&gt; Parameters: 29(Integer)
+DEBUG [main] - &lt;==      Total: 1
+User{id=29, username='二级缓存已更新', sex='1', birthday=Mon Jun 19 00:00:00 CST 2017, address='湖南益阳', orderList=null}
+DEBUG [main] - Resetting autocommit to true on JDBC Connection [com.mysql.jdbc.JDBC4Connection@25a65b77]
+DEBUG [main] - Closing JDBC Connection [com.mysql.jdbc.JDBC4Connection@25a65b77]
+DEBUG [main] - Returned connection 631659383 to pool.
+Process finished with exit code 0
+</code></pre></div></div>
+
+<h3 id="二级缓存的应用场景">二级缓存的应用场景</h3>
+
+<p>对于访问多的查询请求且用户对查询结果实时性要求不高，此时可采用mybatis二级缓存技术降低数据库访问量，提高访问速度，业务场景比如：耗时较高的统计分析sql、电话账单查询sql等。</p>
+
+<p>实现方法如下：通过设置刷新间隔时间，由mybatis每隔一段时间自动清空缓存，根据数据变化频率设置缓存刷新间隔flushInterval，比如设置为30分钟、60分钟、24小时等，根据需求而定。</p>
+
+<h3 id="二级缓存的局限性">二级缓存的局限性</h3>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>缓存命中率低，对于细粒度（改哪个只改哪个）级别的缓存实现不好。 
+</code></pre></div></div>
+
+<p>mybatis二级缓存对细粒度的数据级别的缓存实现不好，比如如下需求：对商品信息进行缓存，由于商品信息查询访问量大，但是要求用户每次都能查询最新的商品信息，此</p>
+
+<p>时如果使用mybatis的二级缓存就无法实现当一个商品变化时只刷新该商品的缓存信息而不刷新其它商品的信息，因为mybaits的二级缓存区域以mapper为单位划分，当一个商品信</p>
+
+<p>息变化会将所有商品信息的缓存数据全部清空。解决此类问题需要在业务层根据需求对数据有针对性缓存。</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/mybatis%E5%AD%A6%E4%B9%A0%E4%B9%8B%E6%9F%A5%E8%AF%A2%E7%BC%93%E5%AD%98.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/%E4%BD%BF%E7%94%A8-maven-%E7%AE%A1%E7%90%86%E9%A1%B9%E7%9B%AE.html">&laquo; 使用 Maven 管理项目</a>
+  
+  
+  <a class="next" href="/2017/spring_yuan_ma_fen_xi_zhi_proxyfactorybean_fang_shi_shi_xian_aop_gong_neng_de_fen_xi.html">Spring源码分析之ProxyFactoryBean方式实现Aop功能的分析 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

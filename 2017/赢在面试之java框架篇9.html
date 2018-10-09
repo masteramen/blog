@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>赢在面试之Java框架篇（9） | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="赢在面试之Java框架篇（9）" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="（感谢微信名为“哼”的朋友留言纠错，在赢在面试之Java基础篇（1）中，switch语句能否作用在String上说错了，Java1.7之后已经支持这种写法了，再次感谢！）" />
+<meta property="og:description" content="（感谢微信名为“哼”的朋友留言纠错，在赢在面试之Java基础篇（1）中，switch语句能否作用在String上说错了，Java1.7之后已经支持这种写法了，再次感谢！）" />
+<link rel="canonical" href="http://www.jfox.info/2017/%E8%B5%A2%E5%9C%A8%E9%9D%A2%E8%AF%95%E4%B9%8Bjava%E6%A1%86%E6%9E%B6%E7%AF%879.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/%E8%B5%A2%E5%9C%A8%E9%9D%A2%E8%AF%95%E4%B9%8Bjava%E6%A1%86%E6%9E%B6%E7%AF%879.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:59:46+00:00" />
+<script type="application/ld+json">
+{"description":"（感谢微信名为“哼”的朋友留言纠错，在赢在面试之Java基础篇（1）中，switch语句能否作用在String上说错了，Java1.7之后已经支持这种写法了，再次感谢！）","@type":"BlogPosting","url":"http://www.jfox.info/2017/%E8%B5%A2%E5%9C%A8%E9%9D%A2%E8%AF%95%E4%B9%8Bjava%E6%A1%86%E6%9E%B6%E7%AF%879.html","headline":"赢在面试之Java框架篇（9）","dateModified":"2017-01-01T15:59:46+00:00","datePublished":"2017-01-01T15:59:46+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/%E8%B5%A2%E5%9C%A8%E9%9D%A2%E8%AF%95%E4%B9%8Bjava%E6%A1%86%E6%9E%B6%E7%AF%879.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">赢在面试之Java框架篇（9）</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:59:46+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p><em>（感谢微信名为“哼”的朋友留言纠错，在</em><a href="https://www.jfox.info/go.php?url=http://mp.weixin.qq.com/s?__biz=MzI4Njc5NjM1NQ==&amp;mid=2247483653&amp;idx=1&amp;sn=006c7510542d5ea29c3afb4ce14cbc64&amp;chksm=ebd63e29dca1b73f12d1adaab65a484c5eef94180df5fcac93fabde691c6d26a689c45f63bcf&amp;scene=21#wechat_redirect"><em>赢在面试之Java基础篇（1）</em></a><em>中，switch语句能否作用在String上说错了，Java1.7之后已经支持这种写法了，再次感谢！）</em></p>
+
+<p>spring现在无疑是Java中最火的框架，使用范围广，几乎每个公司面试都会涉及spring和数据库，你可以对Struts不熟悉，但一定不能表现出对spring不了解。 <em>第九篇赢在面试全篇介绍spring常考点。数据库重中之重会在后面花五篇介绍常问题型</em></p>
+
+<p>81， <strong>使用Spring框架的好处是什么？</strong></p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>     轻量：Spring 是轻量的，基本的版本大约2MB。 
+
+     控制反转：Spring通过控制反转实现了松散耦合，对象们给出它们的依赖，而不是创建或查找依赖的对象们。 
+
+     面向切面的编程(AOP)：Spring支持面向切面的编程，并且把应用业务逻辑和系统服务分开。 
+
+     容器：Spring 包含并管理应用中对象的生命周期和配置。 
+
+     MVC框架：Spring的WEB框架是个精心设计的框架，是Web框架的一个很好的替代品。 
+
+     事务管理：Spring 提供一个持续的事务管理接口，可以扩展到上至本地事务下至全局事务（JTA）。 
+
+     异常处理：Spring 提供方便的API把具体技术相关的异常（比如由JDBC，Hibernate or JDO抛出的）转化为一致的unchecked 异常。 
+</code></pre></div></div>
+
+<h3 id="82-applicationcontext通常的实现是什么">82. ApplicationContext通常的实现是什么?</h3>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>     FileSystemXmlApplicationContext ：此容器从一个XML文件中加载beans的定义，XML Bean 配置文件的全路径名必须提供给它的构造函数。 
+
+     ClassPathXmlApplicationContext：此容器也从一个XML文件中加载beans的定义，这里，你需要正确设置classpath因为这个容器将在classpath里找bean配置。 
+
+     WebXmlApplicationContext：此容器加载一个XML文件，此文件定义了一个WEB应用的所有bean。 
+</code></pre></div></div>
+
+<h3 id="83什么是spring的依赖注入有哪些方法进行依赖注入">83，什么是Spring的依赖注入？有哪些方法进行依赖注入</h3>
+
+<p>依赖注入，是IOC的一个方面，是个通常的概念，它有多种解释。这概念是说你不用创建对象，而只需要描述它如何被创建。你不在代码里直接组装你的组件和服务，但是要在配置文件里描述哪些组件需要哪些服务，之后一个容器（IOC容器）负责把他们组装起来。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>     构造器依赖注入：构造器依赖注入通过容器触发一个类的构造器来实现的，该类有一系列参数，每个参数代表一个对其他类的依赖。 
+
+     Setter方法注入：Setter方法注入是容器通过调用无参构造器或无参static工厂 方法实例化bean之后，调用该bean的setter方法，即实现了基于setter的依赖注入。 
+</code></pre></div></div>
+
+<h3 id="84什么是spring-beans">84，什么是Spring beans?</h3>
+
+<p>Spring beans 是那些形成Spring应用的主干的java对象。它们被Spring IOC容器初始化，装配，和管理。这些beans通过容器中配置的元数据创建。比如，以XML文件中<bean></bean> 的形式定义。</p>
+
+<p>Spring 框架定义的beans都是单件beans。在bean tag中有个属性”singleton”，如果它被赋为TRUE，bean 就是单件，否则就是一个 prototype bean。默认是TRUE，所以所有在Spring框架中的beans 缺省都是单件。</p>
+
+<h4 id="85解释spring支持的几种bean的作用域">85，解释Spring支持的几种bean的作用域。</h4>
+
+<p>Spring框架支持以下五种bean的作用域：</p>
+
+<p>singleton : bean在每个Spring ioc 容器中只有一个实例。</p>
+
+<p>prototype：一个bean的定义可以有多个实例。</p>
+
+<p>request：每次http请求都会创建一个bean，该作用域仅在基于web的        Spring ApplicationContext情形下有效。</p>
+
+<p>session：在一个HTTP Session中，一个bean定义对应一个实例。该作用域仅在基于web的Spring ApplicationContext情形下有效。</p>
+
+<p>global-session：在一个全局的HTTP Session中，一个bean定义对应一个实例。该作用域仅在基于web的Spring ApplicationContext情形下有效。</p>
+
+<p>缺省的Spring bean 的作用域是Singleton.</p>
+
+<h4 id="86解释spring框架中bean的生命周期">86，解释Spring框架中bean的生命周期。</h4>
+
+<p>1，Spring容器 从XML 文件中读取bean的定义，并实例化bean。</p>
+
+<p>2，Spring根据bean的定义填充所有的属性。</p>
+
+<p>3，如果bean实现了BeanNameAware 接口，Spring 传递bean 的ID 到 setBeanName方法。</p>
+
+<p>4，如果Bean 实现了 BeanFactoryAware 接口， Spring传递beanfactory 给setBeanFactory 方法。</p>
+
+<p>5，如果有任何与bean相关联的BeanPostProcessors，Spring会在postProcesserBeforeInitialization()方法内调用它们。</p>
+
+<p>6，如果bean实现IntializingBean了，调用它的afterPropertySet方法，如果bean声明了初始化方法，调用此初始化方法。</p>
+
+<p>7，如果有BeanPostProcessors 和bean 关联，这些bean的postProcessAfterInitialization() 方法将被调用。</p>
+
+<p>8，如果bean实现了 DisposableBean，它将调用destroy()方法。</p>
+
+<h3 id="87在-spring中如何注入一个java集合">87，在 Spring中如何注入一个java集合？</h3>
+
+<p>Spring提供以下几种集合的配置元素：</p>
+
+<list>类型用于注入一列值，允许有相同的值。
+
+<set> 类型用于注入一组值，不允许有相同的值。
+
+<map> 类型用于注入一组键值对，键和值都可以为任意类型。
+
+<props>类型用于注入一组键值对，键和值都只能为String类型。
+
+###  88，解释不同方式的自动装配 。 
+
+有五种自动装配的方式，用来指导Spring容器用自动装配方式进行依赖注入。
+
+         no：默认的方式是不进行自动装配，通过显式设置ref 属性来进行装配。 
+
+         byName：通过参数名 自动装配，Spring容器在配置文件中发现bean的autowire属性被设置成byname，之后容器试图匹配、装配和该bean的属性具有相同名字的bean。 
+
+         byType:：通过参数类型自动装配，Spring容器在配置文件中发现bean的autowire属性被设置成byType，之后容器试图匹配、装配和该bean的属性具有相同类型的bean。如果有多个bean符合条件，则抛出错误。 
+
+         constructor：这个方式类似于byType， 但是要提供给构造器参数，如果没有确定的带参数的构造器参数类型，将会抛出异常。 
+
+         autodetect：首先尝试使用constructor来自动装配，如果无法工作，则使用byType方式。 
+
+###  89，Spring框架的事务管理有哪些优点？ 
+
+它为不同的事务API  如 JTA，JDBC，Hibernate，JPA 和JDO，提供一个不变的编程模式。
+
+它为编程式事务管理提供了一套简单的API而不是一些复杂的事务API如
+
+它支持声明式事务管理。
+
+它和Spring各种数据访问抽象层很好得集成。
+
+###  90.什么是基于Java的Spring注解配置? 给一些注解的例子. 
+
+基于Java的配置，允许你在少量的Java注解的帮助下，进行你的大部分Spring配置而非通过XML文件。
+
+以@Configuration 注解为例，它用来标记类可以当做一个bean的定义，被Spring IOC容器使用。另一个例子是@Bean注解，它表示此方法将要返回一个对象，作为一个bean注册进Spring应用上下文。
+
+（Java知音收集了几份不错的简历模版，如果您有需要，点击下方的资源库下载吧）
+
+Java知音公众号整理一些各大公司常用的面试笔试题，供大家在每天闲暇之余学习其中几道题目，日积月累，等到出去面试时，一切都水到渠成，面试时就自然会游刃有余了。
+</props></map></set></list>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/%E8%B5%A2%E5%9C%A8%E9%9D%A2%E8%AF%95%E4%B9%8Bjava%E6%A1%86%E6%9E%B6%E7%AF%879.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/dubbo%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%E4%BA%8C%E8%B6%85%E6%97%B6%E5%8E%9F%E7%90%86%E4%BB%A5%E5%8F%8A%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF.html">&laquo; dubbo源码分析（二）：超时原理以及应用场景</a>
+  
+  
+  <a class="next" href="/2017/%E6%9C%89%E5%93%AA%E4%BA%9Bjava%E6%BA%90%E4%BB%A3%E7%A0%81%E7%9C%8B%E4%BA%86%E5%90%8E%E8%AE%A9%E4%BD%A0%E6%94%B6%E8%8E%B7%E5%BE%88%E5%A4%9A%E4%BB%A3%E7%A0%81%E6%80%9D%E7%BB%B4%E5%92%8C%E8%83%BD.html">有哪些 Java 源代码看了后让你收获很多，代码思维和能力有较大的提升？ &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

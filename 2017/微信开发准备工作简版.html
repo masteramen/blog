@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>微信开发（准备工作简版） | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="微信开发（准备工作简版）" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="1.准备工作" />
+<meta property="og:description" content="1.准备工作" />
+<link rel="canonical" href="http://www.jfox.info/2017/%E5%BE%AE%E4%BF%A1%E5%BC%80%E5%8F%91%E5%87%86%E5%A4%87%E5%B7%A5%E4%BD%9C%E7%AE%80%E7%89%88.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/%E5%BE%AE%E4%BF%A1%E5%BC%80%E5%8F%91%E5%87%86%E5%A4%87%E5%B7%A5%E4%BD%9C%E7%AE%80%E7%89%88.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:58:38+00:00" />
+<script type="application/ld+json">
+{"description":"1.准备工作","@type":"BlogPosting","url":"http://www.jfox.info/2017/%E5%BE%AE%E4%BF%A1%E5%BC%80%E5%8F%91%E5%87%86%E5%A4%87%E5%B7%A5%E4%BD%9C%E7%AE%80%E7%89%88.html","headline":"微信开发（准备工作简版）","dateModified":"2017-01-01T15:58:38+00:00","datePublished":"2017-01-01T15:58:38+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/%E5%BE%AE%E4%BF%A1%E5%BC%80%E5%8F%91%E5%87%86%E5%A4%87%E5%B7%A5%E4%BD%9C%E7%AE%80%E7%89%88.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">微信开发（准备工作简版）</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:58:38+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>1.准备工作</p>
+
+<p>1.1 首先需要一个url地址，用来接收相关的数据
+1.2 注册开发者账号进行开发（可用公众平台测试账号）</p>
+
+<p>1.3 appid,第三方用户唯一凭证(你的AppID)</p>
+
+<p>1.4 secret,第三方用户唯一凭证密钥,即Appsecret</p>
+
+<p>1.3 需要access_token,access_token是公众号的全局唯一票据，公众号调用各接口时都需使用access_token。access_token的存储至少要保留512个字符空间。access_token的有效期为2个小时，需定时刷新，重复获取将导致上次获取的access_token失效。
+2.获取相关数据、配置、验证状态
+2.1获取access_token：通过</p>
+
+<p><a href="https://www.jfox.info/go.php?url=https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&amp;appid=%E4%BD%A0%E7%9A%84AppID&amp;secret=%E4%BD%A0%E7%9A%84Appsecret">https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&amp;appid=你的AppID&amp;secret=你的Appsecret</a> 来获取</p>
+
+<p>2.2 验证服务器地址的有效性（确保信息来源为微信服务器）</p>
+
+<p>2.2.1将token、timestamp、nonce进行字典序排序</p>
+
+<p>2.2.2将三个参数拼成一个字符串，并进行sha1加密</p>
+
+<p>2.2.3开发者获得加密后的字符串可与signature对比，进行验证该请求来源于微信，如果验证结果为相等，则请返回echostr字符串、</p>
+
+<p>3.相关的下载地址</p>
+
+<p>3.1多媒体文件下载地址</p>
+
+<p>http://file.api.weixin.qq.com/cgi-bin/media/get?access_token=ACCESS_TOKEN&amp;media_id=MEDIA_ID</p>
+
+<p>1）ACCESS_TOKE：你获取的access_token</p>
+
+<p>2）MEDIA_ID：媒体文件ID</p>
+
+<p>4.开始开发——用户通过post请求发送XMl数据包到Url地址</p>
+
+<p>通用XML参数：</p>
+
+<p><strong>参数</strong></p>
+
+<p><strong>描述</strong></p>
+
+<p>ToUserName</p>
+
+<p>开发者微信号</p>
+
+<p>FromUserName</p>
+
+<p>发送方帐号（一个OpenID）</p>
+
+<p>CreateTime</p>
+
+<p>消息创建时间 （整型）</p>
+
+<p>MsgType</p>
+
+<p>消息类型（text、image、voice）</p>
+
+<p>MsgId</p>
+
+<p>消息id，64位整型</p>
+
+<p>4.1获取文本信息</p>
+
+<p>XML格式：</p>
+
+<xml>
+
+ <ToUserName>&lt;![CDATA[toUser]]&gt;</ToUserName>
+
+ <FromUserName>&lt;![CDATA[fromUser]]&gt;</FromUserName> 
+
+ <CreateTime>1348831860</CreateTime>
+
+ <MsgType>&lt;![CDATA[text]]&gt;</MsgType>
+
+ <Content>&lt;![CDATA[this is a test]]&gt;</Content>
+
+ <MsgId>1234567890123456</MsgId>
+
+ </xml>
+
+<p><strong>参数</strong></p>
+
+<p><strong>描述</strong></p>
+
+<p>MsgType</p>
+
+<p>text</p>
+
+<p>Content</p>
+
+<p>为用户所发送的消息</p>
+
+<p>4.2获取图片信息</p>
+
+<p>XML数据格式:</p>
+
+<xml>
+
+ <ToUserName>&lt;![CDATA[toUser]]&gt;</ToUserName>
+
+ <FromUserName>&lt;![CDATA[fromUser]]&gt;</FromUserName>
+
+ <CreateTime>1348831860</CreateTime>
+
+ <MsgType>&lt;![CDATA[image]]&gt;</MsgType>
+
+ <PicUrl>&lt;![CDATA[this is a url]]&gt;</PicUrl>
+
+ <MediaId>&lt;![CDATA[media_id]]&gt;</MediaId>
+
+ <MsgId>1234567890123456</MsgId>
+
+ </xml>
+
+<p><strong>参数</strong></p>
+
+<p><strong>描述</strong></p>
+
+<p>MsgType</p>
+
+<p>image</p>
+
+<p>PicUrl</p>
+
+<p>可根据该图片地址查看该图片</p>
+
+<p>MediaId</p>
+
+<p>图片消息媒体id，可以调用多媒体文件下载接口拉取数据。</p>
+
+<p>4.3获取语音消息</p>
+
+<p>XML数据格式：</p>
+
+<xml>
+
+<ToUserName>&lt;![CDATA[toUser]]&gt;</ToUserName>
+
+<FromUserName>&lt;![CDATA[fromUser]]&gt;</FromUserName>
+
+<CreateTime>1357290913</CreateTime>
+
+<MsgType>&lt;![CDATA[voice]]&gt;</MsgType>
+
+<MediaId>&lt;![CDATA[media_id]]&gt;</MediaId>
+
+<Format>&lt;![CDATA[Format]]&gt;</Format>
+
+<MsgId>1234567890123456</MsgId>
+
+</xml>
+
+<p><strong>参数</strong></p>
+
+<p><strong>描述</strong></p>
+
+<p>MsgType</p>
+
+<p>语音为voice</p>
+
+<p>MediaId</p>
+
+<p>语音消息媒体id，可以调用多媒体文件下载接口拉取数据。</p>
+
+<p>Format</p>
+
+<p>语音格式，如amr，speex等</p>
+
+<p>4.4获取视频消息</p>
+
+<p>XML数据格式：</p>
+
+<xml>
+
+<ToUserName>&lt;![CDATA[toUser]]&gt;</ToUserName>
+
+<FromUserName>&lt;![CDATA[fromUser]]&gt;</FromUserName>
+
+<CreateTime>1357290913</CreateTime>
+
+<MsgType>&lt;![CDATA]&gt;</MsgType>
+
+<MediaId>&lt;![CDATA[media_id]]&gt;</MediaId>
+
+<ThumbMediaId>&lt;![CDATA[thumb_media_id]]&gt;</ThumbMediaId>
+
+<MsgId>1234567890123456</MsgId>
+
+</xml>
+
+<p><strong>参数</strong></p>
+
+<p><strong>描述</strong></p>
+
+<p>MsgType</p>
+
+<p>语音为video</p>
+
+<p>MediaId</p>
+
+<p>视频消息媒体id，可以调用多媒体文件下载接口拉取数据。</p>
+
+<p>ThumbMediaId</p>
+
+<p>视频消息缩略图的媒体id，可以调用多媒体文件下载接口拉取数据.</p>
+
+<p>4.5获取小视频的消息</p>
+
+<p>XML数据格式：</p>
+
+<xml>
+
+<ToUserName>&lt;![CDATA[toUser]]&gt;</ToUserName>
+
+<FromUserName>&lt;![CDATA[fromUser]]&gt;</FromUserName>
+
+<CreateTime>1357290913</CreateTime>
+
+<MsgType>&lt;![CDATA[shortvideo]]&gt;</MsgType>
+
+<MediaId>&lt;![CDATA[media_id]]&gt;</MediaId>
+
+<ThumbMediaId>&lt;![CDATA[thumb_media_id]]&gt;</ThumbMediaId>
+
+<MsgId>1234567890123456</MsgId>
+
+</xml>
+
+<p><strong>参数</strong></p>
+
+<p><strong>描述</strong></p>
+
+<p>MsgType</p>
+
+<p>小视频为shortvideo，</p>
+
+<p>MediaId</p>
+
+<p>视频消息媒体id，可以调用多媒体文件下载接口拉取数据。</p>
+
+<p>ThumbMediaId</p>
+
+<p>视频消息缩略图的媒体id，可以调用多媒体文件下载接口拉取数据。</p>
+
+<p>4.6获取地理位置消息</p>
+
+<p>XML数据格式：</p>
+
+<xml>
+
+<ToUserName>&lt;![CDATA[toUser]]&gt;</ToUserName>
+
+<FromUserName>&lt;![CDATA[fromUser]]&gt;</FromUserName>
+
+<CreateTime>1351776360</CreateTime>
+
+<MsgType>&lt;![CDATA[location]]&gt;</MsgType>
+
+<Location_X>23.134521</Location_X>
+
+<Location_Y>113.358803</Location_Y>
+
+<Scale>20</Scale>
+
+<label>&lt;![CDATA[位置信息]]&gt;</label>
+
+<MsgId>1234567890123456</MsgId>
+
+</xml>
+
+<h3 id="-">** **</h3>
+
+<p><strong>参数</strong></p>
+
+<p><strong>描述</strong></p>
+
+<p>MsgType</p>
+
+<p>location</p>
+
+<p>Location_X</p>
+
+<p>地理位置维度</p>
+
+<p>Location_Y</p>
+
+<p>地理位置经度</p>
+
+<p>Scale</p>
+
+<p>地图缩放大小</p>
+
+<p>Label</p>
+
+<p>地理位置信息</p>
+
+<p>4.7获取连接消息</p>
+
+<p>XML数据格式：</p>
+
+<xml>
+
+<ToUserName>&lt;![CDATA[toUser]]&gt;</ToUserName>
+
+<FromUserName>&lt;![CDATA[fromUser]]&gt;</FromUserName>
+
+<CreateTime>1351776360</CreateTime>
+
+<MsgType>&lt;![CDATA[link]]&gt;</MsgType>
+
+<Title>&lt;![CDATA[公众平台官网链接]]&gt;</Title>
+
+<Description>&lt;![CDATA[公众平台官网链接]]&gt;</Description>
+
+<Url>&lt;![CDATA[url]]&gt;</Url>
+
+<MsgId>1234567890123456</MsgId>
+
+</xml>
+
+<h3 id="--1">** **</h3>
+
+<p><strong>参数</strong></p>
+
+<p><strong>描述</strong></p>
+
+<p>MsgType</p>
+
+<p>消息类型，link</p>
+
+<p>Title</p>
+
+<p>消息标题</p>
+
+<p>Description</p>
+
+<p>消息描述</p>
+
+<p>Url</p>
+
+<p>消息链接</p>
+
+<p>5.消息排重（响应微信服务器）</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/%E5%BE%AE%E4%BF%A1%E5%BC%80%E5%8F%91%E5%87%86%E5%A4%87%E5%B7%A5%E4%BD%9C%E7%AE%80%E7%89%88.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/java%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%B3%BB%E5%88%97%E5%9B%9Block%E7%9A%84%E4%BD%BF%E7%94%A8.html">&laquo; java多线程系列(四)—Lock的使用</a>
+  
+  
+  <a class="next" href="/2017/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3java%E8%99%9A%E6%8B%9F%E6%9C%BA%E4%BA%8C.html">《深入理解Java虚拟机》（二） &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

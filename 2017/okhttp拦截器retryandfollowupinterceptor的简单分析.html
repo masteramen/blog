@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>OKHTTP拦截器RetryAndFollowUpInterceptor的简单分析 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="OKHTTP拦截器RetryAndFollowUpInterceptor的简单分析" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="OKHTTP拦截器RetryAndFollowUpInterceptor的简单分析" />
+<meta property="og:description" content="OKHTTP拦截器RetryAndFollowUpInterceptor的简单分析" />
+<link rel="canonical" href="http://www.jfox.info/2017/okhttp%E6%8B%A6%E6%88%AA%E5%99%A8retryandfollowupinterceptor%E7%9A%84%E7%AE%80%E5%8D%95%E5%88%86%E6%9E%90.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/okhttp%E6%8B%A6%E6%88%AA%E5%99%A8retryandfollowupinterceptor%E7%9A%84%E7%AE%80%E5%8D%95%E5%88%86%E6%9E%90.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:56:19+00:00" />
+<script type="application/ld+json">
+{"description":"OKHTTP拦截器RetryAndFollowUpInterceptor的简单分析","@type":"BlogPosting","url":"http://www.jfox.info/2017/okhttp%E6%8B%A6%E6%88%AA%E5%99%A8retryandfollowupinterceptor%E7%9A%84%E7%AE%80%E5%8D%95%E5%88%86%E6%9E%90.html","headline":"OKHTTP拦截器RetryAndFollowUpInterceptor的简单分析","dateModified":"2017-01-01T15:56:19+00:00","datePublished":"2017-01-01T15:56:19+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/okhttp%E6%8B%A6%E6%88%AA%E5%99%A8retryandfollowupinterceptor%E7%9A%84%E7%AE%80%E5%8D%95%E5%88%86%E6%9E%90.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">OKHTTP拦截器RetryAndFollowUpInterceptor的简单分析</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:56:19+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<h1 id="okhttp拦截器retryandfollowupinterceptor的简单分析">OKHTTP拦截器RetryAndFollowUpInterceptor的简单分析</h1>
+
+<p>作者<a href="/u/8173f323f5bb">liaoweijian</a>2017.07.11 18:28*字数 1669
+<a href="https://www.jfox.info/go.php?url=http://www.jianshu.com/p/3214ef86a52d">OKHTTP异步和同步请求简单分析</a><a href="https://www.jfox.info/go.php?url=http://www.jianshu.com/p/8d0bc05104ef">OKHTTP拦截器缓存策略CacheInterceptor的简单分析</a><a href="https://www.jfox.info/go.php?url=http://www.jianshu.com/p/5472521f8d63">OKHTTP拦截器ConnectInterceptor的简单分析</a><a href="https://www.jfox.info/go.php?url=http://www.jianshu.com/p/4510ae14dbe9">OKHTTP拦截器CallServerInterceptor的简单分析</a><a href="https://www.jfox.info/go.php?url=http://www.jianshu.com/p/ede34ab5b776">OKHTTP拦截器BridgeInterceptor的简单分析</a><a href="https://www.jfox.info/go.php?url=http://www.jianshu.com/p/64111e0db93c">OKHTTP拦截器RetryAndFollowUpInterceptor的简单分析</a><a href="https://www.jfox.info/go.php?url=http://www.jianshu.com/p/d04b463806c8">OKHTTP结合官网示例分析两种自定义拦截器的区别</a></p>
+
+<h1 id="1retryandfollowupinterceptor的作用">1、RetryAndFollowUpInterceptor的作用</h1>
+
+<p>看到该拦截器的名称就知道，它就是一个负责失败重连的拦截器，如果我们想要实现失败重连，那么就要在 OkHttpClient 进行配置，下面的代码片段是就是进行配置的。不过呢，不是所有的网络请求失败了都可以进行重连的，因此呢，它内部会进行检测网络请求异常和响应码的情况，根据这些情况判断是否需要重新进行网络请求。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>OkHttpClient okHttpClient = new OkHttpClient();
+okHttpClient.retryOnConnectionFailure();
+</code></pre></div></div>
+
+<p>RetryAndFollowUpInterceptor 是 OKHTTP 内置中的第一个拦截器，其功能主要有以下几点：</p>
+
+<ul>
+  <li>1.创建 StreamAllocation 对象；</li>
+  <li>2.调用 RealInterceptorChain.proceed(…)进行网络请求；</li>
+  <li>3.根据异常结果或者响应结果判断是否要进行重新请求。</li>
+</ul>
+
+<p>注意第二和第三点是在 while (true)内部执行的，也就是系统通过死循环来实现重连机制。下面阅读 OKHTTP 源码来看 RetryAndFollowUpInterceptor 内部是怎么实现以上 3 点功能的。</p>
+
+<h2 id="11创建-streamallocation-对象">1.1、创建 StreamAllocation 对象</h2>
+
+<p>StreamAllocation 在 RetryAndFollowUpInterceptor 创建，它会在 ConnectInterceptor 中真正被使用到，主要就是用于获取连接服务端的 Connection 和用于进行跟服务端进行数据传输的输入输出流 HttpStream，具体的操作不是这篇博客的重点，只要了解它的作用的就行了。</p>
+
+<h2 id="12网络请求">1.2、网络请求</h2>
+
+<p>因为在 OKHTTP 中的拦截器的执行过程是一个递归的过程，也就是它内部会通过 RealInterceptorChain 这个类去负责将所有的拦截器进行串起来。只有所有的拦截器执行完毕之后，一个网络请求的响应 Response 才会被返回。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>拦截器的执行过程.png 
+</code></pre></div></div>
+
+<p>但是呢，在执行这个过程中，难免会出现一些问题，例如连接中断，握手失败或者服务器检测到未认证等，那么这个 resposne 的返回码就不是正常的 200 了，因此说这个 response 并不一定是可用的，或者说在请求过程就已经抛出异常了，例如超时异常等，那么 RetryAndFollowUpInterceptor 需要依据这些问题进行判断是否可以进行重新连接。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>while(true){
+    try{
+        ...
+        response = ((RealInterceptorChain) chain).proceed(request, 
+        streamAllocation, null, null);
+        ...
+    }catch(RouteException e){
+        //判断 RouteException  否可以重连
+    }catch(IOException e){
+        //判断 IOException 否可以重连
+    }finally{
+        //释放流
+    }
+    ...
+}
+</code></pre></div></div>
+
+<h3 id="13-网络请求异常的重连机制">1.3、 网络请求异常的“重连机制”</h3>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public Response proceed(Request request, StreamAllocation 
+streamAllocation, HttpStream httpStream,Connection connection) throws IOException {
+</code></pre></div></div>
+
+<p>在上面已经介绍过了网络请求时通过 RealInterceptorChain#proceed 方法进行的，该方法的声明中抛出了 IOException ，表示在整个网络请求过程有可能出现 IOException，但是我们看了在 catch 中还有一个异常那就是 RouteException，下面是两个异常的继承结构：</p>
+
+<ul>
+  <li>
+    <p>IOException 它是编译时，需要在编译时期就要捕获或者抛出。public class IOException extends Exception</p>
+  </li>
+  <li>
+    <p>RouteException 是运行时异常，不需要显示的去捕获或者抛出。public final class RouteException extends RuntimeException</p>
+
+    <p>try {
+  //网络请求
+  response = ((RealInterceptorChain) chain).proceed(request, streamAllocation, null, null);
+  //表示是否要释放连接，在 finally 中会使用到。
+  releaseConnection = false;
+} catch (RouteException e) {
+  //路由异常RouteException 
+  // The attempt to connect via a route failed. The request will not have been sent.
+  //检测路由异常是否能重新连接
+  if (!recover(e.getLastConnectException(), true, request)) throw e.getLastConnectException();
+  //可以重新连接，那么就不要释放连接
+  releaseConnection = false;
+  //重新进行while循环，进行网络请求
+  continue;
+} catch (IOException e) {
+   //检测该IO异常是否能重新连接
+  // An attempt to communicate with a server failed. The request may have been sent.
+  if (!recover(e, false, request)) throw e;
+  //可以重新连接，那么就不要释放连接
+  releaseConnection = false;
+ //重新进行while循环，进行网络请求
+  continue;
+} finally {
+  //当 releaseConnection 为true时表示需要释放连接了。
+  // We’re throwing an unchecked exception. Release any resources.
+  if (releaseConnection) {
+    streamAllocation.streamFailed(null);
+    streamAllocation.release();
+  }</p>
+  </li>
+</ul>
+
+<h4 id="131routeexception-异常的重连机制">1.3.1、RouteException 异常的重连机制</h4>
+
+<p>在 RouteException 的重连机制主要做了这样几件事：</p>
+
+<ul>
+  <li>通过 recover 方法检测该 RouteException 是否能重新连接；</li>
+  <li>可以重新连接，那么就不要释放连接 releaseConnection = false；</li>
+  <li>continue进入下一次循环，进行网络请求；</li>
+  <li>不可以重新连接就直接走 finally 代码块释放连接。</li>
+</ul>
+
+<p>下面是通过 find Usages 得到 RouteException 被哪里抛出的图，从图可以看出 RouteException 是在获取一个 HttpStream 流和与 SOCKET 创建连接时出现异常才被抛出的，在抛异常的方法内部并没有显示地去捕获，因此异常会被 RetryAndFollowUpInterceptor#intercept 中的 catch 捕获，下面就是对捕获的异常的处理。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>RouteException的抛出.png 
+</code></pre></div></div>
+
+<p>查看源码可以知道 RouteException 和 IOException 异常检测都会调用 recover 方法进行判断，主要是第二个参数不一样，这里传入的是true，表示该异常是 RouteException ，下面 IOException 检测时传入的参数时 false 。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>if (!recover(e.getLastConnectException(), true, request)) throw 
+e.getLastConnectException();
+</code></pre></div></div>
+
+<h4 id="132-recover-方法异常检测">1.3.2、 recover 方法异常检测</h4>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>private boolean recover(IOException e, boolean routeException, Request userRequest) {
+  streamAllocation.streamFailed(e);
+  //1.判断 OkHttpClient 是否支持失败重连的机制
+  // The application layer has forbidden retries.
+  if (!client.retryOnConnectionFailure()) return false;
+  // 在该方法中传入的 routeException值 为 true
+  // We can't send the request body again.
+  if (!routeException &amp;&amp; userRequest.body() instanceof UnrepeatableRequestBody) return false;
+  //2.isRecoverable 检测该异常是否是致命的。
+  // This exception is fatal.
+  if (!isRecoverable(e, routeException)) return false;
+  // No more routes to attempt.
+  //3.是否有更多的路线
+  if (!streamAllocation.hasMoreRoutes()) return false;
+  // For failure recovery, use the same route selector with a new connection.
+  return true;
+}
+</code></pre></div></div>
+
+<p>从上面源码可以看出 recover 方法主要做了以下几件事：</p>
+
+<ul>
+  <li>
+    <p>1.判断 OkHttpClient 是否支持失败重连的机制；</p>
+  </li>
+  <li>
+    <p>如果不支持重连，就表示请求失败就失败了，不能再重试了。</p>
+  </li>
+  <li>2.通过 isRecoverable 方法检测该异常是否是致命的；</li>
+  <li>3.是否有更多的路线，可以重试。</li>
+</ul>
+
+<h4 id="133isrecoverable-方法异常检测">1.3.3、isRecoverable 方法异常检测</h4>
+
+<p>在该方法中会检测异常是否为严重异常，严重异常就不要进行重连了，下面检测的异常都做了注释。这里涉及到一个 SocketTimeoutException 的异常，表示连接超时异常，这个异常还是可以进行重连的，也就是说** OKHTTP 内部在连接超时时是会自动进行重连的。**</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>private boolean isRecoverable(IOException e, boolean routeException) {
+  //ProtocolException 这种异常属于严重异常，不能进行重新连接
+  // If there was a protocol problem, don't recover.
+  if (e instanceof ProtocolException) {
+    return false;
+  }
+  //当异常为中断异常时
+  // If there was an interruption don't recover, but if there was a timeout connecting to a route
+  // we should try the next route (if there is one).
+  if (e instanceof InterruptedIOException) {
+    return e instanceof SocketTimeoutException &amp;&amp; routeException;
+  }
+  // Look for known client-side or negotiation errors that are unlikely to be fixed by trying
+  // again with a different route.
+  //握手异常
+  if (e instanceof SSLHandshakeException) {
+    // If the problem was a CertificateException from the X509TrustManager,
+    // do not retry.
+    if (e.getCause() instanceof CertificateException) {
+      return false;
+    }
+  }
+  //验证异常
+  if (e instanceof SSLPeerUnverifiedException) {
+    // e.g. a certificate pinning error.
+    return false;
+  }
+  // An example of one we might want to retry with a different route is a problem connecting to a
+  // proxy and would manifest as a standard IOException. Unless it is one we know we should not
+  // retry, we return true and try a new route.
+  return true;
+}
+</code></pre></div></div>
+
+<h4 id="134ioexception-异常的重连机制">1.3.4、IOException 异常的重连机制</h4>
+
+<p>IOException 异常的检测实际上和 RouteException 是一样的，只是传入 recover 方法的第二个参数为 false 而已，表示该异常不是 RouteException ，这里就不分析了。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// An attempt to communicate with a server failed. The request may 
+//have been sent.
+if (!recover(e, false, request)) throw e;
+</code></pre></div></div>
+
+<h3 id="14followuprequest-响应码检测">1.4、followUpRequest 响应码检测</h3>
+
+<p>当代码可以执行到 followUpRequest 方法就表示这个请求是成功的，但是服务器返回的状态码可能不是 200 ok 的情况，这时还需要对该请求进行检测，其主要就是通过返回码进行判断的。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>private Request followUpRequest(Response userResponse) throws IOException {
+  if (userResponse == null) throw new IllegalStateException();
+  Connection connection = streamAllocation.connection();
+  Route route = connection != null
+      ? connection.route()
+      : null;
+  int responseCode = userResponse.code();
+  final String method = userResponse.request().method();
+  switch (responseCode) {
+    case HTTP_PROXY_AUTH:
+      Proxy selectedProxy = route != null
+          ? route.proxy()
+          : client.proxy();
+      if (selectedProxy.type() != Proxy.Type.HTTP) {
+        throw new ProtocolException("Received HTTP_PROXY_AUTH (407) code while not using proxy");
+      }
+      return client.proxyAuthenticator().authenticate(route, userResponse);
+    case HTTP_UNAUTHORIZED:
+      return client.authenticator().authenticate(route, userResponse);
+    case HTTP_PERM_REDIRECT:
+    case HTTP_TEMP_REDIRECT:
+      // "If the 307 or 308 status code is received in response to a request other than GET
+      // or HEAD, the user agent MUST NOT automatically redirect the request"
+      if (!method.equals("GET") &amp;&amp; !method.equals("HEAD")) {
+        return null;
+      }
+      // fall-through
+    case HTTP_MULT_CHOICE:
+    case HTTP_MOVED_PERM:
+    case HTTP_MOVED_TEMP:
+    case HTTP_SEE_OTHER:
+      // Does the client allow redirects?
+      if (!client.followRedirects()) return null;
+      String location = userResponse.header("Location");
+      if (location == null) return null;
+      HttpUrl url = userResponse.request().url().resolve(location);
+      // Don't follow redirects to unsupported protocols.
+      if (url == null) return null;
+      // If configured, don't follow redirects between SSL and non-SSL.
+      boolean sameScheme = url.scheme().equals(userResponse.request().url().scheme());
+      if (!sameScheme &amp;&amp; !client.followSslRedirects()) return null;
+      // Redirects don't include a request body.
+      Request.Builder requestBuilder = userResponse.request().newBuilder();
+      if (HttpMethod.permitsRequestBody(method)) {
+        if (HttpMethod.redirectsToGet(method)) {
+          requestBuilder.method("GET", null);
+        } else {
+          requestBuilder.method(method, null);
+        }
+        requestBuilder.removeHeader("Transfer-Encoding");
+        requestBuilder.removeHeader("Content-Length");
+        requestBuilder.removeHeader("Content-Type");
+      }
+      // When redirecting across hosts, drop all authentication headers. This
+      // is potentially annoying to the application layer since they have no
+      // way to retain them.
+      if (!sameConnection(userResponse, url)) {
+        requestBuilder.removeHeader("Authorization");
+      }
+      return requestBuilder.url(url).build();
+    case HTTP_CLIENT_TIMEOUT:
+      // 408's are rare in practice, but some servers like HAProxy use this response code. The
+      // spec says that we may repeat the request without modifications. Modern browsers also
+      // repeat the request (even non-idempotent ones.)
+      if (userResponse.request().body() instanceof UnrepeatableRequestBody) {
+        return null;
+      }
+      return userResponse.request();
+    default:
+      return null;
+  }
+}
+</code></pre></div></div>
+
+<p>下面是服务器返回的状态码的判断，对于这些状态我都没遇到过，在这里只是将其列举出来而已。</p>
+
+<ul>
+  <li>
+    <p>407 HTTP_PROXY_AUTH 表示需要经过代理服务器认证；</p>
+  </li>
+  <li>
+    <p>401 HTTP_UNAUTHORIZED 身份未认证；</p>
+  </li>
+  <li>
+    <p>307HTTP_TEMP_REDIRECT 308HTTP_PERM_REDIRECT 重定向（只有是 GET 和 HEAD）才可以；</p>
+  </li>
+  <li>300HTTP_MULT_CHOICE 301HTTP_MOVED_PERM ；</li>
+  <li>
+    <p>302 HTTP_MOVED_TEMP 303HTTP_SEE_OTHER 通过client.followRedirects()判断是否运行重定向，之后获取响应头 Location 值，这就是要重定向的地址；</p>
+  </li>
+  <li>HTTP_CLIENT_TIMEOUT 客户端超时的情况。</li>
+</ul>
+
+<h3 id="15重试次数判断">1.5、重试次数判断</h3>
+
+<p>在 RetryAndFollowUpInterceptor 内部有一个 MAX_FOLLOW_UPS 常量，它表示该请求可以重试多少次，在 OKHTTP 内部中是不能超过 20 次，如果超过 20 次，那么就不会再请求了。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>private static final int MAX_FOLLOW_UPS = 20;
+
+if (++followUpCount &gt; MAX_FOLLOW_UPS) {
+  streamAllocation.release();
+  throw new ProtocolException("Too many follow-up requests: " + followUpCount);
+}
+</code></pre></div></div>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/okhttp%E6%8B%A6%E6%88%AA%E5%99%A8retryandfollowupinterceptor%E7%9A%84%E7%AE%80%E5%8D%95%E5%88%86%E6%9E%90.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/java%E8%AE%BE%E7%BD%AE%E4%B8%80%E6%AE%B5%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C%E7%9A%84%E8%B6%85%E6%97%B6%E6%97%B6%E9%97%B4.html">&laquo; Java设置一段代码执行的超时时间</a>
+  
+  
+  <a class="next" href="/2017/android%E8%87%AA%E5%AE%9A%E4%B9%89%E4%B8%87%E8%83%BDcanvas%E7%94%BB%E5%B8%83.html">Android自定义万能Canvas画布 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

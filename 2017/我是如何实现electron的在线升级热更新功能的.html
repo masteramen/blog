@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>我是如何实现electron的在线升级热更新功能的？ | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="我是如何实现electron的在线升级热更新功能的？" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="一、electron的热更新效果预览" />
+<meta property="og:description" content="一、electron的热更新效果预览" />
+<link rel="canonical" href="http://www.jfox.info/2017/%E6%88%91%E6%98%AF%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0electron%E7%9A%84%E5%9C%A8%E7%BA%BF%E5%8D%87%E7%BA%A7%E7%83%AD%E6%9B%B4%E6%96%B0%E5%8A%9F%E8%83%BD%E7%9A%84.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/%E6%88%91%E6%98%AF%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0electron%E7%9A%84%E5%9C%A8%E7%BA%BF%E5%8D%87%E7%BA%A7%E7%83%AD%E6%9B%B4%E6%96%B0%E5%8A%9F%E8%83%BD%E7%9A%84.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:51:15+00:00" />
+<script type="application/ld+json">
+{"description":"一、electron的热更新效果预览","@type":"BlogPosting","url":"http://www.jfox.info/2017/%E6%88%91%E6%98%AF%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0electron%E7%9A%84%E5%9C%A8%E7%BA%BF%E5%8D%87%E7%BA%A7%E7%83%AD%E6%9B%B4%E6%96%B0%E5%8A%9F%E8%83%BD%E7%9A%84.html","headline":"我是如何实现electron的在线升级热更新功能的？","dateModified":"2017-01-01T15:51:15+00:00","datePublished":"2017-01-01T15:51:15+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/%E6%88%91%E6%98%AF%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0electron%E7%9A%84%E5%9C%A8%E7%BA%BF%E5%8D%87%E7%BA%A7%E7%83%AD%E6%9B%B4%E6%96%B0%E5%8A%9F%E8%83%BD%E7%9A%84.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">我是如何实现electron的在线升级热更新功能的？</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:51:15+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<h3 id="一electron的热更新效果预览">一、electron的热更新效果预览</h3>
+
+<p>下面几张图是我实现的带热更新功能的electron应用实际效果截图：</p>
+
+<p>打开electron应用，此时会去检测线上是否有新版本，例如，我本地版本是1.2.2，然后线上版本是1.2.4，则会有这样的显示：</p>
+
+<p>点击“新版功能”会显示最新版的升级描述，例如，这里点击后出现弹框信息：</p>
+
+<p>点击红色的“升级”按钮，则直接请求线上的资源替换本地资源，完成升级（升级成功后刷新页面），升级效果参见下gif截图：</p>
+
+<h3 id="二electron的热更新原理说明">二、electron的热更新原理说明</h3>
+
+<p>** 1. 我是直接使用github作为线上资源仓储的 **</p>
+
+<p>当使用 ` raw.githubusercontent.com ` 作为请求域名，我们是可以直接获取资源内容的，例如，我们要获取一个路径为 ` js/test.js ` 的文件，则该文件完整地址为：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>https://raw.githubusercontent.com/username/project-name/master/js/test.js
+</code></pre></div></div>
+
+<p>此时，我们就可以使用node.js的 ` https.get() ` 方法获取这个 ` js/test.js ` 完整内容了。</p>
+
+<p>** 2. 我是借助 ` package.json ` 标记版本和更新内容的 **</p>
+
+<p>之所以借助 ` package.json ` ，主要是被里面约定俗成的 ` version ` 版本关键字吸引，如果用户本地 ` version ` 版本比github项目线上 ` version ` 版本低，岂不就意味着可以进行升级。</p>
+
+<p>于是，再把升级文件列表和更新信息一整合，就有了完整的升级数据了，如下截图示意：</p>
+
+<p>** 3. electron的热更新原理说明 **</p>
+
+<p>当每次我们的electron加载完毕之后，就会发送一个请求，去获取github项目上的 ` package.json ` 文件，主要是知道目前线上的版本是多少，然后和本地的 ` package.json ` 文件的 ` version ` 版本数据做比较。如果发现版本不一致，则说明有新版可以升级，于是让界面变成这样：</p>
+
+<p>当我们点击“升级”按钮后，会把高于本地版本的需要更新的文件重新整合成一个新的完整的升级文件列表，然后依次从github上远程获取，存储在一个临时文件夹中，如果全部文件获取成功，再一并覆盖本地资源，全部覆盖完成后，刷新页面，完成升级。</p>
+
+<p>以上就是完整的升级原理。</p>
+
+<h3 id="三electron的热更新一些代码实现">三、electron的热更新一些代码实现</h3>
+
+<p>electron热更新最大的难点应该是如何获取远程资源，我简单整理了下，希望能够对有需求的小伙伴有所帮助，由于ES6并未花时间学习，因此，相关JS还是ES5语法：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var https = require('https');
+var getHttpsData = function (filepath, success, error) {
+  // 回调缺省时候的处理
+  success = success || function () {};
+  error = error || function () {};
+  var url = 'https://raw.githubusercontent.com/username/project-name/master/' + filepath + '?r=' + Math.random();
+  https.get(url, function (res) {
+    var statusCode = res.statusCode;
+    if (statusCode !== 200) {
+        // 出错回调
+        error();
+        // 消耗响应数据以释放内存
+        res.resume();
+        return;
+    }
+    res.setEncoding('utf8');
+    var rawData = '';
+    res.on('data', function (chunk) {
+      rawData += chunk;
+    });
+    // 请求结束
+    res.on('end', function () {
+      // 成功回调
+      success(rawData);
+    }).on('error', function (e) {
+      // 出错回调
+      error();
+    });
+  });
+};
+</code></pre></div></div>
+
+<p>然后，下面的事情就简单了，直接把请求的数据写入本地就可以了，举个简单的例子，一个 ` index.html ` 文件：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>getHttpsData('index.html', function (data) {
+  // 写入文件
+  fs.writeFileSync('index.html', data);
+  // 然后下一个文件获取并写入...
+});
+</code></pre></div></div>
+
+<p>配合一些loading交互效果，就完成了完整的在线热更新功能。</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/%E6%88%91%E6%98%AF%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0electron%E7%9A%84%E5%9C%A8%E7%BA%BF%E5%8D%87%E7%BA%A7%E7%83%AD%E6%9B%B4%E6%96%B0%E5%8A%9F%E8%83%BD%E7%9A%84.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/%E5%AF%B9%E8%B1%A1%E5%B1%9E%E6%80%A7%E5%A4%8D%E5%88%B6%E5%87%A0%E7%A7%8D%E6%96%B9%E5%BC%8F%E7%9A%84%E6%95%88%E7%8E%87.html">&laquo; 对象属性复制几种方式的效率</a>
+  
+  
+  <a class="next" href="/2017/redis%E5%AE%A2%E6%88%B7%E7%AB%AF%E7%AE%80%E5%8D%95%E5%B0%81%E8%A3%85.html">Redis客户端简单封装 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

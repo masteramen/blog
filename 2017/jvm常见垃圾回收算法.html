@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>JVM常见垃圾回收算法 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="JVM常见垃圾回收算法" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="jdk1.7.0_79" />
+<meta property="og:description" content="jdk1.7.0_79" />
+<link rel="canonical" href="http://www.jfox.info/2017/jvm%E5%B8%B8%E8%A7%81%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E7%AE%97%E6%B3%95.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/jvm%E5%B8%B8%E8%A7%81%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E7%AE%97%E6%B3%95.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:56:41+00:00" />
+<script type="application/ld+json">
+{"description":"jdk1.7.0_79","@type":"BlogPosting","url":"http://www.jfox.info/2017/jvm%E5%B8%B8%E8%A7%81%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E7%AE%97%E6%B3%95.html","headline":"JVM常见垃圾回收算法","dateModified":"2017-01-01T15:56:41+00:00","datePublished":"2017-01-01T15:56:41+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/jvm%E5%B8%B8%E8%A7%81%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E7%AE%97%E6%B3%95.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">JVM常见垃圾回收算法</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:56:41+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p><strong><em>jdk1.7.0_79</em></strong></p>
+
+<p>　　众所周知，Java是一门不用程序员手动管理内存的语言，全靠JVM自动管理内存，既然是自动管理，那必然有一个垃圾内存的回收机制或者回收算法。本文将介绍几种常见的垃圾回收（下文简称GC）算法。</p>
+
+<p>　　在Java堆上分配一个内存给实例对象时，此时在虚拟机栈上引用型变量就会存放这个实例对象的起始地址。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Object obj = new Object(); 
+</code></pre></div></div>
+
+<p><img src="c7b2d44.png" alt="" /></p>
+
+<p>　　现在如果我们将变量赋值为null。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>obj = null;
+</code></pre></div></div>
+
+<p><img src="652bbeb.png" alt="" /></p>
+
+<p>　　此时可以看到Java<strong>堆上的实例对象无法再次引用它，那么它就是被GC的对象，我们称之为对象“已死”</strong>。那虚拟机栈上的obj变量呢？上文<a href="https://www.jfox.info/go.php?url=http://www.cnblogs.com/yulinfeng/p/7153391.html">《</a><a href="https://www.jfox.info/go.php?url=http://www.cnblogs.com/yulinfeng/p/7153391.html">JVM入门——</a><a href="https://www.jfox.info/go.php?url=http://www.cnblogs.com/yulinfeng/p/7153391.html">运行时数据区》</a>提到过，虚拟机栈是线程独占的，也就是说随着线程初始而初始，消亡而消亡，当线程被销毁后，虚拟机栈上的内存自然会被回收，也就是说<strong>虚拟机栈上的这块内存空间不在虚拟机GC范围</strong>。下图展示了垃圾回收的内存范围：</p>
+
+<p><img src="2c05ddd.png" alt="" /></p>
+
+<p>　　1.<strong>对象是否“已死”算法——引用计数器算法</strong></p>
+
+<p>　　对象中添加一个引用计数器，如果引用计数器为0则表示没有其它地方在引用它。如果有一个地方引用就+1，引用失效时就-1。看似搞笑且简单的一个算法，实际上在大部分Java虚拟机中并没有采用这种算法，因为它会带来一个致命的问题——对象循环引用。对象A指向B，对象B反过来指向A，此时它们的引用计数器都不为0，但它们俩实际上已经没有意义因为没有任何地方指向它们。所以又引出了下面的算法。</p>
+
+<p><strong>　2.</strong><strong>**对象是否“已死”算法——可达性分析算法</strong>**</p>
+
+<p>　　这种算法可以有效地避免对象循环引用的情况，整个对象实例以一个树呈现，根节点是一个称为“GC Roots”的对象，从这个对象开始向下搜索并作标记，遍历完这棵树过后，未被标记的对象就会判断“已死”，即为可被回收的对象。</p>
+
+<p><img src="7902876.png" alt="" /></p>
+
+<p><strong>GC算法</strong></p>
+
+<p>　　1.<strong>标记–清除算法</strong></p>
+
+<p>　　等待被回收对象的“标记”过程在上文已经提到过，如果在被标记后直接对对象进行清除，会带来另一个新的问题——内存碎片化。如果下次有比较大的对象实例需要在堆上分配较大的内存空间时，可能会出现无法找到足够的连续内存而不得不再次触发垃圾回收。</p>
+
+<p>　　2.<strong>复制算法</strong><strong>（Java堆中新生代的垃圾回收算法）</strong></p>
+
+<p>此GC算法实际上解决了标记–清除算法带来的“内存碎片化”问题。首先还是先标记处待回收内存和不用回收的内存，下一步将不用回收的内存复制到新的内存区域，这样旧的内存区域就可以全部回收，而新的内存区域则是连续的。它的缺点就是会损失掉部分系统内存，因为你总要腾出一部分内存用于复制。</p>
+
+<p>　　在上文<a href="https://www.jfox.info/go.php?url=http://www.cnblogs.com/yulinfeng/p/7153391.html">《JVM</a><a href="https://www.jfox.info/go.php?url=http://www.cnblogs.com/yulinfeng/p/7153391.html">入门——运行时数据区》</a>提到过在Java堆中被分为了新生代和老年代，这样的划分是方便GC。Java堆中的新生代就使用了GC复制算法。在新生代中又分为了三个区域：Eden 空间、To Survivor空间、From Survivor空间。不妨将注意力回到这张图的左边新生代部分：</p>
+
+<p><img src="7838dea.png" alt="" /></p>
+
+<p>　　新的对象实例被创建的时候通常在Eden空间，发生在Eden空间上的GC称为Minor GC，<strong>当在新生代发生一次GC后</strong><strong>，</strong><strong>会将Eden</strong><strong>和其中一个Survivor空间的内存复制到另外一个Survivor中</strong>，如果反复几次有对象一直存活，此时内存对象将会被移至老年代。可以看到新生代中Eden占了大部分，而两个Survivor实际上占了很小一部分。这是因为大部分的对象被创建过后很快就会被GC（这里也许运用了是二八原则）。</p>
+
+<p>　　3.<strong>标记</strong><strong>–</strong><strong>压缩算法</strong><strong>（或称为标记-整理算法，Java堆中老年代的垃圾回收算法）</strong></p>
+
+<p>　　对于新生代，大部分对象都不会存活，所以在新生代中使用复制算法较为高效，而对于老年代来讲，大部分对象可能会继续存活下去，如果此时还是利用复制算法，效率则会降低。<strong>标记–压缩算法首先还是“标记”，标记过后，将不用回收的内存对象压缩到内存一端，此时即可直接清除边界处的内存</strong>，这样就能避免复制算法带来的效率问题，同时也能避免内存碎片化的问题。老年代的垃圾回收称为“Major GC”。</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/jvm%E5%B8%B8%E8%A7%81%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E7%AE%97%E6%B3%95.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/java%E5%88%86%E6%94%AF%E4%B8%8E%E5%BE%AA%E7%8E%AF.html">&laquo; java 分支与循环 » java面试题</a>
+  
+  
+  <a class="next" href="/2017/spring%E5%AD%A6%E4%B9%A0%E4%B9%8B%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86.html">Spring学习之动态代理 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

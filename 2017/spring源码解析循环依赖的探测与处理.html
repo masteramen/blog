@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>Spring源码解析：循环依赖的探测与处理 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="Spring源码解析：循环依赖的探测与处理" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="Spring 为开发人员提供了极其灵活和强大的配置方式，在方便使用的同时也为容器的初始化过程带来了不确定性，本篇所要介绍的循环依赖就是其中之一，尤其在一些大型项目中，循环依赖的配置往往是我们不经意而为之的，幸好 Spring 能够在初始化的过程中探测到对象之间的循环依赖，并能够在一定程度上对其进行处理。" />
+<meta property="og:description" content="Spring 为开发人员提供了极其灵活和强大的配置方式，在方便使用的同时也为容器的初始化过程带来了不确定性，本篇所要介绍的循环依赖就是其中之一，尤其在一些大型项目中，循环依赖的配置往往是我们不经意而为之的，幸好 Spring 能够在初始化的过程中探测到对象之间的循环依赖，并能够在一定程度上对其进行处理。" />
+<link rel="canonical" href="http://www.jfox.info/2017/spring%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E5%BE%AA%E7%8E%AF%E4%BE%9D%E8%B5%96%E7%9A%84%E6%8E%A2%E6%B5%8B%E4%B8%8E%E5%A4%84%E7%90%86.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/spring%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E5%BE%AA%E7%8E%AF%E4%BE%9D%E8%B5%96%E7%9A%84%E6%8E%A2%E6%B5%8B%E4%B8%8E%E5%A4%84%E7%90%86.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:55:24+00:00" />
+<script type="application/ld+json">
+{"description":"Spring 为开发人员提供了极其灵活和强大的配置方式，在方便使用的同时也为容器的初始化过程带来了不确定性，本篇所要介绍的循环依赖就是其中之一，尤其在一些大型项目中，循环依赖的配置往往是我们不经意而为之的，幸好 Spring 能够在初始化的过程中探测到对象之间的循环依赖，并能够在一定程度上对其进行处理。","@type":"BlogPosting","url":"http://www.jfox.info/2017/spring%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E5%BE%AA%E7%8E%AF%E4%BE%9D%E8%B5%96%E7%9A%84%E6%8E%A2%E6%B5%8B%E4%B8%8E%E5%A4%84%E7%90%86.html","headline":"Spring源码解析：循环依赖的探测与处理","dateModified":"2017-01-01T15:55:24+00:00","datePublished":"2017-01-01T15:55:24+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/spring%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E5%BE%AA%E7%8E%AF%E4%BE%9D%E8%B5%96%E7%9A%84%E6%8E%A2%E6%B5%8B%E4%B8%8E%E5%A4%84%E7%90%86.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Spring源码解析：循环依赖的探测与处理</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:55:24+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>Spring 为开发人员提供了极其灵活和强大的配置方式，在方便使用的同时也为容器的初始化过程带来了不确定性，本篇所要介绍的循环依赖就是其中之一，尤其在一些大型项目中，循环依赖的配置往往是我们不经意而为之的，幸好 Spring 能够在初始化的过程中探测到对象之间的循环依赖，并能够在一定程度上对其进行处理。</p>
+
+<h3 id="一-什么是循环依赖">一. 什么是循环依赖</h3>
+
+<p>以最简单的循环依赖举例，假设我们定义了两个类 A 和 B，如下：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public class A{
+
+    private String name;
+
+    private B b;
+
+    public A(){
+    }
+
+    public A(B b){
+        this.b = b;
+    }
+
+    // 省略 getter 和 setter
+}
+
+
+public class B{
+
+    private String name;
+
+    private A a;
+
+    public B(){
+    }
+
+    public B(A a){
+        this.a = a;
+    }
+
+    // 省略 getter 和 setter
+}
+</code></pre></div></div>
+
+<p>我们看到 A 中定义有 B 类型的属性，而 B 中定义有 A 类型的属性，这个时候如果我们基于 Spring 容器来管理对象 A 和 B 之间的依赖关系，就会存在循环依赖的问题。</p>
+
+<h3 id="二-spring-如何发现和处理循环依赖">二. Spring 如何发现和处理循环依赖</h3>
+
+<p>那么 Spring 如何探测和处理循环依赖呢？我们先给出结论：</p>
+
+<p>Spring 仅能够处理单例对象之间基于 setter 注入方式造成的循环依赖，除此之外全部抛出 BeanCurrentlyInCreationException 异常。</p>
+
+<p>也就是说如果按照如下配置，则容器能够正常的完成初始化：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;!--单例：setter注入--&gt;
+&lt;beanid="a"class="org.zhenchao.cyclic.A"&gt;
+    &lt;propertyname="name"value="bean a"/&gt;
+    &lt;propertyname="b"ref="b"/&gt;
+&lt;/bean&gt;
+&lt;beanid="b"class="org.zhenchao.cyclic.B"&gt;
+    &lt;propertyname="name"value="bean b"/&gt;
+    &lt;propertyname="a"ref="a"/&gt;
+&lt;/bean&gt;
+</code></pre></div></div>
+
+<p>而余下两种配置方式均会触发容器初始化出错：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;!--单例：构造方法注入--&gt;
+&lt;beanid="a"class="org.zhenchao.cyclic.A"&gt;
+    &lt;constructor-argname="b"ref="b"/&gt;
+    &lt;propertyname="name"value="bean a"/&gt;
+&lt;/bean&gt;
+&lt;beanid="b"class="org.zhenchao.cyclic.B"&gt;
+    &lt;constructor-argname="a"ref="a"/&gt;
+    &lt;propertyname="name"value="bean b"/&gt;
+&lt;/bean&gt;
+
+
+&lt;!--原型：setter注入--&gt;
+&lt;beanid="a"class="org.zhenchao.cyclic.A"scope="prototype"&gt;
+    &lt;propertyname="name"value="bean a"/&gt;
+    &lt;propertyname="b"ref="b"/&gt;
+&lt;/bean&gt;
+&lt;beanid="b"class="org.zhenchao.cyclic.B"scope="prototype"&gt;
+    &lt;propertyname="name"value="bean b"/&gt;
+    &lt;propertyname="a"ref="a"/&gt;
+&lt;/bean&gt;
+</code></pre></div></div>
+
+<p>那么 Spring 又是怎么发现我们的配置存在循环依赖的呢？首先我们先列出整个过程中需要用到的几个用于记录状态的集合属性：</p>
+
+<ul>
+  <li>
+    <p>singletonFactories：Map</p>
+
+    <blockquote>
+      <p>类型，用于记录beanName和创建bean的工厂之间的关系</p>
+    </blockquote>
+  </li>
+  <li>
+    <p>singletonObjects: Map</p>
+
+    <p>类型，用于记录beanName和bean实例之间的关系</p>
+  </li>
+  <li>
+    <p>earlySingletonObjects：Map</p>
+
+    <p>类型，用于记录beanName和原始bean实例之间的关系</p>
+  </li>
+</ul>
+
+<p>其中 singletonObjects 和 earlySingletonObjects 虽然都是记录 beanName 与 bean 实例之间的关系，但是区别在于当一个 bean 的实例记录在 earlySingletonObjects 中后，即使 bean 还在创建过程中，也可以通过 getBean 方法获取到，所以说二者存放的内容是互斥的。</p>
+
+<p>这些集合属性涉及到的操作方法如下：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// org.springframework.beans.factory.support.DefaultSingletonBeanRegistry#addSingletonFactory
+protected void addSingletonFactory(String beanName, ObjectFactory&lt;?&gt; singletonFactory){
+    Assert.notNull(singletonFactory, "Singleton factory must not be null");
+    synchronized (this.singletonObjects) {
+        if (!this.singletonObjects.containsKey(beanName)) {
+            this.singletonFactories.put(beanName, singletonFactory);
+            this.earlySingletonObjects.remove(beanName);
+            this.registeredSingletons.add(beanName);
+        }
+    }
+}
+
+
+// org.springframework.beans.factory.support.DefaultSingletonBeanRegistry#addSingleton
+protected void addSingleton(String beanName, Object singletonObject){
+    synchronized (this.singletonObjects) {
+        this.singletonObjects.put(beanName, (singletonObject != null ? singletonObject : NULL_OBJECT));
+        this.singletonFactories.remove(beanName);
+        this.earlySingletonObjects.remove(beanName);
+        this.registeredSingletons.add(beanName);
+    }
+}
+
+
+// org.springframework.beans.factory.support.DefaultSingletonBeanRegistry#getSingleton(java.lang.String, boolean)
+protectedObjectgetSingleton(String beanName,booleanallowEarlyReference){
+    Object singletonObject = this.singletonObjects.get(beanName);
+    if (singletonObject == null &amp;&amp; this.isSingletonCurrentlyInCreation(beanName)) {
+        synchronized (this.singletonObjects) {
+            singletonObject = this.earlySingletonObjects.get(beanName);
+            if (singletonObject == null &amp;&amp; allowEarlyReference) {
+                ObjectFactory&lt;?&gt; singletonFactory = this.singletonFactories.get(beanName);
+                if (singletonFactory != null) {
+                    singletonObject = singletonFactory.getObject();
+                    this.earlySingletonObjects.put(beanName, singletonObject);
+                    this.singletonFactories.remove(beanName);
+                }
+            }
+        }
+    }
+    return (singletonObject != NULL_OBJECT ? singletonObject : null);
+}
+</code></pre></div></div>
+
+<p>记得我们之间在探究 bean 实例的创建和初始化过程时曾提到过在一个 bean 的实例创建出来之后，且在注入属性值之前，会执行如下这样一段代码：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>boolean earlySingletonExposure = (
+    mbd.isSingleton() // 单例
+            &amp;&amp; this.allowCircularReferences // 允许循环依赖，需要通过程序设置
+            &amp;&amp; this.isSingletonCurrentlyInCreation(beanName)); // 当前 bean 正在创建中
+if (earlySingletonExposure) {
+    if (logger.isDebugEnabled()) {
+        logger.debug("Eagerly caching bean '" + beanName + "' to allow for resolving potential circular references");
+    }
+    // 为避免循环依赖，在完成bean实例化之前，将对应的ObjectFactory加入创建bean的工厂集合中
+    this.addSingletonFactory(beanName, new ObjectFactory&lt;Object&gt;() {
+        @Override
+        publicObjectgetObject()throwsBeansException{
+            // 对bean再一次依赖引用，应用SmartInstantiationAwareBeanPostProcessor
+            return getEarlyBeanReference(beanName, mbd, bean);
+        }
+    });
+}
+</code></pre></div></div>
+
+<p>这段代码的核心就是调用了上面的列出的 addSingletonFactory 方法，将创建 bean 的 ObjectFactory 对象记录到 singletonFactories 属性中。</p>
+
+<p>如果此时正好有另外一个操作试图获取正在创建中的单例 bean，则会进入上面列出的 getSingleton 方法，该方法将获取我们之前缓存的 ObjectFactory 对象，并调用对象的 getObject() 方法获取到我们之前创建的目标 bean 实例，并记录到 earlySingletonObjects 中，同时移除 singletonFactories 中的 ObjectFactory 对象。</p>
+
+<p>而实例化过程也会很快调用上面列出的 addSingleton 方法，将完整的 bean 实例记录到 singletonObjects 属性中，并移除所有的临时记录。</p>
+
+<p>再回到我们前面的例子，为什么用构造方法注入就会抛异常，而 setter 则不会呢，这是因为对于构造方法注入而言，在创建单例对象之前，Spring 会调用如下方法检查指定 bean 是否处于正在创建中，且不在免检的白名单里面：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>protected void beforeSingletonCreation(String beanName){
+    if (!this.inCreationCheckExclusions.contains(beanName) &amp;&amp; !this.singletonsCurrentlyInCreation.add(beanName)) {
+        throw new BeanCurrentlyInCreationException(beanName);
+    }
+}
+</code></pre></div></div>
+
+<p>这里先解释一下这两个属性：</p>
+
+<ul>
+  <li>
+    <p>singletonsCurrentlyInCreation：Set</p>
+
+    <p>类型，记录正在创建的 beanName</p>
+  </li>
+  <li>
+    <p>inCreationCheckExclusions：Set</p>
+
+    <p>类型，beanName 集合，可以将其视为白名单</p>
+  </li>
+</ul>
+
+<p>beforeSingletonCreation 方法在每次创建对象之前都会被调用，对于创建同一个 bean 的第二次之后的调用就会触发该方法抛出异常，而我们在前面的例子中通过构造方法注入时，因为创建目标对象需要调用包含依赖对象类型参数的构造方法，而循环依赖势必导致该构造方法的循环调用，从而触发该方法抛出异常。但是对于 setter 注入来说就不存在这样的问题，因为 Spring 对于 bean 实例的构造是分两步走的，第一步完成对象的创建，第二步再执行对象的初始化操作，将相应的属性值注入到该对象中。这个情况下即使有循环依赖也不会阻碍对象的创建，因为这个时候调用的是无参数的构造方法（即使有参数，参数中也不包含循环依赖的对象），所以基于 setter 方法的单例对象循环依赖，容器的初始化机制能够很好的处理。</p>
+
+<p>那么非单例的怎么就不行了呢？我们先来看一下源码的实现，容器会用一个 prototypesCurrentlyInCreation 集合变量来记录当前线程内正在创建的 beanName，并且在创建一个非单例 bean 之前，容器会调用如下方法进行校验：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// org.springframework.beans.factory.support.AbstractBeanFactory#doGetBean
+if (this.isPrototypeCurrentlyInCreation(beanName)) {
+    throw new BeanCurrentlyInCreationException(beanName);
+}
+
+
+protected boolean isPrototypeCurrentlyInCreation(String beanName){
+    Object curVal = this.prototypesCurrentlyInCreation.get();
+    return (curVal != null &amp;&amp;
+            (curVal.equals(beanName) || (curVal instanceof Set &amp;&amp; ((Set&lt;?&gt;) curVal).contains(beanName))));
+}
+</code></pre></div></div>
+
+<p>如果存在循环依赖则抛出 BeanCurrentlyInCreationException 异常。</p>
+
+<p>Spring 为什么需要这样设计呢？网上有很多文章说是因为容器无法暴露一个正处于创建中的 bean，我个人觉得这不太科学。对于非单例来说，完全可以复用单例那一套来实现，只不过这些中间变量都是属于线程私有的，个人觉得 Spring 之所以没有这样设计是出于性能考虑，非单例对象的特性就是每次 getBean 都会返回一个新的对象，并且这个过程可能是频繁调用的，这样就会降低框架的性能，同时增加内存占用，而更多时候循环依赖是因为开发者的错误配置导致的，这个时候还不如直接抛出异常，快速失败为好。</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/spring%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E5%BE%AA%E7%8E%AF%E4%BE%9D%E8%B5%96%E7%9A%84%E6%8E%A2%E6%B5%8B%E4%B8%8E%E5%A4%84%E7%90%86.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/javaweb%E9%9A%8F%E5%BF%83%E7%AC%94%E8%AE%B02.html">&laquo; JavaWeb随心笔记(2)</a>
+  
+  
+  <a class="next" href="/2017/effectivejava%E5%AD%A6%E4%B9%A01%E6%9C%8D%E5%8A%A1%E6%8F%90%E4%BE%9B%E8%80%85%E6%A1%86%E6%9E%B6.html">Effective Java学习(1) 服务提供者框架 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>JPA Advanced Mappings(映射) | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="JPA Advanced Mappings(映射)" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="JPA是一个使用java规范发布的库。因此，它支持所有面向对象的实体持久性概念。" />
+<meta property="og:description" content="JPA是一个使用java规范发布的库。因此，它支持所有面向对象的实体持久性概念。" />
+<link rel="canonical" href="http://www.jfox.info/2017/jpaadvancedmappings%E6%98%A0%E5%B0%84.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/jpaadvancedmappings%E6%98%A0%E5%B0%84.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:58:52+00:00" />
+<script type="application/ld+json">
+{"description":"JPA是一个使用java规范发布的库。因此，它支持所有面向对象的实体持久性概念。","@type":"BlogPosting","url":"http://www.jfox.info/2017/jpaadvancedmappings%E6%98%A0%E5%B0%84.html","headline":"JPA Advanced Mappings(映射)","dateModified":"2017-01-01T15:58:52+00:00","datePublished":"2017-01-01T15:58:52+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/jpaadvancedmappings%E6%98%A0%E5%B0%84.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">JPA Advanced Mappings(映射)</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:58:52+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>JPA是一个使用java规范发布的库。因此，它支持所有面向对象的实体持久性概念。</p>
+
+<p><img src="c7fa7c5.png" alt="" /></p>
+
+<p>原文链接：<a href="https://www.jfox.info/go.php?url=http://blogxinxiucan.sh1.newtouch.com/2017/07/30/JPA-Advanced-Mappings-%E6%98%A0%E5%B0%84/">http://blogxinxiucan.sh1.newtouch.com/2017/07/30/JPA-Advanced-Mappings-映射/</a></p>
+
+<h3 id="继承策略">继承策略</h3>
+
+<p>继承是面向对象语言的核心概念，因此我们可以在实体之间使用继承关系或策略。JPA支持三种类型的继承策略，如SINGLE_TABLE，JOINED_TABLE和TABLE_PER_CONCRETE_CLASS。</p>
+
+<p>Staff, TeachingStaff, NonTeachingStaff关系：</p>
+
+<p><img src="07a453d.png" alt="" /></p>
+
+<p>在上图中，Staff是一个实体，TeachingStaff和NonTeachingStaff是员工的子实体。在这里我们将讨论上述三个继承的策略。</p>
+
+<h3 id="单表策略">单表策略</h3>
+
+<p>单表策略采用所有类字段（超类和子类），并将其映射到称为SINGLE_TABLE策略的单个表中。鉴别器值在区分一个表中三个实体的值时起关键作用。</p>
+
+<p>让我们考虑上面的例子，TeachingStaff和NonTeachingStaff是类员工的子类。提醒继承的概念（是通过子类继承超类的属性的机制），因此sid，sname是属于TeachingStaff和NonTeachingStaff的字段。创建一个JPA项目。本项目的所有模块如下：</p>
+
+<p><strong>创建实体</strong>
+在<code class="highlighter-rouge">“src”</code>包下创建一个名为<code class="highlighter-rouge">“com.tutorialspoint.eclipselink.entity”</code> 的包。在给定的包下创建一个名为Staff.java的新Java类。Staff实体类显示如下：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">com</span><span class="p">.</span><span class="n">tutorialspoint</span><span class="p">.</span><span class="n">eclipselink</span><span class="p">.</span><span class="n">entity</span><span class="p">;</span><span class="n">import</span> <span class="n">java</span><span class="p">.</span><span class="n">io</span><span class="p">.</span><span class="n">Serializable</span><span class="p">;</span><span class="n">import</span> <span class="n">javax</span><span class="p">.</span><span class="n">persistence</span><span class="p">.</span><span class="n">DiscriminatorColumn</span><span class="p">;</span><span class="n">import</span> <span class="n">javax</span><span class="p">.</span><span class="n">persistence</span><span class="p">.</span><span class="n">Entity</span><span class="p">;</span><span class="n">import</span> <span class="n">javax</span><span class="p">.</span><span class="n">persistence</span><span class="p">.</span><span class="n">GeneratedValue</span><span class="p">;</span><span class="n">import</span> <span class="n">javax</span><span class="p">.</span><span class="n">persistence</span><span class="p">.</span><span class="n">GenerationType</span><span class="p">;</span><span class="n">import</span> <span class="n">javax</span><span class="p">.</span><span class="n">persistence</span><span class="p">.</span><span class="n">Id</span><span class="p">;</span><span class="n">import</span> <span class="n">javax</span><span class="p">.</span><span class="n">persistence</span><span class="p">.</span><span class="n">Inheritance</span><span class="p">;</span><span class="n">import</span> <span class="n">javax</span><span class="p">.</span><span class="n">persistence</span><span class="p">.</span><span class="n">InheritanceType</span><span class="p">;</span><span class="n">import</span> <span class="n">javax</span><span class="p">.</span><span class="n">persistence</span><span class="p">.</span><span class="n">Table</span><span class="p">;@</span><span class="n">Entity</span><span class="p">@</span><span class="n">Table</span><span class="p">@</span><span class="n">Inheritance</span><span class="p">(</span> <span class="n">strategy</span> <span class="p">=</span> <span class="n">InheritanceType</span><span class="p">.</span><span class="n">SINGLE_TABLE</span> <span class="p">)</span>
+<span class="p">@</span><span class="n">DiscriminatorColumn</span><span class="p">(</span> <span class="n">name</span> <span class="p">=</span> <span class="s2">"type"</span> <span class="p">)</span>
+
+<span class="n">publicclass</span> <span class="n">Staff</span> <span class="n">implements</span> <span class="n">Serializable</span> <span class="p">{</span>
+   <span class="p">@</span><span class="n">Id</span><span class="p">@</span><span class="n">GeneratedValue</span><span class="p">(</span> <span class="n">strategy</span> <span class="p">=</span> <span class="n">GenerationType</span><span class="p">.</span><span class="n">AUTO</span> <span class="p">)</span>
+   
+   <span class="n">privateint</span> <span class="n">sid</span><span class="p">;</span>
+   <span class="n">private</span> <span class="k">String</span> <span class="n">sname</span><span class="p">;</span>
+   
+   <span class="n">publicStaff</span><span class="p">(</span> <span class="n">int</span> <span class="n">sid</span><span class="p">,</span> <span class="k">String</span> <span class="n">sname</span> <span class="p">)</span> <span class="p">{</span>
+      <span class="n">super</span><span class="p">(</span> <span class="p">);</span>
+      <span class="n">this</span><span class="p">.</span><span class="n">sid</span> <span class="p">=</span> <span class="n">sid</span><span class="p">;</span>
+      <span class="n">this</span><span class="p">.</span><span class="n">sname</span> <span class="p">=</span> <span class="n">sname</span><span class="p">;</span>
+   <span class="p">}</span>
+   
+   <span class="n">publicStaff</span><span class="p">(</span> <span class="p">)</span> <span class="p">{</span>
+      <span class="n">super</span><span class="p">(</span> <span class="p">);</span>
+   <span class="p">}</span>
+   
+   <span class="n">publicintgetSid</span><span class="p">(</span> <span class="p">)</span> <span class="p">{</span>
+      <span class="n">return</span> <span class="n">sid</span><span class="p">;</span>
+   <span class="p">}</span>
+   
+   <span class="n">publicvoidsetSid</span><span class="p">(</span> <span class="n">int</span> <span class="n">sid</span> <span class="p">)</span> <span class="p">{</span>
+      <span class="n">this</span><span class="p">.</span><span class="n">sid</span> <span class="p">=</span> <span class="n">sid</span><span class="p">;</span>
+   <span class="p">}</span>
+   
+   <span class="k">public</span> <span class="k">String</span> <span class="n">getSname</span><span class="p">(</span> <span class="p">)</span> <span class="p">{</span>
+      <span class="n">return</span> <span class="n">sname</span><span class="p">;</span>
+   <span class="p">}</span>
+   
+   <span class="n">publicvoidsetSname</span><span class="p">(</span> <span class="k">String</span> <span class="n">sname</span> <span class="p">)</span> <span class="p">{</span>
+      <span class="n">this</span><span class="p">.</span><span class="n">sname</span> <span class="p">=</span> <span class="n">sname</span><span class="p">;</span>
+   <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>在上述代码中，@DescriminatorColumn指定字段名称（type），其值显示剩余的（Teaching and NonTeachingStaff）字段。</p>
+
+<p>在com.tutorialspoint.eclipselink.entity包下创建一个名为TeachingStaff.java的 Staff类的子类（class）。TeachingStaff实体类显示如下：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">com</span><span class="p">.</span><span class="n">tutorialspoint</span><span class="p">.</span><span class="n">eclipselink</span><span class="p">.</span><span class="n">entity</span><span class="p">;</span><span class="n">import</span> <span class="n">javax</span><span class="p">.</span><span class="n">persistence</span><span class="p">.</span><span class="n">DiscriminatorValue</span><span class="p">;</span><span class="n">import</span> <span class="n">javax</span><span class="p">.</span><span class="n">persistence</span><span class="p">.</span><span class="n">Entity</span><span class="p">;@</span><span class="n">Entity</span><span class="p">@</span><span class="n">DiscriminatorValue</span><span class="p">(</span> <span class="n">value</span><span class="p">=</span><span class="s2">"TS"</span> <span class="p">)</span>
+<span class="n">publicclass</span> <span class="n">TeachingStaff</span> <span class="n">extends</span> <span class="n">Staff</span> <span class="p">{</span>
+
+   <span class="n">private</span> <span class="k">String</span> <span class="n">qualification</span><span class="p">;</span>
+   <span class="n">private</span> <span class="k">String</span> <span class="n">subjectexpertise</span><span class="p">;</span>
+
+   <span class="n">publicTeachingStaff</span><span class="p">(</span> <span class="n">int</span> <span class="n">sid</span><span class="p">,</span> <span class="k">String</span> <span class="n">sname</span><span class="p">,</span> 
+   
+   <span class="k">String</span> <span class="n">qualification</span><span class="p">,</span><span class="k">String</span> <span class="n">subjectexpertise</span> <span class="p">)</span> <span class="p">{</span>
+      <span class="n">super</span><span class="p">(</span> <span class="n">sid</span><span class="p">,</span> <span class="n">sname</span> <span class="p">);</span>
+      <span class="n">this</span><span class="p">.</span><span class="n">qualification</span> <span class="p">=</span> <span class="n">qualification</span><span class="p">;</span>
+      <span class="n">this</span><span class="p">.</span><span class="n">subjectexpertise</span> <span class="p">=</span> <span class="n">subjectexpertise</span><span class="p">;</span>
+   <span class="p">}</span>
+
+   <span class="n">publicTeachingStaff</span><span class="p">(</span> <span class="p">)</span> <span class="p">{</span>
+      <span class="n">super</span><span class="p">(</span> <span class="p">);</span>
+   <span class="p">}</span>
+
+   <span class="k">public</span> <span class="k">String</span> <span class="n">getQualification</span><span class="p">(</span> <span class="p">){</span>
+      <span class="n">return</span> <span class="n">qualification</span><span class="p">;</span>
+   <span class="p">}</span>
+
+   <span class="n">publicvoidsetQualification</span><span class="p">(</span> <span class="k">String</span> <span class="n">qualification</span> <span class="p">){</span>
+      <span class="n">this</span><span class="p">.</span><span class="n">qualification</span> <span class="p">=</span> <span class="n">qualification</span><span class="p">;</span>
+   <span class="p">}</span>
+
+   <span class="k">public</span> <span class="k">String</span> <span class="n">getSubjectexpertise</span><span class="p">(</span> <span class="p">)</span> <span class="p">{</span>
+      <span class="n">return</span> <span class="n">subjectexpertise</span><span class="p">;</span>
+   <span class="p">}</span>
+
+   <span class="n">publicvoidsetSubjectexpertise</span><span class="p">(</span> <span class="k">String</span> <span class="n">subjectexpertise</span> <span class="p">){</span>
+      <span class="n">this</span><span class="p">.</span><span class="n">subjectexpertise</span> <span class="p">=</span> <span class="n">subjectexpertise</span><span class="p">;</span>
+   <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>在com.tutorialspoint.eclipselink.entity包下创建一个名为NonTeachingStaff.java的 Staff类的子类（class）。NonTeachingStaff实体类显示如下：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">com</span><span class="p">.</span><span class="n">tutorialspoint</span><span class="p">.</span><span class="n">eclipselink</span><span class="p">.</span><span class="n">entity</span><span class="p">;</span><span class="n">import</span> <span class="n">javax</span><span class="p">.</span><span class="n">persistence</span><span class="p">.</span><span class="n">DiscriminatorValue</span><span class="p">;</span><span class="n">import</span> <span class="n">javax</span><span class="p">.</span><span class="n">persistence</span><span class="p">.</span><span class="n">Entity</span><span class="p">;@</span><span class="n">Entity</span><span class="p">@</span><span class="n">DiscriminatorValue</span><span class="p">(</span> <span class="n">value</span> <span class="p">=</span> <span class="s2">"NS"</span> <span class="p">)</span>
+
+<span class="n">publicclass</span> <span class="n">NonTeachingStaff</span> <span class="n">extends</span> <span class="n">Staff</span> <span class="p">{</span>
+   <span class="n">private</span> <span class="k">String</span> <span class="n">areaexpertise</span><span class="p">;</span>
+
+   <span class="n">publicNonTeachingStaff</span><span class="p">(</span> <span class="n">int</span> <span class="n">sid</span><span class="p">,</span> <span class="k">String</span> <span class="n">sname</span><span class="p">,</span> <span class="k">String</span> <span class="n">areaexpertise</span> <span class="p">)</span> <span class="p">{</span>
+      <span class="n">super</span><span class="p">(</span> <span class="n">sid</span><span class="p">,</span> <span class="n">sname</span> <span class="p">);</span>
+      <span class="n">this</span><span class="p">.</span><span class="n">areaexpertise</span> <span class="p">=</span> <span class="n">areaexpertise</span><span class="p">;</span>
+   <span class="p">}</span>
+
+   <span class="n">publicNonTeachingStaff</span><span class="p">(</span> <span class="p">)</span> <span class="p">{</span>
+      <span class="n">super</span><span class="p">(</span> <span class="p">);</span>
+   <span class="p">}</span>
+
+   <span class="k">public</span> <span class="k">String</span> <span class="n">getAreaexpertise</span><span class="p">(</span> <span class="p">)</span> <span class="p">{</span>
+      <span class="n">return</span> <span class="n">areaexpertise</span><span class="p">;</span>
+   <span class="p">}</span>
+
+   <span class="n">publicvoidsetAreaexpertise</span><span class="p">(</span> <span class="k">String</span> <span class="n">areaexpertise</span> <span class="p">){</span>
+      <span class="n">this</span><span class="p">.</span><span class="n">areaexpertise</span> <span class="p">=</span> <span class="n">areaexpertise</span><span class="p">;</span>
+   <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><strong>persistence.xml中</strong></p>
+
+<p>Persistence.xml文件包含实体类的数据库和注册信息的配置信息。xml文件显示如下：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+
+<span class="nt">&lt;persistence</span> <span class="na">version=</span><span class="s">"2.0"</span> <span class="na">xmlns=</span><span class="s">"http://java.sun.com/xml/ns/persistence"</span>
+   <span class="na">xmlns:xsi=</span><span class="s">"http://www.w3.org/2001/XMLSchema-instance"</span> 
+   <span class="na">xsi:schemaLocation=</span><span class="s">"http://java.sun.com/xml/ns/persistence 
+   http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd"</span><span class="nt">&gt;</span>
+
+   <span class="nt">&lt;persistence-unit</span> <span class="na">name=</span><span class="s">"Eclipselink_JPA"</span> <span class="na">transaction-type=</span><span class="s">"RESOURCE_LOCAL"</span><span class="nt">&gt;</span>
+   
+      <span class="nt">&lt;class&gt;</span>com.tutorialspoint.eclipselink.entity.Staff<span class="nt">&lt;/class&gt;</span>
+      <span class="nt">&lt;class&gt;</span>com.tutorialspoint.eclipselink.entity.NonTeachingStaff<span class="nt">&lt;/class&gt;</span>
+      <span class="nt">&lt;class&gt;</span>com.tutorialspoint.eclipselink.entity.TeachingStaff<span class="nt">&lt;/class&gt;</span>
+      
+      <span class="nt">&lt;properties&gt;</span>
+         <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"javax.persistence.jdbc.url"</span> <span class="na">value=</span><span class="s">"jdbc:mysql://localhost:3306/jpadb"</span><span class="nt">/&gt;</span>
+         <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"javax.persistence.jdbc.user"</span> <span class="na">value=</span><span class="s">"root"</span><span class="nt">/&gt;</span>
+         <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"javax.persistence.jdbc.password"</span> <span class="na">value=</span><span class="s">"root"</span><span class="nt">/&gt;</span>
+         <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"javax.persistence.jdbc.driver"</span> <span class="na">value=</span><span class="s">"com.mysql.jdbc.Driver"</span><span class="nt">/&gt;</span>
+         <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"eclipselink.logging.level"</span> <span class="na">value=</span><span class="s">"FINE"</span><span class="nt">/&gt;</span>
+         <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"eclipselink.ddl-generation"</span> <span class="na">value=</span><span class="s">"create-tables"</span><span class="nt">/&gt;</span>
+      <span class="nt">&lt;/properties&gt;</span>
+      
+   <span class="nt">&lt;/persistence-unit&gt;</span>
+<span class="nt">&lt;/persistence&gt;</span>
+</code></pre></div></div>
+
+<p><strong>Service class</strong></p>
+
+<p>服务类是业务组件的实现部分。在名为’com.tutorialspoint.eclipselink.service’的’src’包下创建一个包。</p>
+
+<p>在给定的包下创建一个名为SaveClient.java的类来存储Staff，TeachingStaff和NonTeachingStaff类字段。SaveClient类显示如下：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">com</span><span class="p">.</span><span class="n">tutorialspoint</span><span class="p">.</span><span class="n">eclipselink</span><span class="p">.</span><span class="n">service</span><span class="p">;</span><span class="n">import</span> <span class="n">javax</span><span class="p">.</span><span class="n">persistence</span><span class="p">.</span><span class="n">EntityManager</span><span class="p">;</span><span class="n">import</span> <span class="n">javax</span><span class="p">.</span><span class="n">persistence</span><span class="p">.</span><span class="n">EntityManagerFactory</span><span class="p">;</span><span class="n">import</span> <span class="n">javax</span><span class="p">.</span><span class="n">persistence</span><span class="p">.</span><span class="n">Persistence</span><span class="p">;</span><span class="n">import</span> <span class="n">com</span><span class="p">.</span><span class="n">tutorialspoint</span><span class="p">.</span><span class="n">eclipselink</span><span class="p">.</span><span class="n">entity</span><span class="p">.</span><span class="n">NonTeachingStaff</span><span class="p">;</span><span class="n">import</span> <span class="n">com</span><span class="p">.</span><span class="n">tutorialspoint</span><span class="p">.</span><span class="n">eclipselink</span><span class="p">.</span><span class="n">entity</span><span class="p">.</span><span class="n">TeachingStaff</span><span class="p">;</span><span class="n">publicclass</span> <span class="n">SaveClient</span> <span class="p">{</span>
+
+   <span class="n">publicstaticvoidmain</span><span class="p">(</span> <span class="k">String</span><span class="p">[</span> <span class="p">]</span> <span class="n">args</span> <span class="p">)</span> <span class="p">{</span>
+   
+      <span class="n">EntityManagerFactory</span> <span class="n">emfactory</span> <span class="p">=</span> <span class="n">Persistence</span><span class="p">.</span><span class="n">createEntityManagerFactory</span><span class="p">(</span> <span class="s2">"Eclipselink_JPA"</span> <span class="p">);</span>
+      <span class="n">EntityManager</span> <span class="n">entitymanager</span> <span class="p">=</span> <span class="n">emfactory</span><span class="p">.</span><span class="n">createEntityManager</span><span class="p">(</span> <span class="p">);</span>
+      <span class="n">entitymanager</span><span class="p">.</span><span class="n">getTransaction</span><span class="p">(</span> <span class="p">).</span><span class="n">begin</span><span class="p">(</span> <span class="p">);</span>
+
+      <span class="p">//</span><span class="n">Teaching</span> <span class="n">staff</span> <span class="n">entity</span> 
+      <span class="n">TeachingStaff</span> <span class="n">ts1</span><span class="p">=</span><span class="n">newTeachingStaff</span><span class="p">(</span><span class="m">1</span><span class="p">,</span><span class="s2">"Gopal"</span><span class="p">,</span><span class="s2">"MSc MEd"</span><span class="p">,</span><span class="s2">"Maths"</span><span class="p">);</span>
+      <span class="n">TeachingStaff</span> <span class="n">ts2</span><span class="p">=</span><span class="n">newTeachingStaff</span><span class="p">(</span><span class="m">2</span><span class="p">,</span> <span class="s2">"Manisha"</span><span class="p">,</span> <span class="s2">"BSc BEd"</span><span class="p">,</span> <span class="s2">"English"</span><span class="p">);</span>
+      
+      <span class="p">//</span><span class="n">Non</span><span class="p">-</span><span class="n">Teaching</span> <span class="n">Staff</span> <span class="n">entity</span>
+      <span class="n">NonTeachingStaff</span> <span class="n">nts1</span><span class="p">=</span><span class="n">newNonTeachingStaff</span><span class="p">(</span><span class="m">3</span><span class="p">,</span> <span class="s2">"Satish"</span><span class="p">,</span> <span class="s2">"Accounts"</span><span class="p">);</span>
+      <span class="n">NonTeachingStaff</span> <span class="n">nts2</span><span class="p">=</span><span class="n">newNonTeachingStaff</span><span class="p">(</span><span class="m">4</span><span class="p">,</span> <span class="s2">"Krishna"</span><span class="p">,</span> <span class="s2">"Office Admin"</span><span class="p">);</span>
+
+      <span class="p">//</span><span class="n">storing</span> <span class="n">all</span> <span class="n">entities</span>
+      <span class="n">entitymanager</span><span class="p">.</span><span class="n">persist</span><span class="p">(</span><span class="n">ts1</span><span class="p">);</span>
+      <span class="n">entitymanager</span><span class="p">.</span><span class="n">persist</span><span class="p">(</span><span class="n">ts2</span><span class="p">);</span>
+      <span class="n">entitymanager</span><span class="p">.</span><span class="n">persist</span><span class="p">(</span><span class="n">nts1</span><span class="p">);</span>
+      <span class="n">entitymanager</span><span class="p">.</span><span class="n">persist</span><span class="p">(</span><span class="n">nts2</span><span class="p">);</span>
+      
+      <span class="n">entitymanager</span><span class="p">.</span><span class="n">getTransaction</span><span class="p">().</span><span class="n">commit</span><span class="p">();</span>
+      
+      <span class="n">entitymanager</span><span class="p">.</span><span class="n">close</span><span class="p">();</span>
+      <span class="n">emfactory</span><span class="p">.</span><span class="n">close</span><span class="p">();</span>
+   <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>编译和执行上述程序后，您将在Eclipse IDE的控制面板中收到通知。检查MySQL工作台的输出。表格格式的输出如下所示：
+SidTypeSnameAreaexpertiseQualificationSubjectexpertise1TSGopal–MSC MEDMaths2TSManisha–BSC BEDEnglish3NSSatishAccounts4NSKrishnaOffice Admin
+最后，您将获得包含所有三类字段的单表，并与名为“Type”（字段）的discriminator列不同。</p>
+
+<h3 id="加盟表策略">加盟表策略</h3>
+
+<p>加入表策略是共享引用的列，其中包含唯一值以加入表并进行简单的事务。让我们考虑与上述相同的例子。</p>
+
+<p>创建JPA项目。所有项目模块如下所示：</p>
+
+<p><strong>创建实体</strong>
+在“src”包下创建一个名为“com.tutorialspoint.eclipselink.entity” 的包。在给定的包下创建一个名为Staff.java的新Java类。Staff实体类显示如下：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">com</span><span class="p">.</span><span class="n">tutorialspoint</span><span class="p">.</span><span class="n">eclipselink</span><span class="p">.</span><span class="n">entity</span><span class="p">;</span><span class="n">import</span> <span class="n">java</span><span class="p">.</span><span class="n">io</span><span class="p">.</span><span class="n">Serializable</span><span class="p">;</span><span class="n">import</span> <span class="n">javax</span><span class="p">.</span><span class="n">persistence</span><span class="p">.</span><span class="n">Entity</span><span class="p">;</span><span class="n">import</span> <span class="n">javax</span><span class="p">.</span><span class="n">persistence</span><span class="p">.</span><span class="n">GeneratedValue</span><span class="p">;</span><span class="n">import</span> <span class="n">javax</span><span class="p">.</span><span class="n">persistence</span><span class="p">.</span><span class="n">GenerationType</span><span class="p">;</span><span class="n">import</span> <span class="n">javax</span><span class="p">.</span><span class="n">persistence</span><span class="p">.</span><span class="n">Id</span><span class="p">;</span><span class="n">import</span> <span class="n">javax</span><span class="p">.</span><span class="n">persistence</span><span class="p">.</span><span class="n">Inheritance</span><span class="p">;</span><span class="n">import</span> <span class="n">javax</span><span class="p">.</span><span class="n">persistence</span><span class="p">.</span><span class="n">InheritanceType</span><span class="p">;</span><span class="n">import</span> <span class="n">javax</span><span class="p">.</span><span class="n">persistence</span><span class="p">.</span><span class="n">Table</span><span class="p">;@</span><span class="n">Entity</span><span class="p">@</span><span class="n">Table</span><span class="p">@</span><span class="n">Inheritance</span><span class="p">(</span> <span class="n">strategy</span> <span class="p">=</span> <span class="n">InheritanceType</span><span class="p">.</span><span class="n">JOINED</span> <span class="p">)</span>
+
+<span class="n">publicclass</span> <span class="n">Staff</span> <span class="n">implements</span> <span class="n">Serializable</span> <span class="p">{</span>
+
+   <span class="p">@</span><span class="n">Id</span><span class="p">@</span><span class="n">GeneratedValue</span><span class="p">(</span> <span class="n">strategy</span> <span class="p">=</span> <span class="n">GenerationType</span><span class="p">.</span><span class="n">AUTO</span> <span class="p">)</span>
+   
+   <span class="n">privateint</span> <span class="n">sid</span><span class="p">;</span>
+   <span class="n">private</span> <span class="k">String</span> <span class="n">sname</span><span class="p">;</span>
+   
+   <span class="n">publicStaff</span><span class="p">(</span> <span class="n">int</span> <span class="n">sid</span><span class="p">,</span> <span class="k">String</span> <span class="n">sname</span> <span class="p">)</span> <span class="p">{</span>
+      <span class="n">super</span><span class="p">(</span> <span class="p">);</span>
+      <span class="n">this</span><span class="p">.</span><span class="n">sid</span> <span class="p">=</span> <span class="n">sid</span><span class="p">;</span>
+      <span class="n">this</span><span class="p">.</span><span class="n">sname</span> <span class="p">=</span> <span class="n">sname</span><span class="p">;</span>
+   <span class="p">}</span>
+   
+   <span class="n">publicStaff</span><span class="p">(</span> <span class="p">)</span> <span class="p">{</span>
+      <span class="n">super</span><span class="p">(</span> <span class="p">);</span>
+   <span class="p">}</span>
+   
+   <span class="n">publicintgetSid</span><span class="p">(</span> <span class="p">)</span> <span class="p">{</span>
+      <span class="n">return</span> <span class="n">sid</span><span class="p">;</span>
+   <span class="p">}</span>
+   
+   <span class="n">publicvoidsetSid</span><span class="p">(</span> <span class="n">int</span> <span class="n">sid</span> <span class="p">)</span> <span class="p">{</span>
+      <span class="n">this</span><span class="p">.</span><span class="n">sid</span> <span class="p">=</span> <span class="n">sid</span><span class="p">;</span>
+   <span class="p">}</span>
+   
+   <span class="k">public</span> <span class="k">String</span> <span class="n">getSname</span><span class="p">(</span> <span class="p">)</span> <span class="p">{</span>
+      <span class="n">return</span> <span class="n">sname</span><span class="p">;</span>
+   <span class="p">}</span>
+   
+   <span class="n">publicvoidsetSname</span><span class="p">(</span> <span class="k">String</span> <span class="n">sname</span> <span class="p">)</span> <span class="p">{</span>
+      <span class="n">this</span><span class="p">.</span><span class="n">sname</span> <span class="p">=</span> <span class="n">sname</span><span class="p">;</span>
+   <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>在com.tutorialspoint.eclipselink.entity包下创建一个名为TeachingStaff.java的 Staff类的子类（class）。TeachingStaff实体类显示如下：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">com</span><span class="p">.</span><span class="n">tutorialspoint</span><span class="p">.</span><span class="n">eclipselink</span><span class="p">.</span><span class="n">entity</span><span class="p">;</span><span class="n">import</span> <span class="n">javax</span><span class="p">.</span><span class="n">persistence</span><span class="p">.</span><span class="n">DiscriminatorValue</span><span class="p">;</span><span class="n">import</span> <span class="n">javax</span><span class="p">.</span><span class="n">persistence</span><span class="p">.</span><span class="n">Entity</span><span class="p">;@</span><span class="n">Entity</span><span class="p">@</span><span class="n">PrimaryKeyJoinColumn</span><span class="p">(</span><span class="n">referencedColumnName</span><span class="p">=</span><span class="s2">"sid"</span><span class="p">)</span>
+
+<span class="n">publicclass</span> <span class="n">TeachingStaff</span> <span class="n">extends</span> <span class="n">Staff</span> <span class="p">{</span>
+   <span class="n">private</span> <span class="k">String</span> <span class="n">qualification</span><span class="p">;</span>
+   <span class="n">private</span> <span class="k">String</span> <span class="n">subjectexpertise</span><span class="p">;</span>
+
+   <span class="n">publicTeachingStaff</span><span class="p">(</span> <span class="n">int</span> <span class="n">sid</span><span class="p">,</span> <span class="k">String</span> <span class="n">sname</span><span class="p">,</span> 
+   
+   <span class="k">String</span> <span class="n">qualification</span><span class="p">,</span><span class="k">String</span> <span class="n">subjectexpertise</span> <span class="p">)</span> <span class="p">{</span>
+      <span class="n">super</span><span class="p">(</span> <span class="n">sid</span><span class="p">,</span> <span class="n">sname</span> <span class="p">);</span>
+      <span class="n">this</span><span class="p">.</span><span class="n">qualification</span> <span class="p">=</span> <span class="n">qualification</span><span class="p">;</span>
+      <span class="n">this</span><span class="p">.</span><span class="n">subjectexpertise</span> <span class="p">=</span> <span class="n">subjectexpertise</span><span class="p">;</span>
+   <span class="p">}</span>
+
+   <span class="n">publicTeachingStaff</span><span class="p">(</span> <span class="p">)</span> <span class="p">{</span>
+      <span class="n">super</span><span class="p">(</span> <span class="p">);</span>
+   <span class="p">}</span>
+
+   <span class="k">public</span> <span class="k">String</span> <span class="n">getQualification</span><span class="p">(</span> <span class="p">){</span>
+      <span class="n">return</span> <span class="n">qualification</span><span class="p">;</span>
+   <span class="p">}</span>
+
+   <span class="n">publicvoidsetQualification</span><span class="p">(</span> <span class="k">String</span> <span class="n">qualification</span> <span class="p">){</span>
+      <span class="n">this</span><span class="p">.</span><span class="n">qualification</span> <span class="p">=</span> <span class="n">qualification</span><span class="p">;</span>
+   <span class="p">}</span>
+
+   <span class="k">public</span> <span class="k">String</span> <span class="n">getSubjectexpertise</span><span class="p">(</span> <span class="p">)</span> <span class="p">{</span>
+      <span class="n">return</span> <span class="n">subjectexpertise</span><span class="p">;</span>
+   <span class="p">}</span>
+
+   <span class="n">publicvoidsetSubjectexpertise</span><span class="p">(</span> <span class="k">String</span> <span class="n">subjectexpertise</span> <span class="p">){</span>
+      <span class="n">this</span><span class="p">.</span><span class="n">subjectexpertise</span> <span class="p">=</span> <span class="n">subjectexpertise</span><span class="p">;</span>
+   <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>在com.tutorialspoint.eclipselink.entity包下创建一个名为NonTeachingStaff.java的 Staff类的子类（class）。NonTeachingStaff实体类显示如下：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">com</span><span class="p">.</span><span class="n">tutorialspoint</span><span class="p">.</span><span class="n">eclipselink</span><span class="p">.</span><span class="n">entity</span><span class="p">;</span><span class="n">import</span> <span class="n">javax</span><span class="p">.</span><span class="n">persistence</span><span class="p">.</span><span class="n">DiscriminatorValue</span><span class="p">;</span><span class="n">import</span> <span class="n">javax</span><span class="p">.</span><span class="n">persistence</span><span class="p">.</span><span class="n">Entity</span><span class="p">;@</span><span class="n">Entity</span><span class="p">@</span><span class="n">PrimaryKeyJoinColumn</span><span class="p">(</span><span class="n">referencedColumnName</span><span class="p">=</span><span class="s2">"sid"</span><span class="p">)</span>
+
+<span class="n">publicclass</span> <span class="n">NonTeachingStaff</span> <span class="n">extends</span> <span class="n">Staff</span> <span class="p">{</span>
+   <span class="n">private</span> <span class="k">String</span> <span class="n">areaexpertise</span><span class="p">;</span>
+
+   <span class="n">publicNonTeachingStaff</span><span class="p">(</span> <span class="n">int</span> <span class="n">sid</span><span class="p">,</span> <span class="k">String</span> <span class="n">sname</span><span class="p">,</span> <span class="k">String</span> <span class="n">areaexpertise</span> <span class="p">)</span> <span class="p">{</span>
+      <span class="n">super</span><span class="p">(</span> <span class="n">sid</span><span class="p">,</span> <span class="n">sname</span> <span class="p">);</span>
+      <span class="n">this</span><span class="p">.</span><span class="n">areaexpertise</span> <span class="p">=</span> <span class="n">areaexpertise</span><span class="p">;</span>
+   <span class="p">}</span>
+
+   <span class="n">publicNonTeachingStaff</span><span class="p">(</span> <span class="p">)</span> <span class="p">{</span>
+      <span class="n">super</span><span class="p">(</span> <span class="p">);</span>
+   <span class="p">}</span>
+
+   <span class="k">public</span> <span class="k">String</span> <span class="n">getAreaexpertise</span><span class="p">(</span> <span class="p">)</span> <span class="p">{</span>
+      <span class="n">return</span> <span class="n">areaexpertise</span><span class="p">;</span>
+   <span class="p">}</span>
+
+   <span class="n">publicvoidsetAreaexpertise</span><span class="p">(</span> <span class="k">String</span> <span class="n">areaexpertise</span> <span class="p">)</span> <span class="p">{</span>
+      <span class="n">this</span><span class="p">.</span><span class="n">areaexpertise</span> <span class="p">=</span> <span class="n">areaexpertise</span><span class="p">;</span>
+   <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="persistencexml中">persistence.xml中</h3>
+
+<p>Persistence.xml文件包含实体类的数据库和注册信息的配置信息。xml文件显示如下：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;?xml version = "1.0" encoding = "UTF-8"?&gt;</span>
+
+<span class="nt">&lt;persistence</span> <span class="na">version =</span> <span class="s">"2.0"</span> <span class="na">xmlns =</span> <span class="s">"http://java.sun.com/xml/ns/persistence"</span> 
+   <span class="na">xmlns:xsi =</span> <span class="s">"http://www.w3.org/2001/XMLSchema-instance"</span> 
+   <span class="na">xsi:schemaLocation =</span> <span class="s">"http://java.sun.com/xml/ns/persistence 
+   http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd"</span><span class="nt">&gt;</span>
+   
+   <span class="nt">&lt;persistence-unit</span> <span class="na">name =</span> <span class="s">"Eclipselink_JPA"</span> <span class="na">transaction-type =</span> <span class="s">"RESOURCE_LOCAL"</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;class&gt;</span>com.tutorialspoint.eclipselink.entity.Staff<span class="nt">&lt;/class&gt;</span>
+      <span class="nt">&lt;class&gt;</span>com.tutorialspoint.eclipselink.entity.NonTeachingStaff<span class="nt">&lt;/class&gt;</span>
+      <span class="nt">&lt;class&gt;</span>com.tutorialspoint.eclipselink.entity.TeachingStaff<span class="nt">&lt;/class&gt;</span>
+      
+      <span class="nt">&lt;properties&gt;</span>
+         <span class="nt">&lt;property</span> <span class="na">name =</span> <span class="s">"javax.persistence.jdbc.url"</span> <span class="na">value =</span> <span class="s">"jdbc:mysql://localhost:3306/jpadb"</span><span class="nt">/&gt;</span>
+         <span class="nt">&lt;property</span> <span class="na">name =</span> <span class="s">"javax.persistence.jdbc.user"</span> <span class="na">value =</span> <span class="s">"root"</span><span class="nt">/&gt;</span>
+         <span class="nt">&lt;property</span> <span class="na">name =</span> <span class="s">"javax.persistence.jdbc.password"</span> <span class="na">value =</span> <span class="s">"root"</span><span class="nt">/&gt;</span>
+         <span class="nt">&lt;property</span> <span class="na">name =</span> <span class="s">"javax.persistence.jdbc.driver"</span> <span class="na">value =</span> <span class="s">"com.mysql.jdbc.Driver"</span><span class="nt">/&gt;</span>
+         <span class="nt">&lt;property</span> <span class="na">name =</span> <span class="s">"eclipselink.logging.level"</span> <span class="na">value =</span> <span class="s">"FINE"</span><span class="nt">/&gt;</span>
+         <span class="nt">&lt;property</span> <span class="na">name =</span> <span class="s">"eclipselink.ddl-generation"</span> <span class="na">value =</span> <span class="s">"create-tables"</span><span class="nt">/&gt;</span>
+      <span class="nt">&lt;/properties&gt;</span>
+      
+   <span class="nt">&lt;/persistence-unit&gt;</span>
+<span class="nt">&lt;/persistence&gt;</span>
+</code></pre></div></div>
+
+<h3 id="服务类">服务类</h3>
+
+<p>服务类是业务组件的实现部分。在名为’com.tutorialspoint.eclipselink.service’的’src’包下创建一个包。</p>
+
+<p>在给定的包下创建一个名为SaveClient.java的类来存储Staff，TeachingStaff和NonTeachingStaff类字段。然后SaveClient类如下：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">com</span><span class="p">.</span><span class="n">tutorialspoint</span><span class="p">.</span><span class="n">eclipselink</span><span class="p">.</span><span class="n">service</span><span class="p">;</span>
+
+<span class="n">import</span> <span class="n">javax</span><span class="p">.</span><span class="n">persistence</span><span class="p">.</span><span class="n">EntityManager</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">javax</span><span class="p">.</span><span class="n">persistence</span><span class="p">.</span><span class="n">EntityManagerFactory</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">javax</span><span class="p">.</span><span class="n">persistence</span><span class="p">.</span><span class="n">Persistence</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">com</span><span class="p">.</span><span class="n">tutorialspoint</span><span class="p">.</span><span class="n">eclipselink</span><span class="p">.</span><span class="n">entity</span><span class="p">.</span><span class="n">NonTeachingStaff</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">com</span><span class="p">.</span><span class="n">tutorialspoint</span><span class="p">.</span><span class="n">eclipselink</span><span class="p">.</span><span class="n">entity</span><span class="p">.</span><span class="n">TeachingStaff</span><span class="p">;</span>
+
+<span class="k">public</span> <span class="n">class</span> <span class="n">SaveClient</span> <span class="p">{</span>
+   <span class="k">public</span> <span class="n">static</span> <span class="n">void</span> <span class="n">main</span><span class="p">(</span> <span class="k">String</span><span class="p">[</span> <span class="p">]</span> <span class="n">args</span> <span class="p">)</span> <span class="p">{</span>
+      <span class="n">EntityManagerFactory</span> <span class="n">emfactory</span> <span class="p">=</span> <span class="n">Persistence</span><span class="p">.</span><span class="n">createEntityManagerFactory</span><span class="p">(</span> <span class="s2">"Eclipselink_JPA"</span> <span class="p">);</span>
+      <span class="n">EntityManager</span> <span class="n">entitymanager</span> <span class="p">=</span> <span class="n">emfactory</span><span class="p">.</span><span class="n">createEntityManager</span><span class="p">(</span> <span class="p">);</span>
+      <span class="n">entitymanager</span><span class="p">.</span><span class="n">getTransaction</span><span class="p">(</span> <span class="p">).</span><span class="n">begin</span><span class="p">(</span> <span class="p">);</span>
+
+      <span class="p">//</span><span class="n">Teaching</span> <span class="n">staff</span> <span class="n">entity</span> 
+      <span class="n">TeachingStaff</span> <span class="n">ts1</span> <span class="p">=</span> <span class="n">new</span> <span class="n">TeachingStaff</span><span class="p">(</span><span class="m">1</span><span class="p">,</span><span class="s2">"Gopal"</span><span class="p">,</span><span class="s2">"MSc MEd"</span><span class="p">,</span><span class="s2">"Maths"</span><span class="p">);</span>
+      <span class="n">TeachingStaff</span> <span class="n">ts2</span> <span class="p">=</span> <span class="n">new</span> <span class="n">TeachingStaff</span><span class="p">(</span><span class="m">2</span><span class="p">,</span> <span class="s2">"Manisha"</span><span class="p">,</span> <span class="s2">"BSc BEd"</span><span class="p">,</span> <span class="s2">"English"</span><span class="p">);</span>
+      
+      <span class="p">//</span><span class="n">Non</span><span class="p">-</span><span class="n">Teaching</span> <span class="n">Staff</span> <span class="n">entity</span>
+      <span class="n">NonTeachingStaff</span> <span class="n">nts1</span> <span class="p">=</span> <span class="n">new</span> <span class="n">NonTeachingStaff</span><span class="p">(</span><span class="m">3</span><span class="p">,</span> <span class="s2">"Satish"</span><span class="p">,</span> <span class="s2">"Accounts"</span><span class="p">);</span>
+      <span class="n">NonTeachingStaff</span> <span class="n">nts2</span> <span class="p">=</span> <span class="n">new</span> <span class="n">NonTeachingStaff</span><span class="p">(</span><span class="m">4</span><span class="p">,</span> <span class="s2">"Krishna"</span><span class="p">,</span> <span class="s2">"Office Admin"</span><span class="p">);</span>
+
+      <span class="p">//</span><span class="n">storing</span> <span class="n">all</span> <span class="n">entities</span>
+      <span class="n">entitymanager</span><span class="p">.</span><span class="n">persist</span><span class="p">(</span><span class="n">ts1</span><span class="p">);</span>
+      <span class="n">entitymanager</span><span class="p">.</span><span class="n">persist</span><span class="p">(</span><span class="n">ts2</span><span class="p">);</span>
+      <span class="n">entitymanager</span><span class="p">.</span><span class="n">persist</span><span class="p">(</span><span class="n">nts1</span><span class="p">);</span>
+      <span class="n">entitymanager</span><span class="p">.</span><span class="n">persist</span><span class="p">(</span><span class="n">nts2</span><span class="p">);</span>
+
+      <span class="n">entitymanager</span><span class="p">.</span><span class="n">getTransaction</span><span class="p">().</span><span class="n">commit</span><span class="p">();</span>
+      <span class="n">entitymanager</span><span class="p">.</span><span class="n">close</span><span class="p">();</span>
+      <span class="n">emfactory</span><span class="p">.</span><span class="n">close</span><span class="p">();</span>
+   <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>编译和执行上述程序后，您将在Eclipse IDE的控制面板中收到通知。输出检查MySQL工作台如下：</p>
+
+<p>这里创建了三个表格，表格格式的员工表格的结果如下所示：
+SidDtypeSname1TeachingStaffGopal2TeachingStaffManisha3NonTeachingStaffSatish4NonTeachingStaffKrishna
+<strong>TeachingStaff</strong>表的结果如表格所示：
+SidQualificationSubjectexpertise1MSC MEDMaths2BSC BEDEnglish
+在上表中sid是外键（参考字段表单staff表）NonTeachingStaff表的结果如表格所示：
+SidAreaexpertise3Accounts4Office Admin
+最后，这三个表分别使用它们的字段创建，SID字段由所有三个表共享。在员工表SID中是主键，在剩余的（TeachingStaff和NonTeachingStaff）表中SID是外键。</p>
+
+<h3 id="每个类策略表">每个类策略表</h3>
+
+<p>每个类策略的表是为每个子实体创建一个表。工作人员表将被创建，但它将包含空记录。Staff表的字段值必须由TeachingStaff和NonTeachingStaff表共享。</p>
+
+<p>让我们考虑与上述相同的例子。本项目的所有模块如下所示：</p>
+
+<p><strong>创建实体</strong>
+在“src”包下创建一个名为“com.tutorialspoint.eclipselink.entity” 的包。在给定的包下创建一个名为Staff.java的新Java类。Staff实体类显示如下：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">com</span><span class="p">.</span><span class="n">tutorialspoint</span><span class="p">.</span><span class="n">eclipselink</span><span class="p">.</span><span class="n">entity</span><span class="p">;</span>
+
+<span class="n">import</span> <span class="n">java</span><span class="p">.</span><span class="n">io</span><span class="p">.</span><span class="n">Serializable</span><span class="p">;</span>
+
+<span class="n">import</span> <span class="n">javax</span><span class="p">.</span><span class="n">persistence</span><span class="p">.</span><span class="n">Entity</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">javax</span><span class="p">.</span><span class="n">persistence</span><span class="p">.</span><span class="n">GeneratedValue</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">javax</span><span class="p">.</span><span class="n">persistence</span><span class="p">.</span><span class="n">GenerationType</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">javax</span><span class="p">.</span><span class="n">persistence</span><span class="p">.</span><span class="n">Id</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">javax</span><span class="p">.</span><span class="n">persistence</span><span class="p">.</span><span class="n">Inheritance</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">javax</span><span class="p">.</span><span class="n">persistence</span><span class="p">.</span><span class="n">InheritanceType</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">javax</span><span class="p">.</span><span class="n">persistence</span><span class="p">.</span><span class="n">Table</span><span class="p">;</span>
+
+<span class="p">@</span><span class="n">Entity</span>
+<span class="p">@</span><span class="n">Table</span>
+<span class="p">@</span><span class="n">Inheritance</span><span class="p">(</span> <span class="n">strategy</span> <span class="p">=</span> <span class="n">InheritanceType</span><span class="p">.</span><span class="n">TABLE_PER_CLASS</span> <span class="p">)</span>
+
+<span class="k">public</span> <span class="n">class</span> <span class="n">Staff</span> <span class="n">implements</span> <span class="n">Serializable</span> <span class="p">{</span>
+
+   <span class="p">@</span><span class="n">Id</span>
+   <span class="p">@</span><span class="n">GeneratedValue</span><span class="p">(</span> <span class="n">strategy</span> <span class="p">=</span> <span class="n">GenerationType</span><span class="p">.</span><span class="n">AUTO</span> <span class="p">)</span>
+
+   <span class="n">private</span> <span class="n">int</span> <span class="n">sid</span><span class="p">;</span>
+   <span class="n">private</span> <span class="k">String</span> <span class="n">sname</span><span class="p">;</span>
+
+   <span class="k">public</span> <span class="n">Staff</span><span class="p">(</span> <span class="n">int</span> <span class="n">sid</span><span class="p">,</span> <span class="k">String</span> <span class="n">sname</span> <span class="p">)</span> <span class="p">{</span>
+      <span class="n">super</span><span class="p">(</span> <span class="p">);</span>
+      <span class="n">this</span><span class="p">.</span><span class="n">sid</span> <span class="p">=</span> <span class="n">sid</span><span class="p">;</span>
+      <span class="n">this</span><span class="p">.</span><span class="n">sname</span> <span class="p">=</span> <span class="n">sname</span><span class="p">;</span>
+   <span class="p">}</span>
+
+   <span class="k">public</span> <span class="n">Staff</span><span class="p">(</span> <span class="p">)</span> <span class="p">{</span>
+      <span class="n">super</span><span class="p">(</span> <span class="p">);</span>
+   <span class="p">}</span>
+
+   <span class="k">public</span> <span class="n">int</span> <span class="n">getSid</span><span class="p">(</span> <span class="p">)</span> <span class="p">{</span>
+      <span class="n">return</span> <span class="n">sid</span><span class="p">;</span>
+   <span class="p">}</span>
+
+   <span class="k">public</span> <span class="n">void</span> <span class="n">setSid</span><span class="p">(</span> <span class="n">int</span> <span class="n">sid</span> <span class="p">)</span> <span class="p">{</span>
+      <span class="n">this</span><span class="p">.</span><span class="n">sid</span> <span class="p">=</span> <span class="n">sid</span><span class="p">;</span>
+   <span class="p">}</span>
+
+   <span class="k">public</span> <span class="k">String</span> <span class="n">getSname</span><span class="p">(</span> <span class="p">)</span> <span class="p">{</span>
+      <span class="n">return</span> <span class="n">sname</span><span class="p">;</span>
+   <span class="p">}</span>
+
+   <span class="k">public</span> <span class="n">void</span> <span class="n">setSname</span><span class="p">(</span> <span class="k">String</span> <span class="n">sname</span> <span class="p">)</span> <span class="p">{</span>
+      <span class="n">this</span><span class="p">.</span><span class="n">sname</span> <span class="p">=</span> <span class="n">sname</span><span class="p">;</span>
+   <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>在com.tutorialspoint.eclipselink.entity包下创建一个名为TeachingStaff.java的 Staff类的子类（class）。TeachingStaff实体类显示如下：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">com</span><span class="p">.</span><span class="n">tutorialspoint</span><span class="p">.</span><span class="n">eclipselink</span><span class="p">.</span><span class="n">entity</span><span class="p">;</span>
+
+<span class="n">import</span> <span class="n">javax</span><span class="p">.</span><span class="n">persistence</span><span class="p">.</span><span class="n">DiscriminatorValue</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">javax</span><span class="p">.</span><span class="n">persistence</span><span class="p">.</span><span class="n">Entity</span><span class="p">;</span>
+
+<span class="p">@</span><span class="n">Entity</span>
+<span class="k">public</span> <span class="n">class</span> <span class="n">TeachingStaff</span> <span class="n">extends</span> <span class="n">Staff</span> <span class="p">{</span>
+   <span class="n">private</span> <span class="k">String</span> <span class="n">qualification</span><span class="p">;</span>
+   <span class="n">private</span> <span class="k">String</span> <span class="n">subjectexpertise</span><span class="p">;</span>
+
+   <span class="k">public</span> <span class="n">TeachingStaff</span><span class="p">(</span> <span class="n">int</span> <span class="n">sid</span><span class="p">,</span> <span class="k">String</span> <span class="n">sname</span><span class="p">,</span> <span class="k">String</span> <span class="n">qualification</span><span class="p">,</span> <span class="k">String</span> <span class="n">subjectexpertise</span> <span class="p">)</span> <span class="p">{</span>
+      <span class="n">super</span><span class="p">(</span> <span class="n">sid</span><span class="p">,</span> <span class="n">sname</span> <span class="p">);</span>
+      <span class="n">this</span><span class="p">.</span><span class="n">qualification</span> <span class="p">=</span> <span class="n">qualification</span><span class="p">;</span>
+      <span class="n">this</span><span class="p">.</span><span class="n">subjectexpertise</span> <span class="p">=</span> <span class="n">subjectexpertise</span><span class="p">;</span>
+   <span class="p">}</span>
+
+   <span class="k">public</span> <span class="n">TeachingStaff</span><span class="p">(</span> <span class="p">)</span> <span class="p">{</span>
+      <span class="n">super</span><span class="p">(</span> <span class="p">);</span>
+   <span class="p">}</span>
+
+   <span class="k">public</span> <span class="k">String</span> <span class="n">getQualification</span><span class="p">(</span> <span class="p">){</span>
+      <span class="n">return</span> <span class="n">qualification</span><span class="p">;</span>
+   <span class="p">}</span>
+   
+   <span class="k">public</span> <span class="n">void</span> <span class="n">setQualification</span><span class="p">(</span> <span class="k">String</span> <span class="n">qualification</span> <span class="p">)</span> <span class="p">{</span>
+      <span class="n">this</span><span class="p">.</span><span class="n">qualification</span> <span class="p">=</span> <span class="n">qualification</span><span class="p">;</span>
+   <span class="p">}</span>
+
+   <span class="k">public</span> <span class="k">String</span> <span class="n">getSubjectexpertise</span><span class="p">(</span> <span class="p">)</span> <span class="p">{</span>
+      <span class="n">return</span> <span class="n">subjectexpertise</span><span class="p">;</span>
+   <span class="p">}</span>
+
+   <span class="k">public</span> <span class="n">void</span> <span class="n">setSubjectexpertise</span><span class="p">(</span> <span class="k">String</span> <span class="n">subjectexpertise</span> <span class="p">){</span>
+      <span class="n">this</span><span class="p">.</span><span class="n">subjectexpertise</span> <span class="p">=</span> <span class="n">subjectexpertise</span><span class="p">;</span>
+   <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>在com.tutorialspoint.eclipselink.entity包下创建一个名为NonTeachingStaff.java的 Staff类的子类（class）。NonTeachingStaff实体类显示如下：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">com</span><span class="p">.</span><span class="n">tutorialspoint</span><span class="p">.</span><span class="n">eclipselink</span><span class="p">.</span><span class="n">entity</span><span class="p">;</span>
+
+<span class="n">import</span> <span class="n">javax</span><span class="p">.</span><span class="n">persistence</span><span class="p">.</span><span class="n">DiscriminatorValue</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">javax</span><span class="p">.</span><span class="n">persistence</span><span class="p">.</span><span class="n">Entity</span><span class="p">;</span>
+
+<span class="p">@</span><span class="n">Entity</span>
+<span class="k">public</span> <span class="n">class</span> <span class="n">NonTeachingStaff</span> <span class="n">extends</span> <span class="n">Staff</span> <span class="p">{</span>
+   <span class="n">private</span> <span class="k">String</span> <span class="n">areaexpertise</span><span class="p">;</span>
+
+   <span class="k">public</span> <span class="n">NonTeachingStaff</span><span class="p">(</span> <span class="n">int</span> <span class="n">sid</span><span class="p">,</span> <span class="k">String</span> <span class="n">sname</span><span class="p">,</span> <span class="k">String</span> <span class="n">areaexpertise</span> <span class="p">)</span> <span class="p">{</span>
+      <span class="n">super</span><span class="p">(</span> <span class="n">sid</span><span class="p">,</span> <span class="n">sname</span> <span class="p">);</span>
+      <span class="n">this</span><span class="p">.</span><span class="n">areaexpertise</span> <span class="p">=</span> <span class="n">areaexpertise</span><span class="p">;</span>
+   <span class="p">}</span>
+
+   <span class="k">public</span> <span class="n">NonTeachingStaff</span><span class="p">(</span> <span class="p">)</span> <span class="p">{</span>
+      <span class="n">super</span><span class="p">(</span> <span class="p">);</span>
+   <span class="p">}</span>
+
+   <span class="k">public</span> <span class="k">String</span> <span class="n">getAreaexpertise</span><span class="p">(</span> <span class="p">)</span> <span class="p">{</span>
+      <span class="n">return</span> <span class="n">areaexpertise</span><span class="p">;</span>
+   <span class="p">}</span>
+
+   <span class="k">public</span> <span class="n">void</span> <span class="n">setAreaexpertise</span><span class="p">(</span> <span class="k">String</span> <span class="n">areaexpertise</span> <span class="p">)</span> <span class="p">{</span>
+      <span class="n">this</span><span class="p">.</span><span class="n">areaexpertise</span> <span class="p">=</span> <span class="n">areaexpertise</span><span class="p">;</span>
+   <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><strong>persistence.xml中</strong>
+Persistence.xml文件包含实体类的数据库和注册信息的配置信息。xml文件显示如下：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;?xml version="1.0" encoding = "UTF-8"?&gt;</span>
+<span class="nt">&lt;persistence</span> <span class="na">version =</span> <span class="s">"2.0"</span> <span class="na">xmlns =</span> <span class="s">"http://java.sun.com/xml/ns/persistence"</span>
+   <span class="na">xmlns:xsi =</span> <span class="s">"http://www.w3.org/2001/XMLSchema-instance"</span> 
+   <span class="na">xsi:schemaLocation =</span> <span class="s">"http://java.sun.com/xml/ns/persistence 
+   http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd"</span><span class="nt">&gt;</span>
+
+   <span class="nt">&lt;persistence-unit</span> <span class="na">name =</span> <span class="s">"Eclipselink_JPA"</span> <span class="na">transaction-type =</span> <span class="s">"RESOURCE_LOCAL"</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;class&gt;</span>com.tutorialspoint.eclipselink.entity.Staff<span class="nt">&lt;/class&gt;</span>
+      <span class="nt">&lt;class&gt;</span>com.tutorialspoint.eclipselink.entity.NonTeachingStaff<span class="nt">&lt;/class&gt;</span>
+      <span class="nt">&lt;class&gt;</span>com.tutorialspoint.eclipselink.entity.TeachingStaff<span class="nt">&lt;/class&gt;</span>
+      
+      <span class="nt">&lt;properties&gt;</span>
+         <span class="nt">&lt;property</span> <span class="na">name =</span> <span class="s">"javax.persistence.jdbc.url"</span> <span class="na">value =</span> <span class="s">"jdbc:mysql://localhost:3306/jpadb"</span><span class="nt">/&gt;</span>
+         <span class="nt">&lt;property</span> <span class="na">name =</span> <span class="s">"javax.persistence.jdbc.user"</span> <span class="na">value =</span> <span class="s">"root"</span><span class="nt">/&gt;</span>
+         <span class="nt">&lt;property</span> <span class="na">name =</span> <span class="s">"javax.persistence.jdbc.password"</span> <span class="na">value =</span> <span class="s">"root"</span><span class="nt">/&gt;</span>
+         <span class="nt">&lt;property</span> <span class="na">name =</span> <span class="s">"javax.persistence.jdbc.driver"</span> <span class="na">value =</span> <span class="s">"com.mysql.jdbc.Driver"</span><span class="nt">/&gt;</span>
+         <span class="nt">&lt;property</span> <span class="na">name =</span> <span class="s">"eclipselink.logging.level"</span> <span class="na">value =</span> <span class="s">"FINE"</span><span class="nt">/&gt;</span>
+         <span class="nt">&lt;property</span> <span class="na">name =</span> <span class="s">"eclipselink.ddl-generation"</span> <span class="na">value=</span><span class="s">"create-tables"</span><span class="nt">/&gt;</span>
+      <span class="nt">&lt;/properties&gt;</span>
+      
+   <span class="nt">&lt;/persistence-unit&gt;</span>
+<span class="nt">&lt;/persistence&gt;</span>
+</code></pre></div></div>
+
+<h3 id="服务类-1">服务类</h3>
+
+<p>服务类是业务组件的实现部分。在名为’com.tutorialspoint.eclipselink.service’的’src’包下创建一个包。</p>
+
+<p>在给定的包下创建一个名为SaveClient.java的类来存储Staff，TeachingStaff和NonTeachingStaff类字段。SaveClient类显示如下：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">com</span><span class="p">.</span><span class="n">tutorialspoint</span><span class="p">.</span><span class="n">eclipselink</span><span class="p">.</span><span class="n">service</span><span class="p">;</span><span class="n">import</span> <span class="n">javax</span><span class="p">.</span><span class="n">persistence</span><span class="p">.</span><span class="n">EntityManager</span><span class="p">;</span><span class="n">import</span> <span class="n">javax</span><span class="p">.</span><span class="n">persistence</span><span class="p">.</span><span class="n">EntityManagerFactory</span><span class="p">;</span><span class="n">import</span> <span class="n">javax</span><span class="p">.</span><span class="n">persistence</span><span class="p">.</span><span class="n">Persistence</span><span class="p">;</span><span class="n">import</span> <span class="n">com</span><span class="p">.</span><span class="n">tutorialspoint</span><span class="p">.</span><span class="n">eclipselink</span><span class="p">.</span><span class="n">entity</span><span class="p">.</span><span class="n">NonTeachingStaff</span><span class="p">;</span><span class="n">import</span> <span class="n">com</span><span class="p">.</span><span class="n">tutorialspoint</span><span class="p">.</span><span class="n">eclipselink</span><span class="p">.</span><span class="n">entity</span><span class="p">.</span><span class="n">TeachingStaff</span><span class="p">;</span><span class="n">publicclass</span> <span class="n">SaveClient</span> <span class="p">{</span>
+   <span class="n">publicstaticvoidmain</span><span class="p">(</span> <span class="k">String</span><span class="p">[</span> <span class="p">]</span> <span class="n">args</span> <span class="p">)</span> <span class="p">{</span>
+      <span class="n">EntityManagerFactory</span> <span class="n">emfactory</span> <span class="p">=</span> <span class="n">Persistence</span><span class="p">.</span><span class="n">createEntityManagerFactory</span><span class="p">(</span> <span class="s2">"Eclipselink_JPA"</span> <span class="p">);</span>
+      <span class="n">EntityManager</span> <span class="n">entitymanager</span> <span class="p">=</span> <span class="n">emfactory</span><span class="p">.</span><span class="n">createEntityManager</span><span class="p">(</span> <span class="p">);</span>
+      <span class="n">entitymanager</span><span class="p">.</span><span class="n">getTransaction</span><span class="p">(</span> <span class="p">).</span><span class="n">begin</span><span class="p">(</span> <span class="p">);</span>
+
+      <span class="p">//</span><span class="n">Teaching</span> <span class="n">staff</span> <span class="n">entity</span> 
+      <span class="n">TeachingStaff</span> <span class="n">ts1</span> <span class="p">=</span> <span class="n">newTeachingStaff</span><span class="p">(</span><span class="m">1</span><span class="p">,</span><span class="s2">"Gopal"</span><span class="p">,</span><span class="s2">"MSc MEd"</span><span class="p">,</span><span class="s2">"Maths"</span><span class="p">);</span>
+      <span class="n">TeachingStaff</span> <span class="n">ts2</span> <span class="p">=</span> <span class="n">newTeachingStaff</span><span class="p">(</span><span class="m">2</span><span class="p">,</span> <span class="s2">"Manisha"</span><span class="p">,</span> <span class="s2">"BSc BEd"</span><span class="p">,</span> <span class="s2">"English"</span><span class="p">);</span>
+      
+      <span class="p">//</span><span class="n">Non</span><span class="p">-</span><span class="n">Teaching</span> <span class="n">Staff</span> <span class="n">entity</span>
+      <span class="n">NonTeachingStaff</span> <span class="n">nts1</span> <span class="p">=</span> <span class="n">newNonTeachingStaff</span><span class="p">(</span><span class="m">3</span><span class="p">,</span> <span class="s2">"Satish"</span><span class="p">,</span> <span class="s2">"Accounts"</span><span class="p">);</span>
+      <span class="n">NonTeachingStaff</span> <span class="n">nts2</span> <span class="p">=</span> <span class="n">newNonTeachingStaff</span><span class="p">(</span><span class="m">4</span><span class="p">,</span> <span class="s2">"Krishna"</span><span class="p">,</span> <span class="s2">"Office Admin"</span><span class="p">);</span>
+
+      <span class="p">//</span><span class="n">storing</span> <span class="n">all</span> <span class="n">entities</span>
+      <span class="n">entitymanager</span><span class="p">.</span><span class="n">persist</span><span class="p">(</span><span class="n">ts1</span><span class="p">);</span>
+      <span class="n">entitymanager</span><span class="p">.</span><span class="n">persist</span><span class="p">(</span><span class="n">ts2</span><span class="p">);</span>
+      <span class="n">entitymanager</span><span class="p">.</span><span class="n">persist</span><span class="p">(</span><span class="n">nts1</span><span class="p">);</span>
+      <span class="n">entitymanager</span><span class="p">.</span><span class="n">persist</span><span class="p">(</span><span class="n">nts2</span><span class="p">);</span>
+
+      <span class="n">entitymanager</span><span class="p">.</span><span class="n">getTransaction</span><span class="p">().</span><span class="n">commit</span><span class="p">();</span>
+      <span class="n">entitymanager</span><span class="p">.</span><span class="n">close</span><span class="p">();</span>
+      <span class="n">emfactory</span><span class="p">.</span><span class="n">close</span><span class="p">();</span>
+   <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>编译和执行上述程序后，您将在Eclipse IDE的控制面板中收到通知。对于输出，检查MySQL工作台如下：</p>
+
+<p>这里创建了三个表，Staff表包含空记录。</p>
+
+<p>TeachingStaff的结果如表格所示：</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/jpaadvancedmappings%E6%98%A0%E5%B0%84.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3java%E8%99%9A%E6%8B%9F%E6%9C%BA%E4%B8%89.html">&laquo; 《深入理解Java虚拟机》（三）</a>
+  
+  
+  <a class="next" href="/2017/shardingjdbc150%E6%AD%A3%E5%BC%8F%E5%8F%91%E5%B8%83%E5%85%A8%E6%96%B0sql%E8%A7%A3%E6%9E%90%E5%8F%91%E5%8A%A8%E6%9C%BA.html">Sharding-JDBC 1.5.0 正式发布：全新 SQL 解析发动机 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>Java内部类基本使用 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="Java内部类基本使用" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="??创建内部类时，那个类的对象同时拥有封装对象(封装内部类的外部类)的一个链接，所以内部类可以访问外部类的成员。 ??内部类拥有对外部类所有元素的访问权限。 ??看如下代码，内部类SSelector访问外部类元素o，而且o是private。" />
+<meta property="og:description" content="??创建内部类时，那个类的对象同时拥有封装对象(封装内部类的外部类)的一个链接，所以内部类可以访问外部类的成员。 ??内部类拥有对外部类所有元素的访问权限。 ??看如下代码，内部类SSelector访问外部类元素o，而且o是private。" />
+<link rel="canonical" href="http://www.jfox.info/2017/java%E5%86%85%E9%83%A8%E7%B1%BB%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/java%E5%86%85%E9%83%A8%E7%B1%BB%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:51:54+00:00" />
+<script type="application/ld+json">
+{"description":"??创建内部类时，那个类的对象同时拥有封装对象(封装内部类的外部类)的一个链接，所以内部类可以访问外部类的成员。 ??内部类拥有对外部类所有元素的访问权限。 ??看如下代码，内部类SSelector访问外部类元素o，而且o是private。","@type":"BlogPosting","url":"http://www.jfox.info/2017/java%E5%86%85%E9%83%A8%E7%B1%BB%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8.html","headline":"Java内部类基本使用","dateModified":"2017-01-01T15:51:54+00:00","datePublished":"2017-01-01T15:51:54+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/java%E5%86%85%E9%83%A8%E7%B1%BB%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Java内部类基本使用</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:51:54+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>??创建内部类时，那个类的对象同时拥有封装对象(封装内部类的外部类)的一个链接，所以内部类可以访问外部类的成员。
+??内部类拥有对外部类所有元素的访问权限。
+??看如下代码，内部类SSelector访问外部类元素o，而且o是private。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>interface Selector
+{
+    boolean end();
+    Object current();
+    void next();
+}
+
+public class Sequence
+{
+    private Object[] o;
+    private int next = 0;
+    public Sequence(int size)
+    {
+        o = new Object[size];
+    }
+
+    public void add(Object x)
+    {
+        if(next &lt; o.length)
+        {
+            o[next] = x;
+            next++;
+        }
+    }
+
+    private class SSelector implements Selector
+    {
+        int i = 0;
+        public boolean end()
+        {
+            return i == o.length;
+        }
+        public Object current()
+        {
+            return o[i];
+        }
+        public void next()
+        {
+            if(i &lt; o.length)
+            {
+                i++;
+            }
+        }
+    }
+
+    public Selector getSelector()
+    {
+        return new SSelector();
+    }
+
+    public static void main(String[] args)
+    {
+        Sequence s = new Sequence(10);
+        for(int i = 0; i &lt; 10; i++)
+        {
+            s.add(Integer.toString(i));
+        }
+        Selector s1 = s.getSelector();
+        while (!s1.end())
+        {
+            System.out.println((String)s1.current());
+            s1.next();
+        }
+    }
+}
+</code></pre></div></div>
+
+<p><em>ADVERTISEMENT</em>
+输出结果如下：</p>
+
+<p>0
+1
+2
+3
+4
+5
+6
+7
+8
+9</p>
+
+<h3 id="static内部类"><strong>static内部类</strong></h3>
+
+<ul>
+  <li>为创建一个static内部类的对象，不需要一个外部类对象。</li>
+  <li>不能从static内部类的一个对象访问一个外部类对象。</li>
+  <li>
+    <p>为创建内部类的对象而不需要创建外部类的一个对象，那么可将所有东西设置为static。</p>
+
+    <p>abstract class Contents
+  {
+      abstract public int value();
+  }</p>
+
+    <p>interface Destination
+  {
+      String readLabel();
+  }</p>
+
+    <p>public class Test3
+  {
+      private static class PContents extends Contents
+      {
+          private int i = 11;
+          public int value()
+          {
+              return i;
+          }
+      }</p>
+
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  protected static class PDestination implements Destination
+  {
+      private String label;
+      private PDestination(String whereTo)
+      {
+          label = whereTo;
+      }
+      public String readLabel()
+      {
+          return label;
+      }
+  }
+
+  public static Contents cont()
+  {
+      return new PContents();
+  }
+
+  public static Destination dest(String s)
+  {
+      return new PDestination(s);
+  }
+
+  public static void main(String[] args)
+  {
+      Contents c = cont();
+      Destination d = dest("Wu Han");
+      System.out.println(c.value());
+      System.out.println(d.readLabel());
+  }   }
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<p><em>ADVERTISEMENT</em></p>
+<h3 id="内部类中引用外部类对象"><strong>内部类中引用外部类对象</strong></h3>
+
+<p>??若想在内部类中生成外部类的句柄，就要用一个.和this来命名外部类。
+??如下，第一次输出为Test3中的x，初始值为0，第二次使用内部类中的method方法对外部类x进行修改，使其变为5。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public class Test3
+{
+    int x = 0;
+
+    public class Test4
+    {
+        int x;
+        public void method()
+        {
+            //内部类x
+            x = 3;
+            //外部类
+            Test3.this.x = 5;
+        }
+    }
+
+    public Test4 test()
+    {
+        return new Test4();
+    }
+
+    public static void main(String[] args)
+    {
+        Test3 test3 = new Test3();
+        Test4 test4 = test3.test();
+        System.out.println(test3.x);
+        test4.method();
+        System.out.println(test3.x);
+    }
+}
+</code></pre></div></div>
+
+<p><em>ADVERTISEMENT</em>
+输出结果：</p>
+
+<p>0
+5</p>
+
+<h3 id="通过外部类对象引用内部类对象"><strong>通过外部类对象引用内部类对象</strong></h3>
+
+<p>??通过外部类对象引用加上.和new与该外部类对应的内部类对象，就可以通过外部类对象来引用内部类对象。
+??代码如下，整体与上述代码基本相同，就是在获取内部类对象的时候直接使用.new获取。输出结果也是0 5</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public class Test3
+{
+    int x = 0;
+
+    public class Test4
+    {
+        int x;
+        public void method()
+        {
+            //内部类x
+            x = 3;
+            //外部类
+            Test3.this.x = 5;
+        }
+    }
+
+    public static void main(String[] args)
+    {
+        Test3 test3 = new Test3();
+        Test4 test4 = test3.new Test4();
+        System.out.println(test3.x);
+        test4.method();
+        System.out.println(test3.x);
+    }
+}
+</code></pre></div></div>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/java%E5%86%85%E9%83%A8%E7%B1%BB%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/spring-springmvc-mybatis%E6%B7%B1%E5%85%A5%E5%AD%A6%E4%B9%A0%E5%8F%8A%E6%90%AD%E5%BB%BA-%E5%8D%81%E4%BA%94-springmvc%E6%B3%A8%E8%A7%A3%E5%BC%80%E5%8F%91-%E5%9F%BA%E7%A1%80%E7%AF%87.html">&laquo; Spring+SpringMVC+MyBatis深入学习及搭建(十五)——SpringMVC注解开发（基础篇）</a>
+  
+  
+  <a class="next" href="/2017/%E6%9B%BE%E5%B0%86%E5%85%AC%E5%8F%B8%E9%80%81%E4%B8%8A%E6%96%B0%E4%B8%89%E6%9D%BF%E7%9A%84%E5%88%9B%E5%A7%8B%E4%BA%BA-%E4%B8%BA%E4%BD%95%E9%87%8D%E5%9B%9Ebat%E5%B7%A5%E4%BD%9C.html">曾将公司送上新三板的创始人，为何重回BAT工作？ &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

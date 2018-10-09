@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>Java数据类型(2)——自动封装拆箱 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="Java数据类型(2)——自动封装拆箱" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="目的:" />
+<meta property="og:description" content="目的:" />
+<link rel="canonical" href="http://www.jfox.info/2017/java%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B-2-%E8%87%AA%E5%8A%A8%E5%B0%81%E8%A3%85%E6%8B%86%E7%AE%B1.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/java%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B-2-%E8%87%AA%E5%8A%A8%E5%B0%81%E8%A3%85%E6%8B%86%E7%AE%B1.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:50:03+00:00" />
+<script type="application/ld+json">
+{"description":"目的:","@type":"BlogPosting","url":"http://www.jfox.info/2017/java%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B-2-%E8%87%AA%E5%8A%A8%E5%B0%81%E8%A3%85%E6%8B%86%E7%AE%B1.html","headline":"Java数据类型(2)——自动封装拆箱","dateModified":"2017-01-01T15:50:03+00:00","datePublished":"2017-01-01T15:50:03+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/java%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B-2-%E8%87%AA%E5%8A%A8%E5%B0%81%E8%A3%85%E6%8B%86%E7%AE%B1.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Java数据类型(2)——自动封装拆箱</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:50:03+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p><strong>目的:</strong></p>
+
+<p>自动装箱和拆箱从Java 1.5开始引入，目的是将原始类型值转自动地转换成对应的对象,以使用对象的API和引用类型操作。自动装箱与拆箱的机制可以让我们在Java的变量赋值或者是方法调用等情况下使用原始类型或者对象类型更加简单直接。</p>
+
+<p><strong>定义:</strong></p>
+
+<p>自动装箱就是Java自动将原始类型值转换成对应的对象，比如将int的变量转换成Integer对象，这个过程叫做装箱，反之将Integer对象转换成int类型值，这个过程叫做拆箱。因为这里的装箱和拆箱是自动进行的非人为转换，所以就称作为自动装箱和拆箱。原始类型byte,short,char,int,long,float,double和boolean对应的封装类为Byte,Short,Character,Integer,Long,Float,Double,Boolean。</p>
+
+<p><strong>实现：</strong></p>
+
+<p>自动装箱时编译器调用valueOf将原始类型值转换成对象，同时自动拆箱时，编译器通过调用类似intValue(),doubleValue()这类的方法将对象转换成原始类型值。</p>
+
+<p><strong>发生时间：</strong></p>
+
+<p>有一个方法，接受一个对象类型的参数，如果我们传递一个原始类型值，那么Java会自动讲这个原始类型值转换成与之对应的对象。</p>
+
+<p>List<Integer> list = **new** ArrayList<Integer>();</Integer></Integer></p>
+
+<p>// 自动装箱</p>
+
+<p>list.add(1);</p>
+
+<p>list.add(2);</p>
+
+<p>// 拆箱</p>
+
+<p><strong>int</strong>i = list.get(0);</p>
+
+<p><strong>int</strong>ii = list.get(1);</p>
+
+<p><strong>自动装箱的弊端：</strong></p>
+
+<p>自动装箱有一个问题，那就是在一个循环中进行自动装箱操作的情况，如下面的例子就会创建多余的对象，影响程序的性能。</p>
+
+<p>Integer sum = 0;</p>
+
+<p>for(int i=1000; i&lt;5000; i++){</p>
+
+<p>sum+=i;</p>
+
+<p>}</p>
+
+<p>上面的代码sum+=i可以看成sum = sum + i，但是==、+、–、*、/这个操作符不适用于Integer对象，首先sum进行自动拆箱操作，进行数值相加操作，最后发生自动装箱操作转换成Integer对象。其过程如下</p>
+
+<p>int temp = sum.intValue() + i;</p>
+
+<p>Integer sum = new Integer(temp);</p>
+
+<p>由于我们这里声明的sum为Integer类型，在上面的循环中会创建将近5000个无用的Integer对象，在这样庞大的循环中，会降低程序的性能并且加重了垃圾回收的工作量。因此，需要注意到这一点，正确地声明变量类型，避免因为自动装箱引起的性能问题.</p>
+
+<p><strong>注意事项:</strong></p>
+
+<p>自动装箱和拆箱可以让代码简洁，但是，我们在使用的时候应该注意下，否则会发生一些问题。</p>
+
+<p>1.<strong>比较</strong></p>
+
+<p>”==“可以用于原始值进行比较，也可以用于对象进行比较，当用于对象与对象之间比较时，比较的不是对象代表的值，而是检查两个对象是否是同一对象，即检查引用地址是否相同。这个比较过程中没有自动装箱发生。进行对象值比较不应该使用”==“，而应该使用对象对应的equals方法。</p>
+
+<p>// 1</p>
+
+<p><strong>int</strong> i1=1;</p>
+
+<p><strong>int</strong> i2=1;</p>
+
+<p>System.<em>out</em>.println(i2==i1);// true</p>
+
+<p>// 2</p>
+
+<p>Integer I1=1;</p>
+
+<p>System.<em>out</em>.println(I1==i1);// true</p>
+
+<p>Integer I2=1;</p>
+
+<p>System.<em>out</em>.println(I1==I2);// true</p>
+
+<p>// 3</p>
+
+<p>Integer I3 = 128;// 触发自动封装</p>
+
+<p>Integer I4 = 128;</p>
+
+<p>System.<em>out</em>.println(I3==I4);// false</p>
+
+<p>// 4</p>
+
+<p>Integer I5= <strong>new</strong> Integer(1);// 不触发自动封装</p>
+
+<p>Integer I6= <strong>new</strong> Integer(1);</p>
+
+<p>System.<em>out</em>.println(I5==I6); // false</p>
+
+<p>值得注意的是第2个小例子的第二个比较，这是一种极端情况。I1和I2的初始化都发生了自动装箱操作。但是处于节省内存的考虑，JVM会缓存-128到127的Integer对象。因为I1和I2实际上是同一个对象。所以使用”==“比较返回true,而第三个小例子使用‘==’返回false。</p>
+
+<p>注：<strong>自动封装的函数</strong></p>
+
+<p>public static Integer valueOf(int i) {</p>
+
+<table>
+  <tbody>
+    <tr>
+      <td>return i &gt;= 128</td>
+      <td> </td>
+      <td>i &lt; -128 ? new Integer(i) : SMALL_VALUES[i + 128];</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>}</p>
+
+<p>private static final Integer[] SMALL_VALUES = new Integer[256];</p>
+
+<p>2.<strong>容易混乱的对象和原始数据值</strong></p>
+
+<p>另一个需要避免的问题就是混乱使用对象和原始数据值，一个具体的例子就是当我们在一个原始数据值与一个对象进行比较或赋值时，如果这个对象没有进行初始化或者为Null，在自动拆箱过程中obj.xxxValue，会抛出NullPointerException,如下面的代码</p>
+
+<p><strong>private</strong><strong>static</strong> Integer <em>count</em>;</p>
+
+<p><strong>if</strong>(count&gt;=0){</p>
+
+<p>System.<em>out</em>.println(11111111111L);</p>
+
+<p>}</p>
+
+<p>3.<strong>缓存的对象</strong></p>
+
+<p>在Java中，会对-128到127的Integer对象进行缓存，当创建新的Integer对象时，如果符合这个这个范围，并且已有存在的相同值的对象，则返回这个对象，否则创建新的Integer对象。</p>
+
+<p>4.<strong>生成无用对象</strong></p>
+
+<p>因为自动装箱会隐式地创建对象，像前面提到的那样，如果在一个循环体中，会创建无用的中间对象，这样会增加GC压力，拉低程序的性能。所以在写循环时一定要注意代码，避免引入不必要的自动装箱操作。</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/java%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B-2-%E8%87%AA%E5%8A%A8%E5%B0%81%E8%A3%85%E6%8B%86%E7%AE%B1.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/jms-%E4%B9%8B-active-mq-%E7%9A%84spring%E6%95%B4%E5%90%88.html">&laquo; JMS 之 Active MQ 的spring整合</a>
+  
+  
+  <a class="next" href="/2017/spring%E6%95%B4%E5%90%88cxf%E6%A1%86%E6%9E%B6.html">spring整合cxf框架 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>React 如何转 Vue.js | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="React 如何转 Vue.js" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="如果你是一个 React 开发人员，并决定尝试 Vue.js。欢迎参加这场聚会。" />
+<meta property="og:description" content="如果你是一个 React 开发人员，并决定尝试 Vue.js。欢迎参加这场聚会。" />
+<link rel="canonical" href="http://www.jfox.info/2017/react-%E5%A6%82%E4%BD%95%E8%BD%AC-vue-js.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/react-%E5%A6%82%E4%BD%95%E8%BD%AC-vue-js.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:50:12+00:00" />
+<script type="application/ld+json">
+{"description":"如果你是一个 React 开发人员，并决定尝试 Vue.js。欢迎参加这场聚会。","@type":"BlogPosting","url":"http://www.jfox.info/2017/react-%E5%A6%82%E4%BD%95%E8%BD%AC-vue-js.html","headline":"React 如何转 Vue.js","dateModified":"2017-01-01T15:50:12+00:00","datePublished":"2017-01-01T15:50:12+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/react-%E5%A6%82%E4%BD%95%E8%BD%AC-vue-js.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">React 如何转 Vue.js</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:50:12+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>如果你是一个 React 开发人员，并决定尝试 Vue.js。欢迎参加这场聚会。</p>
+
+<p>React 和 Vue 就像可口可乐和百事可乐，很多你可以在 React 中做的事，也同样可以在 Vue 中做。不过两者仍然有一些重要的概念上的差异，其中一些反映了 Angular 对 Vue 的影响。</p>
+
+<p>接下来的文章中，我将重点讨论下两者的差异，以便你准备好切换到Vue，并且能马上写出高效的代码。</p>
+
+<h2 id="react-和-vue-之间有多大的区别">React 和 Vue 之间有多大的区别？</h2>
+
+<p>React 和 Vue 的相似性多于差异性：</p>
+
+<ul>
+  <li>都是用于创建 UI 的 JavaScript 库</li>
+  <li>都是快速和轻量级的</li>
+  <li>都有基于组件的架构</li>
+  <li>都使用虚拟 DOM</li>
+  <li>都可以放在单独的 HTML 文件中，或者在更复杂的 Webpack 设置中的一个模块</li>
+  <li>都有独立但常用的路由器和状态管理库</li>
+</ul>
+
+<p>它们最大的区别在于 Vue 通常使用 <em>HTML 模板文件</em>，而 React 是完全使用 JavaScript。Vue 还有具有<em>可变状态</em>和称为 “reactivity” 的重新渲染的自动系统。</p>
+
+<p>我们将在下面一一道来。</p>
+
+<h2 id="components">Components</h2>
+
+<p>使用 Vue.js，组件将使用 API 方法 <code class="highlighter-rouge">.component</code> 进行声明，该方法接收 <code class="highlighter-rouge">id</code> 和定义对象的参数。你可能会注意到 Vue 组件中熟悉的方面，以及不太熟悉的方面：
+JavaScript</p>
+
+<p>Vue.component(‘my-component’, {
+  // Props
+  props: [ ‘myprop’ ],
+  // Local state
+  data() {
+    return {
+      firstName: ‘John’,
+      lastName: ‘Smith’
+    }
+  },
+  // Computed property
+  computed: {
+    fullName() {
+      return this.firstName + ‘ ‘ + this.lastName;
+    }
+  },
+  // Template
+  template:</p>
+
+<p>Vue components typically have string templates.</p>
+
+<p>Here’s some local state: {{ firstName }}</p>
+
+<p>Here’s a computed value: {{ fullName }}</p>
+
+<p>Here’s a prop passed down from the parent: {{ myprop }}</p>
+
+<p>,
+  // Lifecycle hook
+  created() {
+    setTimeout(() =&gt; {
+      this.message = ‘Goodbye World’<br />
+    }, 2000);</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/react-%E5%A6%82%E4%BD%95%E8%BD%AC-vue-js.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/java%E4%B8%AD%E7%9A%84%E6%B3%A8%E8%A7%A3%E6%80%BB%E7%BB%93.html">&laquo; java中的注解总结 » java面试题</a>
+  
+  
+  <a class="next" href="/2017/guava-eventbus%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90-%E4%B8%80.html">guava eventbus代码分析(一) &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

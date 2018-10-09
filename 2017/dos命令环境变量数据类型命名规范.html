@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>dos命令-环境变量-数据类型-命名规范 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="dos命令-环境变量-数据类型-命名规范" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="2、能够使用常见的DOS命令 d: — 回到d盘根目录； cd.. — 返回上级目录（以C盘为例）； cd “文件名” — 打开文件夹； dir — 查看当前文件夹； cls — 清屏； exit — 退出；" />
+<meta property="og:description" content="2、能够使用常见的DOS命令 d: — 回到d盘根目录； cd.. — 返回上级目录（以C盘为例）； cd “文件名” — 打开文件夹； dir — 查看当前文件夹； cls — 清屏； exit — 退出；" />
+<link rel="canonical" href="http://www.jfox.info/2017/dos%E5%91%BD%E4%BB%A4%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E5%91%BD%E5%90%8D%E8%A7%84%E8%8C%83.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/dos%E5%91%BD%E4%BB%A4%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E5%91%BD%E5%90%8D%E8%A7%84%E8%8C%83.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:53:03+00:00" />
+<script type="application/ld+json">
+{"description":"2、能够使用常见的DOS命令 d: — 回到d盘根目录； cd.. — 返回上级目录（以C盘为例）； cd “文件名” — 打开文件夹； dir — 查看当前文件夹； cls — 清屏； exit — 退出；","@type":"BlogPosting","url":"http://www.jfox.info/2017/dos%E5%91%BD%E4%BB%A4%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E5%91%BD%E5%90%8D%E8%A7%84%E8%8C%83.html","headline":"dos命令-环境变量-数据类型-命名规范","dateModified":"2017-01-01T15:53:03+00:00","datePublished":"2017-01-01T15:53:03+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/dos%E5%91%BD%E4%BB%A4%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E5%91%BD%E5%90%8D%E8%A7%84%E8%8C%83.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">dos命令-环境变量-数据类型-命名规范</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:53:03+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>2、能够使用常见的DOS命令
+d: — 回到d盘根目录；
+cd.. — 返回上级目录（以C盘为例）；
+cd “文件名” — 打开文件夹；
+dir — 查看当前文件夹；
+cls — 清屏；
+exit — 退出；</p>
+
+<p>3、能够编写HelloWorld源文件
+public class HelloWorld{
+public static void main(String[] args){
+System.out.println(“HelloWorld!”);
+}
+}</p>
+
+<p>4、能够编译HelloWorld.java
+dos进入需编译的源文件（.java）文件夹–dos窗口输入javac.exe路径  .java文件–enter–生成.class文件
+5、能够运行HelloWorld.class文件
+dos进入需运行的.class文件所在文件夹–dos窗口输入java.exe路径  .class文件–enter–窗口输出</p>
+
+<p>6、能够独立配置path环境变量
+环境变量配置需修改两个地方：
+a.系统–高级系统设置–环境变量–系统变量–新建–名称（JAVA_HOME）,变量值(D:JAVA);
+b.系统–高级系统设置–环境变量–系统变量–找到“PATH”–在最前加上”%JAVA_HOME%bin;……”</p>
+
+<p>7、能够在源代码中使用注释
+java中注释分为三类：
+a.单行注释  //
+b.多行注释  /*  */
+c.文档注释  /**  */</p>
+
+<p>8、能够解释关键字的概念
+关键字是JAVA赋予特殊含义的单词，其特征为全为小写，且在特定软件中会以颜色标示。</p>
+
+<p>9、能够理解常量的概念和分类
+常量分为6类：
+a.整数
+b.小数
+c.字符
+d.字符串
+e.布尔型
+f.空值</p>
+
+<p>10.能够复述变量的概念
+变量分为两类：基础变量，引用变量
+引用变量如数组、接口等
+基础变量分为4类8小种
+a.整型
+1)byte 1字节
+2)short 2字节
+3)int(默认) 4字节
+4)long 8字节
+b.浮点型
+1)float 4字节
+2)double(默认) 8字节
+c.布尔型：boolean–true/false 1字节,默认值为false.
+d.字符型:char 2字节</p>
+
+<p><img src="8c9cae5.png" alt="" /></p>
+
+<p>11、能够记住变量的定义格式
+两种定义方式：
+a. int b;
+b = 130;
+b. int b = 130;
+注意：各变量类型的数据范围；变量必须初始化才能使用；</p>
+
+<p>12.能够使用标识符定义变量和类名 <br />
+标识符是指命名规范，有如下几点：
+a.命名可使用字母/数字/$/_;
+b.数字和_不可开头；
+c.包的命名，各单词首字母均为小写；
+d.类的命名，各单词首字母均为大写(大驼峰命名法)；
+e.变量命名，第一个单词首字母小写，其后各单词首字母大写（小驼峰命名法）；
+f.方法命名，第一个单词首字母小写，其后各单词首字母大写（小驼峰命名法）；</p>
+
+<p>13.反编译
+javap <option> 编译后的class文件(文件名加不加.class都可)
+-c:分解方法代码,显示每个方法的具体字节码
+-l:指定显示行号和局部变量列表
+-verbose:显示详细信息
+-public|protected|default|private:显示该级别的类成员</option></p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/dos%E5%91%BD%E4%BB%A4%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E5%91%BD%E5%90%8D%E8%A7%84%E8%8C%83.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/springmvc%E9%85%8D%E7%BD%AEbootstrap.html">&laquo; spring mvc 配置bootstrap</a>
+  
+  
+  <a class="next" href="/2017/springcloud%E6%9E%84%E5%BB%BA%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%9E%B6%E6%9E%84%E6%9C%8D%E5%8A%A1%E5%AE%B9%E9%94%99%E4%BF%9D%E6%8A%A4hystrix%E6%96%AD%E8%B7%AF%E5%99%A8dalston%E7%89%88.html">Spring Cloud构建微服务架构：服务容错保护（Hystrix断路器）【Dalston版】 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

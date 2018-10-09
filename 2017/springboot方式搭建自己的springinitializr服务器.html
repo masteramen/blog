@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>Spring Boot方式搭建自己的Spring Initializr 服务器。 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="Spring Boot方式搭建自己的Spring Initializr 服务器。" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="io.spring.initializr initializr-web" />
+<meta property="og:description" content="io.spring.initializr initializr-web" />
+<link rel="canonical" href="http://www.jfox.info/2017/springboot%E6%96%B9%E5%BC%8F%E6%90%AD%E5%BB%BA%E8%87%AA%E5%B7%B1%E7%9A%84springinitializr%E6%9C%8D%E5%8A%A1%E5%99%A8.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/springboot%E6%96%B9%E5%BC%8F%E6%90%AD%E5%BB%BA%E8%87%AA%E5%B7%B1%E7%9A%84springinitializr%E6%9C%8D%E5%8A%A1%E5%99%A8.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:53:05+00:00" />
+<script type="application/ld+json">
+{"description":"io.spring.initializr initializr-web","@type":"BlogPosting","url":"http://www.jfox.info/2017/springboot%E6%96%B9%E5%BC%8F%E6%90%AD%E5%BB%BA%E8%87%AA%E5%B7%B1%E7%9A%84springinitializr%E6%9C%8D%E5%8A%A1%E5%99%A8.html","headline":"Spring Boot方式搭建自己的Spring Initializr 服务器。","dateModified":"2017-01-01T15:53:05+00:00","datePublished":"2017-01-01T15:53:05+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/springboot%E6%96%B9%E5%BC%8F%E6%90%AD%E5%BB%BA%E8%87%AA%E5%B7%B1%E7%9A%84springinitializr%E6%9C%8D%E5%8A%A1%E5%99%A8.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Spring Boot方式搭建自己的Spring Initializr 服务器。</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:53:05+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<dependency>
+    	<groupId>io.spring.initializr</groupId>
+    	<artifactId>initializr-web</artifactId>
+    </dependency>
+
+<h2 id="3-启动运行">3. 启动运行</h2>
+
+<p>运行报错，无法引入依赖。仔细查找文档， <a href="https://www.jfox.info/go.php?url=https://github.com/spring-io/initializr">https://github.com/spring-io/initializr</a> README中有说明： 
+<img src="4d9248e.png" alt="" />
+简单翻译下：Spring Initializr没有在Maven仓库中提供，你需要自己从源码构建。</p>
+
+<h2 id="4-clone源码按照源码提示进行编译">4. Clone源码，按照源码提示进行编译</h2>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>//进入 initialzr项目目录，执行（好慢，我大概执行了1个小时）
+./mvnw clean install
+
+//备注：mvnw执行的是包装maven，未使用本地的maven，安装到maven默认仓库位置。如果本地maven仓库的位置不是默认的，在本地仓库下还是找不到依赖jar，可以在默认位置复制到本地即可。
+</code></pre></div></div>
+
+<p>执行成功结果
+<img src="54a7291.png" alt="" /></p>
+<h2 id="5再次启动运行异常">5.再次启动运行，异常</h2>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>2017-07-05 10:33:51.265 ERROR 134836 --- [           main] o.s.b.f.s.DefaultListableBeanFactory     : Destroy method on bean with name 'org.springframework.boot.autoconfigure.internalCachingMetadataReaderFactory' threw an exception
+
+java.lang.IllegalStateException: ApplicationEventMulticaster not initialized - call 'refresh' before multicasting events via the context: org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@533bda92: startup date [Wed Jul 05 10:33:40 CST 2017]; root of context hierarchy
+	at org.springframework.context.support.AbstractApplicationContext.getApplicationEventMulticaster(AbstractApplicationContext.java:414) [spring-context-4.3.9.RELEASE.jar:4.3.9.RELEASE]
+	at org.springframework.context.support.ApplicationListenerDetector.postProcessBeforeDestruction(ApplicationListenerDetector.java:97) ~[spring-context-4.3.9.RELEASE.jar:4.3.9.RELEASE]
+	at org.springframework.beans.factory.support.DisposableBeanAdapter.destroy(DisposableBeanAdapter.java:253) ~[spring-beans-4.3.9.RELEASE.jar:4.3.9.RELEASE]
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.destroyBean(DefaultSingletonBeanRegistry.java:578) [spring-beans-4.3.9.RELEASE.jar:4.3.9.RELEASE]
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.destroySingleton(DefaultSingletonBeanRegistry.java:554) [spring-beans-4.3.9.RELEASE.jar:4.3.9.RELEASE]
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.destroySingleton(DefaultListableBeanFactory.java:961) [spring-beans-4.3.9.RELEASE.jar:4.3.9.RELEASE]
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.destroySingletons(DefaultSingletonBeanRegistry.java:523) [spring-beans-4.3.9.RELEASE.jar:4.3.9.RELEASE]
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.destroySingletons(DefaultListableBeanFactory.java:968) [spring-beans-4.3.9.RELEASE.jar:4.3.9.RELEASE]
+	at org.springframework.context.support.AbstractApplicationContext.destroyBeans(AbstractApplicationContext.java:1030) [spring-context-4.3.9.RELEASE.jar:4.3.9.RELEASE]
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:556) [spring-context-4.3.9.RELEASE.jar:4.3.9.RELEASE]
+	at org.springframework.boot.context.embedded.EmbeddedWebApplicationContext.refresh(EmbeddedWebApplicationContext.java:122) [spring-boot-1.5.4.RELEASE.jar:1.5.4.RELEASE]
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:693) [spring-boot-1.5.4.RELEASE.jar:1.5.4.RELEASE]
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:360) [spring-boot-1.5.4.RELEASE.jar:1.5.4.RELEASE]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:303) [spring-boot-1.5.4.RELEASE.jar:1.5.4.RELEASE]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1118) [spring-boot-1.5.4.RELEASE.jar:1.5.4.RELEASE]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1107) [spring-boot-1.5.4.RELEASE.jar:1.5.4.RELEASE]
+	at com.github.charles.OwnInitializrApplication.main(OwnInitializrApplication.java:10) [classes/:na]
+
+2017-07-05 10:33:51.278  INFO 134836 --- [           main] utoConfigurationReportLoggingInitializer :
+
+Error starting ApplicationContext. To display the auto-configuration report re-run your application with 'debug' enabled.
+2017-07-05 10:33:51.287 ERROR 134836 --- [           main] o.s.boot.SpringApplication               : Application startup failed
+
+org.springframework.beans.factory.BeanDefinitionStoreException: Failed to process import candidates for configuration class [io.spring.initializr.web.autoconfigure.InitializrAutoConfiguration]; nested exception is java.lang.ClassCastException: java.lang.ClassNotFoundException cannot be cast to [Ljava.lang.Object;
+	at org.springframework.context.annotation.ConfigurationClassParser.processImports(ConfigurationClassParser.java:616) ~[spring-context-4.3.9.RELEASE.jar:4.3.9.RELEASE]
+	at org.springframework.context.annotation.ConfigurationClassParser.doProcessConfigurationClass(ConfigurationClassParser.java:299) ~[spring-context-4.3.9.RELEASE.jar:4.3.9.RELEASE]
+	at org.springframework.context.annotation.ConfigurationClassParser.processConfigurationClass(ConfigurationClassParser.java:245) ~[spring-context-4.3.9.RELEASE.jar:4.3.9.RELEASE]
+	at org.springframework.context.annotation.ConfigurationClassParser.processImports(ConfigurationClassParser.java:606) ~[spring-context-4.3.9.RELEASE.jar:4.3.9.RELEASE]
+	at org.springframework.context.annotation.ConfigurationClassParser.processDeferredImportSelectors(ConfigurationClassParser.java:548) ~[spring-context-4.3.9.RELEASE.jar:4.3.9.RELEASE]
+	at org.springframework.context.annotation.ConfigurationClassParser.parse(ConfigurationClassParser.java:185) ~[spring-context-4.3.9.RELEASE.jar:4.3.9.RELEASE]
+	at org.springframework.context.annotation.ConfigurationClassPostProcessor.processConfigBeanDefinitions(ConfigurationClassPostProcessor.java:308) ~[spring-context-4.3.9.RELEASE.jar:4.3.9.RELEASE]
+	at org.springframework.context.annotation.ConfigurationClassPostProcessor.postProcessBeanDefinitionRegistry(ConfigurationClassPostProcessor.java:228) ~[spring-context-4.3.9.RELEASE.jar:4.3.9.RELEASE]
+	at org.springframework.context.support.PostProcessorRegistrationDelegate.invokeBeanDefinitionRegistryPostProcessors(PostProcessorRegistrationDelegate.java:270) ~[spring-context-4.3.9.RELEASE.jar:4.3.9.RELEASE]
+	at org.springframework.context.support.PostProcessorRegistrationDelegate.invokeBeanFactoryPostProcessors(PostProcessorRegistrationDelegate.java:93) ~[spring-context-4.3.9.RELEASE.jar:4.3.9.RELEASE]
+	at org.springframework.context.support.AbstractApplicationContext.invokeBeanFactoryPostProcessors(AbstractApplicationContext.java:687) ~[spring-context-4.3.9.RELEASE.jar:4.3.9.RELEASE]
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:525) ~[spring-context-4.3.9.RELEASE.jar:4.3.9.RELEASE]
+	at org.springframework.boot.context.embedded.EmbeddedWebApplicationContext.refresh(EmbeddedWebApplicationContext.java:122) ~[spring-boot-1.5.4.RELEASE.jar:1.5.4.RELEASE]
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:693) [spring-boot-1.5.4.RELEASE.jar:1.5.4.RELEASE]
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:360) [spring-boot-1.5.4.RELEASE.jar:1.5.4.RELEASE]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:303) [spring-boot-1.5.4.RELEASE.jar:1.5.4.RELEASE]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1118) [spring-boot-1.5.4.RELEASE.jar:1.5.4.RELEASE]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1107) [spring-boot-1.5.4.RELEASE.jar:1.5.4.RELEASE]
+	at com.github.charles.OwnInitializrApplication.main(OwnInitializrApplication.java:10) [classes/:na]
+Caused by: java.lang.ClassCastException: java.lang.ClassNotFoundException cannot be cast to [Ljava.lang.Object;
+	at org.springframework.boot.context.properties.EnableConfigurationPropertiesImportSelector.selectImports(EnableConfigurationPropertiesImportSelector.java:54) ~[spring-boot-1.5.4.RELEASE.jar:1.5.4.RELEASE]
+	at org.springframework.context.annotation.ConfigurationClassParser.processImports(ConfigurationClassParser.java:586) ~[spring-context-4.3.9.RELEASE.jar:4.3.9.RELEASE]
+	... 18 common frames omitted
+</code></pre></div></div>
+
+<p>异常没有找到解决方案。补充：后来发现是编译缓存的问题。清楚缓存或者重建项目后，恢复正常。</p>
+
+<p><img src="ce584d2.png" alt="" /></p>
+
+<p>通过截图可以看出依赖等配置都是空的。</p>
+
+<h2 id="6自定义配置">6.自定义配置</h2>
+
+<p>编辑application.yml配置文件。详见配置文件以及 <a href="https://www.jfox.info/go.php?url=http://docs.spring.io/initializr/docs/current-SNAPSHOT/reference/htmlsingle/">官方文档</a></p>
+
+<h2 id="ⅲ项目源码">Ⅲ.项目源码</h2>
+
+<p><a href="https://www.jfox.info/go.php?url=https://github.com/CharlesSong/OwnInitializr">https://github.com/CharlesSong/OwnInitializr</a></p>
+
+<h2 id="ⅳ待解决问题">Ⅳ.待解决问题</h2>
+
+<h2 id="1默认生成applicationyml配置文件">1.默认生成application.yml配置文件</h2>
+
+<p>在Issue中看到，现在并不支持默认生成application.yml。原因是IDE对yml支持不友好。</p>
+
+<h2 id="2如何添加一些额外的信息到生成的项目中">2.如何添加一些额外的信息到生成的项目中？</h2>
+
+<p>比如：服务中心、配置中心的配置、通用jar包、数据库配置等</p>
+
+<h2 id="3其他">3.其他</h2>
+
+<p>其实，如果编译源码构建之后，就没必要自己搭建了。直接把源码打包部署到服务器即可，还继承了应用监控。</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/springboot%E6%96%B9%E5%BC%8F%E6%90%AD%E5%BB%BA%E8%87%AA%E5%B7%B1%E7%9A%84springinitializr%E6%9C%8D%E5%8A%A1%E5%99%A8.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/springcloud%E6%9E%84%E5%BB%BA%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%9E%B6%E6%9E%84%E6%9C%8D%E5%8A%A1%E5%AE%B9%E9%94%99%E4%BF%9D%E6%8A%A4hystrix%E6%96%AD%E8%B7%AF%E5%99%A8dalston%E7%89%88.html">&laquo; Spring Cloud构建微服务架构：服务容错保护（Hystrix断路器）【Dalston版】</a>
+  
+  
+  <a class="next" href="/2017/tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B013session.html">【Tomcat学习笔记】13-Session &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

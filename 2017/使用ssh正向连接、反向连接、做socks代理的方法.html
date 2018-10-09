@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>使用ssh正向连接、反向连接、做socks代理的方法 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="使用ssh正向连接、反向连接、做socks代理的方法" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="最近才发现ssh有多么的强大！" />
+<meta property="og:description" content="最近才发现ssh有多么的强大！" />
+<link rel="canonical" href="http://www.jfox.info/2017/%E4%BD%BF%E7%94%A8ssh%E6%AD%A3%E5%90%91%E8%BF%9E%E6%8E%A5%E3%80%81%E5%8F%8D%E5%90%91%E8%BF%9E%E6%8E%A5%E3%80%81%E5%81%9Asocks%E4%BB%A3%E7%90%86%E7%9A%84%E6%96%B9%E6%B3%95.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/%E4%BD%BF%E7%94%A8ssh%E6%AD%A3%E5%90%91%E8%BF%9E%E6%8E%A5%E3%80%81%E5%8F%8D%E5%90%91%E8%BF%9E%E6%8E%A5%E3%80%81%E5%81%9Asocks%E4%BB%A3%E7%90%86%E7%9A%84%E6%96%B9%E6%B3%95.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:46:04+00:00" />
+<script type="application/ld+json">
+{"description":"最近才发现ssh有多么的强大！","@type":"BlogPosting","url":"http://www.jfox.info/2017/%E4%BD%BF%E7%94%A8ssh%E6%AD%A3%E5%90%91%E8%BF%9E%E6%8E%A5%E3%80%81%E5%8F%8D%E5%90%91%E8%BF%9E%E6%8E%A5%E3%80%81%E5%81%9Asocks%E4%BB%A3%E7%90%86%E7%9A%84%E6%96%B9%E6%B3%95.html","headline":"使用ssh正向连接、反向连接、做socks代理的方法","dateModified":"2017-01-01T15:46:04+00:00","datePublished":"2017-01-01T15:46:04+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/%E4%BD%BF%E7%94%A8ssh%E6%AD%A3%E5%90%91%E8%BF%9E%E6%8E%A5%E3%80%81%E5%8F%8D%E5%90%91%E8%BF%9E%E6%8E%A5%E3%80%81%E5%81%9Asocks%E4%BB%A3%E7%90%86%E7%9A%84%E6%96%B9%E6%B3%95.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">使用ssh正向连接、反向连接、做socks代理的方法</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:46:04+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>最近才发现ssh有多么的强大！</p>
+
+<p>在网上搜了半天，发现大多数人都是一瓶子不满的水平，浅尝辄止。就没有几个人有点儿科学研究的精神吗？为啥不把它搞明白呢？</p>
+
+<p>当然，相信有不少人是很明白的，但是不愿意写博文来公开。其实这样大可不必，独乐乐不如众乐乐，何必那么小肚鸡肠？</p>
+
+<p><strong>1、用ssh做正向连接</strong></p>
+
+<p>啥叫正向连接？就是client连上server，然后把server能访问的机器地址和端口（当然也包括server自己）镜像到client的端口上。</p>
+
+<p>命令：</p>
+
+<p><strong>ssh -L **[客户端IP或省略]</strong>:<strong>[客户端端口]</strong>:<strong>[服务器侧能访问的IP]</strong>:<strong>[服务器侧能访问的IP的端口][登陆服务器的用户名@服务器IP]</strong> -p **[服务器ssh服务端口（默认22）]</p>
+
+<p>其中，客户端IP可以省略，省略的话就是127.0.0.1了，也就是说只能在客户端本地访问。服务器IP都可以用域名来代替。</p>
+
+<p>举例说明：</p>
+
+<p>你的IP是192.168.1.2，你可以ssh到某台服务器8.8.8.8，8.8.8.8可以访问8.8.4.4，你内网里还有一台机器可以访问你。</p>
+
+<p>如果你想让内网里的另外一台电脑访问8.8.4.4的80端口的http服务，那么可以执行：</p>
+
+<p>ssh -L 192.168.1.2:8080:8.8.4.4:80 <a href="https://www.jfox.info/go.php?url=http://www.jfox.info/url.php?_src=&amp;isencode=1&amp;content=dGltZT0xNDA2NTQ0NzY3NjUyJnVybD1tYWlsdG8lM0F0ZXN0JTQwOC44LjguOA==">test@8.8.8.8</a></p>
+
+<p>也就是说，ssh到8.8.8.8上，然后让8.8.8.8把8.8.4.4的80端口映射到本地的8080端口上，而且和本地192.168.1.2这个IP绑定。</p>
+
+<p>内网里的另外一台机器可以通过IE浏览器中输入<a href="https://www.jfox.info/go.php?url=http://www.jfox.info/url.php?_src=&amp;isencode=1&amp;content=dGltZT0xNDA2NTQ0NzY3NjUzJnVybD1odHRwJTNBJTJGJTJGMTkyLjE2OC4xLjIlM0E4MDgwJTJG">http://192.168.1.2:8080</a>查看8.8.4.4的网页。</p>
+
+<p>当然，如果是其他服务，比如ftp、ssh、远程桌面也是可以的。不过，VPN貌似是不行的，可能是因为GRE协议无法通过。</p>
+
+<p><strong>2、用ssh做反向连接</strong></p>
+
+<p>啥叫反向连接？就是client连上server，然后把client能访问的机器地址和端口（也包括client自己）镜像到server的端口上。</p>
+
+<p>反向连接用得可能更多一些。比如你的客户端在内网，在外网是无法直接访问到的，这时用反向连接打通一条隧道，就可以从外网通过这条隧道进来了。</p>
+
+<p>命令：</p>
+
+<p><strong>ssh -R **[服务器IP或省略]</strong>:<strong>[服务器端口]</strong>:<strong>[客户端侧能访问的IP]</strong>:<strong>[客户端侧能访问的IP的端口][登陆服务器的用户名@服务器IP]</strong> -p **[服务器ssh服务端口（默认22）]</p>
+
+<p>其中，服务器IP如果省略，则默认为127.0.0.1，只有服务器自身可以访问。指定服务器外网IP的话，任何人都可以通过[服务器IP:端口]来访问服务。当然，这个时候服务器本机也要输入外网IP:端口来访问。</p>
+
+<p>举例说明：</p>
+
+<p>你的IP是192.168.1.2，你可以ssh到外网某台服务器8.8.8.8，你内网里有一台机器192.168.1.3。</p>
+
+<p>如果你想让外网所有的能访问8.8.8.8的IP都能访问192.168.1.3的http服务，那么可以执行：</p>
+
+<p>ssh -R 8.8.8.8:8080:192.168.1.3:80 <a href="https://www.jfox.info/go.php?url=http://www.jfox.info/url.php?_src=&amp;isencode=1&amp;content=dGltZT0xNDA2NTQ0NzY3NjU0JnVybD1tYWlsdG8lM0F0ZXN0JTQwOC44LjguOA==">test@8.8.8.8</a></p>
+
+<p>也就是说，ssh到8.8.8.8上，然后把本地局域网内192.168.1.3的80端口映射到8.8.8.8的8080端口上，这样外网任何一台可以访问8.8.8.8的机器都可以通过8080端口访问到内网192.168.1.3机器的80端口了。</p>
+
+<p>反向连接同样支持各种服务。</p>
+
+<p><strong>3、用ssh做socks代理</strong>
+假设你内网里某台机器可以上网，但是你不能上网，如果你有ssh到那台机器的权限，那么就可以利用ssh方式建立一个代理socks5，通过代理来上网。</p>
+
+<p>命令：</p>
+
+<p><strong>ssh -D **[本地IP或省略]</strong>:<strong>[本地端口][登陆服务器的用户名@服务器IP]</strong> -p **[服务器ssh服务端口（默认22）]</p>
+
+<p>道理和上面是一样的，执行这个命令之后，本地会监听指定的端口等待连接。</p>
+
+<p>网上好多文章说Firefox和Chrome要下载什么插件才能支持，其实都是扯淡。</p>
+
+<p>在配置代理的时候直接选择Sock5就可以了，不需要用户名和密码验证。另外，IE也是支持Sock5的，具体配置方法是：勾选为LAN使用代理服务器，然后任何字段都不要填，点“高级”按钮，在套接字里面填好相应的配置，其他都留空。</p>
+
+<p>Chrome默认采用IE的配置，所以如果IE配置好了，Chrome也是可以上网的。</p>
+
+<p>另外，可以使用一个叫做Sockscap的软件，把应用扔进去就能以代理的方式上网了。（部分需要调用多个进程的应用可能不行）</p>
+
+<p>说句题外话，QQ2012版目前的Socks5代理上网功能貌似不支持本地Socks5代理，不过可以选择“浏览器配置”方式来规避。</p>
+
+<p><strong>把socks代理转换成http代理</strong></p>
+
+<p>如果你想把socks代理转换成http代理，可以用privoxy这个东东。去官网下载个.zip的文件包，然后解压到任意目录，执行可执行文件。</p>
+
+<p>在主界面点击Options菜单-&gt;Edit Main Configuration，在弹出的文本文件中搜索forward-socks5，找到的章节就是讲socks5转换的。</p>
+
+<p>回车新建一行，输入<strong>forward-socks5 / **[本地IP]</strong>:<strong>[本地端口]</strong> . **注意后面还有个“.”，然后保存。</p>
+
+<p>这样就可以实现把socks5代理转换成127.0.0.1:8118的http代理了。程序可以通过127.0.0.1:8118这个http代理上网。</p>
+
+<p>如果你想让局域网内其他IP也能通过你的机器上网，需要修改配置文件中的listen-address部分，搜索一下相信你就会看明白了。</p>
+
+<p><strong>4、Windows下的ssh和ssh server</strong></p>
+
+<p>不要以为只有Linux下才能用ssh，Windows下一样有强大的ssh命令行工具和ssh服务器。并且对以上功能支持的都很好。</p>
+
+<p>那就是伟大的PuTTY！去官方网站下载吧！
+ssh命令行客户端对应的是plink.exe，命令稍微有一点不同（比如指定端口是大写的P），具体看帮助文件稍作修改就好了。</p>
+
+<p>ssh服务器端是WinSSHD，傻瓜式安装，默认配置支持windows用户认证。</p>
+
+<p><strong>5、自动连接和防断线脚本</strong></p>
+
+<p>如果你想让连接长期保持，可以写个脚本来保证因为网络原因断线的话可以自动重连。</p>
+
+<p>先说Windows平台，用plink -pw参数可以指定密码，所以只要写个批处理：</p>
+
+<p>:1</p>
+
+<p>plink -pw “password” -D 7070 <a href="https://www.jfox.info/go.php?url=http://www.jfox.info/url.php?_src=&amp;isencode=1&amp;content=dGltZT0xNDA2NTQ0NzY3NjU0JnVybD1tYWlsdG8lM0F1c2VyJTQwc2VydmVyaXA=">user@serverip</a></p>
+
+<p>goto 1</p>
+
+<p>这样应该就可以解决大多数问题造成的断线。</p>
+
+<p>Linux平台ssh默认不支持把密码作为参数，不过有sshpass可以搞定</p>
+
+<p><a href="https://www.jfox.info/go.php?url=http://www.jfox.info/url.php?_src=&amp;isencode=1&amp;content=dGltZT0xNDA2NTQ0NzY3NjU0JnVybD1odHRwJTNBJTJGJTJGc291cmNlZm9yZ2UubmV0JTJGcHJvamVjdHMlMkZzc2hwYXNzJTJGZmlsZXMlMkZsYXRlc3QlMkZkb3dubG9hZA==">http://sourceforge.net/projects/sshpass/files/latest/download</a></p>
+
+<p>下载，解压，编译，把可执行文件拷贝到合适的目录，执行命令格式如下：</p>
+
+<p>sshpass -p “password” ssh -D 7070 <a href="https://www.jfox.info/go.php?url=http://www.jfox.info/url.php?_src=&amp;isencode=1&amp;content=dGltZT0xNDA2NTQ0NzY3NjU0JnVybD1tYWlsdG8lM0F1c2VyJTQwc2VydmVyaXA=">user@serverip</a></p>
+
+<p>貌似ubuntu下可以直接apt-get install sshpass</p>
+
+<p>然后写脚本autossh.sh，内容如下：</p>
+
+<p>#!/bin/bash</p>
+
+<p>while [ ” == ” ]
+do
+ssh_d_process_num=<code class="highlighter-rouge">ps aux|grep -E ‘ssh \-‘ |grep -v grep |wc -l</code>
+if [ “$ssh_d_process_num” == “0” ]; then
+/home/user/sshpass -p “password” ssh -D 7070 <a href="https://www.jfox.info/go.php?url=http://www.jfox.info/url.php?_src=&amp;isencode=1&amp;content=dGltZT0xNDA2NTQ0NzY3NjU1JnVybD1tYWlsdG8lM0F1c2VyJTQwU2VydmVySVA=">user@ServerIP</a> &amp;
+fi</p>
+
+<p>sleep 300
+done</p>
+
+<p>执行一下这个脚本就可以了。sleep 300代表300秒查看一次，可以根据需要调整。</p>
+
+<p><strong>6、常用参数</strong></p>
+
+<p>其实一般来说不是很有必要加特殊的参数，不过以下几个可以根据需要选择</p>
+
+<p>-q 静默运行，就算出错也啥都不提示</p>
+
+<p>-f 后台运行</p>
+
+<p>-C 压缩，带宽很差的时候压缩会快一些，否则会更慢</p>
+
+<p>-i xxx.file 提供公钥文件直接验证</p>
+
+<p>-l 指定用户名，其实就是@前面写的那个。</p>
+
+<p>其他的不太常用，自己查手册吧~</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/%E4%BD%BF%E7%94%A8ssh%E6%AD%A3%E5%90%91%E8%BF%9E%E6%8E%A5%E3%80%81%E5%8F%8D%E5%90%91%E8%BF%9E%E6%8E%A5%E3%80%81%E5%81%9Asocks%E4%BB%A3%E7%90%86%E7%9A%84%E6%96%B9%E6%B3%95.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/java%E5%AE%9E%E7%8E%B0%E7%B1%BB%E5%9E%8Bqqmsn%E8%87%AA%E5%8A%A8%E5%81%9C%E9%9D%A0%E9%9A%90%E8%97%8F%E5%8A%9F%E8%83%BD.html">&laquo; java实现类型QQ,MSN自动停靠隐藏功能</a>
+  
+  
+  <a class="next" href="/2017/java-classloader-xq.html">Java类加载器浅析 » java面试题 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

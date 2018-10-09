@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>用 DOM 与 CSS 展示二叉树 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="用 DOM 与 CSS 展示二叉树" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="关于二叉树的更多内容已经超出了本文的讨论范围，有兴趣的同学可以自行维基百科或者找其它相关的资料。" />
+<meta property="og:description" content="关于二叉树的更多内容已经超出了本文的讨论范围，有兴趣的同学可以自行维基百科或者找其它相关的资料。" />
+<link rel="canonical" href="http://www.jfox.info/2017/%E7%94%A8-dom-%E4%B8%8E-css-%E5%B1%95%E7%A4%BA%E4%BA%8C%E5%8F%89%E6%A0%91.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/%E7%94%A8-dom-%E4%B8%8E-css-%E5%B1%95%E7%A4%BA%E4%BA%8C%E5%8F%89%E6%A0%91.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:50:33+00:00" />
+<script type="application/ld+json">
+{"description":"关于二叉树的更多内容已经超出了本文的讨论范围，有兴趣的同学可以自行维基百科或者找其它相关的资料。","@type":"BlogPosting","url":"http://www.jfox.info/2017/%E7%94%A8-dom-%E4%B8%8E-css-%E5%B1%95%E7%A4%BA%E4%BA%8C%E5%8F%89%E6%A0%91.html","headline":"用 DOM 与 CSS 展示二叉树","dateModified":"2017-01-01T15:50:33+00:00","datePublished":"2017-01-01T15:50:33+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/%E7%94%A8-dom-%E4%B8%8E-css-%E5%B1%95%E7%A4%BA%E4%BA%8C%E5%8F%89%E6%A0%91.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">用 DOM 与 CSS 展示二叉树</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:50:33+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>关于二叉树的更多内容已经超出了本文的讨论范围，有兴趣的同学可以自行维基百科或者找其它相关的资料。</p>
+
+<p>现成的工具当然也有不少，比如 LeetCode 的自测数据输入框。一开始我也想要不自己做个这样的好了，但是细细想，感觉还蛮复杂的，每层的树的数量不确定，而且越往下层树的结点越多，真要想通过一颗树生成一个漂亮的图片，不管是 SVG 还是画在 Canvas 里，都是相当复杂的。</p>
+
+<p>这是其一，其二是展示成图片的话还不利于交互，万一以后想要与展示出来的结构做些简单的交互，图片很显然是不行的，Canvas 实现交互需要计算坐标；SVG 虽然可以为结点绑定事件，但 SVG 的另一个问题是元素之间不能嵌套，虽然有 g 标签，但 g 标签其实只是对 SVG 中的标签进行分组，而不是实现树状（或递归）的嵌套，所以想要容易的在 SVG 里画出树也并不会比在 Canvas 里容易，一样需要计算每个结点的大小和坐标。</p>
+
+<p>于是我就想，能不能用 HTML 跟 CSS 来显示一颗树的视觉结构呢？毕竟 CSS 可以方便的实现多级菜单，而多级菜单的本质其实就是多叉树。</p>
+
+<p>经过简单的分析，我总结出如下几点：</p>
+
+<ul>
+  <li>首先，DOM 的结构就是树状的，用它来显示同为树结构的二叉树应该是相当容易的</li>
+  <li>第二，目前 CSS 有非常强大的布局功能，用上所有 CSS 最新的功能，可以很容易的实现非常灵活的布局</li>
+  <li>第三，用 DOM 来展示树结构，可以很方便的实现交互</li>
+</ul>
+
+<p>从二叉树的定义来看，它是一个递归结构，根结点的左子树与右子树分别又是一颗二叉树，所以只要把一颗树考虑成其根结点、左子树和右子树就可以了，而左右子树的结构跟根结点一样，就像级联菜单一样，那么不难构想出如下 DOM 结构：
+XHTML</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>     1 
+    
+   
+     2 
+    
+   
+     3 
+    
+   
+     4 
+    
+   
+     5 
+    
+   &lt;div class=“tree”&gt;&lt;span&gt;根结点&lt;/span&gt;&lt;div&gt;【左子树】&lt;/div&gt;&lt;div&gt;【右子树】&lt;/div&gt;&lt;/div&gt; 其中左子树与右子树的 DOM 结构依然是你上面看到的这种，由于左右子树自身已经被一个 div.tree 元素包着，所以上面的结构其实并不需要里面的两个 div，而且去掉两个额外的 div 会在后面为我们带来一些便利，我们可以方便的用 CSS 仅选择表示叶子结点的 span 元素：span:only-child。
+</code></pre></div></div>
+
+<p>那么前面那颗二叉树如果按照上面的结构写成 DOM 将会是下面这样的（为了方便观察，把结点用【】括起来了）：
+XHTML</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/%E7%94%A8-dom-%E4%B8%8E-css-%E5%B1%95%E7%A4%BA%E4%BA%8C%E5%8F%89%E6%A0%91.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/bboss-log4j%E6%BB%9A%E5%8A%A8%E6%97%A5%E5%BF%97%E6%96%87%E4%BB%B6%E6%89%A9%E5%B1%95%E6%8F%92%E4%BB%B6%E4%BD%BF%E7%94%A8%E4%BB%8B%E7%BB%8D.html">&laquo; bboss log4j滚动日志文件扩展插件使用介绍</a>
+  
+  
+  <a class="next" href="/2017/cong_wen_yi_dao_kou_jiao_-_wo_de_cheng_xu_7_nian_zhi_yang.html">从文艺到抠脚-我的程序7年之痒 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

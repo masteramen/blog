@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>下面代码有错误码 » java面试题 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="下面代码有错误码 » java面试题" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="By Lee - Last updated: 星期二, 五月 21, 2013" />
+<meta property="og:description" content="By Lee - Last updated: 星期二, 五月 21, 2013" />
+<link rel="canonical" href="http://www.jfox.info/2017/xia-mian-dai-ma-you-cuo-wu-ma.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/xia-mian-dai-ma-you-cuo-wu-ma.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:41:22+00:00" />
+<script type="application/ld+json">
+{"description":"By Lee - Last updated: 星期二, 五月 21, 2013","@type":"BlogPosting","url":"http://www.jfox.info/2017/xia-mian-dai-ma-you-cuo-wu-ma.html","headline":"下面代码有错误码 » java面试题","dateModified":"2017-01-01T15:41:22+00:00","datePublished":"2017-01-01T15:41:22+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/xia-mian-dai-ma-you-cuo-wu-ma.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">下面代码有错误码 » java面试题</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:41:22+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>By Lee - Last updated: 星期二, 五月 21, 2013</p>
+
+<h3 id="下面代码有错误码">下面代码有错误码？</h3>
+
+<p>1.
+abstract class Name {
+private String name;
+public abstract boolean isStupidName(String name) {}
+}
+大侠们，这有何错误?
+答案: 错。abstract method必须以分号结尾，且不带花括号。
+2.
+public class Something {
+void doSomething () {
+private String s = “”;
+int l = s.length();
+}
+}
+有错吗?
+答案: 错。局部变量前不能放置任何访问修饰符 (private，public，和protected)。final可以用来修饰局部变量
+(final如同abstract和strictfp，都是非访问修饰符，strictfp只能修饰class和method而非variable)。
+3.
+abstract class Something {
+private abstract String doSomething ();
+}
+这好像没什么错吧?
+答案: 错。abstract的methods不能以private修饰。abstract的methods就是让子类implement(实现)具体细节的，怎么可以用private把abstract
+method封锁起来呢? (同理，abstract method前不能加final)。
+4.
+public class Something {
+public int addOne(final int x) {
+return ++x;
+}
+}
+这个比较明显。
+答案: 错。int x被修饰成final，意味着x不能在addOne method中被修改。
+5.
+public class Something {
+public static void main(String[] args) {
+Other o = new Other();
+new Something().addOne(o);
+}
+public void addOne(final Other o) {
+o.i++;
+}
+}
+class Other {
+public int i;
+}
+和上面的很相似，都是关于final的问题，这有错吗?
+答案: 正确。在addOne method中，参数o被修饰成final。如果在addOne method里我们修改了o的reference
+(比如: o = new Other();)，那么如同上例这题也是错的。但这里修改的是o的member vairable
+(成员变量)，而o的reference并没有改变。
+6.
+class Something {
+int i;
+public void doSomething() {
+System.out.println(“i = ” + i);
+}
+} 
+有什么错呢? 看不出来啊。
+答案: 正确。输出的是”i = 0″。int i属於instant variable (实例变量，或叫成员变量)。instant variable有default value。int的default value是0。
+7.
+class Something {
+final int i;
+public void doSomething() {
+System.out.println(“i = ” + i);
+}
+}
+和上面一题只有一个地方不同，就是多了一个final。这难道就错了吗?
+答 案: 错。final int i是个final的instant variable (实例变量，或叫成员变量)。final的instant variable没有default value，必须在constructor (构造器)结束之前被赋予一个明确的值。可以修改为”final int i = 0;”。
+8.
+public class Something {
+public static void main(String[] args) {
+Something s = new Something();
+System.out.println(“s.doSomething() returns ” + doSomething());
+}
+public String doSomething() {
+return “Do something …”;
+}
+}
+看上去很完美。
+答 案: 错。看上去在main里call doSomething没有什么问题，毕竟两个methods都在同一个class里。但仔细看，main是static的。static method不能直接call non-static methods。可改成”System.out.println(“s.doSomething() returns ” + s.doSomething());”。同理，static method不能访问non-static instant variable。
+9.
+此处，Something类的文件名叫OtherThing.java
+class Something {
+private static void main(String[] something_to_do) { 
+System.out.println(“Do something …”);
+}
+}
+这个好像很明显。
+答案: 正确。从来没有人说过Java的Class名字必须和其文件名相同。但public class的名字必须和文件名相同。
+10．
+interface A{
+int x = 0;
+}
+class B{
+int x =1;
+}
+class C extends B implements A {
+public void pX(){
+System.out.println(x);
+}
+public static void main(String[] args) {
+new C().pX();
+}
+}
+答 案：错误。在编译时会发生错误(错误描述不同的JVM有不同的信息，意思就是未明确的x调用，两个x都匹配（就象在同时import java.util和java.sql两个包时直接声明Date一样）。对于父类的变量,可以用super.x来明确，而接口的属性默认隐含为 public static final.所以可以通过A.x来明确。
+11.
+interface Playable {
+void play();
+}
+interface Bounceable {
+void play();
+}
+interface Rollable extends Playable, Bounceable {
+Ball ball = new Ball(“PingPang”);
+}
+class Ball implements Rollable {
+private String name;
+public String getName() {
+return name;
+}
+public Ball(String name) {
+this.name = name; 
+}
+public void play() {
+ball = new Ball(“Football”);
+System.out.println(ball.getName());
+}
+}
+这个错误不容易发现。
+答 案: 错。”interface Rollable extends Playable, Bounceable”没有问题。interface可继承多个interfaces，所以这里没错。问题出在interface Rollable里的”Ball ball = new Ball(“PingPang”);”。任何在interface里声明的interface variable (接口变量，也可称成员变量)，默认为public static final。也就是说”Ball ball = new Ball(“PingPang”);”实际上是”public static final Ball ball = new Ball(“PingPang”);”。在Ball类的Play()方法中，”ball = new Ball(“Football”);”改变了ball的reference，而这里的ball来自Rollable interface，Rollable interface里的ball是public static final的，final的object是不能被改变reference的。因此编译器将在”ball = new Ball(“Football”);”这里显示有错。</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/xia-mian-dai-ma-you-cuo-wu-ma.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/shu-zu-you-mei-you-length-zhe-ge-fang-fa-String-you-mei-you-length-zhe-ge-fang-fa.html">&laquo; 数组有没有length()这个方法? String有没有length()这个方法？</a>
+  
+  
+  <a class="next" href="/2017/shu-ju-ku-you-hua-you-hua-cha-xun.html">数据库优化:优化查询 » java面试题 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

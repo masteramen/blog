@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>HTTPServer 优雅关闭 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="HTTPServer 优雅关闭" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="和同事聊到了服务在需要关闭的时候该如何优雅退出，顺藤摸瓜挖掘了Go1.8的特性。Go 1.8起新增了优雅退出 HTTPServer 的特性，也就是大家经常提到的 GraceFul ShutDown。" />
+<meta property="og:description" content="和同事聊到了服务在需要关闭的时候该如何优雅退出，顺藤摸瓜挖掘了Go1.8的特性。Go 1.8起新增了优雅退出 HTTPServer 的特性，也就是大家经常提到的 GraceFul ShutDown。" />
+<link rel="canonical" href="http://www.jfox.info/2017/httpserver%E4%BC%98%E9%9B%85%E5%85%B3%E9%97%AD.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/httpserver%E4%BC%98%E9%9B%85%E5%85%B3%E9%97%AD.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:55:41+00:00" />
+<script type="application/ld+json">
+{"description":"和同事聊到了服务在需要关闭的时候该如何优雅退出，顺藤摸瓜挖掘了Go1.8的特性。Go 1.8起新增了优雅退出 HTTPServer 的特性，也就是大家经常提到的 GraceFul ShutDown。","@type":"BlogPosting","url":"http://www.jfox.info/2017/httpserver%E4%BC%98%E9%9B%85%E5%85%B3%E9%97%AD.html","headline":"HTTPServer 优雅关闭","dateModified":"2017-01-01T15:55:41+00:00","datePublished":"2017-01-01T15:55:41+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/httpserver%E4%BC%98%E9%9B%85%E5%85%B3%E9%97%AD.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">HTTPServer 优雅关闭</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:55:41+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>和同事聊到了服务在需要关闭的时候该如何优雅退出，顺藤摸瓜挖掘了Go1.8的特性。Go 1.8起新增了优雅退出 HTTPServer 的特性，也就是大家经常提到的 GraceFul ShutDown。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// src/net/http/server.go
+// Shutdown gracefully shuts down the server without interrupting any active connections. Shutdown works by first closing all open listeners, then closing all idle connections, and then waiting indefinitely for connections to return to idle and then shut down. If the provided context expires before the shutdown is complete, then the context's error is returned.
+
+func (srv *Server) Shutdown(ctx context.Context) error {
+    atomic.AddInt32(&amp;srv.inShutdown, 1)
+    defer atomic.AddInt32(&amp;srv.inShutdown, -1)
+
+    srv.mu.Lock()
+    lnerr := srv.closeListenersLocked()
+    srv.closeDoneChanLocked()
+    srv.mu.Unlock()
+
+    ticker := time.NewTicker(shutdownPollInterval)
+    defer ticker.Stop()
+    for {
+        if srv.closeIdleConns() {
+            return lnerr
+        }
+        select {
+        case &lt;-ctx.Done():
+            return ctx.Err()
+        case &lt;-ticker.C:
+        }
+    }
+}
+</code></pre></div></div>
+
+<p>从文档注释得知，server.Shutdown 首先关闭所有 active 的 listener，以及所有处于 idle 状态的 Connections，然后无限等待那些处于 active 状态的 connection 变为 idle 状态后，关闭他们，Server退出。</p>
+
+<p>如果有一个 Connection 依然处于 active 状态，那么 server 将一直 block 在那里。 Shutdown 接受一个 Context 参数，调用者可以通过 Context 传入一个等待的超时时间。 一旦超时，Shutdown 将直接返回。对于仍然处理 active 状态的Connection，就无能为力了。 所以 Shutdown 超时时间尽量要比链接处理的时间长。</p>
+
+<p>了解完原理，我们用例子来感受一下这个特性。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">main</span>
+
+<span class="n">import</span> <span class="p">(</span>
+	<span class="s2">"context"</span>
+	<span class="s2">"log"</span>
+	<span class="s2">"net/http"</span>
+	<span class="s2">"os"</span>
+	<span class="s2">"os/signal"</span>
+	<span class="s2">"time"</span>
+	<span class="s2">"github.com/gin-gonic/gin"</span>
+<span class="p">)</span>
+
+<span class="n">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="n">router</span> <span class="p">:=</span> <span class="n">gin</span><span class="p">.</span><span class="n">Default</span><span class="p">()</span>
+	<span class="n">router</span><span class="p">.</span><span class="n">GET</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="n">func</span><span class="p">(</span><span class="n">c</span> <span class="p">*</span><span class="n">gin</span><span class="p">.</span><span class="n">Context</span><span class="p">)</span> <span class="p">{</span>
+		<span class="n">time</span><span class="p">.</span><span class="nf">Sleep</span><span class="p">(</span><span class="m">3</span> <span class="p">*</span> <span class="n">time</span><span class="p">.</span><span class="n">Second</span><span class="p">)</span>
+		<span class="nb">log</span><span class="p">.</span><span class="n">Printf</span><span class="p">(</span><span class="n">http</span><span class="p">.</span><span class="n">StatusOK</span><span class="p">,</span> <span class="s2">"Handle request success"</span><span class="p">)</span>
+	<span class="p">})</span>
+
+	<span class="n">srv</span> <span class="p">:=</span> <span class="p">&amp;</span><span class="n">http</span><span class="p">.</span><span class="n">Server</span><span class="p">{</span>
+		<span class="n">Addr</span><span class="p">:</span>    <span class="s2">":8080"</span><span class="p">,</span>
+		<span class="n">Handler</span><span class="p">:</span> <span class="n">router</span><span class="p">,</span>
+	<span class="p">}</span>
+
+	<span class="n">go</span> <span class="n">func</span><span class="p">()</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="n">err</span> <span class="p">:=</span> <span class="n">srv</span><span class="p">.</span><span class="n">ListenAndServe</span><span class="p">();</span> <span class="n">err</span> <span class="c1">!= nil {
+</span>			<span class="nb">log</span><span class="p">.</span><span class="n">Printf</span><span class="p">(</span><span class="s2">"listen: %sn"</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+		<span class="p">}</span>
+	<span class="p">}()</span>
+
+	<span class="n">quit</span> <span class="p">:=</span> <span class="n">make</span><span class="p">(</span><span class="n">chan</span> <span class="n">os</span><span class="p">.</span><span class="n">Signal</span><span class="p">)</span>
+	<span class="n">signal</span><span class="p">.</span><span class="n">Notify</span><span class="p">(</span><span class="n">quit</span><span class="p">,</span> <span class="n">os</span><span class="p">.</span><span class="n">Interrupt</span><span class="p">)</span>
+	<span class="p">&lt;-</span><span class="n">quit</span>
+	<span class="nb">log</span><span class="p">.</span><span class="n">Println</span><span class="p">(</span><span class="s2">"Shutdown Server ..."</span><span class="p">)</span>
+
+	<span class="n">ctx</span><span class="p">,</span> <span class="n">cancel</span> <span class="p">:=</span> <span class="n">context</span><span class="p">.</span><span class="n">WithTimeout</span><span class="p">(</span><span class="n">context</span><span class="p">.</span><span class="n">Background</span><span class="p">(),</span> <span class="m">5</span><span class="p">*</span><span class="n">time</span><span class="p">.</span><span class="n">Second</span><span class="p">)</span>
+	<span class="n">defer</span> <span class="n">cancel</span><span class="p">()</span>
+	<span class="k">if</span> <span class="n">err</span> <span class="p">:=</span> <span class="n">srv</span><span class="p">.</span><span class="n">Shutdown</span><span class="p">(</span><span class="n">ctx</span><span class="p">);</span> <span class="n">err</span> <span class="c1">!= nil {
+</span>		<span class="nb">log</span><span class="p">.</span><span class="n">Fatal</span><span class="p">(</span><span class="s2">"Server Shutdown:"</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="nb">log</span><span class="p">.</span><span class="n">Println</span><span class="p">(</span><span class="s2">"Server exist"</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>代码中，每个请求都等待3秒才完成，使用信号来捕捉程序退出。退出时，HTTPServer 等待5秒来”善后”。我发起 ` curl localhost:8080 ` 来测试，随即按下 Ctrl+C 退出程序，结果显示，服务器坚持在处理完这个 HTTP 请求才退出。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+ - using env:	export GIN_MODE=release
+ - using code:	gin.SetMode(gin.ReleaseMode)
+
+[GIN-debug] GET    /                         --&gt; main.main.func1 (3 handlers)
+Handle Request success
+[GIN] 2017/07/12 - 20:30:47 | 200 |  3.000385597s | 127.0.0.1 |   GET     /
+^C  //终端输入Ctrl+C
+Shutdown Server ...
+listen: http: Server closed
+Handle Request success //在接收到关闭信号时，依然保证正在处理的请求正常处理完
+[GIN] 2017/07/12 - 20:30:53 | 200 |  3.000360362s | 127.0.0.1 |   GET     /
+Server exist
+</code></pre></div></div>
+
+<p><a href="void(0)">点赞</a><a href="https://www.jfox.info/go.php?url=http://ju.outofmemory.cn/tag/httpserver/">httpserver</a></p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/httpserver%E4%BC%98%E9%9B%85%E5%85%B3%E9%97%AD.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/%E5%85%B3%E4%BA%8Emybatis%E7%9A%84%E5%92%8C%E4%BD%A0%E7%9C%9F%E7%9A%84%E7%9F%A5%E9%81%93%E4%BB%96%E4%BB%AC%E7%9A%84%E7%BB%86%E8%8A%82%E5%90%97-2.html">&laquo; 关于 Mybatis 的 $ 和 #，你真的知道他们的细节吗？</a>
+  
+  
+  <a class="next" href="/2017/alogicframework%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%901%E6%9C%8D%E5%8A%A1%E5%BC%80%E5%8F%91.html">Alogic-FrameWork源码分析-1.服务开发 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

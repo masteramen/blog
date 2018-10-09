@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>调整Oracle应用系统性能的原则和方法 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="调整Oracle应用系统性能的原则和方法" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="By Lee - Last updated: 星期二, 十一月 5, 2013" />
+<meta property="og:description" content="By Lee - Last updated: 星期二, 十一月 5, 2013" />
+<link rel="canonical" href="http://www.jfox.info/2017/tiao-zheng-oracle-ying-yong-xi-tong-xing-neng-de-yuan-ze-he-fang-fa.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/tiao-zheng-oracle-ying-yong-xi-tong-xing-neng-de-yuan-ze-he-fang-fa.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:43:04+00:00" />
+<script type="application/ld+json">
+{"description":"By Lee - Last updated: 星期二, 十一月 5, 2013","@type":"BlogPosting","url":"http://www.jfox.info/2017/tiao-zheng-oracle-ying-yong-xi-tong-xing-neng-de-yuan-ze-he-fang-fa.html","headline":"调整Oracle应用系统性能的原则和方法","dateModified":"2017-01-01T15:43:04+00:00","datePublished":"2017-01-01T15:43:04+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/tiao-zheng-oracle-ying-yong-xi-tong-xing-neng-de-yuan-ze-he-fang-fa.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">调整Oracle应用系统性能的原则和方法</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:43:04+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>By Lee - Last updated: 星期二, 十一月 5, 2013</p>
+
+<p>Oracle 数据库广泛应用在社会的各个领域，特别是在Client/Server模式的应用，但是应用开发者往往碰到整个系统的性能随着数据量的增大显著下降的问题，为了解决这个问题，从以下几个方面：数据库服务器、网络I/O、应用程序等对整个系统加以调整，充分发挥Oracle的效能，提高整个系统的性能。</p>
+
+<p>1、调整数据库服务器的性能</p>
+
+<p>Oracle数据库服务器是整个系统的核心，它的性能高低直接影响整个系统的性能，为了调整Oracle数据库服务器的性能，主要从以下几个方面考虑：</p>
+
+<p>1.1、调整操作系统以适合Oracle数据库服务器运行</p>
+
+<p>Oracle数据库服务器很大程度上依赖于运行服务器的操作系统，如果操作系统不能提供最好性能，那么无论如何调整，Oracle数据库服务器也无法发挥其应有的性能。</p>
+
+<p>1.1.1、为Oracle数据库服务器规划系统资源</p>
+
+<p>据已有计算机可用资源, 规划分配给Oracle服务器资源原则是：尽可能使Oracle服务器使用资源最大化,特别在Client/Server中尽量让服务器上所有资源都来运行Oracle服务。</p>
+
+<p>1.1.2、调整计算机系统中的内存配置</p>
+
+<p>多数操作系统都用虚存来模拟计算机上更大的内存，它实际上是硬盘上的一定的磁盘空间。当实际的内存空间不能满足应用软件的要求时，操作系统就将用这部分的磁盘空间对内存中的信息进行页面替换，这将引起大量的磁盘I/O操作，使整个服务器的性能下降。为了避免过多地使用虚存，应加大计算机的内存。</p>
+
+<p>1.1.3、为Oracle数据库服务器设置操作系统进程优先级</p>
+
+<p>不要在操作系统中调整Oracle进程的优先级，因为在Oracle数据库系统中，所有的后台和前台数据库服务器进程执行的是同等重要的工作，需要同等的优先级。所以在安装时，让所有的数据库服务器进程都使用缺省的优先级运行。</p>
+
+<p>1.2、调整内存分配</p>
+
+<p>Oracle数据库服务器保留3个基本的内存高速缓存，分别对应3种不同类型的数据：库高速缓存，字典高速缓存和缓冲区高速缓存。库高速缓存和字典高速缓存一起构成共享池，共享池再加上缓冲区高速缓存便构成了系统全程区(SGA)。SGA是对数据库数据进行快速访问的一个系统全程区，若SGA本身需要频繁地进行释放、分配，则不能达到快速访问数据的目的，因此应把SGA放在主存中，不要放在虚拟内存中。内存的调整主要是指调整组成SGA的内存结构的大小来提高系统性能，由于Oracle数据库服务器的内存结构需求与应用密切相关，所以内存结构的调整应在磁盘I/O调整之前进行。</p>
+
+<p>1.2.1、库缓冲区的调整</p>
+
+<p>库缓冲区中包含私用和共享SQL和PL/SQL区，通过比较库缓冲区的命中率决定它的大小。要调整库缓冲区，必须首先了解该库缓冲区的活动情况，库缓冲区的活动统计信息保留在动态性能表v$librarycache数据字典中，可通过查询该表来了解其活动情况，以决定如何调整。</p>
+
+<p>Select sum(pins),sum(reloads) from v$librarycache;</p>
+
+<p>Pins列给出SQL语句，PL/SQL块及被访问对象定义的总次数；Reloads列给出SQL 和PL/SQL块的隐式分析或对象定义重装载时在库程序缓冲区中发生的错误。如果sum(pins)/sum(reloads) ≈0，则库缓冲区的命中率合适；若sum(pins)/sum(reloads)&gt;1, 则需调整初始化参数 shared_pool_size来重新调整分配给共享池的内存量。</p>
+
+<p>1.2.2、数据字典缓冲区的调整</p>
+
+<p>数据字典缓冲区包含了有关数据库的结构、用户、实体信息。数据字典的命中率，对系统性能影响极大。数据字典缓冲区的使用情况记录在动态性能表v$librarycache中，可通过查询该表来了解其活动情况，以决定如何调整。</p>
+
+<p>Select sum(gets),sum(getmisses) from v$rowcache;</p>
+
+<p>Gets列是对相应项请求次数的统计；Getmisses 列是引起缓冲区出错的数据的请求次数。对于频繁访问的数据字典缓冲区，sum(getmisses)/sum(gets)&lt;10%～15%。若大于此百分数，则应考虑增加数据字典缓冲区的容量，即需调整初始化参数shared_pool_size来重新调整分配给共享池的内存量。</p>
+
+<p>1.2.3、缓冲区高速缓存的调整</p>
+
+<p>用户进程所存取的所有数据都是经过缓冲区高速缓存来存取，所以该部分的命中率，对性能至关重要。缓冲区高速缓存的使用情况记录在动态性能表v$sysstat中，可通过查询该表来了解其活动情况，以决定如何调整。</p>
+
+<p>Select name,value from v$sysstat where name in
+(‘dbblock gets’,’consistent gets’,’physical reads’);</p>
+
+<p>dbblock gets和consistent gets的值是请求数据缓冲区中读的总次数。physical reads的值是请求数据时引起从盘中读文件的次数。从缓冲区高速缓存中读的可能性的高低称为缓冲区的命中率，计算公式：</p>
+
+<p>Hit Ratio=1-(physical reds/(dbblock gets+consistent gets))</p>
+
+<p>如果Hit Ratio&lt;60%～70%，则应增大db_block_buffers的参数值。db_block_buffers可以调整分配给缓冲区高速缓存的内存量，即db_block_buffers可设置分配缓冲区高速缓存的数据块的个数。缓冲区高速缓存的总字节数=db_block_buffers的值*db_block_size的值。db_block_size 的值表示数据块大小的字节数，可查询 v$parameter 表：</p>
+
+<p>select name,value from v$parameter where name=’db_block_size’;</p>
+
+<p>在修改了上述数据库的初始化参数以后，必须先关闭数据库，在重新启动数据库后才能使新的设置起作用。</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/tiao-zheng-oracle-ying-yong-xi-tong-xing-neng-de-yuan-ze-he-fang-fa.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/tiao-zheng-oracle-ying-yong-xi-tong-xing-neng-de-yuan-ze-he-fang-fa.html">&laquo; 调整Oracle应用系统性能的原则和方法</a>
+  
+  
+  <a class="next" href="/2017/fu-zai-ce-shi-load-testing-ya-li-ce-shi-stress-testing-he-xing-neng-ce-shi-performance-evaluation-test-de-yi-tong.html">负载测试(Load testing)、压力测试(stress testing)和性能测试(Performance Evaluation Test)的异同 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

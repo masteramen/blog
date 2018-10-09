@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>jquery中的sortable排序之后的保存状态到后台的解决方法 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="jquery中的sortable排序之后的保存状态到后台的解决方法" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="By Lee - Last updated: 星期五, 二月 7, 2014" />
+<meta property="og:description" content="By Lee - Last updated: 星期五, 二月 7, 2014" />
+<link rel="canonical" href="http://www.jfox.info/2017/jquery%E4%B8%AD%E7%9A%84sortable%E6%8E%92%E5%BA%8F%E4%B9%8B%E5%90%8E%E7%9A%84%E4%BF%9D%E5%AD%98%E7%8A%B6%E6%80%81%E5%88%B0%E5%90%8E%E5%8F%B0%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/jquery%E4%B8%AD%E7%9A%84sortable%E6%8E%92%E5%BA%8F%E4%B9%8B%E5%90%8E%E7%9A%84%E4%BF%9D%E5%AD%98%E7%8A%B6%E6%80%81%E5%88%B0%E5%90%8E%E5%8F%B0%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:43:50+00:00" />
+<script type="application/ld+json">
+{"description":"By Lee - Last updated: 星期五, 二月 7, 2014","@type":"BlogPosting","url":"http://www.jfox.info/2017/jquery%E4%B8%AD%E7%9A%84sortable%E6%8E%92%E5%BA%8F%E4%B9%8B%E5%90%8E%E7%9A%84%E4%BF%9D%E5%AD%98%E7%8A%B6%E6%80%81%E5%88%B0%E5%90%8E%E5%8F%B0%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95.html","headline":"jquery中的sortable排序之后的保存状态到后台的解决方法","dateModified":"2017-01-01T15:43:50+00:00","datePublished":"2017-01-01T15:43:50+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/jquery%E4%B8%AD%E7%9A%84sortable%E6%8E%92%E5%BA%8F%E4%B9%8B%E5%90%8E%E7%9A%84%E4%BF%9D%E5%AD%98%E7%8A%B6%E6%80%81%E5%88%B0%E5%90%8E%E5%8F%B0%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">jquery中的sortable排序之后的保存状态到后台的解决方法</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:43:50+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>By Lee - Last updated: 星期五, 二月 7, 2014</p>
+
+<p>首先，在jquery的官方demo(http://jqueryui.com/demos/)上找到了相似的代码。我所要的叫就是portlets（http://jqueryui.com/demos/sortable/portlets.html）这种效果。就像igoogle首页那样的。冒似很简单，把要引用的js都加入后，然后几行代码就完事了。</p>
+
+<p>代码如下:</p>
+
+<p>&lt;script type=”text/javascript”&gt;</p>
+
+<p>$(function() {</p>
+
+<p>$(“.column”).sortable({</p>
+
+<p>connectWith: ‘.column’</p>
+
+<p>});</p>
+
+<p>});</p>
+
+<p>&lt;/script&gt;</p>
+
+<p>写完这些之后，你就可以试着拖拽了。有没有觉得很有成就感？不错，小伙子，有前途。sortable 有许多的参数，详细的自己去官网上看吧！只说下这里的connectWith:’.column’是什么意思，它就是说，凡是class为column的，它都可以把一个column的portlet拖到另一个column里去。试试你就知道了。当然今天的重点并不是怎么样去拖拽它，而是拖拽之后刷新还保存着当时的顺序。</p>
+
+<p>$(‘.column’).sortable(‘toArray’);</p>
+
+<p>这样也只能得到第一个class是column里的ID数组.用each()? I tried, but not work;可能你能做到，也请你告诉我吧！所以只能转走其他方法了。或许你会说，这还不简单么，直接把整个网页的布局存起来不就OK了？哈哈，I also think so！通过iedeveloper调试工具发现，它们拖动之后发现了改变，变的不是样式，而是div的先后顺序。如果我把整个内容保存起来的话，似乎也行得通，不过量就有点大了，也不适于动态的内容。怎么办呢，于是我就想着只存它们的ID顺序不就O了吗?于是我又给它们每人一个ID了。</p>
+
+<p>万事开头难，有了这个思路了之后，你是否已经厕所打开了呢？我先去下便下，谢谢开门，马上回来！</p>
+
+<p>接下来就一步步按照这个思路来吧。首先是获取到所有的column.</p>
+
+<p>$.each($(“.column”), function(m) {}</p>
+
+<p>再找每个column下的portlet;</p>
+
+<p>$.each($(“.column”), function(m) {</p>
+
+<p>$.each($(this).children(“.portlet”), function(d) {</p>
+
+<p>}</p>
+
+<p>接着就是把它们按自己的方式存起来。</p>
+
+<p>代码如下:</p>
+
+<p>function saveLayout(){</p>
+
+<p>var list = “”;</p>
+
+<p>$.each($(“.column”), function(m) {</p>
+
+<p>list += $(this).attr(‘id’) + “:”;</p>
+
+<p>$.each($(this).children(“.portlet”), function(d) {</p>
+
+<p>list += $(this).attr(‘id’) + “@”;</p>
+
+<p>})</p>
+
+<table>
+  <tbody>
+    <tr>
+      <td>list += “</td>
+      <td>”;</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>})</p>
+
+<p>$.cookie(“list”, list)}</p>
+
+<p>这里还用到了另一组件jquery.cookie</p>
+
+<p>改下开始的</p>
+
+<p>代码如下:</p>
+
+<p>$(“.column”).sortable({</p>
+
+<p>connectWith: ‘.column’,</p>
+
+<p>stop: saveLayout</p>
+
+<p>});</p>
+
+<p>stop是指拖拽结束后触发的事件.这里可以写保存到后台的代码哦。</p>
+
+<p>最后就是按顺序读到容器里去，这里我就不多说了，只可意会，不能言传哈。贴代码吧:</p>
+
+<p>代码如下:</p>
+
+<p>var list = $.cookie(“list”); //获取cookie里的list值</p>
+
+<p>//alert(list)</p>
+
+<table>
+  <tbody>
+    <tr>
+      <td>var arrColumn = list.split(‘</td>
+      <td>’);</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>$.each(arrColumn, function(m, n) {</p>
+
+<p>var elemId = n.split(‘:’)[0]; //容器ID</p>
+
+<p>var arrRow = n.split(‘:’)[1] ? n.split(‘:’)[1].split(‘@’) : “”; //单个序列ID</p>
+
+<p>$.each(arrRow, function(m, n) {</p>
+
+<p>if (n) {//排除空值</p>
+
+<p>$(“#” + elemId).append($(“#sb” + n).attr(‘id’, n))//把序列填加进容器</p>
+
+<p>}</p>
+
+<p>});</p>
+
+<p>})</p>
+
+<p>好了，今天就这样吧</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/jquery%E4%B8%AD%E7%9A%84sortable%E6%8E%92%E5%BA%8F%E4%B9%8B%E5%90%8E%E7%9A%84%E4%BF%9D%E5%AD%98%E7%8A%B6%E6%80%81%E5%88%B0%E5%90%8E%E5%8F%B0%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/jquery%E4%B8%AD%E7%9A%84sortable%E6%8E%92%E5%BA%8F%E4%B9%8B%E5%90%8E%E7%9A%84%E4%BF%9D%E5%AD%98%E7%8A%B6%E6%80%81%E5%88%B0%E5%90%8E%E5%8F%B0%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95.html">&laquo; jquery中的sortable排序之后的保存状态到后台的解决方法</a>
+  
+  
+  <a class="next" href="/2017/java-poi-%E8%AE%BE%E7%BD%AEexcel%E5%8D%95%E5%85%83%E6%A0%BC%E7%9A%84%E5%AE%BD%E5%BA%A6%E5%92%8C%E9%AB%98%E5%BA%A6.html">Java POI 设置Excel单元格的宽度和高度 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

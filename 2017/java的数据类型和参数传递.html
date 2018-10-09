@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>Java的数据类型和参数传递 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="Java的数据类型和参数传递" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="Java提供的数据类型主要分为两大类：基本数据类型和引用数据类型。 Java中的基本数据类型名称大小　取值范围byte型 （字节）8bit-128-127 (-2^7到2^7-1) short型 （短整型） 16bit-2^15到2^15-1int型 （整形）32bit-2^31到2^31-1long型 （长整型）64bit-2^63到2^63-1float型 （单精度浮点型）32bit double型 （双精度浮点型）64bit char型 （字符型）16bit boolean型 （布尔型）true和false只有两种结果，要么为“真”要么为“假” Java中的引用数据类型：" />
+<meta property="og:description" content="Java提供的数据类型主要分为两大类：基本数据类型和引用数据类型。 Java中的基本数据类型名称大小　取值范围byte型 （字节）8bit-128-127 (-2^7到2^7-1) short型 （短整型） 16bit-2^15到2^15-1int型 （整形）32bit-2^31到2^31-1long型 （长整型）64bit-2^63到2^63-1float型 （单精度浮点型）32bit double型 （双精度浮点型）64bit char型 （字符型）16bit boolean型 （布尔型）true和false只有两种结果，要么为“真”要么为“假” Java中的引用数据类型：" />
+<link rel="canonical" href="http://www.jfox.info/2017/java%E7%9A%84%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E5%92%8C%E5%8F%82%E6%95%B0%E4%BC%A0%E9%80%92.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/java%E7%9A%84%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E5%92%8C%E5%8F%82%E6%95%B0%E4%BC%A0%E9%80%92.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:54:30+00:00" />
+<script type="application/ld+json">
+{"description":"Java提供的数据类型主要分为两大类：基本数据类型和引用数据类型。 Java中的基本数据类型名称大小　取值范围byte型 （字节）8bit-128-127 (-2^7到2^7-1) short型 （短整型） 16bit-2^15到2^15-1int型 （整形）32bit-2^31到2^31-1long型 （长整型）64bit-2^63到2^63-1float型 （单精度浮点型）32bit double型 （双精度浮点型）64bit char型 （字符型）16bit boolean型 （布尔型）true和false只有两种结果，要么为“真”要么为“假” Java中的引用数据类型：","@type":"BlogPosting","url":"http://www.jfox.info/2017/java%E7%9A%84%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E5%92%8C%E5%8F%82%E6%95%B0%E4%BC%A0%E9%80%92.html","headline":"Java的数据类型和参数传递","dateModified":"2017-01-01T15:54:30+00:00","datePublished":"2017-01-01T15:54:30+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/java%E7%9A%84%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E5%92%8C%E5%8F%82%E6%95%B0%E4%BC%A0%E9%80%92.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Java的数据类型和参数传递</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:54:30+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>Java提供的数据类型主要分为两大类：基本数据类型和引用数据类型。
+Java中的基本数据类型名称大小　取值范围byte型 （字节）8bit-128-127  (-2^7到2^7-1)
+short型 （短整型）
+16bit-2^15到2^15-1int型 （整形）32bit-2^31到2^31-1long型 （长整型）64bit-2^63到2^63-1float型 （单精度浮点型）32bit double型 （双精度浮点型）64bit char型 （字符型）16bit boolean型 （布尔型）true和false只有两种结果，要么为“真”要么为“假”
+Java中的引用数据类型：</p>
+
+<p>Java作为面向对象的语言，Java中所有用class，interface，abstract class定义的都属于Java的引用数据类型。</p>
+
+<p>如何理解Java中的基本数据类型和引用数据类型：</p>
+
+<p>　　1.Java的基本数据类型是由Java语言本身提供的数据类型，不需要用户自己定义；</p>
+
+<p>　　2.Java中的引用数据类型则是由用户自己定义的，而引用数据类型的定义需要用到基本数据类型；</p>
+
+<p>　　3.从内存关系上来说：</p>
+
+<p>　　Java的的内存分为两大块：栈内存和堆内存</p>
+
+<p><strong>　栈内存负责存储方法中的基本数据类型变量和对象的引用变量</strong></p>
+
+<p><strong>　　堆内存负责存储通过new关键字产生的数据，也就是new关键字后面的类中的属性和方法。</strong></p>
+
+<p>Java中基本数据类型存储在栈内存中，而引用数据类型的类型名存储在栈内存中，但是引用数据类型的内容则存储在堆内存中。两者之间通过地址来连接，实现互相的访问。</p>
+
+<p>4.数据由小范围往大范围转换时，JVM会自动帮我们实现类型的转换。比如：<strong>int i=10;long l=i;</strong>类似于这样的数据转换，Java的虚拟机可以自动帮我们来完成这个工作。但是当数据由大范围往小范围转换时就需要手动的加上强制类型转换。如果在转过程中出现数据的溢出则根据小范围的数据类型的值域进行变动。比如说把整形的<strong>-129</strong>赋值给<strong>byte</strong>这时候输出byte的值就是<strong>127</strong>；如果把整形的<strong>128</strong>赋值给<strong>byte</strong>类型，那么输出的就应该是-128。</p>
+
+<p>Java中的参数传递：</p>
+
+<p>基本数据类型：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public void test1(){
+        int i=10;
+        long l;
+        l=i;
+        System.out.println(i);//输出值10
+        System.out.println(l);//输出值10
+        l=i+1;
+        System.out.println(i);//输出值10
+        System.out.println(l);//输出值11
+    } 
+</code></pre></div></div>
+
+<p>由于基本数据类型是变量名与变量值一同存储在栈内存中，<strong>i</strong> 和** l** 这两个变量是互相独立的，对** l <strong>的赋值操作并不会影响</strong> i** 值。</p>
+
+<p>引用数据类型：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public class Book {
+    private String name;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+}
+public class Test {
+    public static void main(String[] args) {
+        Book book1=new Book();
+        book1.setName("《百年孤独》");
+        Book book2=new Book();
+        book2.setName("《围城》");
+        System.out.println("book1:"+book1.getName());//输出：book1:《百年孤独》
+        System.out.println("book2:"+book2.getName());//输出：book2:《围城》
+        book1=book2;
+        book1.setName("《活着》");
+        System.out.println("book1:"+book1.getName());//输出：book1:《活着》
+        System.out.println("book2:"+book2.getName());//book2:《活着》
+
+    }
+}
+</code></pre></div></div>
+
+<p>第一次new了两个对象分别是book1,book2他们的书名分别是“百年孤独”和“围城”。然后通过赋值，book1也指向了与book2一样的内存区域，这时无论是对book1 还是book2 进行操作影响的都是同一块内存区域了。这也就是为什么后面的输出都是一样的原因了。另外book1原先开辟的内存空间由于没有使用，JVM的垃圾回收机制会对其进行处理，将这些不用的内存空间进行释放。</p>
+
+<p>posted @ 
+ 2017-07-09 08:10<a href="https://www.jfox.info/go.php?url=http://www.cnblogs.com/cbs-writing/">迷失的小菜包</a> 阅读( 
+ …) 评论( 
+ …)</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/java%E7%9A%84%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E5%92%8C%E5%8F%82%E6%95%B0%E4%BC%A0%E9%80%92.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90struts2%E9%AB%98%E5%8D%B1%E6%BC%8F%E6%B4%9Es%E5%88%86%E6%9E%90.html">&laquo; 【漏洞分析】Struts2高危漏洞S分析</a>
+  
+  
+  <a class="next" href="/2017/springprofile%E6%BF%80%E6%B4%BB%E5%A4%84%E7%90%86.html">spring profile激活处理 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

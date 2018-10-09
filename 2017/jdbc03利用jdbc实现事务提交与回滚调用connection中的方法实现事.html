@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>JDBC03 利用JDBC实现事务提交与回滚【调用Connection中的方法实现事务管理】 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="JDBC03 利用JDBC实现事务提交与回滚【调用Connection中的方法实现事务管理】" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="1 Connection中的重用方法" />
+<meta property="og:description" content="1 Connection中的重用方法" />
+<link rel="canonical" href="http://www.jfox.info/2017/jdbc03%E5%88%A9%E7%94%A8jdbc%E5%AE%9E%E7%8E%B0%E4%BA%8B%E5%8A%A1%E6%8F%90%E4%BA%A4%E4%B8%8E%E5%9B%9E%E6%BB%9A%E8%B0%83%E7%94%A8connection%E4%B8%AD%E7%9A%84%E6%96%B9%E6%B3%95%E5%AE%9E%E7%8E%B0%E4%BA%8B.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/jdbc03%E5%88%A9%E7%94%A8jdbc%E5%AE%9E%E7%8E%B0%E4%BA%8B%E5%8A%A1%E6%8F%90%E4%BA%A4%E4%B8%8E%E5%9B%9E%E6%BB%9A%E8%B0%83%E7%94%A8connection%E4%B8%AD%E7%9A%84%E6%96%B9%E6%B3%95%E5%AE%9E%E7%8E%B0%E4%BA%8B.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:53:53+00:00" />
+<script type="application/ld+json">
+{"description":"1 Connection中的重用方法","@type":"BlogPosting","url":"http://www.jfox.info/2017/jdbc03%E5%88%A9%E7%94%A8jdbc%E5%AE%9E%E7%8E%B0%E4%BA%8B%E5%8A%A1%E6%8F%90%E4%BA%A4%E4%B8%8E%E5%9B%9E%E6%BB%9A%E8%B0%83%E7%94%A8connection%E4%B8%AD%E7%9A%84%E6%96%B9%E6%B3%95%E5%AE%9E%E7%8E%B0%E4%BA%8B.html","headline":"JDBC03 利用JDBC实现事务提交与回滚【调用Connection中的方法实现事务管理】","dateModified":"2017-01-01T15:53:53+00:00","datePublished":"2017-01-01T15:53:53+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/jdbc03%E5%88%A9%E7%94%A8jdbc%E5%AE%9E%E7%8E%B0%E4%BA%8B%E5%8A%A1%E6%8F%90%E4%BA%A4%E4%B8%8E%E5%9B%9E%E6%BB%9A%E8%B0%83%E7%94%A8connection%E4%B8%AD%E7%9A%84%E6%96%B9%E6%B3%95%E5%AE%9E%E7%8E%B0%E4%BA%8B.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">JDBC03 利用JDBC实现事务提交与回滚【调用Connection中的方法实现事务管理】</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:53:53+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>1 Connection中的重用方法</p>
+
+<p>　　2 JDBC事务管理经典案例</p>
+
+<h2 id="1-connection类中常用的方法回顾">1 Connection类中常用的方法回顾</h2>
+
+<h3 id="11-statement-createstatement-throws-sqlexception">　　1.1 Statement createStatement() throws SQLException;</h3>
+
+<p>　　　　创建一个Statement实例（即：创建一个SQL执行对象）</p>
+
+<h3 id="12-preparedstatement-preparestatementstring-sql-throws-sqlexception">　　1.2 PreparedStatement prepareStatement(String sql) throws SQLException;</h3>
+
+<p>　　　　创建一个PreparedStatement对象（即：创建一个预编译SQL执行对象）</p>
+
+<h3 id="13-void-setautocommitboolean-autocommit-throws-sqlexception">　　1.3 void setAutoCommit(boolean autoCommit) throws SQLException;</h3>
+
+<p>　　　　设置事务的自动提交（false为关闭自动提交，true为启动自动提交）</p>
+
+<h3 id="14-void-commit-throws-sqlexception">　　1.4 void commit() throws SQLException;</h3>
+
+<p>　　　　手动提交事务</p>
+
+<h3 id="15-void-rollback-throws-sqlexception">　　1.5 void rollback() throws SQLException;</h3>
+
+<p>　　　　手动回滚事务</p>
+
+<h2 id="2-需要用到事务回滚的经典案例银行转账案例">2 需要用到事务回滚的经典案例：银行转账案例</h2>
+
+<p>　　转出和转入是一个事务，如果转出成功但是转入失败的会就需要进行事务回滚，否则就出出现转出者余额减少但是转入者余额没有增加</p>
+
+<p>　　注意：事务的提交与回滚是通过Connection提供的方法来调用的;本质上事务还是依赖数据库的实现；Connection的方法实质上也是调用了数据库事务机制.</p>
+
+<p>　　2.1 不使用事务控制的转账业务</p>
+
+<p>　　　　缺点：如果转入成功，但是转入失败的话，会造成转出者余额减少，但是转入者余额不变</p>
+
+<p>　　　　项目结构图</p>
+
+<p><img src="5173d98.png" alt="" />
+<img src="6b4fc56.gif" alt="" /><img src="/wp-content/uploads/2017/07/1499444663.gif" alt="" />
+     1package cn.xiangxu.entity;
+     2 3import java.sql.Connection;
+     4import java.sql.PreparedStatement;
+     5import java.util.Scanner;
+     6 7import cn.xiangxu.tools.DBUtil;
+     8 9publicclass Test {
+    10publicstaticvoid main(String[] args) {
+    11         Scanner scanner = new Scanner(System.in);
+    12         System.out.println(“请输入转出用户名：”);
+    13         String outName = scanner.nextLine();
+    14         System.out.println(“请输入需要转出的资金额度：”);
+    15         Double money = Double.parseDouble(scanner.nextLine());
+    16         System.out.println(“请输入转入用户名：”);
+    17         String inName = scanner.nextLine();
+    18         System.out.println(“转出账户为：” + outName + “转出金额为：” + money + “转入账户为：” + inName);
+    192021         Connection conn = null;
+    22try {
+    23             conn = DBUtil.getConnection(); // 实例化连接对象
+    2425//            conn.setAutoCommit(false); // 关闭自动提交事务功能2627             String sql = “UPDATE client “
+    28                     + “SET account = account - ? “ 
+    29                     + “WHERE name = ? “;
+    30             PreparedStatement ps = conn.prepareStatement(sql);
+    31             ps.setDouble(1, money);
+    32             ps.setString(2, outName);
+    33             Integer rs = ps.executeUpdate();
+    34if(rs &gt; 0) {
+    35                 System.out.println(“转出成功”);
+    36             } else {
+    37                 System.out.println(“转出失败”);
+    38return; // 转出失败跳出函数，不再执行下面的语句；但是finally中的语句还是会执行的，因为就算天塌下来finally中的语句都会执行39            }
+    4041             System.out.println(“======分割线=======”);
+    4243             String sql_in = “UPDATE client “
+    44                     + “SET account = account + ? “ 
+    45                     + “WHERE name = ? “;
+    46             PreparedStatement ps_in = conn.prepareStatement(sql_in);
+    47             ps_in.setDouble(1, money);
+    48             ps_in.setString(2, inName);
+    49             Integer judge_in = ps_in.executeUpdate();
+    50if(judge_in &gt; 0) {
+    51                 System.out.println(“转入成功”);
+    52//                conn.commit(); // 转出、转入都成功就提交事务53             } else {
+    54                 System.out.println(“转入失败”);
+    55//                conn.rollback(); // 转出成功、转入失败就回滚事务56            }
+    5758//            conn.setAutoCommit(true); // 打开自动提交事务5960         } catch (Exception e) {
+    61// TODO Auto-generated catch block62            e.printStackTrace();
+    63         } finally {
+    64             System.out.println(“我是finally中的语句哟”);
+    65try {
+    66                DBUtil.closeConnection();
+    67             } catch (Exception e) {
+    68// TODO Auto-generated catch block69                e.printStackTrace();
+    70            }
+    71        }
+    72    }
+    73 }</p>
+
+<p>转账业务java源代码<img src="6b4fc56.gif" alt="" /><img src="/wp-content/uploads/2017/07/1499444663.gif" alt="" />
+    1CREATE TABLE client  (
+    2    id INT (10)  PRIMARY KEY,
+    3    name VARCHAR (10),
+    4    pwd VARCHAR (10),
+    5    account INT (20)
+    6 );</p>
+
+<p>SQL语句<img src="6b4fc56.gif" alt="" /><img src="/wp-content/uploads/2017/07/1499444663.gif" alt="" />
+     1package cn.xiangxu.tools;
+     2 3import java.io.IOException;
+     4import java.io.InputStream;
+     5import java.sql.Connection;
+     6import java.sql.SQLException;
+     7import java.util.Properties;
+     8 9import org.apache.commons.dbcp.BasicDataSource;
+    1011publicclass DBUtil {
+    12/<em>13     * ThreadLocal用于线程跨方法共享数据使用
+    14     * ThreadLocal内部有一个Map,  key为需要共享数据的线程本身,value就是其需要共享的数据
+    15</em>/16privatestatic ThreadLocal<Connection> tl; // 声明一个类似于仓库的东西17privatestatic BasicDataSource dataSource; // 声明一个数据库连接池对象
+    1819// 静态代码块，在类加载的时候执行，而且只执行一次20static {
+    21         tl = new ThreadLocal<Connection>(); // 实例化仓库对象22         dataSource = new BasicDataSource(); // 实例数据库连接池对象2324         Properties prop = new Properties(); // 创建一个Properties对象用（该对象可以用来加载配置文件中的属性列表）25         InputStream is = DBUtil.class.getClassLoader().getResourceAsStream("config/mysql.properties"); // 读取配置文件信息26try {
+    27             prop.load(is); // 加载配置文件中的属性列表2829             String driverClassName = prop.getProperty("driverClassName"); // 获取属性信息30             String url = prop.getProperty("url");
+    31             String username = prop.getProperty("username");
+    32             String password = prop.getProperty("password");
+    33             Integer maxActive = Integer.parseInt(prop.getProperty("maxActive"));
+    34             Integer maxWait = Integer.parseInt(prop.getProperty("maxWait"));
+    3536             dataSource.setDriverClassName(driverClassName); // 初始化数据库连接池（即：配置数据库连接池的先关参数）37            dataSource.setUrl(url);
+    38            dataSource.setUsername(username);
+    39            dataSource.setPassword(password);
+    40            dataSource.setMaxActive(maxActive);
+    41            dataSource.setMaxWait(maxWait);
+    4243             is.close(); // 关闭输入流，释放资源44         } catch (IOException e) {
+    45// TODO Auto-generated catch block46            e.printStackTrace();
+    47        } 
+    4849    }
+    5051/**52     * 创建连接对象（注意：静态方法可以直接通过类名来调用）
+    53     * @return 连接对象
+    54     * @throws Exception
+    55*/56publicstatic Connection getConnection() throws Exception { 
+    57try {
+    58             Connection conn = dataSource.getConnection(); // 创建连接对象（利用数据库连接池进行创建）59             tl.set(conn); // 将连接对象放到仓库中60return conn; 
+    61         } catch (Exception e) {
+    62// TODO Auto-generated catch block63            e.printStackTrace();
+    64throw e;
+    65        }
+    66    }
+    6768/**69     * 关闭连接对象（注意：静态方法可以通过类名直接调用）
+    70     * @throws Exception
+    71*/72publicstaticvoid closeConnection() throws Exception {
+    73         Connection conn = tl.get(); // 从仓库中取出连接对象74         tl.remove(); // 清空仓库75if(conn != null) { // 判断连接对象是否释放资源76try {
+    77                conn.close();
+    78             } catch (Exception e) {
+    79// TODO Auto-generated catch block80                e.printStackTrace();
+    81throw e;
+    82            }
+    83        }
+    84    }
+    8586 }</Connection></Connection></p>
+
+<p>数据库连接池的java源代码<img src="6b4fc56.gif" alt="" /><img src="/wp-content/uploads/2017/07/1499444663.gif" alt="" />
+    1# zhe shi zhu shi , yi ban bu yong zhong wen 
+    2# deng hao liang bian mei you kong ge, mo wei mei you fen hao
+    3# hou mian bu neng you kong ge
+    4driverClassName=com.mysql.jdbc.Driver
+    5url=jdbc:mysql://localhost:3306/test
+    6username=root
+    7password=182838
+    8maxActive=100
+    9 maxWait=3000</p>
+
+<p>数据库信息文件<img src="6b4fc56.gif" alt="" /><img src="/wp-content/uploads/2017/07/1499444663.gif" alt="" />
+     1<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"> 2<modelVersion>4.0.0</modelVersion> 3<groupId>cn.xiangxu</groupId> 4<artifactId>testJDBC</artifactId> 5<version>0.0.1-SNAPSHOT</version> 6<dependencies> 7<dependency> 8<groupId>mysql</groupId> 9<artifactId>mysql-connector-java</artifactId>10<version>5.1.37</version>11</dependency>12<dependency>13<groupId>junit</groupId>14<artifactId>junit</artifactId>15<version>4.12</version>16</dependency>17<dependency>18<groupId>commons-dbcp</groupId>19<artifactId>commons-dbcp</artifactId>20<version>1.4</version>21</dependency>22</dependencies>23</project></p>
+
+<p>maven依赖文件</p>
+<h3 id="22-利用事务控制的转账业务">　　2.2 利用事务控制的转账业务</h3>
+<p><img src="6b4fc56.gif" alt="" /><img src="/wp-content/uploads/2017/07/1499444663.gif" alt="" />
+     1package cn.xiangxu.entity;
+     2 3import java.sql.Connection;
+     4import java.sql.PreparedStatement;
+     5import java.sql.SQLException;
+     6import java.util.Scanner;
+     7 8import cn.xiangxu.tools.DBUtil;
+     910publicclass Test {
+    11publicstaticvoid main(String[] args) {
+    12         Scanner scanner = new Scanner(System.in);
+    13         System.out.println(“请输入转出用户名：”);
+    14         String outName = scanner.nextLine();
+    15         System.out.println(“请输入需要转出的资金额度：”);
+    16         Double money = Double.parseDouble(scanner.nextLine());
+    17         System.out.println(“请输入转入用户名：”);
+    18         String inName = scanner.nextLine();
+    19         System.out.println(“转出账户为：” + outName + “转出金额为：” + money + “转入账户为：” + inName);
+    202122         Connection conn = null;
+    23try {
+    24             conn = DBUtil.getConnection(); // 实例化连接对象2526             conn.setAutoCommit(false); // 关闭自动提交事务功能2728             String sql = “UPDATE client “
+    29                     + “SET account = account - ? “ 
+    30                     + “WHERE name = ? “;
+    31             PreparedStatement ps = conn.prepareStatement(sql);
+    32             ps.setDouble(1, money);
+    33             ps.setString(2, outName);
+    34             Integer rs = ps.executeUpdate();
+    35if(rs &gt; 0) {
+    36                 System.out.println(“转出成功”);
+    37             } else {
+    38                 System.out.println(“转出失败”);
+    39return; // 转出失败跳出函数，不再执行下面的语句；但是finally中的语句还是会执行的，因为就算天塌下来finally中的语句都会执行40            }
+    4142             System.out.println(“======分割线=======”);
+    4344             String sql_in = “UPDATE client “
+    45                     + “SET account = account + ? “ 
+    46                     + “WHERE name = ? “;
+    47             PreparedStatement ps_in = conn.prepareStatement(sql_in);
+    48             ps_in.setDouble(1, money);
+    49             ps_in.setString(2, inName);
+    50             Integer judge_in = ps_in.executeUpdate();
+    51if(judge_in &gt; 0) {
+    52                 System.out.println(“转入成功”);
+    53                 conn.commit(); // 转出、转入都成功就提交事务54             } else {
+    55                 System.out.println(“转入失败”);
+    56                 conn.rollback(); // 转出成功、转入失败就回滚事务57            }
+    5859             conn.setAutoCommit(true); // 打开自动提交事务6061         } catch (Exception e) {
+    62// TODO Auto-generated catch block63try {
+    64                 conn.rollback(); // 捕获到异常后也需要进行事务回滚65             } catch (SQLException e1) {
+    66// TODO Auto-generated catch block67                e1.printStackTrace();
+    68            } 
+    69            e.printStackTrace();
+    70         } finally {
+    71             System.out.println(“我是finally中的语句哟”);
+    72try {
+    73                DBUtil.closeConnection();
+    74             } catch (Exception e) {
+    75// TODO Auto-generated catch block76                e.printStackTrace();
+    77            }
+    78        }
+    79    }
+    80 }</p>
+
+<p>转账业务的java源代码</p>
+<h3 id="23-将关闭自动提交功能手动提交功能手动回滚功能封装到一个类中">　　2.3 将关闭自动提交功能、手动提交功能、手动回滚功能封装到一个类中</h3>
+<p><img src="6b4fc56.gif" alt="" /><img src="/wp-content/uploads/2017/07/1499444663.gif" alt="" />
+      1package cn.xiangxu.tools;
+      2  3import java.io.IOException;
+      4import java.io.InputStream;
+      5import java.sql.Connection;
+      6import java.sql.SQLException;
+      7import java.util.Properties;
+      8  9import org.apache.commons.dbcp.BasicDataSource;
+     10 11publicclass DBUtil {
+     12/* 13     * ThreadLocal用于线程跨方法共享数据使用
+     14     * ThreadLocal内部有一个Map,  key为需要共享数据的线程本身,value就是其需要共享的数据
+     15*/ 16privatestatic ThreadLocal<Connection> tl; // 声明一个类似于仓库的东西 17privatestatic BasicDataSource dataSource; // 声明一个数据库连接池对象
+     18 19// 静态代码块，在类加载的时候执行，而且只执行一次 20static {
+     21         tl = new ThreadLocal<Connection>(); // 实例化仓库对象 22         dataSource = new BasicDataSource(); // 实例数据库连接池对象 23 24         Properties prop = new Properties(); // 创建一个Properties对象用（该对象可以用来加载配置文件中的属性列表） 25         InputStream is = DBUtil.class.getClassLoader().getResourceAsStream("config/mysql.properties"); // 读取配置文件信息 26try {
+     27             prop.load(is); // 加载配置文件中的属性列表 28 29             String driverClassName = prop.getProperty("driverClassName"); // 获取属性信息 30             String url = prop.getProperty("url");
+     31             String username = prop.getProperty("username");
+     32             String password = prop.getProperty("password");
+     33             Integer maxActive = Integer.parseInt(prop.getProperty("maxActive"));
+     34             Integer maxWait = Integer.parseInt(prop.getProperty("maxWait"));
+     35 36             dataSource.setDriverClassName(driverClassName); // 初始化数据库连接池（即：配置数据库连接池的先关参数） 37            dataSource.setUrl(url);
+     38            dataSource.setUsername(username);
+     39            dataSource.setPassword(password);
+     40            dataSource.setMaxActive(maxActive);
+     41            dataSource.setMaxWait(maxWait);
+     42 43             is.close(); // 关闭输入流，释放资源 44         } catch (IOException e) {
+     45// TODO Auto-generated catch block 46            e.printStackTrace();
+     47        } 
+     48 49    }
+     50 51/** 52     * 创建连接对象（注意：静态方法可以直接通过类名来调用）
+     53     * @return 连接对象
+     54     * @throws Exception
+     55*/ 56publicstatic Connection getConnection() throws Exception { 
+     57try {
+     58             Connection conn = dataSource.getConnection(); // 创建连接对象（利用数据库连接池进行创建） 59             tl.set(conn); // 将连接对象放到仓库中 60return conn; 
+     61         } catch (Exception e) {
+     62// TODO Auto-generated catch block 63            e.printStackTrace();
+     64throw e;
+     65        }
+     66    }
+     67 68/** 69     * 关闭连接对象（注意：静态方法可以通过类名直接调用）
+     70     * @throws Exception
+     71*/ 72publicstaticvoid closeConnection() throws Exception {
+     73         Connection conn = tl.get(); // 从仓库中取出连接对象 74         tl.remove(); // 清空仓库 75if(conn != null) { // 判断连接对象是否释放资源 76try {
+     77                conn.close();
+     78             } catch (Exception e) {
+     79// TODO Auto-generated catch block 80                e.printStackTrace();
+     81throw e;
+     82            }
+     83        }
+     84    }
+     85 86/** 87     * 在执行SQL语句前关闭JDBC的自动提交事务功能
+     88     * @throws SQLException
+     89*/ 90publicstaticvoid tansBegin() throws SQLException {
+     91try {
+     92             tl.get().setAutoCommit(false); // 从仓库中获取连接对象并调用setAutoCommit来关闭自动提交事务功能 93         } catch(SQLException e) {
+     94            e.printStackTrace();
+     95throw e;
+     96        }
+     97    }
+     98 99/**100     * 手动回滚功能
+    101     * @throws SQLException
+    102*/103publicstaticvoid transBack() throws SQLException {
+    104         tl.get().rollback(); // 从仓库中获取连接对象并调用rollback来实现事务回滚操作105         tl.get().setAutoCommit(true); // 回滚启动事务自动提交功能106    }
+    107108/**109     * 手动提交功能
+    110     * @throws SQLException
+    111*/112publicstaticvoid transCommit() throws SQLException {
+    113         tl.get().commit(); // 从仓库中获取连接对象并调用commit来实现事务提交操作114         tl.get().setAutoCommit(true); // 提交后启动事务自动提交功能115    }
+    116117 }</Connection></Connection></p>
+
+<p>DBUtil<img src="6b4fc56.gif" alt="" /><img src="/wp-content/uploads/2017/07/1499444663.gif" alt="" />
+     1package cn.xiangxu.entity;
+     2 3import java.sql.Connection;
+     4import java.sql.PreparedStatement;
+     5import java.sql.SQLException;
+     6import java.util.Scanner;
+     7 8import cn.xiangxu.tools.DBUtil;
+     910publicclass Test {
+    11publicstaticvoid main(String[] args) {
+    12         Scanner scanner = new Scanner(System.in);
+    13         System.out.println(“请输入转出用户名：”);
+    14         String outName = scanner.nextLine();
+    15         System.out.println(“请输入需要转出的资金额度：”);
+    16         Double money = Double.parseDouble(scanner.nextLine());
+    17         System.out.println(“请输入转入用户名：”);
+    18         String inName = scanner.nextLine();
+    19         System.out.println(“转出账户为：” + outName + “转出金额为：” + money + “转入账户为：” + inName);
+    202122         Connection conn = null;
+    23try {
+    24             conn = DBUtil.getConnection(); // 实例化连接对象2526             DBUtil.tansBegin(); // 关闭自动提交事务功能2728             String sql = “UPDATE client “
+    29                     + “SET account = account - ? “ 
+    30                     + “WHERE name = ? “;
+    31             PreparedStatement ps = conn.prepareStatement(sql);
+    32             ps.setDouble(1, money);
+    33             ps.setString(2, outName);
+    34             Integer rs = ps.executeUpdate();
+    35if(rs &gt; 0) {
+    36                 System.out.println(“转出成功”);
+    37             } else {
+    38                 System.out.println(“转出失败”);
+    39return; // 转出失败跳出函数，不再执行下面的语句；但是finally中的语句还是会执行的，因为就算天塌下来finally中的语句都会执行40            }
+    4142             System.out.println(“======分割线=======”);
+    4344             String sql_in = “UPDATE client “
+    45                     + “SET account = account + ? “ 
+    46                     + “WHERE name = ? “;
+    47             PreparedStatement ps_in = conn.prepareStatement(sql_in);
+    48             ps_in.setDouble(1, money);
+    49             ps_in.setString(2, inName);
+    50             Integer judge_in = ps_in.executeUpdate();
+    51if(judge_in &gt; 0) {
+    52                 System.out.println(“转入成功”);
+    53                 DBUtil.transCommit(); // 转出、转入都成功就提交事务54             } else {
+    55                 System.out.println(“转入失败”);
+    56                 DBUtil.transBack(); // 转出成功、转入失败就回滚事务57            }
+    5859         } catch (Exception e) {
+    60// TODO Auto-generated catch block61try {
+    62                 DBUtil.transBack();// 捕获到异常后也需要进行事务回滚63             } catch (SQLException e1) {
+    64// TODO Auto-generated catch block65                e1.printStackTrace();
+    66            } 
+    67            e.printStackTrace();
+    68         } finally {
+    69             System.out.println(“我是finally中的语句哟”);
+    70try {
+    71                DBUtil.closeConnection();
+    72             } catch (Exception e) {
+    73// TODO Auto-generated catch block74                e.printStackTrace();
+    75            }
+    76        }
+    77    }
+    78 }</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/jdbc03%E5%88%A9%E7%94%A8jdbc%E5%AE%9E%E7%8E%B0%E4%BA%8B%E5%8A%A1%E6%8F%90%E4%BA%A4%E4%B8%8E%E5%9B%9E%E6%BB%9A%E8%B0%83%E7%94%A8connection%E4%B8%AD%E7%9A%84%E6%96%B9%E6%B3%95%E5%AE%9E%E7%8E%B0%E4%BA%8B.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/comparatorcomparable%E5%B0%8F%E6%80%BB%E7%BB%93.html">&laquo; 【comparator, comparable】小总结</a>
+  
+  
+  <a class="next" href="/2017/%E6%A3%8B%E7%89%8C%E6%BA%90%E7%A0%81%E5%BC%80%E5%8F%91%E7%89%9B%E7%89%9B%E7%AE%97%E6%B3%95%E6%80%9D%E8%B7%AF.html">棋牌源码开发-牛牛算法思路 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

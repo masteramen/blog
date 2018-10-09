@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>Spring 中的懒加载与事务 – 排坑记录 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="Spring 中的懒加载与事务 – 排坑记录" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="本文主要描述了开发中常见的几个与spring懒加载和事务相关的案例，主要描述常见的使用场景，以及如何规避他们，给出具体的代码。" />
+<meta property="og:description" content="本文主要描述了开发中常见的几个与spring懒加载和事务相关的案例，主要描述常见的使用场景，以及如何规避他们，给出具体的代码。" />
+<link rel="canonical" href="http://www.jfox.info/2017/spring%E4%B8%AD%E7%9A%84%E6%87%92%E5%8A%A0%E8%BD%BD%E4%B8%8E%E4%BA%8B%E5%8A%A1%E6%8E%92%E5%9D%91%E8%AE%B0%E5%BD%95.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/spring%E4%B8%AD%E7%9A%84%E6%87%92%E5%8A%A0%E8%BD%BD%E4%B8%8E%E4%BA%8B%E5%8A%A1%E6%8E%92%E5%9D%91%E8%AE%B0%E5%BD%95.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:54:19+00:00" />
+<script type="application/ld+json">
+{"description":"本文主要描述了开发中常见的几个与spring懒加载和事务相关的案例，主要描述常见的使用场景，以及如何规避他们，给出具体的代码。","@type":"BlogPosting","url":"http://www.jfox.info/2017/spring%E4%B8%AD%E7%9A%84%E6%87%92%E5%8A%A0%E8%BD%BD%E4%B8%8E%E4%BA%8B%E5%8A%A1%E6%8E%92%E5%9D%91%E8%AE%B0%E5%BD%95.html","headline":"Spring 中的懒加载与事务 – 排坑记录","dateModified":"2017-01-01T15:54:19+00:00","datePublished":"2017-01-01T15:54:19+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/spring%E4%B8%AD%E7%9A%84%E6%87%92%E5%8A%A0%E8%BD%BD%E4%B8%8E%E4%BA%8B%E5%8A%A1%E6%8E%92%E5%9D%91%E8%AE%B0%E5%BD%95.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Spring 中的懒加载与事务 – 排坑记录</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:54:19+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>本文主要描述了开发中常见的几个与spring懒加载和事务相关的案例，主要描述常见的使用场景，以及如何规避他们，给出具体的代码。</p>
+
+<ol>
+  <li>在新的线程中，访问某个持久化对象的懒加载属性。 2. 在quartz定时任务中，访问某个持久化对象的懒加载属性。 3. 在dubbo，motan一类rpc框架中，远程调用时服务端session关闭的问题。</li>
+</ol>
+
+<p>上面三个案例，其实核心都是一个问题，就是牵扯到spring对事务的管理，而懒加载这个技术，只是比较容易体现出事务出错的一个实践，主要用它来引发问题，进而对问题进行思考。</p>
+
+<h2 id="前期准备">前期准备</h2>
+
+<p>为了能直观的暴露出第一个案例的问题，我新建了一个项目，采用传统的mvc分层，一个student.Java实体类，一个studentDao.java持久层，一个studentService.java业务层，一个studentController控制层。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>@Entity
+@Table(name = "student")
+public class Student {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Integer id;
+    private String name;
+
+    getter..setter..
+}
+</code></pre></div></div>
+
+<p>持久层使用springdata，框架自动扩展出CURD方法</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public interface StudentDao extends JpaRepository&lt;Student, Integer&gt;{
+}
+</code></pre></div></div>
+
+<p>service层，先给出普通的调用方法。用于错误演示。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>@Service
+public class StudentService {
+
+    @Autowired
+    StudentDao studentDao;
+
+    public void testNormalGetOne(){
+        Student student = studentDao.getOne(1);
+        System.out.println(student.getName());
+    }
+}
+</code></pre></div></div>
+
+<p>注意：getOne和findOne都是springdata提供的根据id查找单个实体的方法，区别是前者是懒加载，后者是立即加载。我们使用getOne来进行懒加载的实验，就不用大费周章去写懒加载属性，设置多个实体类了。</p>
+
+<p>controller层，不是简简单单的调用，而是在新的线程中调用。使用controller层来代替单元测试（实际项目中，通常使用controller调用service，然后在浏览器或者http工具中调用触发，较为方便）</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    @RequestMapping("/testNormalGetOne")
+    @ResponseBody
+    public String testNormalGetOne() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                studentService.testNormalGetOne();
+            }
+        }).start();
+        return "testNormalGetOne";
+    }
+</code></pre></div></div>
+
+<p>启动项目后，访问localhost:8080/testNormalGetOne报错如下：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Exception in thread "Thread-6" org.hibernate.LazyInitializationException: could not initialize proxy - no Session
+    at org.hibernate.proxy.AbstractLazyInitializer.initialize(AbstractLazyInitializer.java:148)
+    at org.hibernate.proxy.AbstractLazyInitializer.getImplementation(AbstractLazyInitializer.java:266)
+    at org.hibernate.proxy.pojo.javassist.JavassistLazyInitializer.invoke(JavassistLazyInitializer.java:68)
+    at com.example.transaction.entity.Student_$$_jvste17_0.getName(Student_$$_jvste17_0.java)
+    at com.example.transaction.service.StudentService.testNormalGetOne(StudentService.java:71)
+    at com.example.transaction.service.StudentService$$FastClassBySpringCGLIB$$f8048714.invoke(&lt;generated&gt;)
+    at org.springframework.cglib.proxy.MethodProxy.invoke(MethodProxy.java:204)
+    at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:651)
+    at com.example.transaction.service.StudentService$$EnhancerBySpringCGLIB$$a6640151.testNormalGetOne(&lt;generated&gt;)
+    at com.example.transaction.controller.StudentController$1.run(StudentController.java:71)
+    at java.lang.Thread.run(Thread.java:745)
+</code></pre></div></div>
+
+<h2 id="问题分析">问题分析</h2>
+
+<p>no session说明了什么？</p>
+
+<p>道理很简单，因为spring的session是和线程绑定的，在整个model-&gt;dao-&gt;service-&gt;controller的调用链中，这种事务和线程绑定的机制非常契合。而我们出现的问题正式由于新开启了一个线程，这个线程与调用链的线程不是同一个。</p>
+
+<h2 id="问题解决">问题解决</h2>
+
+<p>我们先使用一种不太优雅的方式解决这个问题。在新的线程中，手动打开session。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public void testNormalGetOne() {
+        EntityManagerFactory entityManagerFactory = ApplicationContextProvider.getApplicationContext().getBean(EntityManagerFactory.class);
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        EntityManagerHolder entityManagerHolder = new EntityManagerHolder(entityManager);
+        TransactionSynchronizationManager.bindResource(entityManagerFactory, entityManagerHolder);
+        Student student = studentDao.getOne(1);
+        System.out.println(student.getName());
+        TransactionSynchronizationManager.unbindResource(entityManagerFactory);
+        EntityManagerFactoryUtils.closeEntityManager(entityManager);
+}
+</code></pre></div></div>
+
+<p>由于我们使用了JPA，所以事务是由EntityManagerFactory这个工厂类生成的EntityManager来管理的。TransactionSynchronizationManager.bindResource(entityManagerFactory, entityManagerHolder);这个方法使用事务管理器绑定session。</p>
+
+<p>而ApplicationContextProvider这个工具类是用来获取spring容器中的EntityManagerFactory的，为什么不用注入的方式，下文讲解。它的代码如下：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public class ApplicationContextProvider implements ApplicationContextAware {
+
+    private static ApplicationContext context = null;
+
+    public static ApplicationContext getApplicationContext() {
+        return context;
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext ac) throws BeansException {
+        context = ac;
+    }
+}
+</code></pre></div></div>
+
+<p>问题暂时得到了解决。</p>
+
+<h2 id="问题再思考">问题再思考</h2>
+
+<p>我们一般情况下使用懒加载属性，为什么没有出现no session的问题呢？相信大家都知道@Transactional这个注解，他会帮我们进行事务包裹，当然也会绑定session；以及大家熟知的hiberbate中的OpenSessionInterceptor和OpenSessionInViewFilter以及jpa中的OpenEntityManagerInViewInterceptor都是在没有session的情况下，打开session的过滤器。这种方法开始前依赖事务开启，方法结束后回收资源的操作，非常适合用过滤器拦截器处理，后续的两个未讲解的案例，其实都是使用了特殊的过滤器。</p>
+
+<p>看一下官方文档如何描述这个jpa中的过滤器的：</p>
+
+<p>29.3.4 Open EntityManager in View</p>
+
+<p>If you are running a web application, Spring Boot will by default register OpenEntityManagerInViewInterceptor to apply the “Open EntityManager in View” pattern, i.e. to allow for lazy loading in web views. If you don’t want this behavior you should set spring.jpa.open-in-view to false in your application.properties.</p>
+
+<p>我们尝试着关闭这个过滤器：</p>
+
+<p>配置application.properties/application.yml文件</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>spring.jpa.open-in-view=false
+</code></pre></div></div>
+
+<p>再使用正常的方式访问懒加载属性（而不是在一个新的线程中）：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    @RequestMapping("/testNormalGetOne")
+    @ResponseBody
+    public String testNormalGetOne() {
+//      new Thread(new Runnable() {
+//          @Override
+//          public void run() {
+                studentService.testNormalGetOne();
+//          }
+//      }).start();
+        return "testNormalGetOne";
+    }
+</code></pre></div></div>
+
+<p>报错如下：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>{"timestamp":1498194914012,"status":500,"error":"Internal Server Error","exception":"org.hibernate.LazyInitializationException","message":"could not initialize proxy - no Session","path":"/testNormalGetOne"}
+</code></pre></div></div>
+
+<p>是的，我们使用spring的controller作为单元测试时，以及我们平时在直接使用jpa的懒加载属性时没有太关注这个jpa的特性，因为springboot帮我们默认开启了这个过滤器。这也解释了，为什么在新的线程中，定时任务线程中，rpc远程调用时session没有打开的原因，因为这些流程没有经过springboot的web调用链。</p>
+
+<h2 id="另外两个实战案例">另外两个实战案例</h2>
+
+<p>上文已经阐释了，为什么quartz定时任务中访问懒加载属性，rpc框架服务端访问懒加载属性（注意不是客户端，客户端访问懒加载属性那是一种作死的行为，因为是代理对象）为出现问题。我们仿照spring打开session的思路（这取决于你使用hibernate还是jpa，抑或是mybatis），来编写我们的过滤器。</p>
+
+<p>quartz中打开session：</p>
+
+<p>使用quartz提供的JobListenerSupport支持，编写一个任务过滤器，用于在每次任务执行时打开session</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public class OpenEntityManagerJobListener extends JobListenerSupport implements ApplicationContextAware {
+
+    @Override
+    public String getName() {
+        return "OpenEntityManagerJobListener";
+    }
+
+    EntityManagerFactory entityManagerFactory;
+
+    @Override
+    public void jobToBeExecuted(JobExecutionContext context) {
+        entityManagerFactory = applicationContext.getBean(EntityManagerFactory.class);
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        EntityManagerHolder emHolder = new EntityManagerHolder(entityManager);
+        TransactionSynchronizationManager.bindResource(entityManagerFactory, emHolder);
+    }
+
+    @Override
+    public void jobWasExecuted(JobExecutionContext context, JobExecutionException jobException) {
+        EntityManagerHolder emHolder = (EntityManagerHolder) TransactionSynchronizationManager.unbindResource(entityManagerFactory);
+        EntityManagerFactoryUtils.closeEntityManager(emHolder.getEntityManager());
+    }
+
+
+    ApplicationContext applicationContext;
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
+        if(this.applicationContext ==null) throw new RuntimeException("applicationContext is null");
+    }
+}
+</code></pre></div></div>
+
+<p>配置调度工厂：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>//调度工厂
+    @Bean
+    public SchedulerFactoryBean schedulerFactoryBean() {
+        SchedulerFactoryBean factoryBean = new SchedulerFactoryBean();
+        factoryBean.setTriggers(triggerFactoryBeans().getObject());
+        factoryBean.setGlobalJobListeners(openEntityManagerJobListener());
+        return factoryBean;
+    }
+</code></pre></div></div>
+
+<p>也可以参考我的另一篇描述更为细致的文章，那是我还是刚刚参加工作，可能有些许疏漏之处，不过参考是够了。传送门：<a href="https://www.jfox.info/go.php?url=http://blog.csdn.net/u013815546/article/details/53032445">解决Quartz定时器中查询懒加载数据no session的问题</a></p>
+
+<p>Motan（我现在使用的rpc框架）服务端打开session 利用了motan对spi扩展的支持，编写了一个Filter，主要参考了motan的spi过滤器写法和springdata打开session/entityManager的思路。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>@SpiMeta(name = "openjpasession")
+@Activation(sequence = 100)
+public class OpenEntityManagerInMotanFilter implements Filter {
+    private Logger logger = LoggerFactory.getLogger(OpenEntityManagerInMotanFilter.class);
+
+    /**
+     * Default EntityManagerFactory bean name: "entityManagerFactory".
+     * Only applies when no "persistenceUnitName" param has been specified.
+     *
+     * @see #setEntityManagerFactoryBeanName
+     * @see #setPersistenceUnitName
+     */
+    public static final String DEFAULT_ENTITY_MANAGER_FACTORY_BEAN_NAME = "entityManagerFactory";
+
+
+    private String entityManagerFactoryBeanName;
+
+    private String persistenceUnitName;
+
+    private volatile EntityManagerFactory entityManagerFactory;
+
+
+    /**
+     * Set the bean name of the EntityManagerFactory to fetch from Spring's
+     * root application context.
+     * &lt;p&gt;Default is "entityManagerFactory". Note that this default only applies
+     * when no "persistenceUnitName" param has been specified.
+     *
+     * @see #setPersistenceUnitName
+     * @see #DEFAULT_ENTITY_MANAGER_FACTORY_BEAN_NAME
+     */
+    public void setEntityManagerFactoryBeanName(String entityManagerFactoryBeanName) {
+        this.entityManagerFactoryBeanName = entityManagerFactoryBeanName;
+    }
+
+    /**
+     * Return the bean name of the EntityManagerFactory to fetch from Spring's
+     * root application context.
+     */
+    protected String getEntityManagerFactoryBeanName() {
+        return this.entityManagerFactoryBeanName;
+    }
+
+    /**
+     * Set the name of the persistence unit to access the EntityManagerFactory for.
+     * &lt;p&gt;This is an alternative to specifying the EntityManagerFactory by bean name,
+     * resolving it by its persistence unit name instead. If no bean name and no persistence
+     * unit name have been specified, we'll check whether a bean exists for the default
+     * bean name "entityManagerFactory"; if not, a default EntityManagerFactory will
+     * be retrieved through finding a single unique bean of type EntityManagerFactory.
+     *
+     * @see #setEntityManagerFactoryBeanName
+     * @see #DEFAULT_ENTITY_MANAGER_FACTORY_BEAN_NAME
+     */
+    public void setPersistenceUnitName(String persistenceUnitName) {
+        this.persistenceUnitName = persistenceUnitName;
+    }
+
+    /**
+     * Return the name of the persistence unit to access the EntityManagerFactory for, if any.
+     */
+    protected String getPersistenceUnitName() {
+        return this.persistenceUnitName;
+    }
+
+    /**
+     * Look up the EntityManagerFactory that this filter should use.
+     * &lt;p&gt;The default implementation looks for a bean with the specified name
+     * in Spring's root application context.
+     *
+     * @return the EntityManagerFactory to use
+     * @see #getEntityManagerFactoryBeanName
+     */
+    protected EntityManagerFactory lookupEntityManagerFactory() {
+
+        String emfBeanName = getEntityManagerFactoryBeanName();
+        String puName = getPersistenceUnitName();
+        if (StringUtils.hasLength(emfBeanName)) {
+            return ApplicationContextProvider.getApplicationContext().getBean(emfBeanName, EntityManagerFactory.class);
+        } else if (!StringUtils.hasLength(puName) &amp;&amp; ApplicationContextProvider.getApplicationContext().containsBean(DEFAULT_ENTITY_MANAGER_FACTORY_BEAN_NAME)) {
+            return ApplicationContextProvider.getApplicationContext().getBean(DEFAULT_ENTITY_MANAGER_FACTORY_BEAN_NAME, EntityManagerFactory.class);
+        } else {
+            // Includes fallback search for single EntityManagerFactory bean by type.
+            return EntityManagerFactoryUtils.findEntityManagerFactory(ApplicationContextProvider.getApplicationContext(), puName);
+        }
+    }
+
+    /**
+     * Create a JPA EntityManager to be bound to a request.
+     * &lt;p&gt;Can be overridden in subclasses.
+     *
+     * @param emf the EntityManagerFactory to use
+     * @see javax.persistence.EntityManagerFactory#createEntityManager()
+     */
+    protected EntityManager createEntityManager(EntityManagerFactory emf) {
+        return emf.createEntityManager();
+    }
+
+    @Override
+    public Response filter(Caller&lt;?&gt; caller, Request request) {
+        if (!(caller instanceof Provider)) {
+            return caller.call(request);
+        }
+
+        EntityManagerFactory emf = null;
+        try {
+            emf = lookupEntityManagerFactory();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
+
+        //可能没有启用openjpa
+        if (emf == null) {
+            return caller.call(request);
+        }
+
+        try {
+            //如果没有绑定，绑定到当前线程
+            if (TransactionSynchronizationManager.getResource(emf) == null) {
+                EntityManager em = createEntityManager(emf);
+                EntityManagerHolder emHolder = new EntityManagerHolder(em);
+                TransactionSynchronizationManager.bindResource(emf, emHolder);
+            }
+        } catch (Exception e) {
+            logger.error(e.getLocalizedMessage(), e);
+        }
+        try {
+            return caller.call(request);
+        } finally {
+            //解除绑定
+            closeManager(emf);
+        }
+    }
+
+    /**
+     * 关闭 emf
+     *
+     * @param emf
+     */
+    private void closeManager(EntityManagerFactory emf) {
+        if (emf == null || TransactionSynchronizationManager.getResource(emf) == null) {
+            return;
+        }
+        EntityManagerHolder emHolder = null;
+        try {
+            emHolder = (EntityManagerHolder) TransactionSynchronizationManager.unbindResource(emf);
+        } catch (IllegalStateException e) {
+            logger.error(e.getLocalizedMessage(), e);
+        }
+        try {
+            if (emHolder != null) {
+                EntityManagerFactoryUtils.closeEntityManager(emHolder.getEntityManager());
+            }
+        } catch (Exception e) {
+            logger.error(e.getLocalizedMessage(), e);
+        }
+    }
+}
+</code></pre></div></div>
+
+<h2 id="总结">总结</h2>
+
+<p>springboot中的事务管理做的永远比我们想的多，事务管理器的使用场景，@Transactional究竟起了哪些作用，以及spring-data这个对DDD最佳的阐释，以及mybatis一类的非j2ee规范在微服务的地位中是否高于jpa，各个层次之间的实体传输，消息传递…都是值得思考的。</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/spring%E4%B8%AD%E7%9A%84%E6%87%92%E5%8A%A0%E8%BD%BD%E4%B8%8E%E4%BA%8B%E5%8A%A1%E6%8E%92%E5%9D%91%E8%AE%B0%E5%BD%95.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/servlet30%E6%96%B0%E7%89%B9%E6%80%A7tomcat70%E7%89%88%E6%9C%AC%E5%8F%8A%E4%BB%A5%E4%B8%8A.html">&laquo; Servlet3.0新特性(Tomcat7.0版本及以上)</a>
+  
+  
+  <a class="next" href="/2017/%E6%88%91%E6%98%AF%E5%A6%82%E4%BD%95%E6%89%BE%E4%B8%80%E4%B8%AA%E5%BD%B1%E5%93%8D%E6%95%B0%E5%8D%83%E8%81%8C%E4%B8%9A%E7%BD%91%E7%AB%99%E7%9A%84%E6%8C%81%E7%BB%AD%E5%9E%8Bxss%E7%9A%84.html">我是如何找一个影响数千职业网站的持续型XSS的 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

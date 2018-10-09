@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>游戏编程入门（18）：使用闪屏增添游戏的活力 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="游戏编程入门（18）：使用闪屏增添游戏的活力" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="游戏编程入门（18）：使用闪屏增添游戏的活力" />
+<meta property="og:description" content="游戏编程入门（18）：使用闪屏增添游戏的活力" />
+<link rel="canonical" href="http://www.jfox.info/2017/%E6%B8%B8%E6%88%8F%E7%BC%96%E7%A8%8B%E5%85%A5%E9%97%A818%E4%BD%BF%E7%94%A8%E9%97%AA%E5%B1%8F%E5%A2%9E%E6%B7%BB%E6%B8%B8%E6%88%8F%E7%9A%84%E6%B4%BB%E5%8A%9B.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/%E6%B8%B8%E6%88%8F%E7%BC%96%E7%A8%8B%E5%85%A5%E9%97%A818%E4%BD%BF%E7%94%A8%E9%97%AA%E5%B1%8F%E5%A2%9E%E6%B7%BB%E6%B8%B8%E6%88%8F%E7%9A%84%E6%B4%BB%E5%8A%9B.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:53:40+00:00" />
+<script type="application/ld+json">
+{"description":"游戏编程入门（18）：使用闪屏增添游戏的活力","@type":"BlogPosting","url":"http://www.jfox.info/2017/%E6%B8%B8%E6%88%8F%E7%BC%96%E7%A8%8B%E5%85%A5%E9%97%A818%E4%BD%BF%E7%94%A8%E9%97%AA%E5%B1%8F%E5%A2%9E%E6%B7%BB%E6%B8%B8%E6%88%8F%E7%9A%84%E6%B4%BB%E5%8A%9B.html","headline":"游戏编程入门（18）：使用闪屏增添游戏的活力","dateModified":"2017-01-01T15:53:40+00:00","datePublished":"2017-01-01T15:53:40+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/%E6%B8%B8%E6%88%8F%E7%BC%96%E7%A8%8B%E5%85%A5%E9%97%A818%E4%BD%BF%E7%94%A8%E9%97%AA%E5%B1%8F%E5%A2%9E%E6%B7%BB%E6%B8%B8%E6%88%8F%E7%9A%84%E6%B4%BB%E5%8A%9B.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">游戏编程入门（18）：使用闪屏增添游戏的活力</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:53:40+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<h1 id="游戏编程入门18使用闪屏增添游戏的活力">游戏编程入门（18）：使用闪屏增添游戏的活力</h1>
+
+<p>到现在为止，我们开发的游戏都存在一个问题就是它们在初次运行的时候没有充分的标识自己，虽然窗口的标题栏包含了游戏的名称，但是在初次运行游戏时清楚地标识自己是很重要的。而且我们的游戏，总是一点进去就开始了，这也给人以不好的体验。</p>
+
+<p>游戏很像是电影，应该在片头显示名字并且给人以缓冲的时间。在电影中，这种介绍和缓冲被称为片头，而游戏中的名称被称为<strong>闪屏，它们可以包含有用的信息，例如版权通知和游戏玩法的介绍等</strong>。本章将介绍如何通过添加闪屏来装饰 Space Out 游戏。</p>
+
+<p>本章内容包括：</p>
+
+<ul>
+  <li>为什么闪屏是所有游戏的一个重要部分</li>
+  <li>将闪屏结合到游戏中需要哪些工作</li>
+  <li>如何向 Space Out 游戏添加闪屏</li>
+</ul>
+
+<p>接上文 <a href="https://www.jfox.info/go.php?url=http://blog.csdn.net/jurbo/article/details/74532331">游戏编程入门（17）：开发 Space Out（逃离太空）游戏</a></p>
+
+<h1 id="闪屏的重要性">闪屏的重要性</h1>
+
+<p>无论在游戏闪屏中显示的内容是多还是少，重要的是，至少要显示游戏的名称以及其他相关的信息，如游戏的版权。如果需要一个特定的动作才能开始游戏，那么在闪屏中提一下也不错。没有人喜欢游戏立即开始而不提醒玩家游戏将在何时开始，因此闪屏至少应该让玩家有机会准备好才开始玩游戏。</p>
+
+<p>闪屏也是一个提供包括游戏的简短说明以及游戏玩法提示和技巧的位置。对于闪屏，要考虑的最后一点是高分列表。这个列表包含人们在游戏中获得的最高得分。在稍后的文章中，我们将介绍如何创建一个高分列表，将 Space Out 游戏的高分保存到一个文件中。</p>
+
+<p>目前，许多商业游戏都不仅包含闪屏，还包括了介绍性的动画或者视频片断等。这种“闪动画”比简单的闪屏更加吸引人，但是创建它通常需要更多的动作，特别是当它是一个实际的视频时。另一方面，一些游戏只是显示直接来自于游戏的动画片断，这是作为游戏的一种演示。在稍后的文章中，我们也会介绍如何将闪屏转换为 Space Out 游戏的一个演示模式。</p>
+
+<h1 id="了解闪屏">了解闪屏</h1>
+
+<p>实现闪屏最容易的方法就是创建屏幕的位图图像，然后在游戏开始之前将其显示在游戏屏幕上。闪屏的图像可以大到填满整个游戏屏幕，也可以稍微小一点，显示在现有的游戏背景之上。</p>
+
+<p>下图显示了如何设计闪屏图像，以便覆盖在 Space Out 游戏中的背景之上。</p>
+
+<p><img src="f60c12c.png" alt="" /></p>
+
+<p>从上面这幅图可以看得出来，显示闪屏没有什么难度。向游戏添加闪屏稍微有一点难度的地方是为闪屏创建一个单独的游戏模式。例如，之前创建的所有游戏都处于两种模式之中，“游戏结束”和“游戏未结束”。这两种模式直接由 g_bGameOver 全局变量控制，而这个变量有两个布尔值，TURE 或 FALSE。因此，我们<strong>将游戏扩展为以下3种模式：</strong></p>
+
+<p>虽然在显示闪屏时，游戏是结束的。但是对于“游戏结束”模式，因为没有显示闪屏，所以它不同于“闪屏”模式。</p>
+
+<h1 id="开发-space-out-2-游戏">开发 Space Out 2 游戏</h1>
+
+<p>带有一个闪屏的 Space Out 游戏命名为 Space Out 2。游戏玩法没有变，只是添加了一个闪屏来装饰游戏。</p>
+
+<p>注意：若出现编译错误，请在项目设置-&gt;连接-&gt;对象/库模块中 加入 msimg32.lib winmm.lib</p>
+
+<h2 id="space-out-2-目录结构和效果图">Space Out 2 目录结构和效果图</h2>
+
+<p><strong>Space Out 2 目录结构：</strong></p>
+
+<p><img src="f2960e1.png" alt="" /></p>
+
+<p><strong>Space Out 2 效果图：</strong></p>
+
+<p><img src="1037fb1.png" alt="" /></p>
+
+<h2 id="编写游戏代码">编写游戏代码</h2>
+
+<p><strong>向 Space Out 2 游戏添加闪屏的第一步是向游戏添加几个全局变量，以便存储闪屏的位图以及闪屏模式。</strong> 它们是在 SpaceOut.h 中声明的。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Bitmap*           g_pSplashBitmap;                      //闪屏位图BOOL              g_bSplash;                            //是否处于闪屏
+</code></pre></div></div>
+
+<p>g_bSplash 处于 TRUE 则游戏处于闪屏模式。在游戏开始时将g_bSplash 设置为TRUE，然后用户在按 Enter键开始游戏时，将其设置为FALSE。</p>
+
+<p>初始化全局变量非常重要，这项任务是在 GameStart( ) 函数中完成的， <strong>GameStart( ) 函数的第一个变化是创建闪屏位图。</strong></p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>g_pSplashBitmap = new Bitmap(hDC, IDB_SPLASH, g_hInstance);
+</code></pre></div></div>
+
+<p>另外还要初始化 g_bSplash ，如下所示：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// 初始化全局变量
+  g_bSplash = TRUE;
+  g_bGameOver = TRUE;
+</code></pre></div></div>
+
+<h2 id="gameactivate--和-gamedeactivate-">GameActivate( ) 和 GameDeactivate( )</h2>
+
+<p><strong>使闪屏正常的大部分工作是当游戏处于闪屏模式时禁用游戏的某些部分。</strong></p>
+
+<p>GameActivate( ) 和 GameDeactivate( ) 函数在继续活着暂停MIDI 背景音乐之前检查 g_bSplash 变量的值。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>//激活游戏void GameActivate(HWND hWindow)
+{
+  if (!g_bSplash)
+    // 继续播放背景音乐
+    g_pGame-&gt;PlayMIDISong(TEXT(""), FALSE);
+}
+// 游戏未被激活时void GameDeactivate(HWND hWindow)
+{
+  if (!g_bSplash)
+    // 暂停背景音乐
+    g_pGame-&gt;PauseMIDISong();
+}
+</code></pre></div></div>
+
+<h2 id="gamepaint-">GamePaint( )</h2>
+
+<p>与闪屏有关的最重要代码位于 GamePaint( ) 函数中，这里实际绘制闪屏的位置。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// 绘制游戏void GamePaint(HDC hDC)
+{
+ // 绘制背景
+  g_pBackground-&gt;Draw(hDC);
+
+  // 绘制沙漠位图
+  g_pDesertBitmap-&gt;Draw(hDC, 0, 371);
+
+  if (g_bSplash)
+  {
+    // 绘制闪屏位图
+    g_pSplashBitmap-&gt;Draw(hDC, 142, 100, TRUE);
+  }
+  else
+  {
+   // 绘制子画面
+  g_pGame-&gt;DrawSprites(hDC);
+
+  // 绘制得分
+  TCHAR szText[64];
+  RECT  rect = { 460, 0, 510, 30 };
+  wsprintf(szText, "%d", g_iScore);
+  SetBkMode(hDC, TRANSPARENT);
+  SetTextColor(hDC, RGB(255, 255, 255));
+  DrawText(hDC, szText, -1, &amp;rect, DT_SINGLELINE | DT_RIGHT | DT_VCENTER);
+
+  // 绘制剩余生命（小汽车）数量for (int i = 0; i &lt; g_iNumLives; i++)
+    g_pSmCarBitmap-&gt;Draw(hDC, 520 + (g_pSmCarBitmap-&gt;GetWidth() * i),
+      10, TRUE);
+
+  // 绘制游戏结束if (g_bGameOver)
+    g_pGameOverBitmap-&gt;Draw(hDC, 190, 149, TRUE);
+  }
+}
+</code></pre></div></div>
+
+<h2 id="handlekeys-">HandleKeys( )</h2>
+
+<p>HandleKeys( ) 函数在游戏退出闪屏 以开始一个新游戏时更改 g_bSplash 的值。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// 监听键盘void HandleKeys()
+{
+  if (!g_bGameOver)
+  {
+    // 按下左/右键移动汽车
+    POINT ptVelocity = g_pCarSprite-&gt;GetVelocity();
+    if (GetAsyncKeyState(VK_LEFT) &lt;0)
+    {
+      // 向左移动（因为是向左行驶时倒退，所以汽车左行的最大速度小于右行的最大速度）
+      ptVelocity.x =max(ptVelocity.x -1, -4);
+      g_pCarSprite-&gt;SetVelocity(ptVelocity);
+    }
+    elseif (GetAsyncKeyState(VK_RIGHT) &lt;0)
+    {
+      // 向右移动
+      ptVelocity.x =min(ptVelocity.x +2, 6);
+      g_pCarSprite-&gt;SetVelocity(ptVelocity);
+    }
+
+    // 按下空格键发射导弹if ((++g_iFireInputDelay &gt;6) &amp;&amp; GetAsyncKeyState(VK_SPACE) &lt;0)
+    {
+      // 创建一个新的导弹子画面
+      RECT  rcBounds = { 0, 0, 600, 450 };
+      RECT  rcPos = g_pCarSprite-&gt;GetPosition();
+      Sprite* pSprite =new Sprite(g_pMissileBitmap, rcBounds, BA_DIE);
+      pSprite-&gt;SetPosition(rcPos.left +15, 400);
+      pSprite-&gt;SetVelocity(0, -7);
+      g_pGame-&gt;AddSprite(pSprite);
+
+      // 播放导弹发射声音
+      PlaySound((LPCSTR)IDW_MISSILE, g_hInstance, SND_ASYNC |
+        SND_RESOURCE | SND_NOSTOP);
+
+      // 重置输入延迟
+      g_iFireInputDelay =0;
+    }
+  }
+
+  // 按下Enter键开始一个新游戏if (GetAsyncKeyState(VK_RETURN) &lt;0)
+    if (g_bSplash)
+    {
+      // 开始一个没有闪屏的新游戏
+      g_bSplash =FALSE;
+      NewGame();
+    }
+    elseif (g_bGameOver)
+    {
+      // 开始一个新游戏
+      NewGame();
+    }
+}
+</code></pre></div></div>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/%E6%B8%B8%E6%88%8F%E7%BC%96%E7%A8%8B%E5%85%A5%E9%97%A818%E4%BD%BF%E7%94%A8%E9%97%AA%E5%B1%8F%E5%A2%9E%E6%B7%BB%E6%B8%B8%E6%88%8F%E7%9A%84%E6%B4%BB%E5%8A%9B.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/%E6%BC%8F%E6%B4%9E%E9%A2%84%E8%AD%A6%E6%96%97%E8%B1%A1%E7%A7%91%E6%8A%80%E5%8F%91%E7%8E%B0%E9%AB%98%E5%8D%B1struts2showcase%E8%BF%9C%E7%A8%8B%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9Es.html">&laquo; 漏洞预警 | 斗象科技发现高危Struts2 showcase远程代码执行漏洞（S） » java面试题</a>
+  
+  
+  <a class="next" href="/2017/springboot%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E4%B8%80%E6%90%AD%E5%BB%BA%E9%A1%B9%E7%9B%AE%E4%B9%8Bhelloworld.html">spring boot学习笔记：一、搭建项目 之 hello world &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

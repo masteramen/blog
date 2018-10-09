@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>Java Selenium (四) 使用浏览器调试工具 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="Java Selenium (四) 使用浏览器调试工具" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="在基于UI元素的自动化测试中, 无论是桌面的UI自动化测试,还是Web的UI自动化测试. 首先我们需要查找和识别UI元素." />
+<meta property="og:description" content="在基于UI元素的自动化测试中, 无论是桌面的UI自动化测试,还是Web的UI自动化测试. 首先我们需要查找和识别UI元素." />
+<link rel="canonical" href="http://www.jfox.info/2017/javaselenium%E5%9B%9B%E4%BD%BF%E7%94%A8%E6%B5%8F%E8%A7%88%E5%99%A8%E8%B0%83%E8%AF%95%E5%B7%A5%E5%85%B7.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/javaselenium%E5%9B%9B%E4%BD%BF%E7%94%A8%E6%B5%8F%E8%A7%88%E5%99%A8%E8%B0%83%E8%AF%95%E5%B7%A5%E5%85%B7.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:52:58+00:00" />
+<script type="application/ld+json">
+{"description":"在基于UI元素的自动化测试中, 无论是桌面的UI自动化测试,还是Web的UI自动化测试. 首先我们需要查找和识别UI元素.","@type":"BlogPosting","url":"http://www.jfox.info/2017/javaselenium%E5%9B%9B%E4%BD%BF%E7%94%A8%E6%B5%8F%E8%A7%88%E5%99%A8%E8%B0%83%E8%AF%95%E5%B7%A5%E5%85%B7.html","headline":"Java Selenium (四) 使用浏览器调试工具","dateModified":"2017-01-01T15:52:58+00:00","datePublished":"2017-01-01T15:52:58+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/javaselenium%E5%9B%9B%E4%BD%BF%E7%94%A8%E6%B5%8F%E8%A7%88%E5%99%A8%E8%B0%83%E8%AF%95%E5%B7%A5%E5%85%B7.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Java Selenium (四) 使用浏览器调试工具</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:52:58+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>在基于UI元素的自动化测试中, 无论是桌面的UI自动化测试,还是Web的UI自动化测试. 首先我们需要查找和识别UI元素.</p>
+
+<p>在基于Web UI 自动化测试中, 测试人员需要了解HTML, CSS和Javascript的一些知识, 还需要学会使用各种浏览器的调试功能</p>
+
+<p>查找Web UI 页面上的元素, 必须先了解页面的DOM结构, 元素的属性, 甚至一些JavaScript的调用信息. 现在主流的浏览器都自带了很多强有力的工具</p>
+
+<h2 id="google-chrome">Google Chrome</h2>
+
+<p>Google Chrome 自带Web开发调试工具, 可以通过3种方法启动此工具</p>
+
+<p><strong>方法一</strong>:　　按F12快捷键</p>
+
+<p><strong>方法二</strong>:　　点击右上角的图标-&gt;More tools-&gt;Developer Tools 菜单命令, 打开Developer Tools , 然后点击”箭头”图标, 然后选择你要查找的元素. 请看下面动画演示</p>
+
+<p><img src="1bb3047.gif" alt="" /></p>
+
+<p><strong>方法三</strong>:　　鼠标放在你想要的UI元素上，单击鼠标右键，　选择Inspect Element菜单命令</p>
+
+<p><img src="d521d8a.gif" alt="" /></p>
+
+<p>我们还可以使用Chrome 来直接获取元素的XPath.</p>
+
+<p><img src="06d9d48.png" alt="" /></p>
+
+<h2 id="internet-explorer-或者edge">Internet Explorer 或者Edge</h2>
+
+<p>微软自己出品的浏览器同样带有”开发人员工具”, 通过工具菜单,或者F12来 启动</p>
+
+<p><img src="d450a7c.png" alt="" /></p>
+
+<h2 id="firefox-的firebug插件">Firefox 的firebug插件</h2>
+
+<p>Firefox 是selenium 支持的最好的浏览器, 推荐在Firefox 中安装Firebug 插件. 使用firebug 也很方便的查找页面元素</p>
+
+<p>firebug的调用方法, 跟上面Chrome 的调试工具 使用方法一模一样. 这里就不详细解释了</p>
+
+<p><img src="8fcfca5.gif" alt="" /></p>
+
+<h2 id="利用firefinder-插件-来测试xpath-语句">利用FireFinder 插件， 来测试XPath 语句</h2>
+
+<p>在自动化测试中，我们经常要写XPath, 我们可以通过FireFinder 插件来验证我们写的xpath语句是否正确</p>
+
+<p><img src="0a82861.gif" alt="" /></p>
+
+<h2 id="附-selenium-java教程-连载中-敬请期待">附： selenium java教程 (连载中, 敬请期待）</h2>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/javaselenium%E5%9B%9B%E4%BD%BF%E7%94%A8%E6%B5%8F%E8%A7%88%E5%99%A8%E8%B0%83%E8%AF%95%E5%B7%A5%E5%85%B7.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/%E6%BC%AB%E7%94%BB%E7%AE%97%E6%B3%95%E4%BB%80%E4%B9%88%E6%98%AF%E8%B7%B3%E8%B7%83%E8%A1%A8.html">&laquo; 漫画算法：什么是跳跃表？</a>
+  
+  
+  <a class="next" href="/2017/lombok%E4%BD%BF%E7%94%A8%E7%BB%99%E8%87%AA%E5%B7%B1%E7%9C%8B%E7%9A%84%E5%8F%AA%E4%B8%BA%E4%B8%8D%E8%A6%81%E5%BF%98%E8%AE%B0%E8%87%AA%E5%B7%B1%E7%94%A8%E8%BF%87%E7%9A%84%E6%8A%80%E6%9C%AF.html">lombok使用（给自己看的，只为不要忘记自己用过的技术） &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

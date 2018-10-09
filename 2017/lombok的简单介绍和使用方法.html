@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>lombok的简单介绍和使用方法 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="lombok的简单介绍和使用方法" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="这是上周在群里发现有人推荐lombok，他说是神器，当时就引起了我的好奇，然后下班回来我就看了看官网介绍（菜鸟英语水平），这就是难点了，然后就是大概了解了一下，就在网上查了查相关资料，周末的时候自己试了试，现在来做个总结：" />
+<meta property="og:description" content="这是上周在群里发现有人推荐lombok，他说是神器，当时就引起了我的好奇，然后下班回来我就看了看官网介绍（菜鸟英语水平），这就是难点了，然后就是大概了解了一下，就在网上查了查相关资料，周末的时候自己试了试，现在来做个总结：" />
+<link rel="canonical" href="http://www.jfox.info/2017/lombok%E7%9A%84%E7%AE%80%E5%8D%95%E4%BB%8B%E7%BB%8D%E5%92%8C%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/lombok%E7%9A%84%E7%AE%80%E5%8D%95%E4%BB%8B%E7%BB%8D%E5%92%8C%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:57:58+00:00" />
+<script type="application/ld+json">
+{"description":"这是上周在群里发现有人推荐lombok，他说是神器，当时就引起了我的好奇，然后下班回来我就看了看官网介绍（菜鸟英语水平），这就是难点了，然后就是大概了解了一下，就在网上查了查相关资料，周末的时候自己试了试，现在来做个总结：","@type":"BlogPosting","url":"http://www.jfox.info/2017/lombok%E7%9A%84%E7%AE%80%E5%8D%95%E4%BB%8B%E7%BB%8D%E5%92%8C%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95.html","headline":"lombok的简单介绍和使用方法","dateModified":"2017-01-01T15:57:58+00:00","datePublished":"2017-01-01T15:57:58+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/lombok%E7%9A%84%E7%AE%80%E5%8D%95%E4%BB%8B%E7%BB%8D%E5%92%8C%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">lombok的简单介绍和使用方法</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:57:58+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>这是上周在群里发现有人推荐lombok，他说是神器，当时就引起了我的好奇，然后下班回来我就看了看官网介绍（菜鸟英语水平），这就是难点了，然后就是大概了解了一下，就在网上查了查相关资料，周末的时候自己试了试，现在来做个总结：</p>
+
+<p>　　官网：<a href="https://www.jfox.info/go.php?url=http://projectlombok.org/">http://projectlombok.org/</a>  ；进去就有一个几分钟的视频介绍，不过是英语；还有相关的文档等。</p>
+
+<p>　　lombok简介：就是通过@Data注解的方式省去了我们平时开发定义JavaBean之后，生成其属性的构造器、getter、setter、equals、hashcode、toString方法；但是，在编译时会自动生成这些方法，在.class文件中。（我就不多介绍了。。。）</p>
+
+<p>　　要使用lombok，我们需要安装配置lombok，首先下载lombok.jar包：<a href="https://www.jfox.info/go.php?url=https://projectlombok.org/download.html">https://projectlombok.org/download.html</a></p>
+
+<p><strong>安装：</strong></p>
+
+<p>　在eclipse中安装使用：（其他开发工具我没弄）</p>
+
+<p>　　　　打开eclipse.ini文件，在最后添加如下两行：</p>
+
+<p>　　　　　　-javaagent:[lombok.jar所在路径] 
+-Xbootclasspath/a:[lombok.jar所在路径]</p>
+
+<p>　　　　然后重启eclipse。　</p>
+
+<p><strong>lombok 注解：</strong>
+lombok 提供的注解不多，可以参考官方视频的讲解和官方文档。
+文档地址：<a href="https://www.jfox.info/go.php?url=http://projectlombok.org/features/index.html">http://projectlombok.org/features/index.</a></p>
+
+<p>　　下面介绍几个常用的 lombok 注解：
+@Data ：注解在类上；提供类所有属性的 getting 和 setting 方法，此外还提供了equals、canEqual、hashCode、toString 方法
+@Setter：注解在属性上；为属性提供 setting 方法
+@Getter：注解在属性上；为属性提供 getting 方法
+@Log4j ：注解在类上；为类提供一个 属性名为log 的 log4j 日志对象
+@NoArgsConstructor：注解在类上；为类提供一个无参的构造方法
+@AllArgsConstructor：注解在类上；为类提供一个全参的构造方法</p>
+
+<p>　在使用之前，我们需要导入相应的包：</p>
+
+<p><img src="13ef292.png" alt="" /></p>
+
+<p>　下面来瞅瞅代码：</p>
+
+<p>　　1、当我没有使用lombok时：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> 1import java.io.Serializable;
+ 2 3 4import org.junit.Test;
+ 5import org.slf4j.Logger;
+ 6import org.slf4j.LoggerFactory;
+ 7 8 910import lombok.Data;
+11121314publicclass TestLombok implements Serializable{
+1516privatestaticfinallong serialVersionUID = 5071239632319759222L;
+17privatestaticfinal Logger logger = LoggerFactory.getLogger(TestLombok.class);
+1819private String name;
+20private String  gender;
+21privateint age;
+}
+</code></pre></div></div>
+
+<p>下面我们来看看其结构图：</p>
+
+<p><img src="44a73b8.png" alt="" /></p>
+
+<p>从图上可以发现，没有相应的getter，setter等方法。</p>
+
+<p>2、下面我们再来看看加了@Data 注解之后</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> 1import org.junit.Test;
+ 2import org.slf4j.Logger;
+ 3import org.slf4j.LoggerFactory;
+ 4 5 6 7import lombok.Data;
+ 8 910@Data
+11publicclass TestLombok implements Serializable{
+1213privatestaticfinallong serialVersionUID = 5071239632319759222L;
+14privatestaticfinal Logger logger = LoggerFactory.getLogger(TestLombok.class);
+1516private String name;
+17private String  gender;
+18privateint age;
+}
+</code></pre></div></div>
+
+<p>看看结构图会是什么样子？</p>
+
+<p><img src="61fabea.png" alt="" /></p>
+
+<p>从上图可以很明显的发现，加了@Data 注解之后，多了对应的getter，setter等方法。（是不是很简单，笑~~）那么我们再来简单的测试下看看能不能用吧？</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1@Test
+2publicvoid lombok(){
+3         TestLombok lombok = new TestLombok();
+4         lombok.setName("lombok");
+5         lombok.setGender("noGender");
+6         lombok.setAge(99);
+7        System.out.println(lombok.getName());
+89     }
+</code></pre></div></div>
+
+<p>运行结果：</p>
+
+<p><img src="de1a94b.png" alt="" /></p>
+
+<p>事实证明，这个是有作用的，那么对lombok，我就介绍到这儿了。下面说说我觉得的优缺点吧。</p>
+
+<p>　　优点：</p>
+
+<p>　　　　　1、首先，大家都看到了，这是一个很方便的工具，省去了我们不少的操作，特别是在类的属性很多的时候，代码看上去也很简洁。</p>
+
+<p>　　　　　2、其次，也避免了我们在修改属性时，忘记修改字段的错误。</p>
+
+<p>　　缺点：</p>
+
+<p>　　　　1、虽然代码看上去很简洁，但是降低了源代码文件的可读性和完整性（你没发现看上去怪怪的吗，O(∩_∩)O哈哈哈~）</p>
+
+<p>　　　　2、不支持多种参数构造器的重载。</p>
+
+<p>　　其他方面的影响本人暂时还不知道，坐等其他大佬来指教，谢谢！</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/lombok%E7%9A%84%E7%AE%80%E5%8D%95%E4%BB%8B%E7%BB%8D%E5%92%8C%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/java8%E6%96%B0%E7%89%B9%E6%80%A7%E6%97%A5%E6%9C%9Fapi.html">&laquo; Java8 新特性 日期API</a>
+  
+  
+  <a class="next" href="/2017/%E9%97%AE%E9%A2%98%E5%88%86%E6%9E%90%E4%B9%8Bnotransactionisinprogress.html">问题分析 之 no transaction is in progress &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

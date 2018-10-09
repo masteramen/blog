@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>使用Java生成word文档 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="使用Java生成word文档" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="By Lee - Last updated: 星期二, 二月 11, 2014" />
+<meta property="og:description" content="By Lee - Last updated: 星期二, 二月 11, 2014" />
+<link rel="canonical" href="http://www.jfox.info/2017/%E4%BD%BF%E7%94%A8java%E7%94%9F%E6%88%90word%E6%96%87%E6%A1%A3.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/%E4%BD%BF%E7%94%A8java%E7%94%9F%E6%88%90word%E6%96%87%E6%A1%A3.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:44:04+00:00" />
+<script type="application/ld+json">
+{"description":"By Lee - Last updated: 星期二, 二月 11, 2014","@type":"BlogPosting","url":"http://www.jfox.info/2017/%E4%BD%BF%E7%94%A8java%E7%94%9F%E6%88%90word%E6%96%87%E6%A1%A3.html","headline":"使用Java生成word文档","dateModified":"2017-01-01T15:44:04+00:00","datePublished":"2017-01-01T15:44:04+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/%E4%BD%BF%E7%94%A8java%E7%94%9F%E6%88%90word%E6%96%87%E6%A1%A3.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">使用Java生成word文档</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:44:04+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>By Lee - Last updated: 星期二, 二月 11, 2014</p>
+
+<p>　　当我们使用Java生成word文档时，通常首先会想到iText和POI，这是因为我们习惯了使用这两种方法操作Excel，自然而然的也想使用这种生成word文档。但是当我们需要动态生成word时，通常不仅要能够显示word中的内容，还要能够很好的保持word中的复杂样式。这时如果再使用IText和POI去操作，就好比程序员去搬砖一样痛苦。</p>
+
+<p>　　这时候，我们应该考虑使用FreeMarker的模板技术快速实现这个复杂的功能，让程序员在喝咖啡的过程中就把问题解决。实现思路是这样的：先创建一个word文档，按照需求在word中填好一个模板，然后把对应的数据换成变量${}，然后将文档保存为xml文档格式，使用文档编辑器打开这个xml格式的文档，去掉多余的xml符号，使用Freemarker读取这个文档然后替换掉变量，输出word文档即可。</p>
+
+<p>　　具体过程如下：</p>
+
+<p>　　1.创建带有格式的word文档，将该需要动态展示的数据使用变量符替换。</p>
+
+<ol>
+  <li>将刚刚创建的word文档另存为xml格式。</li>
+</ol>
+
+<p>3．编辑这个XMl文档去掉多余的xml标记，如图中蓝色部分</p>
+
+<p>　　4．从Freemarker官网【下载】最新的开发包，将freemarker.jar拷贝到自己的开发项目中。</p>
+
+<p>　　5．新建DocUtil类，实现根据Doc模板生成word文件的方法</p>
+
+<p><code class="highlighter-rouge">package</code><code class="highlighter-rouge">com.favccxx.secret.util;</code></p>
+
+<p><code class="highlighter-rouge">import</code><code class="highlighter-rouge">java.io.BufferedWriter;</code></p>
+
+<p><code class="highlighter-rouge">import</code><code class="highlighter-rouge">java.io.File;</code></p>
+
+<p><code class="highlighter-rouge">import</code><code class="highlighter-rouge">java.io.FileOutputStream;</code></p>
+
+<p><code class="highlighter-rouge">import</code><code class="highlighter-rouge">java.io.OutputStreamWriter;</code></p>
+
+<p><code class="highlighter-rouge">import</code><code class="highlighter-rouge">java.io.Writer;</code></p>
+
+<p><code class="highlighter-rouge">import</code><code class="highlighter-rouge">java.util.Map;</code></p>
+
+<p><code class="highlighter-rouge">import</code><code class="highlighter-rouge">freemarker.template.Configuration;</code></p>
+
+<p><code class="highlighter-rouge">import</code><code class="highlighter-rouge">freemarker.template.DefaultObjectWrapper;</code></p>
+
+<p><code class="highlighter-rouge">import</code><code class="highlighter-rouge">freemarker.template.Template;</code></p>
+
+<p><code class="highlighter-rouge">import</code><code class="highlighter-rouge">freemarker.template.TemplateExceptionHandler;</code></p>
+
+<p><code class="highlighter-rouge">public</code><code class="highlighter-rouge">class</code><code class="highlighter-rouge">DocUtil {</code></p>
+
+<p><code class="highlighter-rouge">       </code><code class="highlighter-rouge">privateConfiguration configure = </code><code class="highlighter-rouge">null</code><code class="highlighter-rouge">;</code></p>
+
+<p><code class="highlighter-rouge">       </code><code class="highlighter-rouge">publicDocUtil(){</code></p>
+
+<p><code class="highlighter-rouge">              </code><code class="highlighter-rouge">configure= </code><code class="highlighter-rouge">new</code><code class="highlighter-rouge">Configuration();</code></p>
+
+<p><code class="highlighter-rouge">              </code><code class="highlighter-rouge">configure.setDefaultEncoding(</code><code class="highlighter-rouge">"utf-8"</code><code class="highlighter-rouge">);</code></p>
+
+<p><code class="highlighter-rouge">       </code><code class="highlighter-rouge">}</code></p>
+
+<p><code class="highlighter-rouge">       </code><code class="highlighter-rouge">/**</code></p>
+
+<p><code class="highlighter-rouge">        </code><code class="highlighter-rouge">* 根据Doc模板生成word文件</code></p>
+
+<p><code class="highlighter-rouge">        </code><code class="highlighter-rouge">* @param dataMap Map 需要填入模板的数据</code></p>
+
+<p><code class="highlighter-rouge">        </code><code class="highlighter-rouge">* @param fileName 文件名称</code></p>
+
+<p><code class="highlighter-rouge">        </code><code class="highlighter-rouge">* @param savePath 保存路径</code></p>
+
+<p><code class="highlighter-rouge">        </code><code class="highlighter-rouge">*/</code></p>
+
+<p><code class="highlighter-rouge">       </code><code class="highlighter-rouge">publicvoid createDoc(Map&lt;String, Object&gt; dataMap, String downloadType, StringsavePath){</code></p>
+
+<p><code class="highlighter-rouge">              </code><code class="highlighter-rouge">try</code><code class="highlighter-rouge">{</code></p>
+
+<p><code class="highlighter-rouge">                     </code><code class="highlighter-rouge">Templatetemplate  = </code><code class="highlighter-rouge">null</code><code class="highlighter-rouge">;</code></p>
+
+<p><code class="highlighter-rouge">                     </code><code class="highlighter-rouge">configure.setClassForTemplateLoading(</code><code class="highlighter-rouge">this</code><code class="highlighter-rouge">.getClass(),</code><code class="highlighter-rouge">"/com/favccxx/secret/templates"</code><code class="highlighter-rouge">);</code></p>
+
+<p><code class="highlighter-rouge">                     </code><code class="highlighter-rouge">configure.setObjectWrapper(newDefaultObjectWrapper());</code></p>
+
+<p><code class="highlighter-rouge">                     </code><code class="highlighter-rouge">configure.setTemplateExceptionHandler(TemplateExceptionHandler.IGNORE_HANDLER);</code></p>
+
+<p><code class="highlighter-rouge">                     </code><code class="highlighter-rouge">template= configure.getTemplate(downloadType + </code><code class="highlighter-rouge">".xml"</code><code class="highlighter-rouge">);</code></p>
+
+<p><code class="highlighter-rouge">                     </code><code class="highlighter-rouge">FileoutFile = </code><code class="highlighter-rouge">new</code><code class="highlighter-rouge">File(savePath);</code></p>
+
+<p><code class="highlighter-rouge">                     </code><code class="highlighter-rouge">Writerout = </code><code class="highlighter-rouge">null</code><code class="highlighter-rouge">;</code></p>
+
+<p><code class="highlighter-rouge">                     </code><code class="highlighter-rouge">out= </code><code class="highlighter-rouge">new</code><code class="highlighter-rouge">BufferedWriter(</code><code class="highlighter-rouge">new</code><code class="highlighter-rouge">OutputStreamWriter(</code><code class="highlighter-rouge">new</code><code class="highlighter-rouge">FileOutputStream(outFile),</code><code class="highlighter-rouge">"utf-8"</code><code class="highlighter-rouge">));                                    </code></p>
+
+<p><code class="highlighter-rouge">                     </code><code class="highlighter-rouge">template.process(dataMap,out);</code></p>
+
+<p><code class="highlighter-rouge">                     </code><code class="highlighter-rouge">outFile.delete();</code></p>
+
+<p><code class="highlighter-rouge">              </code><code class="highlighter-rouge">}</code><code class="highlighter-rouge">catch</code><code class="highlighter-rouge">(Exception e) {</code></p>
+
+<p><code class="highlighter-rouge">                     </code><code class="highlighter-rouge">e.printStackTrace();</code></p>
+
+<p><code class="highlighter-rouge">              </code><code class="highlighter-rouge">}</code></p>
+
+<p><code class="highlighter-rouge">       </code><code class="highlighter-rouge">}</code></p>
+
+<p><code class="highlighter-rouge">}</code></p>
+
+<p>　　6．用户根据自己的需要，调用使用getDataMap获取需要传递的变量，然后调用createDoc方法生成所需要的文档。</p>
+
+<p><code class="highlighter-rouge">/**</code></p>
+
+<p><code class="highlighter-rouge"> </code><code class="highlighter-rouge">* 根据下载类型获取需要传递的Map参数</code></p>
+
+<p><code class="highlighter-rouge"> </code><code class="highlighter-rouge">* @param oid 对象Id</code></p>
+
+<p><code class="highlighter-rouge"> </code><code class="highlighter-rouge">* @param downloadType 下载类型</code></p>
+
+<p><code class="highlighter-rouge"> </code><code class="highlighter-rouge">*/</code></p>
+
+<p><code class="highlighter-rouge">private</code><code class="highlighter-rouge">Map&lt;String, Object&gt; getDataMap(String oid,String downloadType){</code></p>
+
+<p><code class="highlighter-rouge">    </code><code class="highlighter-rouge">Map&lt;String, Object&gt; dataMap = </code><code class="highlighter-rouge">new</code><code class="highlighter-rouge">HashMap&lt;String, Object&gt;();</code></p>
+
+<p><code class="highlighter-rouge">    </code><code class="highlighter-rouge">if</code><code class="highlighter-rouge">(</code><code class="highlighter-rouge">"Parameter1"</code><code class="highlighter-rouge">.equals(downloadType)){</code></p>
+
+<p><code class="highlighter-rouge">        </code><code class="highlighter-rouge">...</code></p>
+
+<p><code class="highlighter-rouge">        </code><code class="highlighter-rouge">...</code></p>
+
+<p><code class="highlighter-rouge">        </code><code class="highlighter-rouge">dataMap = DataMapUtil.setObjToMap(Object1);</code></p>
+
+<p><code class="highlighter-rouge">    </code><code class="highlighter-rouge">}</code><code class="highlighter-rouge">else</code><code class="highlighter-rouge">{</code></p>
+
+<p><code class="highlighter-rouge">        </code><code class="highlighter-rouge">...</code></p>
+
+<p><code class="highlighter-rouge">        </code><code class="highlighter-rouge">...</code></p>
+
+<p><code class="highlighter-rouge">        </code><code class="highlighter-rouge">dataMap = DataMapUtil.setObjToMap(Object2);</code></p>
+
+<p><code class="highlighter-rouge">    </code><code class="highlighter-rouge">}</code></p>
+
+<p><code class="highlighter-rouge">    </code><code class="highlighter-rouge">return</code><code class="highlighter-rouge">dataMap;</code></p>
+
+<p><code class="highlighter-rouge">}</code></p>
+
+<p><code class="highlighter-rouge">public</code><code class="highlighter-rouge">class</code><code class="highlighter-rouge">DataMapUtil {</code></p>
+
+<p><code class="highlighter-rouge">    </code><code class="highlighter-rouge">private</code><code class="highlighter-rouge">static</code><code class="highlighter-rouge">Map&lt;String, Object&gt; dataMap = </code><code class="highlighter-rouge">new</code><code class="highlighter-rouge">HashMap&lt;String, Object&gt;();</code></p>
+
+<p><code class="highlighter-rouge">    </code><code class="highlighter-rouge">/**</code></p>
+
+<p><code class="highlighter-rouge">     </code><code class="highlighter-rouge">* 将对象转换成Map</code></p>
+
+<p><code class="highlighter-rouge">     </code><code class="highlighter-rouge">* @param obj 对象类</code></p>
+
+<p><code class="highlighter-rouge">     </code><code class="highlighter-rouge">* @return</code></p>
+
+<p><code class="highlighter-rouge">     </code><code class="highlighter-rouge">*/</code></p>
+
+<p><code class="highlighter-rouge">    </code><code class="highlighter-rouge">public</code><code class="highlighter-rouge">static</code><code class="highlighter-rouge">Map&lt;String,Object&gt; setObjToMap(Object obj){</code></p>
+
+<p><code class="highlighter-rouge">        </code><code class="highlighter-rouge">Class c;</code></p>
+
+<p><code class="highlighter-rouge">        </code><code class="highlighter-rouge">try</code><code class="highlighter-rouge">{</code></p>
+
+<p><code class="highlighter-rouge">            </code><code class="highlighter-rouge">c = Class.forName(obj.getClass().getName());</code></p>
+
+<p><code class="highlighter-rouge">            </code><code class="highlighter-rouge">Method[] methods = c.getMethods();</code></p>
+
+<p><code class="highlighter-rouge">            </code><code class="highlighter-rouge">for</code><code class="highlighter-rouge">(</code><code class="highlighter-rouge">int</code><code class="highlighter-rouge">i=</code><code class="highlighter-rouge">0</code><code class="highlighter-rouge">,l=methods.length;i&lt;l;i++){</code></p>
+
+<p><code class="highlighter-rouge">                </code><code class="highlighter-rouge">String method = methods[i].getName();</code></p>
+
+<p><code class="highlighter-rouge">                </code><code class="highlighter-rouge">System.out.println(</code><code class="highlighter-rouge">"The method is:"</code><code class="highlighter-rouge">+ method);</code></p>
+
+<p><code class="highlighter-rouge">                </code><code class="highlighter-rouge">if</code><code class="highlighter-rouge">(method.startsWith(</code><code class="highlighter-rouge">"get"</code><code class="highlighter-rouge">)){</code></p>
+
+<p><code class="highlighter-rouge">                    </code><code class="highlighter-rouge">Object value = methods[i].invoke(obj);</code></p>
+
+<p><code class="highlighter-rouge">                    </code><code class="highlighter-rouge">if</code><code class="highlighter-rouge">(value != </code><code class="highlighter-rouge">null</code><code class="highlighter-rouge">){</code></p>
+
+<p><code class="highlighter-rouge">                        </code><code class="highlighter-rouge">if</code><code class="highlighter-rouge">(value.getClass().getClassLoader() != </code><code class="highlighter-rouge">null</code><code class="highlighter-rouge">){  </code></p>
+
+<p><code class="highlighter-rouge">                            </code><code class="highlighter-rouge">setObjToMap(value);</code></p>
+
+<p><code class="highlighter-rouge">                        </code><code class="highlighter-rouge">}</code></p>
+
+<p><code class="highlighter-rouge">                        </code><code class="highlighter-rouge">String key = method.substring(</code><code class="highlighter-rouge">3</code><code class="highlighter-rouge">);</code></p>
+
+<p><code class="highlighter-rouge">                        </code><code class="highlighter-rouge">key = key.substring(</code><code class="highlighter-rouge">0</code><code class="highlighter-rouge">, </code><code class="highlighter-rouge">1</code><code class="highlighter-rouge">).toLowerCase() + key.substring(</code><code class="highlighter-rouge">1</code><code class="highlighter-rouge">);</code></p>
+
+<p><code class="highlighter-rouge">                        </code><code class="highlighter-rouge">if</code><code class="highlighter-rouge">(</code><code class="highlighter-rouge">"java.util.Date"</code><code class="highlighter-rouge">.equals(value.getClass().getName())){</code></p>
+
+<p><code class="highlighter-rouge">                            </code><code class="highlighter-rouge">value = DateUtil.dateToString((Date)value);</code></p>
+
+<p><code class="highlighter-rouge">                        </code><code class="highlighter-rouge">}</code></p>
+
+<p><code class="highlighter-rouge">                        </code><code class="highlighter-rouge">dataMap.put(key, value);</code></p>
+
+<p><code class="highlighter-rouge">                    </code><code class="highlighter-rouge">}</code></p>
+
+<p><code class="highlighter-rouge">                </code><code class="highlighter-rouge">}</code></p>
+
+<p><code class="highlighter-rouge">            </code><code class="highlighter-rouge">}</code></p>
+
+<p><code class="highlighter-rouge">        </code><code class="highlighter-rouge">} </code><code class="highlighter-rouge">catch</code><code class="highlighter-rouge">(Exception e) {</code></p>
+
+<p><code class="highlighter-rouge">            </code><code class="highlighter-rouge">e.printStackTrace();</code></p>
+
+<p><code class="highlighter-rouge">        </code><code class="highlighter-rouge">}</code></p>
+
+<p><code class="highlighter-rouge">        </code><code class="highlighter-rouge">return</code><code class="highlighter-rouge">dataMap;</code></p>
+
+<p><code class="highlighter-rouge">    </code><code class="highlighter-rouge">}</code></p>
+
+<p><code class="highlighter-rouge">}</code></p>
+
+<p>　　7．赶紧把这个方法，应用到自己的项目中吧。</p>
+
+<p>参考来源 <a href="https://www.jfox.info/go.php?url=http://www.jfox.info/url.php?url=http%3A%2F%2Fgenuinecx.blog.51cto.com%2F2890523%2F1331115">使用Java生成word文档（附源码） – 尘风随影的天空</a>.</p>
+
+<p>本文链接：<a href="https://www.jfox.info/go.php?url=http://www.jfox.info/%e4%bd%bf%e7%94%a8java%e7%94%9f%e6%88%90word%e6%96%87%e6%a1%a3">http://www.jfox.info/%e4%bd%bf%e7%94%a8java%e7%94%9f%e6%88%90word%e6%96%87%e6%a1%a3</a>, 转载请保留.</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/%E4%BD%BF%E7%94%A8java%E7%94%9F%E6%88%90word%E6%96%87%E6%A1%A3.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/%E4%BD%BF%E7%94%A8java%E7%94%9F%E6%88%90word%E6%96%87%E6%A1%A3.html">&laquo; 使用Java生成word文档</a>
+  
+  
+  <a class="next" href="/2017/%E5%A6%82%E4%BD%95%E8%AE%A9%E6%B5%8F%E8%A7%88%E5%99%A8%E5%9C%A8%E8%AE%BF%E9%97%AE%E9%93%BE%E6%8E%A5%E6%97%B6%E4%B8%8D%E8%A6%81%E5%B8%A6%E4%B8%8Areferer.html">如何让浏览器在访问链接时不要带上referer? &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

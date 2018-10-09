@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>还在为画“类Word文档报表”而发愁吗？ | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="还在为画“类Word文档报表”而发愁吗？" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="还在为画“类Word文档报表”而发愁吗？" />
+<meta property="og:description" content="还在为画“类Word文档报表”而发愁吗？" />
+<link rel="canonical" href="http://www.jfox.info/2017/%E8%BF%98%E5%9C%A8%E4%B8%BA%E7%94%BB%E7%B1%BBword%E6%96%87%E6%A1%A3%E6%8A%A5%E8%A1%A8%E8%80%8C%E5%8F%91%E6%84%81%E5%90%97.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/%E8%BF%98%E5%9C%A8%E4%B8%BA%E7%94%BB%E7%B1%BBword%E6%96%87%E6%A1%A3%E6%8A%A5%E8%A1%A8%E8%80%8C%E5%8F%91%E6%84%81%E5%90%97.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:57:23+00:00" />
+<script type="application/ld+json">
+{"description":"还在为画“类Word文档报表”而发愁吗？","@type":"BlogPosting","url":"http://www.jfox.info/2017/%E8%BF%98%E5%9C%A8%E4%B8%BA%E7%94%BB%E7%B1%BBword%E6%96%87%E6%A1%A3%E6%8A%A5%E8%A1%A8%E8%80%8C%E5%8F%91%E6%84%81%E5%90%97.html","headline":"还在为画“类Word文档报表”而发愁吗？","dateModified":"2017-01-01T15:57:23+00:00","datePublished":"2017-01-01T15:57:23+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/%E8%BF%98%E5%9C%A8%E4%B8%BA%E7%94%BB%E7%B1%BBword%E6%96%87%E6%A1%A3%E6%8A%A5%E8%A1%A8%E8%80%8C%E5%8F%91%E6%84%81%E5%90%97.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">还在为画“类Word文档报表”而发愁吗？</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:57:23+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<h1 id="还在为画类word文档报表而发愁吗">还在为画“类Word文档报表”而发愁吗？</h1>
+
+<p>​Word 是非常强大的文档编辑工具，一些行业制式文档都是使用Word来创建的，像教育行业的申请表，履历表，审批表等，像石油业的勘探记录表，记录报告，检测报告等，如房地产业的制式合同，不仅包含大量的文字描述，还会嵌入图片，表格等一些数据控件。</p>
+
+<p>我们通常选择使用 Word 来创建这些文档，因为它有着极强的图文混排的能力能够实现集图表，表格，图片等组成的一个混合布局的复杂报表。但使用Word越是创建这些复杂的结构，越需要耗费过多的时间来“画”出这些复杂的样式， 且所有的数据都需要手动输入，无法与业务数据连接，所以更新也会更加困难。</p>
+
+<p>在现代 BI 系统中绝不容忍如此低效，且非实时性的数据分析，因此我们必须寻求与时俱进的现代化数据分析工具，以助于高效的创建数据分析汇总的报表项。<a href="https://www.jfox.info/go.php?url=http://www.grapecity.com.cn/enterprise-solutions/activereports_server/">葡萄城报表</a>可以很好的解决类Word文档类的报表创建，可快速创建复杂的图文混排样式，而且能够实时的进行数据更新。</p>
+
+<h1 id="一类word文档类报表特点">（一）类Word文档类报表特点</h1>
+
+<p>1.1 大量原始数据展示</p>
+
+<p>这些数据往往存储在业务数据库中，但使用Word创建，将所需要看到的数据，手动输入对应的单元格当中，或是由多人维护更新，这样无法导致数据同步更新，而且容易出错。</p>
+
+<p>1.2 图文混排</p>
+
+<p>多个表格、图片、富文本、图表等组成一个混合布局的复杂报表，这些制式文档通常都包含既定的行业规范，所以对于排版要求非常严苛，因此需要按照既定的规范，来‘画’出复杂的样式，这样创建文档的难度又提高，也是十分低效的做法。</p>
+
+<p>1.3 多页结构</p>
+
+<p>特殊的首页和尾页要求，Word文档类报表较大的时候都有多页的结构，而且对于这些页都有不同的要求和规格。如：</p>
+
+<ul>
+  <li>封皮:单面数据，常包含报告的基本信息，如报表名称，报告编号，单位名称，Logo 信息，条码信息等</li>
+</ul>
+
+<p><img src="c522c44.png" alt="" /></p>
+
+<ul>
+  <li>详细数据：多页详细数据，主要由不同结构的数据组成，常包含，页眉页脚信息，详细数据区域。不同页对应的数据结构不一致。传统Word表格样式，详细数据部分，内容格式都不固定，没有规律，行列数量不固定，行高列宽不固定。内容项目为非固定格式，根据实际数据，动态选择内容呈现格式，多种布局并存。</li>
+</ul>
+
+<p><img src="6b4c2cb.png" alt="" /></p>
+
+<ul>
+  <li>结尾声明:文档类的尾部一般包含文档声明、总结等信息，常以大量文本输出为主，不同内容格式也是大有不同，葡萄城报表支持在同一页报表中，显示多种格式的文本内容。</li>
+</ul>
+
+<p><img src="944aa0c.jpg" alt="" /></p>
+
+<ul>
+  <li>首页和尾页的页眉页脚可单独控制：Word文档，在首页和尾页中不需要添加页眉，也不需要显示页号，只需要在内容页显示页眉。</li>
+</ul>
+
+<p><img src="a4a11ce.png" alt="" /></p>
+
+<ul>
+  <li>动态加载图片和调整图片数量</li>
+</ul>
+
+<p><img src="ef7f2b5.png" alt="" /></p>
+
+<ul>
+  <li>传统的Word表格样式，左边标题，右边内容项</li>
+</ul>
+
+<p><img src="5239d2a.png" alt="" /></p>
+
+<ul>
+  <li>动态生成详细数据</li>
+</ul>
+
+<p>1.4 新型数据展示控件</p>
+
+<p>现有的各行业报表为了更加信息化，现代化，因此会在报表中添加一些新型数据控件，如物流业常用的条码，插入特殊格式的文本等，所以在类Word文档类报表中通常存在一些特殊的字符或控件的输入和展示。</p>
+
+<p><img src="0fa48d1.png" alt="" /></p>
+
+<p>##</p>
+
+<h1 id="二创建类word文档类报表">（二）创建类Word文档类报表</h1>
+
+<p>通常Word创建的文档有多种样式的数据呈现形式，多个表格、图片、富文本、图表等组成一个混合布局的复杂报表，同时支持多数据源绑定，每个组成部分可以有自己的独立数据源。这类报表因为信息量和数据量巨大，因此有一些非常特殊的报表需求，比如：首页/尾页不显示页面/页脚、表格跨页显示时标题行需要在每页重复显示便于查看数据、支持多张图片显示等。而这些复杂的报表需求，恰好是葡萄城报表非常强大功能所在。</p>
+
+<p>类Word 报表，可以简单理解为所有使用Word制作的复杂表格，文案，合同类，履历类的文档，都以报表的形式呈现出来。以呈现多层结构信息为主，有严格的格式要求。类Word报表通常包含多个模块显示信息。模块之间结构和数据各有不同，对于页眉和页脚内容也有严格的要求等文档类的需求。</p>
+
+<p>接下来我们就来展示使用葡萄城报表创建档案类报表，档案类报表常见于人员管理系统，这一类报表常包含个人基本信息介绍，经历信息，评价，结论等信息。该类报表的特点： 标题在左，右边为内容；每项内容单元格的样式都是有严格要求的，通常报表的上半部分信息密集，下半部分为大量的数据填报信息，因此占用空间比较大。该类报表通常有固定的页数。</p>
+
+<h2 id="21--报表原型">2.1  报表原型</h2>
+
+<p>档案类报表通常包含如下模块：基本信息，职务信息，主要经历，审批信息，接下来我们来演示如何使用葡萄城报表矩表控件来创建</p>
+
+<p><img src="425856f.png" alt="" /></p>
+
+<p>2.2  报表结构分析</p>
+
+<ol>
+  <li>
+    <p>左侧为标题，右侧为内容</p>
+  </li>
+  <li>
+    <p>内嵌图片控件</p>
+  </li>
+  <li>
+    <p>详细信息高度不一致</p>
+  </li>
+  <li>
+    <p>跨行单元格合并</p>
+  </li>
+</ol>
+
+<h2 id="23-实现思路">2.3 实现思路</h2>
+
+<ol>
+  <li>
+    <p>使用矩表控件</p>
+  </li>
+  <li>
+    <p>添加多级静态列</p>
+  </li>
+  <li>
+    <p>跨行单元格合并</p>
+  </li>
+</ol>
+
+<h2 id="24-报表实现">2.4 报表实现</h2>
+
+<ol>
+  <li>
+    <p>新建RDL 报表模板</p>
+  </li>
+  <li>
+    <p>添加数据源和数据集</p>
+  </li>
+</ol>
+
+<p><img src="9e09284.png" alt="" /></p>
+
+<p><img src="248c028.png" alt="" /></p>
+
+<ol>
+  <li>
+    <p>添加矩表控件</p>
+  </li>
+  <li>
+    <p>删除分组单元格</p>
+  </li>
+</ol>
+
+<p>4.1 因为不涉及动态列，首先需要删除列分组和行分组单元格。</p>
+
+<p>删除 行分组；并设置该行Size 的Width 属性为0</p>
+
+<p><img src="3bcb241.png" alt="" /></p>
+
+<p><img src="981d7a3.png" alt="" /></p>
+
+<p>4.2 删除列分组</p>
+
+<p>右键单击列分组单元格，选择“列分组”-》“删除分组”；</p>
+
+<p>并设置该列Size 的Width 属性为0</p>
+
+<p><img src="e01c27b.png" alt="" /></p>
+
+<ol>
+  <li>构造基本信息模块</li>
+</ol>
+
+<p>5.1 插入静态列</p>
+
+<p>右键选中TextBox1 插入列，右侧；（重复执行7次）</p>
+
+<p><img src="503b953.png" alt="" /></p>
+
+<p>效果图：</p>
+
+<p><img src="869e84c.png" alt="" /></p>
+
+<p>5.2 插入静态行</p>
+
+<p>右键选中 TextBox1插入行，下方;(重复执行6次)</p>
+
+<p><img src="11b7419.png" alt="" /></p>
+
+<p>效果图：</p>
+
+<p><img src="0b8c872.png" alt="" /></p>
+
+<p>5.3 输入项标题</p>
+
+<p>效果图：</p>
+
+<p><img src="06f1928.png" alt="" /></p>
+
+<p>5.4 合并单元格</p>
+
+<p><img src="1e8cef8.png" alt="" /></p>
+
+<ol>
+  <li>添加模块</li>
+</ol>
+
+<p>6.1 选中“学历学位”单元格，插入行（执行三次），输入职务信息。</p>
+
+<p><img src="02f289a.png" alt="" /></p>
+
+<ol>
+  <li>添加详细信息模块</li>
+</ol>
+
+<p>该模块每个内容项对应一行内容，显示大量的文本；因此需要进行单元格合并，设置足够的行高；</p>
+
+<p>7.1 添加静态行</p>
+
+<p>选择“拟免职务”，选择“插入行”-》“下方”（执行6次）</p>
+
+<p><img src="0e702e0.png" alt="" /></p>
+
+<p>效果：</p>
+
+<p><img src="2cb2cd5.png" alt="" /></p>
+
+<p>7.2 合并单元格</p>
+
+<p><img src="ef44342.png" alt="" /></p>
+
+<ol>
+  <li>调整样式</li>
+</ol>
+
+<p><img src="35c9eb2.png" alt="" /></p>
+
+<ol>
+  <li>最终运行效果</li>
+</ol>
+
+<p><img src="111aa6f.png" alt="" /></p>
+
+<p>转载请注明出自：葡萄城报表</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/%E8%BF%98%E5%9C%A8%E4%B8%BA%E7%94%BB%E7%B1%BBword%E6%96%87%E6%A1%A3%E6%8A%A5%E8%A1%A8%E8%80%8C%E5%8F%91%E6%84%81%E5%90%97.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/java%E5%8F%82%E6%95%B0%E4%BC%A0%E9%80%92%E4%B9%8B%E5%80%BC%E4%BC%A0%E9%80%92.html">&laquo; Java参数传递之值传递</a>
+  
+  
+  <a class="next" href="/2017/java%E4%BD%8D%E8%BF%90%E7%AE%97%E4%B9%8B%E7%AE%80%E5%8D%95%E4%BA%86%E8%A7%A3.html">Java位运算之简单了解 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

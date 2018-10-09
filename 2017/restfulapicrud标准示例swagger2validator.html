@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>Restful Api CRUD 标准示例 （Swagger2+validator） | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="Restful Api CRUD 标准示例 （Swagger2+validator）" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="为什么要写这篇贴？" />
+<meta property="og:description" content="为什么要写这篇贴？" />
+<link rel="canonical" href="http://www.jfox.info/2017/restfulapicrud%E6%A0%87%E5%87%86%E7%A4%BA%E4%BE%8Bswagger2validator.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/restfulapicrud%E6%A0%87%E5%87%86%E7%A4%BA%E4%BE%8Bswagger2validator.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:52:41+00:00" />
+<script type="application/ld+json">
+{"description":"为什么要写这篇贴？","@type":"BlogPosting","url":"http://www.jfox.info/2017/restfulapicrud%E6%A0%87%E5%87%86%E7%A4%BA%E4%BE%8Bswagger2validator.html","headline":"Restful Api CRUD 标准示例 （Swagger2+validator）","dateModified":"2017-01-01T15:52:41+00:00","datePublished":"2017-01-01T15:52:41+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/restfulapicrud%E6%A0%87%E5%87%86%E7%A4%BA%E4%BE%8Bswagger2validator.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Restful Api CRUD 标准示例 （Swagger2+validator）</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:52:41+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>为什么要写这篇贴？</p>
+
+<p>　　要写一个最简单的CRUD 符合 Restful Api    规范的  一个Controller， 想百度搜索一下 直接复制拷贝 简单修改一下 方法内代码。</p>
+
+<p>　　然而， 搜索结果让我无语到家。 没一个是正在符合 Restful Api 规范的实例。 最无语的是 你呀直接 JSP 页面了，还说什么  Restful Api 啊！！！</p>
+
+<p>　　为方便以后自己复制拷贝使用，我把自己刚写的贴出来。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>**Swagger2：**
+
+@Configuration
+@EnableSwagger2
+publicclass Swagger2
+{
+    @Bean
+    public Docket createRestApi() {
+        returnnew Docket(DocumentationType.SWAGGER_2)
+                .apiInfo(apiInfo())
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("com.dj.edi.web"))
+                .paths(PathSelectors.any())
+                .build();
+    }
+
+    private ApiInfo apiInfo() {
+        returnnew ApiInfoBuilder()
+                .title("EID 用户 CRUD")
+                .description("EID 用户 CRUD")
+                .version("1.0")
+                .build();
+    }
+
+}
+
+**Application：
+**
+
+@SpringBootApplication
+@Import(springfox.bean.validators.configuration.BeanValidatorPluginsConfiguration.class)
+publicclass ComEdiOrderUserApplication
+{
+    publicstaticvoid main(String[] args) {SpringApplication.run(ComEdiOrderUserApplication.class, args);}
+
+}
+
+**UserApiController:**
+
+@RestController
+@RequestMapping("/v1/user")
+publicclass UserApiController
+{
+    privatestaticfinal Logger LOGGER = LoggerFactory.getLogger(UserApiController.class);
+
+    @Autowired
+    private ClientUsersRepository repository;
+
+    @ApiOperation(value = "获取所有用户数据")
+    @RequestMapping(value = "/list", method = RequestMethod.GET)
+    public ResponseEntity&lt;List&lt;ClientUsers&gt;&gt; getClientUsersList() {
+        try {
+            return ResponseEntity.ok(repository.findAll());
+        } catch (Exception e) {
+            LOGGER.info(" 获取所有用户数据异常 " + e.getMessage(), e);
+            return ResponseEntity.status(500).body(null);
+        }
+    }
+
+    @ApiOperation(value = "获取用户数据")
+    @ApiImplicitParam(name = "id", value = "用户ID", required = true, dataType = "String", paramType = "path")
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
+    public ResponseEntity&lt;ClientUsers&gt; getClientUsers(@PathVariable String id) {
+        try {
+            return ResponseEntity.ok(repository.findOne(id));
+        } catch (Exception e) {
+            LOGGER.info(" 获取用户数据  " + id + "  数据异常 " + e.getMessage(), e);
+            return ResponseEntity.status(500).body(null);
+        }
+    }
+
+    @ApiOperation(value = "创建用户", notes = "根据User对象创建用户")
+    @ApiImplicitParam(name = "users", value = "用户详细实体user", required = true, dataType = "ClientUsers", paramType = "body")
+    @RequestMapping(method = RequestMethod.POST)
+    public ResponseEntity&lt;ClientUsers&gt; createUser(@Valid @RequestBody ClientUsers users) {
+        try {
+
+            users.setId(ObjectId.get().toString());
+            return ResponseEntity.ok(repository.save(users));
+
+        } catch (Exception e) {
+            LOGGER.info(" 创建用户  " + users + "  数据异常 " + e.getMessage(), e);
+            return ResponseEntity.status(500).body(null);
+        }
+    }
+
+    @ApiOperation(value = "更新用户详细信息", notes = "根据url的id来指定更新对象，并根据传过来的user信息来更新用户详细信息")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "id", value = "用户ID", required = true, dataType = "String", paramType = "path"),
+            @ApiImplicitParam(name = "user", value = "用户详细实体user", required = true, dataType = "ClientUsers", paramType = "body")
+    })
+    @RequestMapping(value = "{id}", method = RequestMethod.PUT)
+    public ResponseEntity&lt;ClientUsers&gt; updateUser(@PathVariable("id") String id,@Valid @RequestBody ClientUsers user) {
+        try {
+            user.setId(id);
+            return ResponseEntity.ok(repository.save(user));
+        } catch (Exception e) {
+            LOGGER.info(" 更新用户  " + user + "  数据异常 " + e.getMessage(), e);
+            return ResponseEntity.status(500).body(null);
+        }
+    }
+
+    @ApiOperation(value = "删除用户", notes = "根据url的id来指定删除对象")
+    @ApiImplicitParam(name = "id", value = "用户ID", required = true, dataType = "String", paramType = "path")
+    @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
+    public ResponseEntity&lt;String&gt; deleteUser(@PathVariable String id) {
+        try {
+            repository.delete(id);
+            return ResponseEntity.ok("ok");
+        } catch (Exception e) {
+            LOGGER.info(" 删除用户  " + id + "  数据异常 " + e.getMessage(), e);
+            return ResponseEntity.status(500).body(null);
+        }
+    }
+}
+
+**ClientUsersRepository:
+**
+
+@Component
+publicinterface ClientUsersRepository extends MongoRepository&lt;ClientUsers, String&gt;
+{
+    ClientUsers findByips(String ip);
+    ClientUsers findByclientFlag(String clientFlag);
+}
+
+**ClientUsers:
+**
+
+@Data
+publicclass ClientUsers implements Serializable
+{
+
+    @Id
+    private String id;
+
+    /**
+     * 用户名称
+     */
+    @NotBlank(message = "用户名称 不能为空")
+    @Pattern(regexp = "^(?!string)",message = "不能是 stirng")
+    private String userName;
+
+    /**
+     * ip
+     */
+    @NotNull(message = "ip 至少需要个")
+    private List&lt;String&gt; ips;
+
+    /**
+     * 标识
+     */
+    @NotBlank(message = " 标识 不能为空")
+    @Pattern(regexp = "^(?!string)",message = "不能是 stirng")
+    private String clientFlag;
+
+    /**
+     * 客户服务ID
+     */
+    @NotBlank(message = "客户服务ID 不能为空")
+    @Pattern(regexp = "^(?!string)",message = "不能是 stirng")
+    private String checkID;
+}
+
+**有哪里不好的希望指正**
+
+** **
+</code></pre></div></div>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/restfulapicrud%E6%A0%87%E5%87%86%E7%A4%BA%E4%BE%8Bswagger2validator.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/%E8%BD%AC%E5%B8%96%E5%8F%8A%E6%95%B4%E7%90%86odoowebserviceapi%E4%B9%8Bxmlrpclib%E5%BA%94%E7%94%A8%E6%A1%88%E4%BE%8Bodoo%E5%AF%BC%E5%85%A5%E8%81%94%E7%B3%BB.html">&laquo; 转帖及整理：Odoo Web Service API之xmlrpclib应用案例：”Odoo导入联系</a>
+  
+  
+  <a class="next" href="/2017/java%E7%99%BD%E8%AF%9D%E7%BC%96%E8%AF%91%E5%99%A8%E5%AF%B9listextendt%E5%92%8Clistsupert%E7%B1%BB%E5%9E%8B%E5%AE%9E%E4%BE%8B%E7%9A%84add%E5%92%8Cget%E6%93%8D%E4%BD%9C%E9%99%90%E5%88%B6.html">【Java】白话编译器对List和List类型实例的add()和get()操作限制 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

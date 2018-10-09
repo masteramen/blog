@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>使用ZeroClipboard.js把文本复制到剪贴板 浏览器兼容性最好的方法 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="使用ZeroClipboard.js把文本复制到剪贴板 浏览器兼容性最好的方法" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="By Lee - Last updated: 星期日, 二月 9, 2014" />
+<meta property="og:description" content="By Lee - Last updated: 星期日, 二月 9, 2014" />
+<link rel="canonical" href="http://www.jfox.info/2017/%E4%BD%BF%E7%94%A8zeroclipboard-js%E6%8A%8A%E6%96%87%E6%9C%AC%E5%A4%8D%E5%88%B6%E5%88%B0%E5%89%AA%E8%B4%B4%E6%9D%BF-%E6%B5%8F%E8%A7%88%E5%99%A8%E5%85%BC%E5%AE%B9%E6%80%A7%E6%9C%80%E5%A5%BD%E7%9A%84.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/%E4%BD%BF%E7%94%A8zeroclipboard-js%E6%8A%8A%E6%96%87%E6%9C%AC%E5%A4%8D%E5%88%B6%E5%88%B0%E5%89%AA%E8%B4%B4%E6%9D%BF-%E6%B5%8F%E8%A7%88%E5%99%A8%E5%85%BC%E5%AE%B9%E6%80%A7%E6%9C%80%E5%A5%BD%E7%9A%84.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:43:54+00:00" />
+<script type="application/ld+json">
+{"description":"By Lee - Last updated: 星期日, 二月 9, 2014","@type":"BlogPosting","url":"http://www.jfox.info/2017/%E4%BD%BF%E7%94%A8zeroclipboard-js%E6%8A%8A%E6%96%87%E6%9C%AC%E5%A4%8D%E5%88%B6%E5%88%B0%E5%89%AA%E8%B4%B4%E6%9D%BF-%E6%B5%8F%E8%A7%88%E5%99%A8%E5%85%BC%E5%AE%B9%E6%80%A7%E6%9C%80%E5%A5%BD%E7%9A%84.html","headline":"使用ZeroClipboard.js把文本复制到剪贴板 浏览器兼容性最好的方法","dateModified":"2017-01-01T15:43:54+00:00","datePublished":"2017-01-01T15:43:54+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/%E4%BD%BF%E7%94%A8zeroclipboard-js%E6%8A%8A%E6%96%87%E6%9C%AC%E5%A4%8D%E5%88%B6%E5%88%B0%E5%89%AA%E8%B4%B4%E6%9D%BF-%E6%B5%8F%E8%A7%88%E5%99%A8%E5%85%BC%E5%AE%B9%E6%80%A7%E6%9C%80%E5%A5%BD%E7%9A%84.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">使用ZeroClipboard.js把文本复制到剪贴板 浏览器兼容性最好的方法</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:43:54+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>By Lee - Last updated: 星期日, 二月 9, 2014</p>
+
+<p>在网上找了许多把文本复制到剪贴板的方法，然后又用浏览器测试发现兼容性并不好，最后找到ZeroClipboard这个插件，算是找到的浏览器兼容性最好的方法了.</p>
+
+<p>首先介绍一下ZeroClipboard的实现机制，ZeroClipboard是通过在一个div上覆盖一个透明的flash文件来实现复制功能的，你可以自定义这个div的外观，然后利用js把flash覆盖在这个div上，当用户去点击这个div时，其实是点击了flash，flash接到 click事件后就把内容复制到剪切版了。 因为大多数浏览器都装有flash，所以这个方法的兼容性较高。</p>
+
+<p>============准备步骤============</p>
+
+<p>1、 下载最新版本的 ZeroClipboard
+<a href="https://www.jfox.info/go.php?url=http://code.google.com/p/zeroclipboard/downloads/list">http://code.google.com/p/zeroclipboard/downloads/list</a></p>
+
+<p>2、 解压缩文件，把 ZeroClipboard.js 和 ZeroClipboard.swf 两个文件加入到你的项目里，其它文件可以忽略。</p>
+
+<p>3、 在你的html中添加如下代码：</p>
+
+<p><code class="highlighter-rouge">&lt;div id=“d_clip_container” style=“position: relative;”&gt;
+&lt;div id=“d_clip_button” &gt;Copy code&lt;/div&gt;
+&lt;/div&gt;
+</code></p>
+
+<p>4、 给这些html添加如下css(也可自定义，只要让这个div有一定的宽度和高度):</p>
+
+<p><code class="highlighter-rouge">&lt;style type="text/css"&gt;
+#d_clip_button {
+width:150px;
+text-align:center;
+border:1px solid black;
+background-color:#ccc;
+margin:10px; padding:10px;
+}
+#d_clip_button.hover { background-color:#eee; }
+#d_clip_button.active { background-color:#aaa; }
+&lt;/style&gt; 
+</code></p>
+
+<p>5、导入js文件(注意js文件访问路径)：</p>
+
+<p><code class="highlighter-rouge">&lt;script type=“text/javascript” src=“ZeroClipboard.js”&gt;&lt;/script&gt;
+</code></p>
+
+<p>6、添加js：</p>
+
+<p><code class="highlighter-rouge">//这里是flash文件的访问路径，且不是js代码文件的相对路径，因此请正确设置您的路径
+//确保能够通过“http ://YOURSERVER/path/ZeroClipboard.swf”成功请求到此flash
+ZeroClipboard.setMoviePath( '/path/ZeroClipboard.swf' ); </code></p>
+
+<p>CLIPBOARD = new ZeroClipboard.Client();</p>
+
+<p>CLIPBOARD.setHandCursor( true );</p>
+
+<p><code class="highlighter-rouge">//让flash覆盖在div上， 传的两个参数是html代码中对应的div的ID
+CLIPBOARD.glue( 'd_clip_button', 'd_clip_container' ); 
+</code></p>
+
+<p>============复制代码============</p>
+
+<p>按照上面的步骤完成后，你还需要注意一个问题，前面说了当用户点击flash的时候才会触发复制事件，那么复制的文本怎么传给flash呢？ ZeroClipboard通过预先设置复制文本来实现，也就是说你要先给ZeroClipboard传递你要复制的文本（但此时还没有执行复制操作），然后等用户点击flash的时候才实现真正的复制。</p>
+
+<p>你可以使用如下的代码预先设置要复制的内容:</p>
+
+<p><code class="highlighter-rouge">CLIPBOARD.setText( '你想要复制的内容，但是要等到用户主动点击flash后才真正的复制' );</code></p>
+
+<p>============注意============</p>
+
+<p>此插件必须经过服务器端才可用（比如通过apache请求），如果只是用浏览器打开本地文件测试的话是出不来效果的。</p>
+
+<p>============事件绑定============</p>
+
+<p>因为flash覆盖了div，所以你对div的hover、mouseover等事件都不会被触发， 不过ZeroClipboard为你实现了绑定js事件的方法
+请参考 <a href="https://www.jfox.info/go.php?url=http://code.google.com/p/zeroclipboard/wiki/Instructions#Event_Handlers">http://code.google.com/p/zeroclipboard/wiki/Instructions#Event_Handlers</a></p>
+
+<p>参考来源 <a href="https://www.jfox.info/go.php?url=http://www.jfox.info/url.php?url=http%3A%2F%2Fsdjl.me%2Findex.php%2Farchives%2F174">使用ZeroClipboard.js把文本复制到剪贴板 » sdjl的想法</a>.</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/%E4%BD%BF%E7%94%A8zeroclipboard-js%E6%8A%8A%E6%96%87%E6%9C%AC%E5%A4%8D%E5%88%B6%E5%88%B0%E5%89%AA%E8%B4%B4%E6%9D%BF-%E6%B5%8F%E8%A7%88%E5%99%A8%E5%85%BC%E5%AE%B9%E6%80%A7%E6%9C%80%E5%A5%BD%E7%9A%84.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/%E4%BD%BF%E7%94%A8zeroclipboard-js%E6%8A%8A%E6%96%87%E6%9C%AC%E5%A4%8D%E5%88%B6%E5%88%B0%E5%89%AA%E8%B4%B4%E6%9D%BF-%E6%B5%8F%E8%A7%88%E5%99%A8%E5%85%BC%E5%AE%B9%E6%80%A7%E6%9C%80%E5%A5%BD%E7%9A%84.html">&laquo; 使用ZeroClipboard.js把文本复制到剪贴板 浏览器兼容性最好的方法</a>
+  
+  
+  <a class="next" href="/2017/chrome%E6%B5%8F%E8%A7%88%E5%99%A8%E6%8A%A5%E9%94%99:origin-null-is-not-allowed-by-access-control-allow-origin-%E9%97%AE%E9%A2%98%E8%A7%A3%E5%86%B3.html">Chrome浏览器报错：Origin null is not allowed by Access-Control-Allow-Origin. 问题解决 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

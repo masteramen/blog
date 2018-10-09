@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>Tomcat停机过程分析及线程处理方法 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="Tomcat停机过程分析及线程处理方法" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="工作中经常遇到因为Tomcat shutdown时自己创建的线程因没有及时停止而引起的各种莫名其妙的报错，这篇文章将通过对Tomcat停机过程的梳理讨论产生这些错误的原因,同时提出了两个可行的解决办法。" />
+<meta property="og:description" content="工作中经常遇到因为Tomcat shutdown时自己创建的线程因没有及时停止而引起的各种莫名其妙的报错，这篇文章将通过对Tomcat停机过程的梳理讨论产生这些错误的原因,同时提出了两个可行的解决办法。" />
+<link rel="canonical" href="http://www.jfox.info/2017/tomcat%E5%81%9C%E6%9C%BA%E8%BF%87%E7%A8%8B%E5%88%86%E6%9E%90%E5%8F%8A%E7%BA%BF%E7%A8%8B%E5%A4%84%E7%90%86%E6%96%B9%E6%B3%95.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/tomcat%E5%81%9C%E6%9C%BA%E8%BF%87%E7%A8%8B%E5%88%86%E6%9E%90%E5%8F%8A%E7%BA%BF%E7%A8%8B%E5%A4%84%E7%90%86%E6%96%B9%E6%B3%95.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:59:54+00:00" />
+<script type="application/ld+json">
+{"description":"工作中经常遇到因为Tomcat shutdown时自己创建的线程因没有及时停止而引起的各种莫名其妙的报错，这篇文章将通过对Tomcat停机过程的梳理讨论产生这些错误的原因,同时提出了两个可行的解决办法。","@type":"BlogPosting","url":"http://www.jfox.info/2017/tomcat%E5%81%9C%E6%9C%BA%E8%BF%87%E7%A8%8B%E5%88%86%E6%9E%90%E5%8F%8A%E7%BA%BF%E7%A8%8B%E5%A4%84%E7%90%86%E6%96%B9%E6%B3%95.html","headline":"Tomcat停机过程分析及线程处理方法","dateModified":"2017-01-01T15:59:54+00:00","datePublished":"2017-01-01T15:59:54+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/tomcat%E5%81%9C%E6%9C%BA%E8%BF%87%E7%A8%8B%E5%88%86%E6%9E%90%E5%8F%8A%E7%BA%BF%E7%A8%8B%E5%A4%84%E7%90%86%E6%96%B9%E6%B3%95.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Tomcat停机过程分析及线程处理方法</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:59:54+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>工作中经常遇到因为Tomcat shutdown时自己创建的线程因没有及时停止而引起的各种莫名其妙的报错，这篇文章将通过对Tomcat停机过程的梳理讨论产生这些错误的原因,同时提出了两个可行的解决办法。</p>
+
+<h2 id="tomcat停机过程分析">Tomcat停机过程分析</h2>
+
+<p>一个Tomcat进程本质上是一个JVM进程，其内部结构如下图所示：（图片来自网络）
+<img src="0d55034.png" alt="" />
+从上至下分别为Server、service、connnector | Engine、host、context。</p>
+
+<p>在实现中Engine和host只是一种抽象，更核心的功能在context中实现。顶层的Server只能有一个，一个Server可以包含多个Service，一个Service可以包含多个Connector和一个Continer。Continer是对Engine、Host或者Context的抽象。不严格的说，一个Context对应一个Webapp。</p>
+
+<p>当Tomcat启动时，主线程的主要工作概括如下：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public void start() {
+
+    load();//config server and init it
+    
+    getServer().start();//start server and all continers belong to it
+    
+    Runtime.getRuntime().addShutdownHook(shutdownHook);// register the shutdown hook
+    
+    await();//wait here util the end of Tomcat Proccess
+    
+    stop();
+}
+</code></pre></div></div>
+
+<ol>
+  <li>
+    <p>通过扫描配置文件（默认为server.xml）来构建从顶层Server开始到Service、Connector等容器（其中还包含了对Context的构建）。</p>
+  </li>
+  <li>
+    <p>调用Catalina的start方法，进而调用Server的start方法。start方法将导致整个容器的启动。</p>
+  </li>
+</ol>
+
+<p>Server、Service、Connector、Context等容器都实现了Lifecycle接口，同时这些组件保持了严格的、从上至下的树状结构。Tomcat只通过对根节点（Server）的生命周期管理就可以实现对所有树状结构中其他所有容器的管理。</p>
+
+<ol>
+  <li>
+    <p>将自己阻塞于await()方法，await()方法会等待一个网络连接请求，当有用户连接到对应端口并发送指定字符串（通常是’SHUTDOWN’）时，await()返回，主线程继续执行。</p>
+  </li>
+  <li>
+    <p>主线程执行stop()方法。stop()方法将会从Server开始调用所有其下容器的stop方法。stop()方法执行完后，主线程退出，如果没有问题，Tomcat容器此时运行终止。</p>
+  </li>
+</ol>
+
+<p>值得注意的是stop()方法自Service下面一层开始是异步执行的。代码如下：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>protected synchronized void stopInternal(){
+
+    /*other code*/
+    
+    Container children[] = findChildren();
+    List&lt;Future&lt;Void&gt;&gt; results = new ArrayList&lt;Future&lt;Void&gt;&gt;();
+    for (int i = 0; i &lt; children.length; i++) {
+        results.add(startStopExecutor.submit(new StopChild(children[i])));
+    }
+    boolean fail = false;
+    for (Future&lt;Void&gt; result : results) {
+        try {
+            result.get();
+        } catch (Exception e) {
+            log.error(sm.getString("containerBase.threadedStopFailed"), e);
+            fail = true;
+        }
+    }
+    if (fail) {
+        throw new LifecycleException(
+                sm.getString("containerBase.threadedStopFailed"));
+    }
+    
+    /*other code*/
+}
+</code></pre></div></div>
+
+<p>在这些被关闭的children中，按照标准应该是Engine-Host-Context这样的层状结构，也就是说最后会调用Context的stop()方法。在Context的stopInternal方法中会调用：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>filterStop();
+
+listenerStop();
+
+((Lifecycle) loader).stop();
+</code></pre></div></div>
+
+<p>这三个方法。（这只是其中的一部分，因为与我们分析的过程有关所以列出来了，其他与过程无关的方法未予列出）</p>
+
+<p>其中filterStop会清理我们在web.xml中注册的filter，listenerStop会进一步调用web.xml中注册的Listener的onDestory方法（如果有多个Listener注册，调用顺序与注册顺序相反）。而loader在这儿是WebappClassLoader，其中重要的操作（尝试停止线程、清理引用资源和卸载Class）都是在stop函数中做的。</p>
+
+<p>如果我们使用的SpringWeb，一般web.xml中注册的Listener将会是：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;listener&gt;
+    &lt;listener-class&gt;org.springframework.web.context.ContextLoaderListener&lt;/listener-class&gt;
+&lt;/listener&gt;
+</code></pre></div></div>
+
+<p>看ContextLoaderListener的代码不难发现，Spring框架通过Listener的contextInitialized方法初始化Bean，通过contextDestroyed方法清理Bean。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public class ContextLoaderListener extends ContextLoader implements ServletContextListener {
+    public ContextLoaderListener() {
+    }
+
+    public ContextLoaderListener(WebApplicationContext context) {
+        super(context);
+    }
+
+    public void contextInitialized(ServletContextEvent event) {
+        this.initWebApplicationContext(event.getServletContext());
+    }
+
+    public void contextDestroyed(ServletContextEvent event) {
+        this.closeWebApplicationContext(event.getServletContext());
+        ContextCleanupListener.cleanupAttributes(event.getServletContext());
+    }
+}
+</code></pre></div></div>
+
+<p>在这儿有一个重要的事：我们的线程是在loader中被尝试停止的，而loader的stop方法在listenerStop方法之后，也就是说即使loader成功终止了用户自己启动的线程，依然有可能在线程终止之前使用Sping框架，而此时Spring框架已经在Listener中关闭了！况且在loader的清理线程过程中只有配置了clearReferencesStopThreads参数，用户自己启动的线程才会被强制终止（使用Thread.stop()），而在大多数情况下为了保证数据的完整性，这个参数不会被配置。也就是说在WebApp中，用户自己启动的线程（包括Executors），都不会因为容器的退出而终止。我们知道，JVM自行退出的原因主要有两个：</p>
+
+<ul>
+  <li>
+    <p>调用了System.exit()方法</p>
+  </li>
+  <li>
+    <p>所有非守护线程都退出</p>
+  </li>
+</ul>
+
+<p>而Tomcat中没有在stop执行结束时主动调用System.exit()方法，所以如果有用户启动的非守护线程，并且用户没有与容器同步关闭线程的话，Tomcat不会主动结束！这个问题暂且搁置，下面说说停机时遇到的各种问题。</p>
+
+<h2 id="tomcat停机过程中的异常分析">Tomcat停机过程中的异常分析</h2>
+
+<h3 id="illegalstateexception">IllegalStateException</h3>
+
+<p>在使用Spring框架的Webapp中，Tomcat退出时Spring框架的关闭与用户线程结束之间是有严重的同步问题的。在这段时间里（Spring框架关闭，用户线程结束前）会发生很多不可预料的问题。这些问题中最常见的就是IllegalStateException了。发生这样的异常的标准代码如下：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public void run(){
+    while(!isInterrupted()) {
+        try {
+            Thread.sleep(1000);
+            GQBean bean = SpringContextHolder.getBean(GQBean.class);
+            /*do something with bean...*/
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+</code></pre></div></div>
+
+<p>这种错误很容易复现，也很常见，不用多说。</p>
+
+<h3 id="classnotfoundnullpointerexception">ClassNotFound/NullPointerException</h3>
+
+<p>这种错误不常见，分析起来也比较麻烦。</p>
+
+<p>在前面的分析中我们确定了两件事：</p>
+
+<ol>
+  <li>用户创建的线程不会随着容器的销毁而停止。</li>
+  <li>ClassLoader在容器的停止过程中卸载了加载过的Class</li>
+</ol>
+
+<p>很容易确定这又是线程没有结束引起的。</p>
+
+<ul>
+  <li>当ClassLoader卸载完毕，用户线程尝试去load一个Class时，报ClassNotFoundException或者NoClassDefFoundError。</li>
+  <li>
+    <p>在ClassLoader卸载过程中，因为Tomcat没有对停止容器进行严格的同步，此时如果尝试load一个Class可能会导致NullPointerException，原因如下：</p>
+
+    <p>//part of load class code, may be executed in user thread
+  protected ResourceEntry findResourceInternal(…){
+      if (!started) return null;</p>
+
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  synchronized (jarFiles) {
+      if (openJARs()) {
+          for (int i = 0; i &lt; jarFiles.length; i++) {
+              jarEntry = jarFiles[i].getJarEntry(path);
+                  if (jarEntry != null) {
+                  try {
+                      entry.manifest = jarFiles[i].getManifest();
+                  } catch (IOException ioe) {
+                      // Ignore
+                  }
+                  break;
+              }
+          }
+      }
+  }
+  /*Other statement*/   }
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<p>从代码中可以看到，对jarEntry的访问进行了非常谨慎的同步操作。在其他对jarEntry的使用处都有非常谨慎的同步，除了在stop中没有：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// loader.stop() must be executed in stop thread
+public void stop() throws LifecycleException {
+    /*other statement*/
+    
+    length = jarFiles.length;
+    for (int i = 0; i &lt; length; i++) {
+        try {
+            if (jarFiles[i] != null) {
+                jarFiles[i].close();
+            }
+        } catch (IOException e) {
+            // Ignore
+        }
+        jarFiles[i] = null;
+    }
+    
+    /*other statement*/
+}
+</code></pre></div></div>
+
+<p>可以看到，上面两段代码中，如果用户线程进入同步代码块后（此时会导致线程缓存区的刷新），started变为false跳过了更新jarFiles或者此时jarFiles[0]还未被置空，等到从openJARs返回后，stop正好执行过jarFiles[0] = null， 便会触发NullPointerException。</p>
+
+<p>这个异常非常难以理解，原因就是为什么会触发loadClass操作，尤其是在代码中并没有new一个类的时候。事实上有很多时候都会触发对一个类的初始化检查。</p>
+
+<p><em>（注意是类的初始化，不是类实例的初始化 两者天差地别）</em></p>
+
+<p>如下情况将会触发类的初始化检查，（如果此时类已经初始化完毕，将直接返回，如果此时类还没有初始化，将执行类的初始化操作）：</p>
+
+<ul>
+  <li>当前线程中第一次创建此类的实例</li>
+  <li>当前线程中第一次调用类的静态方法</li>
+  <li>当前线程中第一次使用类的静态成员</li>
+  <li>当前线程中第一次为类静态成员赋值</li>
+</ul>
+
+<p>当在一个线程中发生上面这些情况时就会触发初始化检查，（一个线程中最多检查一次），检查这个类的初始化情况之前必然需要获得这个类，此时需要调用loadClass方法。</p>
+
+<p>一般有如下模式的代码容易触发上述异常：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>try{
+    /**do something **/
+}catch(Exception e){
+    //ExceptionUtil has never used in the current thread before
+    String = ExceptionUtil.getExceptionTrace(e);
+    //or this, ExceptionTracer never appears in the current thread before
+    System.out.println(new ExceptionTracer(e));
+    //or other statement that triggers a call of loadClass
+    /**do other thing**/
+}
+</code></pre></div></div>
+
+<h2 id="一些建议的处理办法">一些建议的处理办法</h2>
+
+<p>根据上面的分析，造成异常的主要原因就是线程没有及时终止。所以解决办法的关键就在如何在容器终止之前优雅地终止用户启动的线程上。</p>
+
+<h3 id="创建自己的listener作为终止线程的通知者">创建自己的Listener作为终止线程的通知者</h3>
+
+<p>根据分析，项目中主要用到的用户创建的线程包括四种：</p>
+
+<ul>
+  <li>Thread</li>
+  <li>Executors</li>
+  <li>Timer</li>
+  <li>Scheduler</li>
+</ul>
+
+<p>所以最直接的想法就是建立一种对这些组件的管理模块，具体做法分为两种：</p>
+
+<ol>
+  <li>
+    <p>对于具体Thread类，为使用者提供一个父类，所有创建的线程均为这个父类的子类。父类重写isInterrupted方法。使用者使用时需要检测线程当前终止状态。</p>
+
+    <p>while(!isInterrupted()){
+     /<strong>do some thing</strong>/
+ }</p>
+  </li>
+  <li>
+    <p>对于Executors等组件，使用专门定制的注册器，使用者保证在创建一个对应组件后立即将组件注册到对应注册器上。在Listener监听到容器销毁事件时调用注册器上的停止方法。</p>
+  </li>
+</ol>
+
+<p>创建自己的Listener的优点是可以主动在监听到事件时阻塞销毁进程，为用户线程做清理工作争取些时间，因为此时Spring还没有销毁，程序的状态一切正常。</p>
+
+<p>缺点就是对代码侵入性大，并且依赖于使用者的编码。</p>
+
+<h3 id="使用spring提供的taskexecutor">使用Spring提供的TaskExecutor</h3>
+
+<p>为了应对在webapp中管理自己的线程的目的，Spring提供了一套TaskExcutor的工具。其中的ThreadPoolTaskExecutor与Java5中的ThreadPoolExecutor非常类似，只是生命周期会被Spring管理，Spring框架停止时，Executor也会被停止，用户线程会收到中断异常。同时Spring还提供了ScheduledThreadPoolExecutor，对于定时任务或者要创建自己线程的需求可以用这个类。对于线程管理，Spring提供了非常丰富的支持， <a href="https://www.jfox.info/go.php?url=https://docs.spring.io/spring/docs/current/spring-framework-reference/html/scheduling.html">具体可以看这里</a> 。</p>
+
+<p>使用Spring框架的优点是对代码侵入性小，对代码依赖性也相对较小。</p>
+
+<p>缺点是Spring框架不保证线程中断与Bean销毁的时间先后顺序，也即是说如果一个线程在捕获InterruptException后，再通过Spring去getBean时依然会触发IllegalSateException。同时使用者依然需要检查线程状态或者在Sleep中触发中断，否则线程依然不会终止。</p>
+
+<h3 id="其他需要提醒的">其他需要提醒的</h3>
+
+<p>在上面的解决方法中，无论是在Listener中阻塞主线程的停止操作还是在Spring框架中不响应interrupt状态都能为线程继续做一些事情争取些时间。但是这个时间不是无限的。在catalina.sh中，stop部分的脚本中我们可以看到：（删繁就简 体现一下）</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>#Tomcat停机脚本摘录
+#第一次正常停止
+eval "\"$_RUNJAVA\"" $LOGGING_MANAGER $JAVA_OPTS \
+    -Djava.endorsed.dirs="\"$JAVA_ENDORSED_DIRS\"" -classpath "\"$CLASSPATH\"" \
+    -Dcatalina.base="\"$CATALINA_BASE\"" \
+    -Dcatalina.home="\"$CATALINA_HOME\"" \
+    -Djava.io.tmpdir="\"$CATALINA_TMPDIR\"" \
+    org.apache.catalina.startup.Bootstrap "$@" stop
+#如果终止失败 使用kill -15
+if [ $? != 0 ]; then
+    kill -15 `cat "$CATALINA_PID"` &gt;/dev/null 2&gt;&amp;1
+#设置等待时间
+SLEEP=5
+if [ "$1" = "-force" ]; then
+    shift
+    #如果参数中有-force 将强制停止
+    FORCE=1
+fi
+while [ $SLEEP -gt 0 ]; do
+    sleep 1
+    SLEEP=`expr $SLEEP - 1 `
+done
+#如果需要强制终止 kill -9
+if [ $FORCE -eq 1 ]; then
+    kill -9 $PID
+fi
+</code></pre></div></div>
+
+<p>从上面的停止脚本中可以看到，如果配置了强制终止（我们服务器默认配置了），你阻塞终止进程去做自己的事的时间只有5秒钟。这期间还有其他线程在做一些任务以及线程真正开始终止到发现终止的时间（比如从当前到下一次调用isInterrupted的时间），考虑到这些的话，最大阻塞时间应该更短。</p>
+
+<p>从上面的分析中也可以看到，如果服务中有比较重要又耗时的任务，又希望保证一致性的话，最好的办法就是在阻塞的宝贵的5秒钟时间里记录当前执行进度，等到服务重启的时候检测上次执行进度，然后从上次的进度中恢复。</p>
+
+<p>建议：每个任务的执行粒度（两个isInterrupted的检测间隔）至少要控制在最大阻塞时间以内以留出足够时间做终止以后的记录工作。</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/tomcat%E5%81%9C%E6%9C%BA%E8%BF%87%E7%A8%8B%E5%88%86%E6%9E%90%E5%8F%8A%E7%BA%BF%E7%A8%8B%E5%A4%84%E7%90%86%E6%96%B9%E6%B3%95.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/%E8%B5%A2%E5%9C%A8%E9%9D%A2%E8%AF%95%E4%B9%8Bjava%E6%8C%81%E4%B9%85%E5%B1%8210.html">&laquo; 赢在面试之Java持久层（10）</a>
+  
+  
+  <a class="next" href="/2017/%E4%B8%80%E8%B5%B7%E6%9D%A5%E5%AD%A6springcloud%E4%B9%8B%E6%96%AD%E8%B7%AF%E5%99%A8hystrixribbon.html">一起来学SpringCloud之 – 断路器Hystrix（Ribbon） &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

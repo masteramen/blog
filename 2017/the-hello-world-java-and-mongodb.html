@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>Java和MongoDB之Hello World | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="Java和MongoDB之Hello World" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="By Lee - Last updated: 星期四, 三月 6, 2014" />
+<meta property="og:description" content="By Lee - Last updated: 星期四, 三月 6, 2014" />
+<link rel="canonical" href="http://www.jfox.info/2017/the-hello-world-java-and-mongodb.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/the-hello-world-java-and-mongodb.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:45:02+00:00" />
+<script type="application/ld+json">
+{"description":"By Lee - Last updated: 星期四, 三月 6, 2014","@type":"BlogPosting","url":"http://www.jfox.info/2017/the-hello-world-java-and-mongodb.html","headline":"Java和MongoDB之Hello World","dateModified":"2017-01-01T15:45:02+00:00","datePublished":"2017-01-01T15:45:02+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/the-hello-world-java-and-mongodb.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Java和MongoDB之Hello World</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:45:02+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>By Lee - Last updated: 星期四, 三月 6, 2014</p>
+
+<p>1.新建Project</p>
+
+<p>新建Java Project，并把mongo-java-driver驱动加入到项目bulid path中，如果你使用的是maven增加依赖。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;dependency&gt;
+</code></pre></div></div>
+<groupId>org.mongodb</groupId>
+<artifactId>mongo-java-driver</artifactId>
+<version>2.10.1</version>
+<p>&lt;/dependency&gt;</p>
+
+<p>2.连接上MongoDB</p>
+
+<p>//&gt;2.10版本
+MongoClient mongo = new MongoClient( “localhost“ , 27017 );</p>
+
+<p>//老版本<br />
+Mongo mongo = new Mongo(“localhost“, 27017);</p>
+
+<p>如果需要验证，需要输入用户名和密码</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>MongoClient mongoClient = new MongoClient(); DB db = mongoClient.getDB(“database name“); boolean auth = db.authenticate(“username“, “password“.toCharArray());
+</code></pre></div></div>
+
+<p>3.MongoDB数据库</p>
+
+<p>得到MongoDB中的数据库，如果数据库名不存在，MongoDB会自动创建</p>
+
+<p>DB db = mongo.getDB(“database name“);</p>
+
+<p>显示所有的数据库</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>List&lt;String&gt; dbs = mongo.getDatabaseNames(); for(String db : dbs){ System.out.println(db); }
+</code></pre></div></div>
+
+<p>4.MongoDB Collection（MongoDB表）</p>
+
+<p>得到数据库中的表</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>DB db = mongo.getDB(“testdb“); DBCollection table = db.getCollection(“user“);
+</code></pre></div></div>
+
+<p>显示数据库中的所有表</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>DB db = mongo.getDB(“testdb“); Set&lt;String&gt; tables = db.getCollectionNames(); for(String coll : tables){ System.out.println(coll); }
+</code></pre></div></div>
+
+<p>5.插入、查找、更新、删除操作</p>
+
+<p>插入数据，向Collection（表）中插入一个Document</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>DBCollection table = db.getCollection(“user“); BasicDBObject document = new BasicDBObject(); document.put(“name“, “qiyadeng“); document.put(“age“, 30); document.put(“createdDate“, new Date()); table.insert(document);
+</code></pre></div></div>
+
+<p>更新Document中的name=”qiyadeng.com”</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>DBCollection table = db.getCollection(“user“);
+
+ BasicDBObject query = new BasicDBObject(); query.put(“name“, “qiyadeng“);
+
+BasicDBObject newDocument = new BasicDBObject(); newDocument.put(“name“, “qiyadeng.com“);
+
+BasicDBObject updateObj = new BasicDBObject(); updateObj.put(“$set“, newDocument); table.update(query, updateObj);
+</code></pre></div></div>
+
+<p>从Collection中查找name=”qiyadeng.com”的Document</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>DBCollection table = db.getCollection(“user“); BasicDBObject searchQuery = new BasicDBObject(); searchQuery.put(“name“, “qiyadeng.com“); DBCursor cursor = table.find(searchQuery); while (cursor.hasNext()) { System.out.println(cursor.next()); }
+</code></pre></div></div>
+
+<p>删除name=”qiyadeng”的Document</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>DBCollection table = db.getCollection(“user“); BasicDBObject searchQuery = new BasicDBObject(); searchQuery.put(“name“, “qiyadeng.com“); table.remove(searchQuery);
+</code></pre></div></div>
+
+<p>6.完整的例子</p>
+
+<p>package com.qiyadeng.mongodb;</p>
+
+<p>import java.util.Date;</p>
+
+<p>import com.mongodb.BasicDBObject;
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.DBCursor;
+import com.mongodb.MongoClient;</p>
+
+<p>public class MongoDBSample {</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public static void main(String[] args) throws Exception{ /**** Connect to MongoDB ****/ //2.10.0后,使用MongoClient
+        MongoClient mongo = new MongoClient(“localhost“, 27017); /**** Get database ****/ // if database doesn’t exists, MongoDB will create it for you
+        DB db = mongo.getDB(“testdb“); /**** Get collection / table from ‘testdb’ ****/ // if collection doesn’t exists, MongoDB will create it for you
+        DBCollection table = db.getCollection(“user“); /**** Insert ****/ // create a document to store key and value
+        BasicDBObject document = new BasicDBObject(); document.put(“name“, “qiyadeng“); document.put(“age“, 30); document.put(“createdDate“, new Date()); table.insert(document); /**** Find and display ****/ BasicDBObject searchQuery = new BasicDBObject(); searchQuery.put(“name“, “qiyadeng“); DBCursor cursor = table.find(searchQuery); while (cursor.hasNext()) { System.out.println(cursor.next()); } /**** Update ****/ // search document where name=”qiyadeng” and update it with new values
+        BasicDBObject query = new BasicDBObject(); query.put(“name“, “qiyadeng“); BasicDBObject newDocument = new BasicDBObject(); newDocument.put(“name“, “qiyadeng.com“); BasicDBObject updateObj = new BasicDBObject(); updateObj.put(“$set“, newDocument); table.update(query, updateObj); /**** Find and display ****/ BasicDBObject searchQuery2  = new BasicDBObject().append(“name“, “qiyadeng.com“); DBCursor cursor2 = table.find(searchQuery2); while (cursor2.hasNext()) { System.out.println(cursor2.next()); } } }
+</code></pre></div></div>
+
+<p>输出</p>
+
+<p>{ “_id“ : { “$oid“ : “51444c88874c79654063356b“} , “name“ : “qiyadeng“ , “age“ : 30 , “createdDate“ : { “$date“ : “2013-03-16T10:42:16.555Z“}}
+{ “_id“ : { “$oid“ : “51444c88874c79654063356b“} , “age“ : 30 , “createdDate“ : { “$date“ : “2013-03-16T10:42:16.555Z“} , “name“ : “qiyadeng.com“}</p>
+
+<p>使用mongo验证创建的数据库testdb，collection user是否存在。</p>
+
+<p>文章来源 <a href="https://www.jfox.info/go.php?url=http://www.jfox.info/url.php?url=http%3A%2F%2Fwww.cnblogs.com%2Fqiyadeng%2Farchive%2F2013%2F03%2F19%2F2970131.html">Java和MongoDB之Hello World – qiyadeng</a>.</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/the-hello-world-java-and-mongodb.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/how-to-design-java-programming-code-exception-handling.html">&laquo; 如何进行Java程序设计异常处理的代码设计</a>
+  
+  
+  <a class="next" href="/2017/amazon-vice-president-of-technical-perfection-former-technical-anatomy.html">Amazon前技术副总裁解剖完美技术面试 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>Spring5源码解析-论Spring DispatcherServlet的生命周期 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="Spring5源码解析-论Spring DispatcherServlet的生命周期" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="Spring Web框架架构的主要部分是 DispatcherServlet 。也就是本文中重点介绍的对象。" />
+<meta property="og:description" content="Spring Web框架架构的主要部分是 DispatcherServlet 。也就是本文中重点介绍的对象。" />
+<link rel="canonical" href="http://www.jfox.info/2017/spring5%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E8%AE%BAspringdispatcherservlet%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/spring5%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E8%AE%BAspringdispatcherservlet%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:59:19+00:00" />
+<script type="application/ld+json">
+{"description":"Spring Web框架架构的主要部分是 DispatcherServlet 。也就是本文中重点介绍的对象。","@type":"BlogPosting","url":"http://www.jfox.info/2017/spring5%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E8%AE%BAspringdispatcherservlet%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F.html","headline":"Spring5源码解析-论Spring DispatcherServlet的生命周期","dateModified":"2017-01-01T15:59:19+00:00","datePublished":"2017-01-01T15:59:19+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/spring5%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E8%AE%BAspringdispatcherservlet%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Spring5源码解析-论Spring DispatcherServlet的生命周期</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:59:19+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>Spring Web框架架构的主要部分是 <code class="highlighter-rouge">DispatcherServlet</code> 。也就是本文中重点介绍的对象。</p>
+
+<p>在本文的第一部分中，我们将看到基于 <code class="highlighter-rouge">Spring的DispatcherServlet</code> 的主要概念：前端控制器模式。第二部分将专门介绍Spring应用程序中的执行链。接下来是 <code class="highlighter-rouge">DispatcherServlet类</code> 的解释。在最后一部分，我们将尝试开发一个自定义的 <code class="highlighter-rouge">dispatcher servlet</code> 。</p>
+
+<p>请注意，本文分析的DispatcherServlet来自Spring的5.0.0.RC3版本。如果使用不同的版本，则可能需要进行几个调整，其实因为分析的都是比较固定的东西，很少有改的。</p>
+
+<h2 id="什么是前端控制器模式">什么是前端控制器模式？</h2>
+
+<p>在进入 <code class="highlighter-rouge">DispatcherServlet</code> 之前，我们需要了解一些关于它的概念基础。 <code class="highlighter-rouge">DispatcherServlet</code> 所隐含的关键概念其实就是 <strong>前端控制器模式</strong> 。</p>
+
+<p>此模式为Web应用程序提供了一个中心入口点。该集中入口点将系统组件的共同特征进行重新组合。我们可以在那里找到安全资源，语言切换，会话管理，缓存或输入过滤的处理程序。这样做的一个很大的好处是:这个共同的入口点有助于避免代码重复。</p>
+
+<p>因此，从技术上讲，前端控制器模式由一个捕获所有传入请求的类组成。之后，分析每个请求以知道哪个控制器以及哪个方法应该来处理该请求。</p>
+
+<p>前端控制器模式有助于对以下询问做出最佳响应:</p>
+
+<ul>
+  <li>如何集中授权和认证？</li>
+  <li>如何处理正确的视图渲染？</li>
+  <li>如何使用URL重写映射将请求发送到适当的控制器？</li>
+</ul>
+
+<p>这个前台控制器模式包含5名参与者：</p>
+
+<ul>
+  <li>客户端：发送请求。</li>
+  <li>控制器：应用程序的中心点，捕获所有请求。</li>
+  <li>调度员：管理视图的选择，以呈现给客户端。</li>
+  <li>视图：表示呈现给客户端的内容。</li>
+  <li>帮助：帮助查看和/或控制器完成请求处理。</li>
+</ul>
+
+<h2 id="什么是dispatcherservlet的执行链">什么是DispatcherServlet的执行链？</h2>
+
+<p>由标题可以看到，前端控制器模式有自己的执行链。这意味着它有自己的逻辑来处理请求并将视图返回给客户端：</p>
+
+<ol>
+  <li>
+    <p>请求由客户端发送。它到达作为Spring的默认前端控制器的 <code class="highlighter-rouge">DispatcherServlet</code> 类。</p>
+  </li>
+  <li>
+    <p><code class="highlighter-rouge">DispatcherServlet</code> 使用请求处理程序映射来发现将分析请求的控制器(controller</p>
+  </li>
+</ol>
+
+<p>)。接口 <strong>org.springframework.web.servlet.HandlerMapping</strong> 的实现返回一个包含 org.springframework.web.servlet.HandlerExecutionChain 类的实例。此实例包含可在控制器调用之前或之后调用的处理程序拦截器数组。您可以在Spring中有关于拦截器拦截器的文章中了解更多关于拦截器的信息。如果在所有定义的处理程序映射中找不到 <code class="highlighter-rouge">HandlerExecutionChain</code> ，这意味着Spring无法将URL与对应的控制器进行匹配。这样的话会抛出一个错误。</p>
+
+<ol>
+  <li>
+    <p>现在系统进行拦截器预处理并调用由映射处理器找到的相应的controller(其实就是在找到的controller之前进行一波拦截处理)。在controller处理请求后， <code class="highlighter-rouge">DispatcherServlet</code> 开始拦截器的后置处理。在此步骤结束时，它从controller接收ModelAndView实例(整个过程其实就是 <code class="highlighter-rouge">request请求</code> -&gt; <code class="highlighter-rouge">进入interceptors</code> -&gt; <code class="highlighter-rouge">controller</code> -&gt; <code class="highlighter-rouge">从interceptors出来</code> -&gt; <code class="highlighter-rouge">ModelAndView接收</code> )。</p>
+  </li>
+  <li>
+    <p>DispatcherServlet现在将使用的该视图的名称发送到视图解析器。这个解析器将决定前台的展现内容。接着，它将此视图返回给DispatcherServlet，其实也就是一个“视图生成后可调用”的拦截器。</p>
+  </li>
+  <li>
+    <p>最后一个操作是视图的渲染并作为对客户端request请求的响应。</p>
+  </li>
+</ol>
+
+<h2 id="什么是dispatcherservlet">什么是DispatcherServlet？</h2>
+
+<p>通过上面讲到的前端控制器模式，我们可以很轻易的知道 <code class="highlighter-rouge">DispatcherServlet</code> 是基于 <code class="highlighter-rouge">Spring</code> 的 <code class="highlighter-rouge">Web</code> 应用程序的中心点。它需要传入请求，并在处理程序映射，拦截器，控制器和视图解析器的帮助下，生成对客户端的响应。所以，我们可以分析这个类的细节，并总结出一些核心要点。</p>
+
+<p>下面是处理一个请求时 <code class="highlighter-rouge">DispatcherServlet</code> 执行的步骤：</p>
+
+<h4 id="1-策略初始化">1. 策略初始化</h4>
+
+<p><code class="highlighter-rouge">DispatcherServlet</code> 是一个位于 <strong>org.springframework.web.servlet</strong> 包中的类，并扩展了同一个包中的抽象类 <code class="highlighter-rouge">FrameworkServlet</code> 。它包含一些解析器的私有静态字段(用于本地化，视图，异常或上传文件)， <code class="highlighter-rouge">映射处理器:handlerMapping</code> 和 <code class="highlighter-rouge">处理适配器:handlerAdapter</code> (进入这个类的第一眼就能看到的)。 <code class="highlighter-rouge">DispatcherServlet</code> 非常重要的一个核心点就是是初始化策略的方法( protected void initStrategies（ApplicationContext context） )。在调用 <code class="highlighter-rouge">onRefresh</code> 方法时调用此方法。最后一次调用是在 <code class="highlighter-rouge">FrameworkServlet</code> 中通过 <code class="highlighter-rouge">initServletBean</code> 和 <code class="highlighter-rouge">initWebApplicationContext</code> 方法进行的( <code class="highlighter-rouge">initServletBean</code> 方法中调用 <code class="highlighter-rouge">initWebApplicationContext</code> ，后者调用 <code class="highlighter-rouge">onRefresh(wac)</code> )。 <code class="highlighter-rouge">initServletBean</code> 通过所提供的这些策略生成我们所需要的应用程序上下文。其中每个策略都会产生一类在 <code class="highlighter-rouge">DispatcherServlet</code> 中用来处理传入请求的对象。</p>
+
+<p>基于篇幅，有些代码就不给贴示了，请在相应版本的源码中自行对照查找，此处只给一部分源码:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/**
+ * This implementation calls {@link #initStrategies}.
+ */
+@Override
+protected void onRefresh(ApplicationContext context){
+	initStrategies(context);
+}
+
+/**
+ * Initialize the strategy objects that this servlet uses.
+ * &lt;p&gt;May be overridden in subclasses in order to initialize further strategy objects.
+ */
+protected void initStrategies(ApplicationContext context){
+	initMultipartResolver(context);
+	initLocaleResolver(context);
+	initThemeResolver(context);
+	initHandlerMappings(context);
+	initHandlerAdapters(context);
+	initHandlerExceptionResolvers(context);
+	initRequestToViewNameTranslator(context);
+	initViewResolvers(context);
+	initFlashMapManager(context);
+}
+</code></pre></div></div>
+
+<p>需要注意的是，如果找的结果不存在，则捕获异常 <code class="highlighter-rouge">NoSuchBeanDefinitionException</code> (下面两段代码的第一段)，并采用默认策略。如果在DispatcherServlet.properties文件中初始定义的默认策略不存在，则抛出BeanInitializationException异常(下面两段代码的第二段)。默认策略如下：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/**
+	 * Initialize the LocaleResolver used by this class.
+	 * &lt;p&gt;If no bean is defined with the given name in the BeanFactory for this namespace,
+	 * we default to AcceptHeaderLocaleResolver.
+	 */
+	private void initLocaleResolver(ApplicationContext context){
+		try {
+			this.localeResolver = context.getBean(LOCALE_RESOLVER_BEAN_NAME, LocaleResolver.class);
+			if (logger.isDebugEnabled()) {
+				logger.debug("Using LocaleResolver [" + this.localeResolver + "]");
+			}
+		}
+		catch (NoSuchBeanDefinitionException ex) {
+			// We need to use the default.
+			this.localeResolver = getDefaultStrategy(context, LocaleResolver.class);
+			if (logger.isDebugEnabled()) {
+				logger.debug("Unable to locate LocaleResolver with name '" + LOCALE_RESOLVER_BEAN_NAME +"': using default [" + this.localeResolver + "]");
+			}
+		}
+	}
+</code></pre></div></div>
+
+<p>抛出异常后调用 <code class="highlighter-rouge">getDefaultStrategy</code> (因为容器里都是单例的存在，所以只需要判断基于这个接口的默认实现实例size为1即可，两个以上还能叫默认么，都有选择了):</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/**
+ * Return the default strategy object for the given strategy interface.
+ * The default implementation delegates to {@link #getDefaultStrategies},
+ * expecting a single object in the list.
+ * @param context the current WebApplicationContext
+ * @param strategyInterface the strategy interface
+ * @return the corresponding strategy object
+ * @see #getDefaultStrategies
+ */
+protected &lt;T&gt; TgetDefaultStrategy(ApplicationContext context, Class&lt;T&gt; strategyInterface){
+    List&lt;T&gt; strategies = getDefaultStrategies(context, strategyInterface);
+    if (strategies.size() != 1) {
+        throw new BeanInitializationException(
+                "DispatcherServlet needs exactly 1 strategy for interface [" + strategyInterface.getName() + "]");
+    }
+    return strategies.get(0);
+}
+
+	/**
+	 * Create a List of default strategy objects for the given strategy interface.
+	 * The default implementation uses the "DispatcherServlet.properties" file (in the same
+	 * package as the DispatcherServlet class) to determine the class names. It instantiates
+	 * the strategy objects through the context's BeanFactory.
+	 * @param context the current WebApplicationContext
+	 * @param strategyInterface the strategy interface
+	 * @return the List of corresponding strategy objects
+	 */
+	@SuppressWarnings("unchecked")
+	protected &lt;T&gt; List&lt;T&gt;getDefaultStrategies(ApplicationContext context, Class&lt;T&gt; strategyInterface){
+		String key = strategyInterface.getName();
+		String value = defaultStrategies.getProperty(key);
+		if (value != null) {
+			String[] classNames = StringUtils.commaDelimitedListToStringArray(value);
+			List&lt;T&gt; strategies = new ArrayList&lt;&gt;(classNames.length);
+			for (String className : classNames) {
+				try {
+					Class&lt;?&gt; clazz = ClassUtils.forName(className, DispatcherServlet.class.getClassLoader());
+					Object strategy = createDefaultStrategy(context, clazz);
+					strategies.add((T) strategy);
+				}
+				catch (ClassNotFoundException ex) {
+					throw new BeanInitializationException("Could not find DispatcherServlet's default strategy class [" + className +"] for interface [" + key + "]", ex);
+				}
+				catch (LinkageError err) {
+					throw new BeanInitializationException(
+							"Error loading DispatcherServlet's default strategy class [" + className +"] for interface [" + key + "]: problem with class file or dependent class", err);
+				}
+			}
+			return strategies;
+		}
+		else {
+			return new LinkedList&lt;&gt;();
+		}
+	}
+</code></pre></div></div>
+
+<h4 id="2请求预处理">2.请求预处理</h4>
+
+<p><code class="highlighter-rouge">FrameworkServlet</code> 抽象类扩展了同一个包下的 <code class="highlighter-rouge">HttpServletBean</code> ， <code class="highlighter-rouge">HttpServletBean</code> 扩展了 <strong>javax.servlet.http.HttpServlet</strong> 。点开这个类源码可以看到， <code class="highlighter-rouge">HttpServlet</code> 是一个抽象类，其方法定义主要用来处理每种类型的 <code class="highlighter-rouge">HTTP</code> 请求： <code class="highlighter-rouge">doGet（GET请求）</code> ， <code class="highlighter-rouge">doPost（POST）</code> ， <code class="highlighter-rouge">doPut（PUT）</code> ， <code class="highlighter-rouge">doDelete（DELETE）</code> ， <code class="highlighter-rouge">doTrace（TRACE）</code> ， <code class="highlighter-rouge">doHead（HEAD）</code> ， <code class="highlighter-rouge">doOptions（OPTIONS）</code> 。 <code class="highlighter-rouge">FrameworkServlet</code> 通过将每个传入的请求调度到 processRequest(HttpServletRequest request，HttpServletResponse response) 来覆盖它们。 <code class="highlighter-rouge">processRequest</code> 是一个 <code class="highlighter-rouge">protected</code> 和 <code class="highlighter-rouge">final</code> 的方法，它构造出 <code class="highlighter-rouge">LocaleContext</code> 和 <code class="highlighter-rouge">ServletRequestAttributes</code> 对象，两者都可以在 <code class="highlighter-rouge">initContextHolders(request, localeContext, requestAttributes)</code> 之后访问。所有这些操作的关键代码 请看：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>@Override
+protected final void doGet(HttpServletRequest request, HttpServletResponse response)
+        throws ServletException, IOException {
+ 
+    processRequest(request, response);
+}
+ ...
+/**
+ * Process this request, publishing an event regardless of the outcome.
+ * The actual event handling is performed by the abstract
+ * {@link #doService} template method.
+ */
+protected final void processRequest(HttpServletRequest request, HttpServletResponse response)
+        throws ServletException, IOException {
+ 
+    long startTime = System.currentTimeMillis();
+    Throwable failureCause = null;
+ 
+    LocaleContext previousLocaleContext = LocaleContextHolder.getLocaleContext();
+    LocaleContext localeContext = buildLocaleContext(request);
+ 
+    RequestAttributes previousAttributes = RequestContextHolder.getRequestAttributes();
+    ServletRequestAttributes requestAttributes = buildRequestAttributes(request, response, previousAttributes);
+ 
+    WebAsyncManager asyncManager = WebAsyncUtils.getAsyncManager(request);
+    asyncManager.registerCallableInterceptor(FrameworkServlet.class.getName(), new RequestBindingInterceptor());
+ 
+    initContextHolders(request, localeContext, requestAttributes);
+ 
+    try {
+        doService(request, response);
+    }
+    catch (ServletException ex) {
+        failureCause = ex;
+        throw ex;
+    }
+    catch (IOException ex) {
+        failureCause = ex;
+        throw ex;
+    }
+    catch (Throwable ex) {
+        failureCause = ex;
+        throw new NestedServletException("Request processing failed", ex);
+    }
+ 
+    finally {
+        resetContextHolders(request, previousLocaleContext, previousAttributes);
+        if (requestAttributes != null) {
+            requestAttributes.requestCompleted();
+        }
+ 
+        if (logger.isDebugEnabled()) {
+            if (failureCause != null) {
+                this.logger.debug("Could not complete request", failureCause);
+            }
+            else {
+                if (asyncManager.isConcurrentHandlingStarted()) {
+                    logger.debug("Leaving response open for concurrent processing");
+                }
+                else {
+                    this.logger.debug("Successfully completed request");
+                }
+            }
+        }
+ 
+        publishRequestHandledEvent(request, startTime, failureCause);
+    }
+}
+
+...
+  
+  private void initContextHolders(HttpServletRequest request,
+			@Nullable LocaleContext localeContext, @Nullable RequestAttributes requestAttributes) {
+
+		if (localeContext != null) {
+			LocaleContextHolder.setLocaleContext(localeContext, this.threadContextInheritable);
+		}
+		if (requestAttributes != null) {
+			RequestContextHolder.setRequestAttributes(requestAttributes, this.threadContextInheritable);
+		}
+		if (logger.isTraceEnabled()) {
+			logger.trace("Bound request context to thread: " + request);
+		}
+	}
+</code></pre></div></div>
+
+<h4 id="3请求处理">3.请求处理</h4>
+
+<p>由上面所看到的，在 <code class="highlighter-rouge">processRequest</code> 的代码中，调用 <strong>initContextHolders</strong> 方法后，调用 protected void doService(HttpServletRequest request，HttpServletResponse response) 。doService将一些附加参数放入request（如Flash映射: <code class="highlighter-rouge">request.setAttribute(OUTPUT_FLASH_MAP_ATTRIBUTE, new FlashMap())</code> ，上下文信息: <code class="highlighter-rouge">request.setAttribute(WEB_APPLICATION_CONTEXT_ATTRIBUTE, getWebApplicationContext())</code> 等）中，并调用 protected void doDispatch(HttpServletRequest request，HttpServletResponse response) 。</p>
+
+<p><code class="highlighter-rouge">doDispatch</code> 方法最重要的部分是处理( <code class="highlighter-rouge">handler</code> )的检索。 <code class="highlighter-rouge">doDispatch</code> 调用 <code class="highlighter-rouge">getHandler()</code> 方法来分析处理后的请求并返回 <code class="highlighter-rouge">HandlerExecutionChain</code> 实例。此实例包含 <code class="highlighter-rouge">handler mapping</code> 和 <code class="highlighter-rouge">interceptors(拦截器)</code> 。 <code class="highlighter-rouge">DispatcherServlet</code> 做的另一件事是应用预处理程序拦截器（ <em>applyPreHandle()</em> ）。如果至少有一个返回 <code class="highlighter-rouge">false</code> ，则请求处理停止。否则， <code class="highlighter-rouge">servlet</code> 使用与 <code class="highlighter-rouge">handler adapter</code> 适配(其实理解成这也是个 <code class="highlighter-rouge">handler</code> 就对了)相应的 <code class="highlighter-rouge">handler mapping</code> 来生成视图对象。</p>
+
+<p><code class="highlighter-rouge">doDispatch</code> 方法：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/**
+ * Process the actual dispatching to the handler.
+ * The handler will be obtained by applying the servlet's HandlerMappings in order.
+ * The HandlerAdapter will be obtained by querying the servlet's installed HandlerAdapters
+ * to find the first that supports the handler class.
+ * All HTTP methods are handled by this method. It's up to HandlerAdapters or handlers
+ * themselves to decide which methods are acceptable.
+ * @param request current HTTP request
+ * @param response current HTTP response
+ * @throws Exception in case of any kind of processing failure
+ */
+protected void doDispatch(HttpServletRequest request, HttpServletResponse response)throwsException{
+		HttpServletRequest processedRequest = request;
+		HandlerExecutionChain mappedHandler = null;
+		boolean multipartRequestParsed = false;
+
+		WebAsyncManager asyncManager = WebAsyncUtils.getAsyncManager(request);
+
+		try {
+			ModelAndView mv = null;
+			Exception dispatchException = null;
+
+			try {
+				processedRequest = checkMultipart(request);
+				multipartRequestParsed = (processedRequest != request);
+
+				// Determine handler for the current request.
+				mappedHandler = getHandler(processedRequest);
+				if (mappedHandler == null) {
+					noHandlerFound(processedRequest, response);
+					return;
+				}
+
+				// Determine handler adapter for the current request.获取可处理request的Handler，适配器其实还 //是调用的相应的Handler,一样的功能，具体请参考本人的Spring设计模式中的适配器模式
+				HandlerAdapter ha = getHandlerAdapter(mappedHandler.getHandler());
+
+				// Process last-modified header, if supported by the handler.
+				String method = request.getMethod();
+				boolean isGet = "GET".equals(method);
+				if (isGet || "HEAD".equals(method)) {
+					long lastModified = ha.getLastModified(request, mappedHandler.getHandler());
+					if (logger.isDebugEnabled()) {
+						logger.debug("Last-Modified value for [" + getRequestUri(request) + "] is: " + lastModified);
+					}
+					if (new ServletWebRequest(request, response).checkNotModified(lastModified) &amp;&amp; isGet) {
+						return;
+					}
+				}
+
+				if (!mappedHandler.applyPreHandle(processedRequest, response)) {
+					return;
+				}
+
+				// Actually invoke the handler.此处就会调用我们写的controller来执行咯
+				mv = ha.handle(processedRequest, response, mappedHandler.getHandler());
+
+				if (asyncManager.isConcurrentHandlingStarted()) {
+					return;
+				}
+				//视图解析
+				applyDefaultViewName(processedRequest, mv);
+				mappedHandler.applyPostHandle(processedRequest, response, mv);
+			}
+			catch (Exception ex) {
+				dispatchException = ex;
+			}
+			catch (Throwable err) {
+				// As of 4.3, we're processing Errors thrown from handler methods as well,
+				// making them available for @ExceptionHandler methods and other scenarios.
+				dispatchException = new NestedServletException("Handler dispatch failed", err);
+			}
+          	//此处进行最后一步的视图渲染
+			processDispatchResult(processedRequest, response, mappedHandler, mv, dispatchException);
+		}
+		catch (Exception ex) {
+			triggerAfterCompletion(processedRequest, response, mappedHandler, ex);
+		}
+		catch (Throwable err) {
+			triggerAfterCompletion(processedRequest, response, mappedHandler,
+					new NestedServletException("Handler processing failed", err));
+		}
+		finally {
+			if (asyncManager.isConcurrentHandlingStarted()) {
+				// Instead of postHandle and afterCompletion
+				if (mappedHandler != null) {
+					mappedHandler.applyAfterConcurrentHandlingStarted(processedRequest, response);
+				}
+			}
+			else {
+				// Clean up any resources used by a multipart request.
+				if (multipartRequestParsed) {
+					cleanupMultipart(processedRequest);
+				}
+			}
+		}
+	}
+</code></pre></div></div>
+
+<h4 id="4视图解析">4.视图解析</h4>
+
+<p>获取 <code class="highlighter-rouge">ModelAndView</code> 实例以查看呈现后， <code class="highlighter-rouge">doDispatch</code> 方法调用 private void applyDefaultViewName(HttpServletRequest request，ModelAndView mv) 。默认视图名称根据定义的bean名称，即 <code class="highlighter-rouge">viewNameTranslator</code> 。默认情况下，它的实现是 org.springframework.web.servlet.RequestToViewNameTranslator 。这个默认实现只是简单的将URL转换为视图名称，例如(直接从 <code class="highlighter-rouge">RequestToViewNameTranslator</code> 获取):http:// localhost:8080/admin/index.html将生成视图admin / index。</p>
+
+<p>代码如下:</p>
+
+<p>下一步是调用后置拦截器(其实就是出拦截器)做的一些处理。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/** RequestToViewNameTranslator used by this servlet */
+	@Nullable
+	private RequestToViewNameTranslator viewNameTranslator;
+...
+  protected void initStrategies(ApplicationContext context){
+		initMultipartResolver(context);
+		initLocaleResolver(context);
+		initThemeResolver(context);
+		initHandlerMappings(context);
+		initHandlerAdapters(context);
+		initHandlerExceptionResolvers(context);
+		initRequestToViewNameTranslator(context); //看下面注释
+		initViewResolvers(context);
+		initFlashMapManager(context);
+	}
+...
+  
+  /**
+	 * Initialize the RequestToViewNameTranslator used by this servlet instance.
+	 * &lt;p&gt;If no implementation is configured then we default to DefaultRequestToViewNameTranslator.
+	 */
+	private void initRequestToViewNameTranslator(ApplicationContext context){
+		try {
+			this.viewNameTranslator =
+					context.getBean(REQUEST_TO_VIEW_NAME_TRANSLATOR_BEAN_NAME, RequestToViewNameTranslator.class);
+			if (logger.isDebugEnabled()) {
+				logger.debug("Using RequestToViewNameTranslator [" + this.viewNameTranslator + "]");
+			}
+		}
+		catch (NoSuchBeanDefinitionException ex) {
+			// We need to use the default.
+			this.viewNameTranslator = getDefaultStrategy(context, RequestToViewNameTranslator.class);
+			if (logger.isDebugEnabled()) {
+				logger.debug("Unable to locate RequestToViewNameTranslator with name '" +
+						REQUEST_TO_VIEW_NAME_TRANSLATOR_BEAN_NAME + "': using default [" + this.viewNameTranslator +"]");
+			}
+		}
+	}
+
+....
+  /**
+	 * Translate the supplied request into a default view name.
+	 * @param request current HTTP servlet request
+	 * @return the view name (or {@code null} if no default found)
+	 * @throws Exception if view name translation failed
+	 */
+	@Nullable
+	protectedStringgetDefaultViewName(HttpServletRequest request)throwsException{
+		return (this.viewNameTranslator != null ? this.viewNameTranslator.getViewName(request) : null);
+	}
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator</code> 实现的 <code class="highlighter-rouge">org.springframework.web.servlet.RequestToViewNameTranslator</code> 接口，其内对上段代码中 <code class="highlighter-rouge">getDefaultViewName</code> 的实现为:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public class DefaultRequestToViewNameTranslatorimplements RequestToViewNameTranslator{
+
+	private static final String SLASH = "/";
+
+
+	private String prefix = "";
+
+	private String suffix = "";
+
+	private String separator = SLASH;
+
+	private boolean stripLeadingSlash = true;
+
+	private boolean stripTrailingSlash = true;
+
+	private boolean stripExtension = true;
+
+	private UrlPathHelper urlPathHelper = new UrlPathHelper();
+
+
+	/**
+	 * Set the prefix to prepend to generated view names.
+	 * @param prefix the prefix to prepend to generated view names
+	 */
+	public void setPrefix(String prefix){
+		this.prefix = (prefix != null ? prefix : "");
+	}
+
+	/**
+	 * Set the suffix to append to generated view names.
+	 * @param suffix the suffix to append to generated view names
+	 */
+	public void setSuffix(String suffix){
+		this.suffix = (suffix != null ? suffix : "");
+	}
+
+	/**
+	 * Set the value that will replace '{@code /}' as the separator
+	 * in the view name. The default behavior simply leaves '{@code /}'
+	 * as the separator.
+	 */
+	public void setSeparator(String separator){
+		this.separator = separator;
+	}
+	...
+	/**
+	 * Translates the request URI of the incoming {@link HttpServletRequest}
+	 * into the view name based on the configured parameters.
+	 * @see org.springframework.web.util.UrlPathHelper#getLookupPathForRequest
+	 * @see #transformPath
+	 */
+	@Override
+	publicStringgetViewName(HttpServletRequest request){
+		String lookupPath = this.urlPathHelper.getLookupPathForRequest(request);
+		return (this.prefix + transformPath(lookupPath) + this.suffix);
+	}
+
+	/**
+	 * Transform the request URI (in the context of the webapp) stripping
+	 * slashes and extensions, and replacing the separator as required.
+	 * @param lookupPath the lookup path for the current request,
+	 * as determined by the UrlPathHelper
+	 * @return the transformed path, with slashes and extensions stripped
+	 * if desired
+	 */
+	protectedStringtransformPath(String lookupPath){
+		String path = lookupPath;
+		if (this.stripLeadingSlash &amp;&amp; path.startsWith(SLASH)) {
+			path = path.substring(1);
+		}
+		if (this.stripTrailingSlash &amp;&amp; path.endsWith(SLASH)) {
+			path = path.substring(0, path.length() - 1);
+		}
+		if (this.stripExtension) {
+			path = StringUtils.stripFilenameExtension(path);
+		}
+		if (!SLASH.equals(this.separator)) {
+			path = StringUtils.replace(path, SLASH, this.separator);
+		}
+		return path;
+	}
+
+}
+</code></pre></div></div>
+
+<h4 id="5处理调度请求--视图渲染">5.处理调度请求 – 视图渲染</h4>
+
+<p>现在， <code class="highlighter-rouge">servlet</code> 知道应该是哪个视图被渲染。它通过 private void processDispatchResult(HttpServletRequest request，HttpServletResponse response，@Nullable HandlerExecutionChain mappedHandler, @Nullable ModelAndView mv,@Nullable Exception exception) 方法来进行最后一步操作 – 视图渲染。</p>
+
+<p>首先， <code class="highlighter-rouge">processDispatchResult</code> 检查它们是否有参数传递异常。有一些异常的话，它定义了一个新的视图，专门用来定位错误页面。如果没有任何异常，该方法将检查 <code class="highlighter-rouge">ModelAndView实例</code> ，如果它不为 <code class="highlighter-rouge">null</code> ，则调用 <code class="highlighter-rouge">render</code> 方法。</p>
+
+<p>渲染方法 <code class="highlighter-rouge">protected void render(ModelAndView mv, HttpServletRequest request, HttpServletResponse response) throws Exception</code> 。跳进此方法内部，根据定义的视图策略，它会查找得到一个 <code class="highlighter-rouge">View类</code> 实例。它将负责显示响应。如果没有找到 <code class="highlighter-rouge">View</code> ，则会抛出一个 <code class="highlighter-rouge">ServletException异常</code> 。有的话， <code class="highlighter-rouge">DispatcherServlet</code> 会调用其 <code class="highlighter-rouge">render</code> 方法来显示结果。</p>
+
+<p>其实可以说成是后置拦截器(进入拦截器前置拦截处理-&gt;controller处理-&gt;出拦截器之前的此拦截器的后置处理)，也就是在请求处理的最后一个步骤中被调用。</p>
+
+<p>下面是 <code class="highlighter-rouge">processDispatchResult</code> 和 <code class="highlighter-rouge">render(渲染)</code> 的相关代码:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/**
+	 * Handle the result of handler selection and handler invocation, which is
+	 * either a ModelAndView or an Exception to be resolved to a ModelAndView.
+	 */
+	private void processDispatchResult(HttpServletRequest request, HttpServletResponse response,
+			@Nullable HandlerExecutionChain mappedHandler, @Nullable ModelAndView mv,
+			@Nullable Exception exception) throws Exception {
+
+		boolean errorView = false;
+
+		if (exception != null) {
+			if (exception instanceof ModelAndViewDefiningException) {
+				logger.debug("ModelAndViewDefiningException encountered", exception);
+				mv = ((ModelAndViewDefiningException) exception).getModelAndView();
+			}
+			else {
+				Object handler = (mappedHandler != null ? mappedHandler.getHandler() : null);
+				mv = processHandlerException(request, response, handler, exception);
+				errorView = (mv != null);
+			}
+		}
+
+		// Did the handler return a view to render?
+		if (mv != null &amp;&amp; !mv.wasCleared()) {
+          //开始渲染
+			render(mv, request, response);
+			if (errorView) {
+				WebUtils.clearErrorRequestAttributes(request);
+			}
+		}
+		else {
+			if (logger.isDebugEnabled()) {
+				logger.debug("Null ModelAndView returned to DispatcherServlet with name '" + getServletName() +
+						"': assuming HandlerAdapter completed request handling");
+			}
+		}
+
+		if (WebAsyncUtils.getAsyncManager(request).isConcurrentHandlingStarted()) {
+			// Concurrent handling started during a forward
+			return;
+		}
+
+		if (mappedHandler != null) {
+			mappedHandler.triggerAfterCompletion(request, response, null);
+		}
+	}
+
+
+...
+  /**
+	 * Render the given ModelAndView.
+	 * &lt;p&gt;This is the last stage in handling a request. It may involve resolving the view by name.
+	 * @param mv the ModelAndView to render
+	 * @param request current HTTP servlet request
+	 * @param response current HTTP servlet response
+	 * @throws ServletException if view is missing or cannot be resolved
+	 * @throws Exception if there's a problem rendering the view
+	 */
+	protected void render(ModelAndView mv, HttpServletRequest request, HttpServletResponse response)throwsException{
+		// Determine locale for request and apply it to the response.
+		Locale locale =
+				(this.localeResolver != null ? this.localeResolver.resolveLocale(request) : request.getLocale());
+		response.setLocale(locale);
+
+		View view;
+		String viewName = mv.getViewName();
+		if (viewName != null) {
+			// We need to resolve the view name.
+			view = resolveViewName(viewName, mv.getModelInternal(), locale, request);
+			if (view == null) {
+				throw new ServletException("Could not resolve view with name '" + mv.getViewName() +
+						"' in servlet with name '" + getServletName() + "'");
+			}
+		}
+		else {
+			// No need to lookup: the ModelAndView object contains the actual View object.
+			view = mv.getView();
+			if (view == null) {
+				throw new ServletException("ModelAndView [" + mv + "] neither contains a view name nor a " +"View object in servlet with name '" + getServletName() + "'");
+			}
+		}
+
+		// Delegate to the View object for rendering.
+		if (logger.isDebugEnabled()) {
+			logger.debug("Rendering view [" + view + "] in DispatcherServlet with name '" + getServletName() + "'");
+		}
+		try {
+			if (mv.getStatus() != null) {
+				response.setStatus(mv.getStatus().value());
+			}
+			view.render(mv.getModelInternal(), request, response);
+		}
+		catch (Exception ex) {
+			if (logger.isDebugEnabled()) {
+				logger.debug("Error rendering view [" + view + "] in DispatcherServlet with name '" +
+						getServletName() + "'", ex);
+			}
+			throw ex;
+		}
+	}
+
+
+/**
+ * Handle the result of handler selection and handler invocation, which is
+ * either a ModelAndView or an Exception to be resolved to a ModelAndView.
+ */
+private void processDispatchResult(HttpServletRequest request, HttpServletResponse response,
+        HandlerExecutionChain mappedHandler, ModelAndView mv, Exception exception) throws Exception {
+ 
+    boolean errorView = false;
+ 
+    if (exception != null) {
+        if (exception instanceof ModelAndViewDefiningException) {
+            logger.debug("ModelAndViewDefiningException encountered", exception);
+            mv = ((ModelAndViewDefiningException) exception).getModelAndView();
+        }
+        else {
+            Object handler = (mappedHandler != null ? mappedHandler.getHandler() : null);
+            mv = processHandlerException(request, response, handler, exception);
+            errorView = (mv != null);
+        }
+    }
+ 
+    // Did the handler return a view to render?
+    if (mv != null &amp;&amp; !mv.wasCleared()) {
+        render(mv, request, response);
+        if (errorView) {
+            WebUtils.clearErrorRequestAttributes(request);
+        }
+    }
+    else {
+        if (logger.isDebugEnabled()) {
+            logger.debug("Null ModelAndView returned to DispatcherServlet with name '" + getServletName() +
+                    "': assuming HandlerAdapter completed request handling");
+        }
+    }
+ 
+    if (WebAsyncUtils.getAsyncManager(request).isConcurrentHandlingStarted()) {
+        // Concurrent handling started during a forward
+        return;
+    }
+ 
+    if (mappedHandler != null) {
+        mappedHandler.triggerAfterCompletion(request, response, null);
+    }
+}
+ 
+/**
+ * Render the given ModelAndView.
+ * This is the last stage in handling a request. It may involve resolving the view by name.
+ * @param mv the ModelAndView to render
+ * @param request current HTTP servlet request
+ * @param response current HTTP servlet response
+ * @throws ServletException if view is missing or cannot be resolved
+ * @throws Exception if there's a problem rendering the view
+ */
+protected void render(ModelAndView mv, HttpServletRequest request, HttpServletResponse response)throwsException{
+    // Determine locale for request and apply it to the response.
+    Locale locale = this.localeResolver.resolveLocale(request);
+    response.setLocale(locale);
+ 
+    View view;
+    if (mv.isReference()) {
+        // We need to resolve the view name.
+        view = resolveViewName(mv.getViewName(), mv.getModelInternal(), locale, request);
+        if (view == null) {
+            throw new ServletException(
+                    "Could not resolve view with name '" + mv.getViewName() + "' in servlet with name '" + getServletName() + "'");
+        }
+    }
+    else {
+        // No need to lookup: the ModelAndView object contains the actual View object.
+        view = mv.getView();
+        if (view == null) {
+            throw new ServletException("ModelAndView [" + mv + "] neither contains a view name nor a " + "View object in servlet with name '" + getServletName() + "'");
+        }
+    }
+ 
+    // Delegate to the View object for rendering.
+    if (logger.isDebugEnabled()) {
+        logger.debug("Rendering view [" + view + "] in DispatcherServlet with name '" + getServletName() + "'");
+    }
+    try {
+        view.render(mv.getModelInternal(), request, response);
+    }
+    catch (Exception ex) {
+        if (logger.isDebugEnabled()) {
+            logger.debug("Error rendering view [" + view + "] in DispatcherServlet with name '" + getServletName() + "'", ex);
+        }
+        throw ex;
+    }
+}
+</code></pre></div></div>
+
+<p>在这部分中，您需要记住的是我们定义了两个上下文：一个用于应用程序，另一个用于Web应用程序。他们有什么区别？应用程序上下文包含所有通用配置，比如service定义，数据库配置。Web应用程序上下文定义所有与Web相关的组件，比如 <code class="highlighter-rouge">controllers</code> 或视图解析器。</p>
+
+<h2 id="custom-dispatcherservlet">Custom DispatcherServlet</h2>
+
+<p>我们已经了解了 <code class="highlighter-rouge">DispatcherServlet</code> 的理论知识。通过文中的这些实用要点，我们可以编写自己的servlet来分派处理请求。同样的，我们也将按步进行，从捕获请求开始，以视图渲染结束。</p>
+
+<p>通过上面的描述，为了捕获请求，我们需要覆盖 <code class="highlighter-rouge">doService</code> 方法：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public class CustomDispatcherServletextends FrameworkServlet{
+    private static final Logger LOGGER = LoggerFactory.getLogger(CustomDispatcherServlet.class);
+ 
+    @Override
+    protected void doService(HttpServletRequest request, HttpServletResponse response)throwsException{
+        LOGGER.debug("[CustomDispatcherServlet] I got the request !");
+    }
+}
+</code></pre></div></div>
+
+<p>这样，在我们的日志文件中，我们应该可以找到一条“[CustomDispatcherServlet]I got the request！”。接着，我们继续添加在 <code class="highlighter-rouge">DispatcherServlet</code> 中 <code class="highlighter-rouge">doDispatch方法</code> 所应该做的一些工作：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>@Override
+protected void doService(HttpServletRequest request, HttpServletResponse response)throwsException{
+    LOGGER.debug("[CustomDispatcherServlet] I got the request !");
+    try {
+        LOGGER.debug("[CustomDispatcherServlet] doService");
+        LocaleContext localeContext = buildLocaleContext(request);
+ 
+        RequestAttributes previousAttributes = RequestContextHolder.getRequestAttributes();
+        ServletRequestAttributes requestAttributes = buildRequestAttributes(request, response, previousAttributes);
+ 
+        initContextHolders(request, localeContext, requestAttributes);
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+}
+</code></pre></div></div>
+
+<p>这个方法是做什么的？首先，它为构建一个 <code class="highlighter-rouge">Locale实例</code> 用来接收请求。第二步是初始化 org.springframework.web.context.request.ServletRequestAttributes 实例。它是 <code class="highlighter-rouge">RequestAttributes</code> 接口的实现，和本地化在同一级别。通过这个，我们可以访问 <code class="highlighter-rouge">servlet</code> 请求的对象和会话对象，而不必区分会话和全局会话。最后，我们调用 <strong>初始化context holders</strong> 的 <code class="highlighter-rouge">initContextHolders()</code> 方法，即从应用程序通过 <code class="highlighter-rouge">LocaleContextHolder</code> 和 <code class="highlighter-rouge">RequestContextHolder</code> 静态方法(分别为: <code class="highlighter-rouge">getLocaleContext和getRequestAttributes</code> )访问请求属性和区域设置的对象。</p>
+
+<p>当请求被拦截，一些基本的设置就绪的时候。我们发现我们还没有执行链和处理器适配器。我们可以通过以下代码进行:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>privateHandlerExecutionChaingetHandlerExecutionChain(HttpServletRequest request)throwsException{
+    for (HandlerMapping mapper : this.handlerMappings) {
+        HandlerExecutionChain executionChain = mapper.getHandler(request);
+        if (executionChain != null) {
+            return executionChain;
+        }
+    }
+    throw new Exception("Execution chain wasn't be found in provided handler mappings: "+this.handlerMappings);
+}
+</code></pre></div></div>
+
+<p>通过执行链，我们可以通过 handler adapter将处理当前请求。看以下代码:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>@Override
+protectedHandlerAdaptergetHandlerAdapter(Object executionChain)throwsServletException{
+    for (HandlerAdapter adapter : this.handlerAdapters) {
+        LOGGER.debug("[CustomDispatcherServlet] "+adapter + " is instanceof HandlerMethod ? "+(adapter instanceof HandlerMethod));
+        if (adapter.supports(executionChain)) {
+            return adapter;
+        }
+    }
+    throw new  ServletException("Handler adapter was not found from adapters list :"+this.handlerAdapters);
+}
+</code></pre></div></div>
+
+<p>只有应用程序上下文中定义的适配器（ <code class="highlighter-rouge">this.handlerAdapter</code> ）支持适配所生成的执行链（ <code class="highlighter-rouge">adapter.supports</code> ）才可以返回我们想要的适配器。最后，我们可以返回到我们的 <code class="highlighter-rouge">doService</code> 方法并操作它们来渲染视图：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ModelAndView modelView = adapter.handle(request, response, executionChain.getHandler());
+Locale locale = this.localeResolver.resolveLocale(request);
+response.setLocale(locale);
+ 
+View view = null;
+if (!modelView.isReference()) {
+    throw new UnsupportedOperationException("Only view models defined as references can be used in this servlet");
+}
+for (ViewResolver viewResolver : this.viewResolvers) {
+    view = viewResolver.resolveViewName(modelView.getViewName(), locale);
+    if (view != null) {
+        break;
+    }
+}
+if (view == null) {
+    throw new ServletException("Could not resolve view with name '" + modelView.getViewName() + "' in servlet with name '" + getServletName() + "'");
+}
+view.render(modelView.getModelMap(), request, response);
+</code></pre></div></div>
+
+<p>我们的servlet中简化了渲染。实际上，我们仅处理 <code class="highlighter-rouge">ModelAndView</code> 的引用对象。这意味着 <code class="highlighter-rouge">ModelAndView</code> 是一个 <code class="highlighter-rouge">String</code> 的实例，用来表示要解析的视图模型，例如：我们定义好几个模板解析器(比如 <code class="highlighter-rouge">freemaker</code> ， <code class="highlighter-rouge">Thymeleaf</code> )，然后查看其配置。在这个检查之后，我们迭代当前视图解析器。能够生成View实例的第一个解析器被视为处理过的请求中使用的解析器。最后，我们检查视图是否正确生成。拿到view实例后，我们调用其render()方法来在屏幕中显示请求处理结果。</p>
+
+<p>在这部分中，我们将描述和代码部分限制在最低限度。只是为了把Spring的整个过程给集中呈现以下，达到更好的理解，其实就是在Servlet中的service方法内做些对request和response的文章而已了。</p>
+
+<p>本文介绍了Spring Web应用程序的中心点，一个调度器servlet。请记住，它是一个处理所有传入请求并将视图呈现给用户的类。在重写之前，你应该熟悉执行链，handler mapping 或handler adapter等概念。请记住，第一步要做的是定义在调度过程中我们要调用的所有元素。handler mapping 是将传入请求(也就是它的URL)映射到适当的controller。最后提到的元素，一个handler适配器，就是一个对象，它将通过其内包装的handler mapping将请求发送到controller。此调度产生的结果是ModelAndView类的一个实例，后面被用于生成和渲染视图。</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/spring5%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E8%AE%BAspringdispatcherservlet%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%9E%B6%E6%9E%84springcloud.html">&laquo; 微服务架构-Spring Cloud</a>
+  
+  
+  <a class="next" href="/2017/threadlocal%E5%AF%BC%E8%87%B4fullgc%E5%88%86%E6%9E%90.html">ThreadLocal 导致Full GC 分析 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

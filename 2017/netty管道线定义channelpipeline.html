@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>Netty 管道线定义-ChannelPipeline | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="Netty 管道线定义-ChannelPipeline" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="netty Inboudn/Outbound通道Invoker: http://donald-draper.iteye.com/blog/2388233netty 异步任务-ChannelFuture： http://donald-draper.iteye.com/blog/2388297 引言:" />
+<meta property="og:description" content="netty Inboudn/Outbound通道Invoker: http://donald-draper.iteye.com/blog/2388233netty 异步任务-ChannelFuture： http://donald-draper.iteye.com/blog/2388297 引言:" />
+<link rel="canonical" href="http://www.jfox.info/2017/netty%E7%AE%A1%E9%81%93%E7%BA%BF%E5%AE%9A%E4%B9%89channelpipeline.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/netty%E7%AE%A1%E9%81%93%E7%BA%BF%E5%AE%9A%E4%B9%89channelpipeline.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:59:40+00:00" />
+<script type="application/ld+json">
+{"description":"netty Inboudn/Outbound通道Invoker: http://donald-draper.iteye.com/blog/2388233netty 异步任务-ChannelFuture： http://donald-draper.iteye.com/blog/2388297 引言:","@type":"BlogPosting","url":"http://www.jfox.info/2017/netty%E7%AE%A1%E9%81%93%E7%BA%BF%E5%AE%9A%E4%B9%89channelpipeline.html","headline":"Netty 管道线定义-ChannelPipeline","dateModified":"2017-01-01T15:59:40+00:00","datePublished":"2017-01-01T15:59:40+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/netty%E7%AE%A1%E9%81%93%E7%BA%BF%E5%AE%9A%E4%B9%89channelpipeline.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Netty 管道线定义-ChannelPipeline</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:59:40+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>netty Inboudn/Outbound通道Invoker: 
+<a href="https://www.jfox.info/go.php?url=http://donald-draper.iteye.com/blog/2388233">http://donald-draper.iteye.com/blog/2388233</a>netty 异步任务-ChannelFuture： 
+<a href="https://www.jfox.info/go.php?url=http://donald-draper.iteye.com/blog/2388297">http://donald-draper.iteye.com/blog/2388297</a>
+引言:</p>
+
+<p>上一篇文章我们看了异步任务相关接口的定义，先来回顾一下：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  netty的异步结果Future继承于JUC的Future，可以异步获取IO操作的结果信息，比如IO操作是否成功完成，如果失败，可以获取失败的原因，是否取消，同时可以使用cancel方法取消IO操作，添加异步结果监听器，、监听IO操作是否完成，并可以移除结果监听器，除这些之外我们还可以异步、同步等待或超时等待IO操作结果。 
+
+  异步结果监听器GenericFutureListener，主要监听一个IO操作是否完成，在异步结果有返回值时，通知监听器。 
+
+  ChannelFuture继承于空异步结果，即没有返回值，所以添加移除监听器，同步异步等待方法为空体。netty所有的IO操作都是异步的，当一个IO操作开始时，不管操作是否完成，一个新的异步操作结果将会被创建。如果因为IO操作没有完成，同时既没有成功，失败，也没有取消，新创建的那么，异步结果并没有完成初始化。如果IO操作完成，不论操作结果成功，失败或取消，异步结果将会标记为完成，同时携带更多的精确信息，比如失败的原因。需要注意的时，失败或取消也属于完成状态。强烈建议使用添加监听器的方式等待IO操作结果，而不await方法，因为监听器模式时非阻塞的，有更好的性能和资源利用率。 
+
+  通道结果监听器ChannelFutureListener内部有3个监听器，分别为在操作完成时，关闭通道任务关联的通道的监听器CLOSE；当IO操作失败时，关闭通道任务关联的通道的监听器CLOSE_ON_FAILURE；转发通道任务异常到Channel管道的监听器FIRE_EXCEPTION_ON_FAILURE。 
+
+   Promise任务继承了任务Future，但多了以便标记成功、失败和不可取消的方法。 
+</code></pre></div></div>
+
+<p>ChannelPromise与ChannelFuture的不同在于ChannelPromise可以标记任务结果。</p>
+
+<p>ChannelProgressivePromise与ProgressivePromise，ChannelProgressiveFuture的关系与ChannelPromise与Promise，ChannelFuture的关系类似，只不过ChannelPromise表示异步操作任务，ChannelProgressivePromise表示异步任务的进度，同时Promise类型异步任务都是可写的。</p>
+
+<p>今天来看一下Channel管道线的定义：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">io</span><span class="p">.</span><span class="n">netty</span><span class="p">.</span><span class="n">channel</span><span class="p">;</span>
+
+<span class="n">import</span> <span class="n">io</span><span class="p">.</span><span class="n">netty</span><span class="p">.</span><span class="n">buffer</span><span class="p">.</span><span class="n">ByteBuf</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">io</span><span class="p">.</span><span class="n">netty</span><span class="p">.</span><span class="n">util</span><span class="p">.</span><span class="n">concurrent</span><span class="p">.</span><span class="n">DefaultEventExecutorGroup</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">io</span><span class="p">.</span><span class="n">netty</span><span class="p">.</span><span class="n">util</span><span class="p">.</span><span class="n">concurrent</span><span class="p">.</span><span class="n">EventExecutorGroup</span><span class="p">;</span>
+
+<span class="n">import</span> <span class="n">java</span><span class="p">.</span><span class="n">net</span><span class="p">.</span><span class="n">SocketAddress</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">java</span><span class="p">.</span><span class="n">nio</span><span class="p">.</span><span class="n">ByteBuffer</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">java</span><span class="p">.</span><span class="n">nio</span><span class="p">.</span><span class="n">channels</span><span class="p">.</span><span class="n">SocketChannel</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">java</span><span class="p">.</span><span class="n">util</span><span class="p">.</span><span class="k">List</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">java</span><span class="p">.</span><span class="n">util</span><span class="p">.</span><span class="n">Map</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">java</span><span class="p">.</span><span class="n">util</span><span class="p">.</span><span class="n">Map</span><span class="p">.</span><span class="n">Entry</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">java</span><span class="p">.</span><span class="n">util</span><span class="p">.</span><span class="n">NoSuchElementException</span><span class="p">;</span>
+
+
+<span class="p">/**</span>
+ <span class="p">*</span> <span class="n">A</span> <span class="k">list</span> <span class="k">of</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelHandler</span><span class="p">}</span><span class="n">s</span> <span class="n">which</span> <span class="n">handles</span> <span class="k">or</span> <span class="n">intercepts</span> <span class="n">inbound</span> <span class="n">events</span> <span class="k">and</span> <span class="n">outbound</span> <span class="n">operations</span> <span class="k">of</span> <span class="n">a</span>
+ <span class="p">*</span> <span class="p">{@</span><span class="n">link</span> <span class="n">Channel</span><span class="p">}.</span>  <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelPipeline</span><span class="p">}</span> <span class="n">implements</span> <span class="n">an</span> <span class="n">advanced</span> <span class="n">form</span> <span class="k">of</span> <span class="n">the</span>
+ <span class="p">*</span> <span class="p">[</span><span class="n">url</span><span class="p">=</span><span class="n">http</span><span class="p">://</span><span class="n">www</span><span class="p">.</span><span class="n">oracle</span><span class="p">.</span><span class="n">com</span><span class="p">/</span><span class="n">technetwork</span><span class="p">/</span><span class="n">java</span><span class="p">/</span><span class="n">interceptingfilter</span><span class="p">-</span><span class="m">142169.</span><span class="n">html</span><span class="p">]</span><span class="n">Intercepting</span> <span class="n">Filter</span><span class="p">[/</span><span class="n">url</span><span class="p">]</span> <span class="n">pattern</span>
+ <span class="p">*</span> <span class="k">to</span> <span class="n">give</span> <span class="n">a</span> <span class="n">user</span> <span class="n">full</span> <span class="n">control</span> <span class="n">over</span> <span class="n">how</span> <span class="n">an</span> <span class="n">event</span> <span class="n">is</span> <span class="n">handled</span> <span class="k">and</span> <span class="n">how</span> <span class="n">the</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelHandler</span><span class="p">}</span><span class="n">s</span> <span class="k">in</span> <span class="n">a</span> <span class="n">pipeline</span>
+ <span class="p">*</span> <span class="n">interact</span> <span class="k">with</span> <span class="n">each</span> <span class="n">other</span><span class="p">.</span>
+ <span class="p">*</span><span class="err">通道处理器集合</span><span class="n">ChannelPipeline</span><span class="err">可以处理或拦截关联通道的</span><span class="n">Inbound</span><span class="err">事件和</span><span class="n">Outbound</span><span class="err">操作。管道线实现了拦截过滤器模式，</span>
+ <span class="err">使开发者可以完全控制事件如何处理，以及通道处理器在管道中如何交互。</span>
+ <span class="p">*</span> <span class="p">&lt;</span><span class="n">h3</span><span class="p">&gt;</span><span class="n">Creation</span> <span class="k">of</span> <span class="n">a</span> <span class="n">pipeline</span><span class="p">&lt;/</span><span class="n">h3</span><span class="p">&gt;</span>
+ <span class="p">*</span><span class="err">创建管道</span>
+ <span class="p">*</span> <span class="n">Each</span> <span class="n">channel</span> <span class="n">has</span> <span class="n">its</span> <span class="n">own</span> <span class="n">pipeline</span> <span class="k">and</span> <span class="n">it</span> <span class="n">is</span> <span class="n">created</span> <span class="n">automatically</span> <span class="n">when</span> <span class="n">a</span> <span class="n">new</span> <span class="n">channel</span> <span class="n">is</span> <span class="n">created</span><span class="p">.</span>
+ <span class="p">*</span><span class="err">每个通道拥有自己的管道，当通道创建时，管道自动创建</span>
+ <span class="p">*</span> <span class="p">&lt;</span><span class="n">h3</span><span class="p">&gt;</span><span class="n">How</span> <span class="n">an</span> <span class="n">event</span> <span class="n">flows</span> <span class="k">in</span> <span class="n">a</span> <span class="n">pipeline</span><span class="p">&lt;/</span><span class="n">h3</span><span class="p">&gt;</span>
+ <span class="p">*</span><span class="err">管道事件流</span>
+ <span class="p">*</span> <span class="n">The</span> <span class="n">following</span> <span class="n">diagram</span> <span class="n">describes</span> <span class="n">how</span> <span class="n">I</span><span class="p">/</span><span class="n">O</span> <span class="n">events</span> <span class="n">are</span> <span class="n">processed</span> <span class="n">by</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelHandler</span><span class="p">}</span><span class="n">s</span> <span class="k">in</span> <span class="n">a</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelPipeline</span><span class="p">}</span>
+ <span class="p">*</span> <span class="n">typically</span><span class="p">.</span> <span class="n">An</span> <span class="n">I</span><span class="p">/</span><span class="n">O</span> <span class="n">event</span> <span class="n">is</span> <span class="n">handled</span> <span class="n">by</span> <span class="n">either</span> <span class="n">a</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelInboundHandler</span><span class="p">}</span> <span class="k">or</span> <span class="n">a</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelOutboundHandler</span><span class="p">}</span>
+ <span class="p">*</span> <span class="k">and</span> <span class="n">be</span> <span class="n">forwarded</span> <span class="k">to</span> <span class="n">its</span> <span class="n">closest</span> <span class="n">handler</span> <span class="n">by</span> <span class="n">calling</span> <span class="n">the</span> <span class="n">event</span> <span class="n">propagation</span> <span class="n">methods</span> <span class="n">defined</span> <span class="k">in</span>
+ <span class="p">*</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelHandlerContext</span><span class="p">},</span> <span class="n">such</span> <span class="k">as</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelHandlerContext</span><span class="p">#</span><span class="n">fireChannelRead</span><span class="p">(</span><span class="n">Object</span><span class="p">)}</span> <span class="k">and</span>
+ <span class="p">*</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelHandlerContext</span><span class="p">#</span><span class="nb">write</span><span class="p">(</span><span class="n">Object</span><span class="p">)}.</span>
+ <span class="p">*</span><span class="err">下图描述事件如何被管道中的通道处理器处理过程。一个</span><span class="n">IO</span><span class="err">事件被</span><span class="n">Inbound</span><span class="err">或</span><span class="n">Outbound</span><span class="err">通道处理器处理时，可以通过通道</span>
+ <span class="err">的上下文的相关事件传播方法，将事件转发给相邻的通道处理器，比如</span> <span class="n">ChannelHandlerContext</span><span class="p">#</span><span class="n">fireChannelRead</span><span class="p">(</span><span class="n">Object</span><span class="p">)</span><span class="err">和</span>
+<span class="n">ChannelHandlerContext</span><span class="p">#</span><span class="nb">write</span><span class="p">(</span><span class="n">Object</span><span class="p">)</span><span class="err">方法。</span>
+ <span class="p">*</span> <span class="p">&lt;</span><span class="n">pre</span><span class="p">&gt;</span>
+ <span class="p">*</span>                                                 <span class="n">I</span><span class="p">/</span><span class="n">O</span> <span class="n">Request</span>
+ <span class="p">*</span>                                            <span class="n">via</span> <span class="p">{@</span><span class="n">link</span> <span class="n">Channel</span><span class="p">}</span> <span class="k">or</span>
+ <span class="p">*</span>                                        <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelHandlerContext</span><span class="p">}</span>
+ <span class="p">*</span>                                                      <span class="p">|</span>
+ <span class="p">*</span>  <span class="p">+---------------------------------------------------+---------------+</span>
+ <span class="p">*</span>  <span class="p">|</span>                           <span class="n">ChannelPipeline</span>         <span class="p">|</span>               <span class="p">|</span>
+ <span class="p">*</span>  <span class="p">|</span>                                                  <span class="p">\|/</span>              <span class="p">|</span>
+ <span class="p">*</span>  <span class="p">|</span>    <span class="p">+---------------------+</span>            <span class="p">+-----------+----------+</span>    <span class="p">|</span>
+ <span class="p">*</span>  <span class="p">|</span>    <span class="p">|</span> <span class="n">Inbound</span> <span class="n">Handler</span>  <span class="n">N</span>  <span class="p">|</span>            <span class="p">|</span> <span class="n">Outbound</span> <span class="n">Handler</span>  <span class="m">1</span>  <span class="p">|</span>    <span class="p">|</span>
+ <span class="p">*</span>  <span class="p">|</span>    <span class="p">+----------+----------+</span>            <span class="p">+-----------+----------+</span>    <span class="p">|</span>
+ <span class="p">*</span>  <span class="p">|</span>              <span class="p">/|\</span>                                  <span class="p">|</span>               <span class="p">|</span>
+ <span class="p">*</span>  <span class="p">|</span>               <span class="p">|</span>                                  <span class="p">\|/</span>              <span class="p">|</span>
+ <span class="p">*</span>  <span class="p">|</span>    <span class="p">+----------+----------+</span>            <span class="p">+-----------+----------+</span>    <span class="p">|</span>
+ <span class="p">*</span>  <span class="p">|</span>    <span class="p">|</span> <span class="n">Inbound</span> <span class="n">Handler</span> <span class="n">N</span><span class="p">-</span><span class="m">1</span> <span class="p">|</span>            <span class="p">|</span> <span class="n">Outbound</span> <span class="n">Handler</span>  <span class="m">2</span>  <span class="p">|</span>    <span class="p">|</span>
+ <span class="p">*</span>  <span class="p">|</span>    <span class="p">+----------+----------+</span>            <span class="p">+-----------+----------+</span>    <span class="p">|</span>
+ <span class="p">*</span>  <span class="p">|</span>              <span class="p">/|\</span>                                  <span class="p">.</span>               <span class="p">|</span>
+ <span class="p">*</span>  <span class="p">|</span>               <span class="p">.</span>                                   <span class="p">.</span>               <span class="p">|</span>
+ <span class="p">*</span>  <span class="p">|</span> <span class="n">ChannelHandlerContext</span><span class="p">.</span><span class="n">fireIN_EVT</span><span class="p">()</span> <span class="n">ChannelHandlerContext</span><span class="p">.</span><span class="n">OUT_EVT</span><span class="p">()|</span>
+ <span class="p">*</span>  <span class="p">|</span>        <span class="p">[</span> <span class="n">method</span> <span class="n">call</span><span class="p">]</span>                       <span class="p">[</span><span class="n">method</span> <span class="n">call</span><span class="p">]</span>         <span class="p">|</span>
+ <span class="p">*</span>  <span class="p">|</span>               <span class="p">.</span>                                   <span class="p">.</span>               <span class="p">|</span>
+ <span class="p">*</span>  <span class="p">|</span>               <span class="p">.</span>                                  <span class="p">\|/</span>              <span class="p">|</span>
+ <span class="p">*</span>  <span class="p">|</span>    <span class="p">+----------+----------+</span>            <span class="p">+-----------+----------+</span>    <span class="p">|</span>
+ <span class="p">*</span>  <span class="p">|</span>    <span class="p">|</span> <span class="n">Inbound</span> <span class="n">Handler</span>  <span class="m">2</span>  <span class="p">|</span>            <span class="p">|</span> <span class="n">Outbound</span> <span class="n">Handler</span> <span class="n">M</span><span class="p">-</span><span class="m">1</span> <span class="p">|</span>    <span class="p">|</span>
+ <span class="p">*</span>  <span class="p">|</span>    <span class="p">+----------+----------+</span>            <span class="p">+-----------+----------+</span>    <span class="p">|</span>
+ <span class="p">*</span>  <span class="p">|</span>              <span class="p">/|\</span>                                  <span class="p">|</span>               <span class="p">|</span>
+ <span class="p">*</span>  <span class="p">|</span>               <span class="p">|</span>                                  <span class="p">\|/</span>              <span class="p">|</span>
+ <span class="p">*</span>  <span class="p">|</span>    <span class="p">+----------+----------+</span>            <span class="p">+-----------+----------+</span>    <span class="p">|</span>
+ <span class="p">*</span>  <span class="p">|</span>    <span class="p">|</span> <span class="n">Inbound</span> <span class="n">Handler</span>  <span class="m">1</span>  <span class="p">|</span>            <span class="p">|</span> <span class="n">Outbound</span> <span class="n">Handler</span>  <span class="n">M</span>  <span class="p">|</span>    <span class="p">|</span>
+ <span class="p">*</span>  <span class="p">|</span>    <span class="p">+----------+----------+</span>            <span class="p">+-----------+----------+</span>    <span class="p">|</span>
+ <span class="p">*</span>  <span class="p">|</span>              <span class="p">/|\</span>                                  <span class="p">|</span>               <span class="p">|</span>
+ <span class="p">*</span>  <span class="p">+---------------+-----------------------------------+---------------+</span>
+ <span class="p">*</span>                  <span class="p">|</span>                                  <span class="p">\|/</span>
+ <span class="p">*</span>  <span class="p">+---------------+-----------------------------------+---------------+</span>
+ <span class="p">*</span>  <span class="p">|</span>               <span class="p">|</span>                                   <span class="p">|</span>               <span class="p">|</span>
+ <span class="p">*</span>  <span class="p">|</span>       <span class="p">[</span> <span class="n">Socket</span><span class="p">.</span><span class="nb">read</span><span class="p">()</span> <span class="p">]</span>                    <span class="p">[</span> <span class="n">Socket</span><span class="p">.</span><span class="nb">write</span><span class="p">()</span> <span class="p">]</span>     <span class="p">|</span>
+ <span class="p">*</span>  <span class="p">|</span>                                                                   <span class="p">|</span>
+ <span class="p">*</span>  <span class="p">|</span>  <span class="n">Netty</span> <span class="n">Internal</span> <span class="n">I</span><span class="p">/</span><span class="n">O</span> <span class="n">Threads</span> <span class="p">(</span><span class="n">Transport</span> <span class="n">Implementation</span><span class="p">)</span>            <span class="p">|</span>
+ <span class="p">*</span>  <span class="p">+-------------------------------------------------------------------+</span>
+ <span class="p">*</span> <span class="p">&lt;/</span><span class="n">pre</span><span class="p">&gt;</span>
+ <span class="p">*</span> <span class="n">An</span> <span class="n">inbound</span> <span class="n">event</span> <span class="n">is</span> <span class="n">handled</span> <span class="n">by</span> <span class="n">the</span> <span class="n">inbound</span> <span class="n">handlers</span> <span class="k">in</span> <span class="n">the</span> <span class="n">bottom</span><span class="p">-</span><span class="n">up</span> <span class="n">direction</span> <span class="k">as</span> <span class="n">shown</span> <span class="n">on</span> <span class="n">the</span> <span class="n">left</span> <span class="n">side</span> <span class="k">of</span> <span class="n">the</span>
+ <span class="p">*</span> <span class="n">diagram</span><span class="p">.</span>  <span class="n">An</span> <span class="n">inbound</span> <span class="n">handler</span> <span class="n">usually</span> <span class="n">handles</span> <span class="n">the</span> <span class="n">inbound</span> <span class="n">data</span> <span class="n">generated</span> <span class="n">by</span> <span class="n">the</span> <span class="n">I</span><span class="p">/</span><span class="n">O</span> <span class="n">thread</span> <span class="n">on</span> <span class="n">the</span> <span class="n">bottom</span> <span class="k">of</span> <span class="n">the</span>
+ <span class="p">*</span> <span class="n">diagram</span><span class="p">.</span>  <span class="n">The</span> <span class="n">inbound</span> <span class="n">data</span> <span class="n">is</span> <span class="n">often</span> <span class="nb">read</span> <span class="k">from</span> <span class="n">a</span> <span class="n">remote</span> <span class="n">peer</span> <span class="n">via</span> <span class="n">the</span> <span class="n">actual</span> <span class="n">input</span> <span class="n">operation</span> <span class="n">such</span> <span class="k">as</span>
+ <span class="p">*</span> <span class="p">{@</span><span class="n">link</span> <span class="n">SocketChannel</span><span class="p">#</span><span class="nb">read</span><span class="p">(</span><span class="n">ByteBuffer</span><span class="p">)}.</span>  <span class="k">If</span> <span class="n">an</span> <span class="n">inbound</span> <span class="n">event</span> <span class="n">goes</span> <span class="n">beyond</span> <span class="n">the</span> <span class="n">top</span> <span class="n">inbound</span> <span class="n">handler</span><span class="p">,</span> <span class="n">it</span> <span class="n">is</span> <span class="n">discarded</span>
+ <span class="p">*</span> <span class="n">silently</span><span class="p">,</span> <span class="k">or</span> <span class="n">logged</span> <span class="k">if</span> <span class="n">it</span> <span class="n">needs</span> <span class="n">your</span> <span class="n">attention</span><span class="p">.</span>
+ <span class="err">在上图中左边，一个</span><span class="n">inbound</span><span class="err">事件，由下向上被</span><span class="n">Inbound</span><span class="err">通道处理器处理。一个</span><span class="n">Inbound</span><span class="err">通道处理器，一般处理来自</span><span class="n">IO</span><span class="err">线程的数据。</span>
+ <span class="n">Inbound</span><span class="err">数据，通常通过实际的输入操作，如</span><span class="n">SocketChannel</span><span class="p">#</span><span class="nb">read</span><span class="err">，从远端</span><span class="n">peer</span><span class="err">读取。如果</span><span class="n">inbound</span><span class="err">事件到达</span><span class="n">Inbound</span><span class="err">处理器的顶部，</span>
+ <span class="err">默认将会被抛弃，如果需要关注，可以</span><span class="nb">log</span>
+ <span class="p">*</span> <span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span>
+ <span class="p">*</span> <span class="n">An</span> <span class="n">outbound</span> <span class="n">event</span> <span class="n">is</span> <span class="n">handled</span> <span class="n">by</span> <span class="n">the</span> <span class="n">outbound</span> <span class="n">handler</span> <span class="k">in</span> <span class="n">the</span> <span class="n">top</span><span class="p">-</span><span class="n">down</span> <span class="n">direction</span> <span class="k">as</span> <span class="n">shown</span> <span class="n">on</span> <span class="n">the</span> <span class="n">right</span> <span class="n">side</span> <span class="k">of</span> <span class="n">the</span>
+ <span class="p">*</span> <span class="n">diagram</span><span class="p">.</span>  <span class="n">An</span> <span class="n">outbound</span> <span class="n">handler</span> <span class="n">usually</span> <span class="n">generates</span> <span class="k">or</span> <span class="n">transforms</span> <span class="n">the</span> <span class="n">outbound</span> <span class="n">traffic</span> <span class="n">such</span> <span class="k">as</span> <span class="nb">write</span> <span class="n">requests</span><span class="p">.</span>
+ <span class="p">*</span> <span class="k">If</span> <span class="n">an</span> <span class="n">outbound</span> <span class="n">event</span> <span class="n">goes</span> <span class="n">beyond</span> <span class="n">the</span> <span class="n">bottom</span> <span class="n">outbound</span> <span class="n">handler</span><span class="p">,</span> <span class="n">it</span> <span class="n">is</span> <span class="n">handled</span> <span class="n">by</span> <span class="n">an</span> <span class="n">I</span><span class="p">/</span><span class="n">O</span> <span class="n">thread</span> <span class="n">associated</span> <span class="k">with</span> <span class="n">the</span>
+ <span class="p">*</span> <span class="p">{@</span><span class="n">link</span> <span class="n">Channel</span><span class="p">}.</span> <span class="n">The</span> <span class="n">I</span><span class="p">/</span><span class="n">O</span> <span class="n">thread</span> <span class="n">often</span> <span class="n">performs</span> <span class="n">the</span> <span class="n">actual</span> <span class="n">output</span> <span class="n">operation</span> <span class="n">such</span> <span class="k">as</span>
+ <span class="p">*</span> <span class="p">{@</span><span class="n">link</span> <span class="n">SocketChannel</span><span class="p">#</span><span class="nb">write</span><span class="p">(</span><span class="n">ByteBuffer</span><span class="p">)}.</span>
+<span class="err">在上图中的右边，</span> <span class="err">一个</span><span class="n">Outbound</span><span class="err">事件，被</span><span class="n">Outbound</span><span class="err">通道处理器从上到下处理。一个</span><span class="n">Outbound</span><span class="err">通道处理器通常产生或者转发</span><span class="n">Outbound</span><span class="err">数据，</span>
+<span class="err">不如写请求。如果</span><span class="n">outbound</span><span class="err">事件到达</span><span class="n">Outbound</span><span class="err">通道处理器的底部，那么将会被通道关联的</span><span class="n">Io</span><span class="err">线程处理。</span><span class="n">IO</span><span class="err">线程执行实际的输出操作，</span>
+<span class="err">如</span><span class="n">SocketChannel</span><span class="p">#</span><span class="nb">write</span><span class="err">。</span>
+ <span class="p">*</span> <span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span>
+ <span class="p">*</span> <span class="n">For</span> <span class="n">example</span><span class="p">,</span> <span class="n">let</span> <span class="n">us</span> <span class="n">assume</span> <span class="n">that</span> <span class="n">we</span> <span class="n">created</span> <span class="n">the</span> <span class="n">following</span> <span class="n">pipeline</span><span class="p">:</span>
+ <span class="err">来看一个例子，假设创建管道如下</span>
+ <span class="p">*</span> <span class="p">&lt;</span><span class="n">pre</span><span class="p">&gt;</span>
+ <span class="p">*</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelPipeline</span><span class="p">}</span> <span class="n">p</span> <span class="p">=</span> <span class="p">...;</span>
+ <span class="p">*</span> <span class="n">p</span><span class="p">.</span><span class="n">addLast</span><span class="p">(</span><span class="s2">"1"</span><span class="p">,</span> <span class="n">new</span> <span class="n">InboundHandlerA</span><span class="p">());</span>
+ <span class="p">*</span> <span class="n">p</span><span class="p">.</span><span class="n">addLast</span><span class="p">(</span><span class="s2">"2"</span><span class="p">,</span> <span class="n">new</span> <span class="n">InboundHandlerB</span><span class="p">());</span>
+ <span class="p">*</span> <span class="n">p</span><span class="p">.</span><span class="n">addLast</span><span class="p">(</span><span class="s2">"3"</span><span class="p">,</span> <span class="n">new</span> <span class="n">OutboundHandlerA</span><span class="p">());</span>
+ <span class="p">*</span> <span class="n">p</span><span class="p">.</span><span class="n">addLast</span><span class="p">(</span><span class="s2">"4"</span><span class="p">,</span> <span class="n">new</span> <span class="n">OutboundHandlerB</span><span class="p">());</span>
+ <span class="p">*</span> <span class="n">p</span><span class="p">.</span><span class="n">addLast</span><span class="p">(</span><span class="s2">"5"</span><span class="p">,</span> <span class="n">new</span> <span class="n">InboundOutboundHandlerX</span><span class="p">());</span>
+ <span class="p">*</span> <span class="p">&lt;/</span><span class="n">pre</span><span class="p">&gt;</span>
+ <span class="p">*</span> <span class="k">In</span> <span class="n">the</span> <span class="n">example</span> <span class="n">above</span><span class="p">,</span> <span class="n">the</span> <span class="n">class</span> <span class="n">whose</span> <span class="n">name</span> <span class="n">starts</span> <span class="k">with</span> <span class="p">{@</span><span class="n">code</span> <span class="n">Inbound</span><span class="p">}</span> <span class="n">means</span> <span class="n">it</span> <span class="n">is</span> <span class="n">an</span> <span class="n">inbound</span> <span class="n">handler</span><span class="p">.</span>
+ <span class="p">*</span> <span class="n">The</span> <span class="n">class</span> <span class="n">whose</span> <span class="n">name</span> <span class="n">starts</span> <span class="k">with</span> <span class="p">{@</span><span class="n">code</span> <span class="n">Outbound</span><span class="p">}</span> <span class="n">means</span> <span class="n">it</span> <span class="n">is</span> <span class="n">a</span> <span class="n">outbound</span> <span class="n">handler</span><span class="p">.</span>
+ <span class="err">在上述示例中，</span><span class="n">Inbound</span><span class="err">开头的为</span><span class="n">Inbound</span><span class="err">处理器，</span><span class="n">Outbound</span><span class="err">开头的为</span><span class="n">Outbound</span><span class="err">处理器</span>
+ <span class="p">*</span> <span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span>
+ <span class="p">*</span> <span class="k">In</span> <span class="n">the</span> <span class="n">given</span> <span class="n">example</span> <span class="n">configuration</span><span class="p">,</span> <span class="n">the</span> <span class="n">handler</span> <span class="k">evaluation</span> <span class="n">order</span> <span class="n">is</span> <span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">3</span><span class="p">,</span> <span class="m">4</span><span class="p">,</span> <span class="m">5</span> <span class="n">when</span> <span class="n">an</span> <span class="n">event</span> <span class="n">goes</span> <span class="n">inbound</span><span class="p">.</span>
+ <span class="p">*</span> <span class="n">When</span> <span class="n">an</span> <span class="n">event</span> <span class="n">goes</span> <span class="n">outbound</span><span class="p">,</span> <span class="n">the</span> <span class="n">order</span> <span class="n">is</span> <span class="m">5</span><span class="p">,</span> <span class="m">4</span><span class="p">,</span> <span class="m">3</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">1.</span>  <span class="n">On</span> <span class="n">top</span> <span class="k">of</span> <span class="n">this</span> <span class="n">principle</span><span class="p">,</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelPipeline</span><span class="p">}</span> <span class="n">skips</span>
+ <span class="p">*</span> <span class="n">the</span> <span class="k">evaluation</span> <span class="k">of</span> <span class="n">certain</span> <span class="n">handlers</span> <span class="k">to</span> <span class="n">shorten</span> <span class="n">the</span> <span class="n">stack</span> <span class="n">depth</span><span class="p">:</span>
+ <span class="n">inbound</span><span class="err">事件处理的顺序为</span><span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">3</span><span class="p">,</span> <span class="m">4</span><span class="p">,</span> <span class="m">5</span><span class="err">，</span><span class="n">outbound</span><span class="err">事件为</span><span class="m">5</span><span class="p">,</span> <span class="m">4</span><span class="p">,</span> <span class="m">3</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">1</span><span class="err">。基于管道的</span><span class="n">top</span><span class="err">原则将会跳过一些无用的处理器，</span>
+ <span class="err">以缩短通道处理器栈的深度。</span>
+ <span class="p">*</span> <span class="p">[</span><span class="k">list</span><span class="p">]</span>
+ <span class="p">*</span> <span class="p">&lt;</span><span class="n">li</span><span class="p">&gt;</span><span class="m">3</span> <span class="k">and</span> <span class="m">4</span> <span class="n">don</span><span class="s1">'t implement {@link ChannelInboundHandler}, and therefore the actual evaluation order of an inbound
+ *     event will be: 1, 2, and 5.&lt;/li&gt; 
+   由于3,4没有实现inbound通道处理器，因此实际inbound通道处理器的顺序为1,2,5.
+ * &lt;li&gt;1 and 2 don'</span><span class="n">t</span> <span class="n">implement</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelOutboundHandler</span><span class="p">},</span> <span class="k">and</span> <span class="n">therefore</span> <span class="n">the</span> <span class="n">actual</span> <span class="k">evaluation</span> <span class="n">order</span> <span class="k">of</span> <span class="n">a</span>
+ <span class="p">*</span>     <span class="n">outbound</span> <span class="n">event</span> <span class="n">will</span> <span class="n">be</span><span class="p">:</span> <span class="m">5</span><span class="p">,</span> <span class="m">4</span><span class="p">,</span> <span class="k">and</span> <span class="m">3.</span><span class="p">&lt;/</span><span class="n">li</span><span class="p">&gt;</span>
+    <span class="err">由于</span><span class="m">1</span><span class="p">,</span><span class="m">2</span><span class="err">没有实现</span><span class="n">inbound</span><span class="err">通道处理器，因此实际</span><span class="n">inbound</span><span class="err">通道处理器的顺序为</span><span class="m">5</span><span class="p">,</span> <span class="m">4</span><span class="p">,</span> <span class="m">3.</span>
+ <span class="p">*</span> <span class="p">&lt;</span><span class="n">li</span><span class="p">&gt;</span><span class="k">If</span> <span class="m">5</span> <span class="n">implements</span> <span class="n">both</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelInboundHandler</span><span class="p">}</span> <span class="k">and</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelOutboundHandler</span><span class="p">},</span> <span class="n">the</span> <span class="k">evaluation</span> <span class="n">order</span> <span class="k">of</span>
+ <span class="p">*</span>     <span class="n">an</span> <span class="n">inbound</span> <span class="k">and</span> <span class="n">a</span> <span class="n">outbound</span> <span class="n">event</span> <span class="n">could</span> <span class="n">be</span> <span class="m">125</span> <span class="k">and</span> <span class="m">543</span> <span class="n">respectively</span><span class="p">.&lt;/</span><span class="n">li</span><span class="p">&gt;</span>
+ <span class="err">如果</span><span class="m">5</span><span class="err">实现了</span><span class="n">inbound</span><span class="err">和</span><span class="n">Outbound</span><span class="err">，则</span><span class="n">inbound</span><span class="err">事件，处理器顺序为</span><span class="m">125</span><span class="err">，</span><span class="n">oubound</span><span class="err">事件为</span><span class="m">543.</span>
+ <span class="p">*</span> <span class="p">[/</span><span class="k">list</span><span class="p">]</span>
+ <span class="p">*</span>
+ <span class="p">*</span> <span class="p">&lt;</span><span class="n">h3</span><span class="p">&gt;</span><span class="n">Forwarding</span> <span class="n">an</span> <span class="n">event</span> <span class="k">to</span> <span class="n">the</span> <span class="k">next</span> <span class="n">handler</span><span class="p">&lt;/</span><span class="n">h3</span><span class="p">&gt;</span>
+ <span class="p">*</span><span class="err">转发事件到下一个处理器</span>
+ <span class="p">*</span> <span class="k">As</span> <span class="n">you</span> <span class="n">might</span> <span class="n">noticed</span> <span class="k">in</span> <span class="n">the</span> <span class="n">diagram</span> <span class="n">shows</span><span class="p">,</span> <span class="n">a</span> <span class="n">handler</span> <span class="n">has</span> <span class="k">to</span> <span class="n">invoke</span> <span class="n">the</span> <span class="n">event</span> <span class="n">propagation</span> <span class="n">methods</span> <span class="k">in</span>
+ <span class="p">*</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelHandlerContext</span><span class="p">}</span> <span class="k">to</span> <span class="k">forward</span> <span class="n">an</span> <span class="n">event</span> <span class="k">to</span> <span class="n">its</span> <span class="k">next</span> <span class="n">handler</span><span class="p">.</span>  <span class="n">Those</span> <span class="n">methods</span> <span class="k">include</span><span class="p">:</span>
+ <span class="err">在上图中，你可能已经注意到，一个处理器不得不调用关联的上下文的事件传播方法，将事件传播给下一个处理器。</span>
+ <span class="err">这些方法如下：</span>
+ <span class="p">*</span> <span class="p">[</span><span class="k">list</span><span class="p">]</span>
+ <span class="p">*</span> <span class="p">&lt;</span><span class="n">li</span><span class="p">&gt;</span><span class="n">Inbound</span> <span class="n">event</span> <span class="n">propagation</span> <span class="n">methods</span><span class="p">:</span>
+ <span class="p">*</span>     <span class="p">[</span><span class="k">list</span><span class="p">]</span>
+ <span class="p">*</span>     <span class="p">[*]{@</span><span class="n">link</span> <span class="n">ChannelHandlerContext</span><span class="p">#</span><span class="n">fireChannelRegistered</span><span class="p">()}</span>
+
+ <span class="p">*</span>     <span class="p">[*]{@</span><span class="n">link</span> <span class="n">ChannelHandlerContext</span><span class="p">#</span><span class="n">fireChannelActive</span><span class="p">()}</span>
+
+ <span class="p">*</span>     <span class="p">[*]{@</span><span class="n">link</span> <span class="n">ChannelHandlerContext</span><span class="p">#</span><span class="n">fireChannelRead</span><span class="p">(</span><span class="n">Object</span><span class="p">)}</span>
+
+ <span class="p">*</span>     <span class="p">[*]{@</span><span class="n">link</span> <span class="n">ChannelHandlerContext</span><span class="p">#</span><span class="n">fireChannelReadComplete</span><span class="p">()}</span>
+
+ <span class="p">*</span>     <span class="p">[*]{@</span><span class="n">link</span> <span class="n">ChannelHandlerContext</span><span class="p">#</span><span class="n">fireExceptionCaught</span><span class="p">(</span><span class="n">Throwable</span><span class="p">)}</span>
+
+ <span class="p">*</span>     <span class="p">[*]{@</span><span class="n">link</span> <span class="n">ChannelHandlerContext</span><span class="p">#</span><span class="n">fireUserEventTriggered</span><span class="p">(</span><span class="n">Object</span><span class="p">)}</span>
+
+ <span class="p">*</span>     <span class="p">[*]{@</span><span class="n">link</span> <span class="n">ChannelHandlerContext</span><span class="p">#</span><span class="n">fireChannelWritabilityChanged</span><span class="p">()}</span>
+
+ <span class="p">*</span>     <span class="p">[*]{@</span><span class="n">link</span> <span class="n">ChannelHandlerContext</span><span class="p">#</span><span class="n">fireChannelInactive</span><span class="p">()}</span>
+
+ <span class="p">*</span>     <span class="p">[*]{@</span><span class="n">link</span> <span class="n">ChannelHandlerContext</span><span class="p">#</span><span class="n">fireChannelUnregistered</span><span class="p">()}</span>
+
+ <span class="p">*</span>     <span class="p">[/</span><span class="k">list</span><span class="p">]</span>
+ <span class="p">*</span> <span class="p">&lt;/</span><span class="n">li</span><span class="p">&gt;</span>
+ <span class="p">*</span> <span class="p">&lt;</span><span class="n">li</span><span class="p">&gt;</span><span class="n">Outbound</span> <span class="n">event</span> <span class="n">propagation</span> <span class="n">methods</span><span class="p">:</span>
+ <span class="p">*</span>     <span class="p">[</span><span class="k">list</span><span class="p">]</span>
+ <span class="p">*</span>     <span class="p">[*]{@</span><span class="n">link</span> <span class="n">ChannelHandlerContext</span><span class="p">#</span><span class="n">bind</span><span class="p">(</span><span class="n">SocketAddress</span><span class="p">,</span> <span class="n">ChannelPromise</span><span class="p">)}</span>
+
+ <span class="p">*</span>     <span class="p">[*]{@</span><span class="n">link</span> <span class="n">ChannelHandlerContext</span><span class="p">#</span><span class="nf">connect</span><span class="p">(</span><span class="n">SocketAddress</span><span class="p">,</span> <span class="n">SocketAddress</span><span class="p">,</span> <span class="n">ChannelPromise</span><span class="p">)}</span>
+
+ <span class="p">*</span>     <span class="p">[*]{@</span><span class="n">link</span> <span class="n">ChannelHandlerContext</span><span class="p">#</span><span class="nb">write</span><span class="p">(</span><span class="n">Object</span><span class="p">,</span> <span class="n">ChannelPromise</span><span class="p">)}</span>
+
+ <span class="p">*</span>     <span class="p">[*]{@</span><span class="n">link</span> <span class="n">ChannelHandlerContext</span><span class="p">#</span><span class="n">flush</span><span class="p">()}</span>
+
+ <span class="p">*</span>     <span class="p">[*]{@</span><span class="n">link</span> <span class="n">ChannelHandlerContext</span><span class="p">#</span><span class="nb">read</span><span class="p">()}</span>
+
+ <span class="p">*</span>     <span class="p">[*]{@</span><span class="n">link</span> <span class="n">ChannelHandlerContext</span><span class="p">#</span><span class="nf">disconnect</span><span class="p">(</span><span class="n">ChannelPromise</span><span class="p">)}</span>
+
+ <span class="p">*</span>     <span class="p">[*]{@</span><span class="n">link</span> <span class="n">ChannelHandlerContext</span><span class="p">#</span><span class="n">close</span><span class="p">(</span><span class="n">ChannelPromise</span><span class="p">)}</span>
+
+ <span class="p">*</span>     <span class="p">[*]{@</span><span class="n">link</span> <span class="n">ChannelHandlerContext</span><span class="p">#</span><span class="n">deregister</span><span class="p">(</span><span class="n">ChannelPromise</span><span class="p">)}</span>
+
+ <span class="p">*</span>     <span class="p">[/</span><span class="k">list</span><span class="p">]</span>
+ <span class="p">*</span> <span class="p">&lt;/</span><span class="n">li</span><span class="p">&gt;</span>
+ <span class="p">*</span> <span class="p">[/</span><span class="k">list</span><span class="p">]</span>
+ <span class="p">*</span>
+ <span class="p">*</span> <span class="k">and</span> <span class="n">the</span> <span class="n">following</span> <span class="n">example</span> <span class="n">shows</span> <span class="n">how</span> <span class="n">the</span> <span class="n">event</span> <span class="n">propagation</span> <span class="n">is</span> <span class="n">usually</span> <span class="n">done</span><span class="p">:</span>
+ <span class="p">*</span><span class="err">下面的实例展示事件如何传播</span>
+ <span class="p">*</span> <span class="p">&lt;</span><span class="n">pre</span><span class="p">&gt;</span>
+ <span class="p">*</span> <span class="k">public</span> <span class="n">class</span> <span class="n">MyInboundHandler</span> <span class="n">extends</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelInboundHandlerAdapter</span><span class="p">}</span> <span class="p">{</span>
+ <span class="p">*</span>     <span class="p">{@</span><span class="n">code</span> <span class="p">@</span><span class="n">Override</span><span class="p">}</span>
+ <span class="p">*</span>     <span class="k">public</span> <span class="n">void</span> <span class="n">channelActive</span><span class="p">({@</span><span class="n">link</span> <span class="n">ChannelHandlerContext</span><span class="p">}</span> <span class="n">ctx</span><span class="p">)</span> <span class="p">{</span>
+ <span class="p">*</span>         <span class="nf">System</span><span class="p">.</span><span class="n">out</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="s2">"Connected!"</span><span class="p">);</span>
+ <span class="p">*</span>         <span class="n">ctx</span><span class="p">.</span><span class="n">fireChannelActive</span><span class="p">();</span>
+ <span class="p">*</span>     <span class="p">}</span>
+ <span class="p">*</span> <span class="p">}</span>
+ <span class="p">*</span>
+ <span class="p">*</span> <span class="k">public</span> <span class="n">class</span> <span class="n">MyOutboundHandler</span> <span class="n">extends</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelOutboundHandlerAdapter</span><span class="p">}</span> <span class="p">{</span>
+ <span class="p">*</span>     <span class="p">{@</span><span class="n">code</span> <span class="p">@</span><span class="n">Override</span><span class="p">}</span>
+ <span class="p">*</span>     <span class="k">public</span> <span class="n">void</span> <span class="n">close</span><span class="p">({@</span><span class="n">link</span> <span class="n">ChannelHandlerContext</span><span class="p">}</span> <span class="n">ctx</span><span class="p">,</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelPromise</span><span class="p">}</span> <span class="n">promise</span><span class="p">)</span> <span class="p">{</span>
+ <span class="p">*</span>         <span class="nf">System</span><span class="p">.</span><span class="n">out</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="s2">"Closing .."</span><span class="p">);</span>
+ <span class="p">*</span>         <span class="n">ctx</span><span class="p">.</span><span class="n">close</span><span class="p">(</span><span class="n">promise</span><span class="p">);</span>
+ <span class="p">*</span>     <span class="p">}</span>
+ <span class="p">*</span> <span class="p">}</span>
+ <span class="p">*</span> <span class="p">&lt;/</span><span class="n">pre</span><span class="p">&gt;</span>
+ <span class="p">*</span>
+ <span class="p">*</span> <span class="p">&lt;</span><span class="n">h3</span><span class="p">&gt;</span><span class="n">Building</span> <span class="n">a</span> <span class="n">pipeline</span><span class="p">&lt;/</span><span class="n">h3</span><span class="p">&gt;</span>
+ <span class="p">*</span> <span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span><span class="err">构建管道</span>
+ <span class="p">*</span> <span class="n">A</span> <span class="n">user</span> <span class="n">is</span> <span class="n">supposed</span> <span class="k">to</span> <span class="n">have</span> <span class="n">one</span> <span class="k">or</span> <span class="n">more</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelHandler</span><span class="p">}</span><span class="n">s</span> <span class="k">in</span> <span class="n">a</span> <span class="n">pipeline</span> <span class="k">to</span> <span class="n">receive</span> <span class="n">I</span><span class="p">/</span><span class="n">O</span> <span class="n">events</span> <span class="p">(</span><span class="n">e</span><span class="p">.</span><span class="n">g</span><span class="p">.</span> <span class="nb">read</span><span class="p">)</span> <span class="k">and</span>
+ <span class="p">*</span> <span class="k">to</span> <span class="n">request</span> <span class="n">I</span><span class="p">/</span><span class="n">O</span> <span class="n">operations</span> <span class="p">(</span><span class="n">e</span><span class="p">.</span><span class="n">g</span><span class="p">.</span> <span class="nb">write</span> <span class="k">and</span> <span class="n">close</span><span class="p">).</span>  <span class="n">For</span> <span class="n">example</span><span class="p">,</span> <span class="n">a</span> <span class="n">typical</span> <span class="n">server</span> <span class="n">will</span> <span class="n">have</span> <span class="n">the</span> <span class="n">following</span> <span class="n">handlers</span>
+ <span class="p">*</span> <span class="k">in</span> <span class="n">each</span> <span class="n">channel</span><span class="s1">'s pipeline, but your mileage may vary depending on the complexity and characteristics of the
+ * protocol and business logic:
+ 用户可能在管道中有多个通道处理器，处理IO事件和IO请求操作(write and close)。比如，一个典型的服务器，在每个通道的
+ 管道中有如下handler，处理过程可能因为不同的协议和业务逻辑而不同
+ *
+ * [list=1]
+ * [*]Protocol Decoder - translates binary data (e.g. {@link ByteBuf}) into a Java object.
+
+ * [*]Protocol Encoder - translates a Java object into binary data.
+
+ * [*]Business Logic Handler - performs the actual business logic (e.g. database access).
+
+ 解码器，编码器，业务逻辑Handler
+ * [/list]
+ *
+ * and it could be represented as shown in the following example:
+ *下面为一个实例
+ * &lt;pre&gt;IO事件操作执行器组
+ * static final {@link EventExecutorGroup} group = new {@link DefaultEventExecutorGroup}(16);
+ * ...
+ *获取通道的管道
+ * {@link ChannelPipeline} pipeline = ch.pipeline();
+ *添加解码器和编码器
+ * pipeline.addLast("decoder", new MyProtocolDecoder());
+ * pipeline.addLast("encoder", new MyProtocolEncoder());
+ *
+ * // Tell the pipeline to run MyBusinessLogicHandler'</span><span class="n">s</span> <span class="n">event</span> <span class="n">handler</span> <span class="n">methods</span>
+ <span class="p">*</span> <span class="p">//</span> <span class="k">in</span> <span class="n">a</span> <span class="n">different</span> <span class="n">thread</span> <span class="n">than</span> <span class="n">an</span> <span class="n">I</span><span class="p">/</span><span class="n">O</span> <span class="n">thread</span> <span class="n">so</span> <span class="n">that</span> <span class="n">the</span> <span class="n">I</span><span class="p">/</span><span class="n">O</span> <span class="n">thread</span> <span class="n">is</span> <span class="k">not</span> <span class="n">blocked</span> <span class="n">by</span>
+ <span class="p">*</span> <span class="p">//</span> <span class="n">a</span> <span class="n">time</span><span class="p">-</span><span class="n">consuming</span> <span class="n">task</span><span class="p">.</span>
+ <span class="p">*</span> <span class="p">//</span> <span class="k">If</span> <span class="n">your</span> <span class="n">business</span> <span class="n">logic</span> <span class="n">is</span> <span class="n">fully</span> <span class="n">asynchronous</span> <span class="k">or</span> <span class="n">finished</span> <span class="n">very</span> <span class="n">quickly</span><span class="p">,</span> <span class="n">you</span> <span class="n">don</span><span class="s1">'t
+ * // need to specify a group.
+ 告诉管道，在不同于IO线程的事件执行器组中，执行通道处理器的事件执行方法，以保证IO线程不会被
+ 一个耗时任务阻塞。如果你的业务逻辑完全异步或能够快速的完成，你不要添加一个事件执行器组。
+ * pipeline.addLast(group, "handler", new MyBusinessLogicHandler());
+ * &lt;/pre&gt;
+ *
+ * &lt;h3&gt;Thread safety&lt;/h3&gt;
+ * &lt;p&gt;线程安全
+ * A {@link ChannelHandler} can be added or removed at any time because a {@link ChannelPipeline} is thread safe.
+ * For example, you can insert an encryption handler when sensitive information is about to be exchanged, and remove it
+ * after the exchange.
+ 由于管道时线程安全的，通道处理器可以在任何时候，添加或移除。比如：当有一些敏感数据要交换时，插入加密Handler，
+ 在交换后，移除。
+ */
+public interface ChannelPipeline
+        extends ChannelInboundInvoker, ChannelOutboundInvoker, Iterable&lt;Entry&lt;String, ChannelHandler&gt;&gt; {
+
+    /**
+     * Inserts a {@link ChannelHandler} at the first position of this pipeline.
+     *添加通道处理器到管道的头部
+     * @param name     the name of the handler to insert first
+     * @param handler  the handler to insert first
+     *
+     * @throws IllegalArgumentException
+     *         if there'</span><span class="n">s</span> <span class="n">an</span> <span class="n">entry</span> <span class="k">with</span> <span class="n">the</span> <span class="n">same</span> <span class="n">name</span> <span class="n">already</span> <span class="k">in</span> <span class="n">the</span> <span class="n">pipeline</span>
+     <span class="p">*</span> <span class="p">@</span><span class="n">throws</span> <span class="n">NullPointerException</span>
+     <span class="p">*</span>         <span class="k">if</span> <span class="n">the</span> <span class="n">specified</span> <span class="n">handler</span> <span class="n">is</span> <span class="p">{@</span><span class="n">code</span> <span class="n">null</span><span class="p">}</span>
+     <span class="p">*/</span>
+    <span class="n">ChannelPipeline</span> <span class="n">addFirst</span><span class="p">(</span><span class="k">String</span> <span class="n">name</span><span class="p">,</span> <span class="n">ChannelHandler</span> <span class="n">handler</span><span class="p">);</span>
+
+    <span class="p">/**</span>
+     <span class="p">*</span> <span class="n">Inserts</span> <span class="n">a</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelHandler</span><span class="p">}</span> <span class="n">at</span> <span class="n">the</span> <span class="n">first</span> <span class="n">position</span> <span class="k">of</span> <span class="n">this</span> <span class="n">pipeline</span><span class="p">.</span>
+     <span class="p">*</span><span class="err">与上面方法不同的是，则增加了一个事件执行器组参数</span>
+     <span class="p">*</span> <span class="p">@</span><span class="n">param</span> <span class="n">group</span>    <span class="n">the</span> <span class="p">{@</span><span class="n">link</span> <span class="n">EventExecutorGroup</span><span class="p">}</span> <span class="n">which</span> <span class="n">will</span> <span class="n">be</span> <span class="n">used</span> <span class="k">to</span> <span class="n">execute</span> <span class="n">the</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelHandler</span><span class="p">}</span>
+     <span class="p">*</span>                 <span class="n">methods</span>
+     <span class="p">*</span> <span class="p">@</span><span class="n">param</span> <span class="n">name</span>     <span class="n">the</span> <span class="n">name</span> <span class="k">of</span> <span class="n">the</span> <span class="n">handler</span> <span class="k">to</span> <span class="n">insert</span> <span class="n">first</span>
+     <span class="p">*</span> <span class="p">@</span><span class="n">param</span> <span class="n">handler</span>  <span class="n">the</span> <span class="n">handler</span> <span class="k">to</span> <span class="n">insert</span> <span class="n">first</span>
+     <span class="p">*</span>
+     <span class="p">*</span> <span class="p">@</span><span class="n">throws</span> <span class="n">IllegalArgumentException</span>
+     <span class="p">*</span>         <span class="k">if</span> <span class="n">there</span><span class="s1">'s an entry with the same name already in the pipeline
+     * @throws NullPointerException
+     *         if the specified handler is {@code null}
+     */
+    ChannelPipeline addFirst(EventExecutorGroup group, String name, ChannelHandler handler);
+
+    /**
+     * Appends a {@link ChannelHandler} at the last position of this pipeline.
+     *添加通道处理器到管道的尾部
+     * @param name     the name of the handler to append
+     * @param handler  the handler to append
+     *
+     * @throws IllegalArgumentException
+     *         if there'</span><span class="n">s</span> <span class="n">an</span> <span class="n">entry</span> <span class="k">with</span> <span class="n">the</span> <span class="n">same</span> <span class="n">name</span> <span class="n">already</span> <span class="k">in</span> <span class="n">the</span> <span class="n">pipeline</span>
+     <span class="p">*</span> <span class="p">@</span><span class="n">throws</span> <span class="n">NullPointerException</span>
+     <span class="p">*</span>         <span class="k">if</span> <span class="n">the</span> <span class="n">specified</span> <span class="n">handler</span> <span class="n">is</span> <span class="p">{@</span><span class="n">code</span> <span class="n">null</span><span class="p">}</span>
+     <span class="p">*/</span>
+    <span class="n">ChannelPipeline</span> <span class="n">addLast</span><span class="p">(</span><span class="k">String</span> <span class="n">name</span><span class="p">,</span> <span class="n">ChannelHandler</span> <span class="n">handler</span><span class="p">);</span>
+
+    <span class="p">/**</span>
+     <span class="p">*</span> <span class="n">Appends</span> <span class="n">a</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelHandler</span><span class="p">}</span> <span class="n">at</span> <span class="n">the</span> <span class="n">last</span> <span class="n">position</span> <span class="k">of</span> <span class="n">this</span> <span class="n">pipeline</span><span class="p">.</span>
+     <span class="p">*</span><span class="err">与上面方法不同的是，则增加了一个事件执行器组参数</span>
+     <span class="p">*</span> <span class="p">@</span><span class="n">param</span> <span class="n">group</span>    <span class="n">the</span> <span class="p">{@</span><span class="n">link</span> <span class="n">EventExecutorGroup</span><span class="p">}</span> <span class="n">which</span> <span class="n">will</span> <span class="n">be</span> <span class="n">used</span> <span class="k">to</span> <span class="n">execute</span> <span class="n">the</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelHandler</span><span class="p">}</span>
+     <span class="p">*</span>                 <span class="n">methods</span>
+     <span class="p">*</span> <span class="p">@</span><span class="n">param</span> <span class="n">name</span>     <span class="n">the</span> <span class="n">name</span> <span class="k">of</span> <span class="n">the</span> <span class="n">handler</span> <span class="k">to</span> <span class="n">append</span>
+     <span class="p">*</span> <span class="p">@</span><span class="n">param</span> <span class="n">handler</span>  <span class="n">the</span> <span class="n">handler</span> <span class="k">to</span> <span class="n">append</span>
+     <span class="p">*</span>
+     <span class="p">*</span> <span class="p">@</span><span class="n">throws</span> <span class="n">IllegalArgumentException</span>
+     <span class="p">*</span>         <span class="k">if</span> <span class="n">there</span><span class="s1">'s an entry with the same name already in the pipeline
+     * @throws NullPointerException
+     *         if the specified handler is {@code null}
+     */
+    ChannelPipeline addLast(EventExecutorGroup group, String name, ChannelHandler handler);
+
+    /**
+     * Inserts a {@link ChannelHandler} before an existing handler of this
+     * pipeline.
+     *添加通道处理器到管道的指定通道处理器的前面
+     * @param baseName  the name of the existing handler
+     * @param name      the name of the handler to insert before
+     * @param handler   the handler to insert before
+     *
+     * @throws NoSuchElementException
+     *         if there'</span><span class="n">s</span> <span class="n">no</span> <span class="n">such</span> <span class="n">entry</span> <span class="k">with</span> <span class="n">the</span> <span class="n">specified</span> <span class="p">{@</span><span class="n">code</span> <span class="n">baseName</span><span class="p">}</span>
+     <span class="p">*</span> <span class="p">@</span><span class="n">throws</span> <span class="n">IllegalArgumentException</span>
+     <span class="p">*</span>         <span class="k">if</span> <span class="n">there</span><span class="s1">'s an entry with the same name already in the pipeline
+     * @throws NullPointerException
+     *         if the specified baseName or handler is {@code null}
+     */
+    ChannelPipeline addBefore(String baseName, String name, ChannelHandler handler);
+
+    /**
+     * Inserts a {@link ChannelHandler} before an existing handler of this
+     * pipeline.
+     *与上面方法不同的是，则增加了一个事件执行器组参数
+     * @param group     the {@link EventExecutorGroup} which will be used to execute the {@link ChannelHandler}
+     *                  methods
+     * @param baseName  the name of the existing handler
+     * @param name      the name of the handler to insert before
+     * @param handler   the handler to insert before
+     *
+     * @throws NoSuchElementException
+     *         if there'</span><span class="n">s</span> <span class="n">no</span> <span class="n">such</span> <span class="n">entry</span> <span class="k">with</span> <span class="n">the</span> <span class="n">specified</span> <span class="p">{@</span><span class="n">code</span> <span class="n">baseName</span><span class="p">}</span>
+     <span class="p">*</span> <span class="p">@</span><span class="n">throws</span> <span class="n">IllegalArgumentException</span>
+     <span class="p">*</span>         <span class="k">if</span> <span class="n">there</span><span class="s1">'s an entry with the same name already in the pipeline
+     * @throws NullPointerException
+     *         if the specified baseName or handler is {@code null}
+     */
+    ChannelPipeline addBefore(EventExecutorGroup group, String baseName, String name, ChannelHandler handler);
+
+    /**
+     * Inserts a {@link ChannelHandler} after an existing handler of this
+     * pipeline.
+     *添加通道处理器到管道的指定通道处理器的后面
+     * @param baseName  the name of the existing handler
+     * @param name      the name of the handler to insert after
+     * @param handler   the handler to insert after
+     *
+     * @throws NoSuchElementException
+     *         if there'</span><span class="n">s</span> <span class="n">no</span> <span class="n">such</span> <span class="n">entry</span> <span class="k">with</span> <span class="n">the</span> <span class="n">specified</span> <span class="p">{@</span><span class="n">code</span> <span class="n">baseName</span><span class="p">}</span>
+     <span class="p">*</span> <span class="p">@</span><span class="n">throws</span> <span class="n">IllegalArgumentException</span>
+     <span class="p">*</span>         <span class="k">if</span> <span class="n">there</span><span class="s1">'s an entry with the same name already in the pipeline
+     * @throws NullPointerException
+     *         if the specified baseName or handler is {@code null}
+     */
+    ChannelPipeline addAfter(String baseName, String name, ChannelHandler handler);
+
+    /**
+     * Inserts a {@link ChannelHandler} after an existing handler of this
+     * pipeline.
+     *与上面方法不同的是，则增加了一个事件执行器组参数
+     * @param group     the {@link EventExecutorGroup} which will be used to execute the {@link ChannelHandler}
+     *                  methods
+     * @param baseName  the name of the existing handler
+     * @param name      the name of the handler to insert after
+     * @param handler   the handler to insert after
+     *
+     * @throws NoSuchElementException
+     *         if there'</span><span class="n">s</span> <span class="n">no</span> <span class="n">such</span> <span class="n">entry</span> <span class="k">with</span> <span class="n">the</span> <span class="n">specified</span> <span class="p">{@</span><span class="n">code</span> <span class="n">baseName</span><span class="p">}</span>
+     <span class="p">*</span> <span class="p">@</span><span class="n">throws</span> <span class="n">IllegalArgumentException</span>
+     <span class="p">*</span>         <span class="k">if</span> <span class="n">there</span><span class="s1">'s an entry with the same name already in the pipeline
+     * @throws NullPointerException
+     *         if the specified baseName or handler is {@code null}
+     */
+    ChannelPipeline addAfter(EventExecutorGroup group, String baseName, String name, ChannelHandler handler);
+
+    /**
+     * Inserts {@link ChannelHandler}s at the first position of this pipeline.
+     *添加多个通道处理器到管道的头部
+     * @param handlers  the handlers to insert first
+     *
+     */
+    ChannelPipeline addFirst(ChannelHandler... handlers);
+
+    /**
+     * Inserts {@link ChannelHandler}s at the first position of this pipeline.
+     *与上面方法不同的是，则增加了一个事件执行器组参数
+     * @param group     the {@link EventExecutorGroup} which will be used to execute the {@link ChannelHandler}s
+     *                  methods.
+     * @param handlers  the handlers to insert first
+     *
+     */
+    ChannelPipeline addFirst(EventExecutorGroup group, ChannelHandler... handlers);
+
+    /**
+     * Inserts {@link ChannelHandler}s at the last position of this pipeline.
+     *添加多个通道处理器到管道的尾部
+     * @param handlers  the handlers to insert last
+     *
+     */
+    ChannelPipeline addLast(ChannelHandler... handlers);
+
+    /**
+     * Inserts {@link ChannelHandler}s at the last position of this pipeline.
+     *与上面方法不同的是，则增加了一个事件执行器组参数
+     * @param group     the {@link EventExecutorGroup} which will be used to execute the {@link ChannelHandler}s
+     *                  methods.
+     * @param handlers  the handlers to insert last
+     *
+     */
+    ChannelPipeline addLast(EventExecutorGroup group, ChannelHandler... handlers);
+
+    /**
+     * Removes the specified {@link ChannelHandler} from this pipeline.
+     *从管道线移除指定的通道处理器
+     * @param  handler          the {@link ChannelHandler} to remove
+     *
+     * @throws NoSuchElementException
+     *         if there'</span><span class="n">s</span> <span class="n">no</span> <span class="n">such</span> <span class="n">handler</span> <span class="k">in</span> <span class="n">this</span> <span class="n">pipeline</span>
+     <span class="p">*</span> <span class="p">@</span><span class="n">throws</span> <span class="n">NullPointerException</span>
+     <span class="p">*</span>         <span class="k">if</span> <span class="n">the</span> <span class="n">specified</span> <span class="n">handler</span> <span class="n">is</span> <span class="p">{@</span><span class="n">code</span> <span class="n">null</span><span class="p">}</span>
+     <span class="p">*/</span>
+    <span class="n">ChannelPipeline</span> <span class="n">remove</span><span class="p">(</span><span class="n">ChannelHandler</span> <span class="n">handler</span><span class="p">);</span>
+
+    <span class="p">/**</span>
+     <span class="p">*</span> <span class="n">Removes</span> <span class="n">the</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelHandler</span><span class="p">}</span> <span class="k">with</span> <span class="n">the</span> <span class="n">specified</span> <span class="n">name</span> <span class="k">from</span> <span class="n">this</span> <span class="n">pipeline</span><span class="p">.</span>
+     <span class="err">根据通道处理器名，从管道中移除对应通道处理器</span>
+     <span class="p">*</span>
+     <span class="p">*</span> <span class="p">@</span><span class="n">param</span>  <span class="n">name</span>             <span class="n">the</span> <span class="n">name</span> <span class="n">under</span> <span class="n">which</span> <span class="n">the</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelHandler</span><span class="p">}</span> <span class="n">was</span> <span class="n">stored</span><span class="p">.</span>
+     <span class="p">*</span>
+     <span class="p">*</span> <span class="p">@</span><span class="n">return</span> <span class="n">the</span> <span class="n">removed</span> <span class="n">handler</span>
+     <span class="p">*</span>
+     <span class="p">*</span> <span class="p">@</span><span class="n">throws</span> <span class="n">NoSuchElementException</span>
+     <span class="p">*</span>         <span class="k">if</span> <span class="n">there</span><span class="s1">'s no such handler with the specified name in this pipeline
+     * @throws NullPointerException
+     *         if the specified name is {@code null}
+     */
+    ChannelHandler remove(String name);
+
+    /**
+     * Removes the {@link ChannelHandler} of the specified type from this pipeline.
+     *移除指定的类型的通道处理器
+     * @param &lt;T&gt;           the type of the handler
+     * @param handlerType   the type of the handler
+     *
+     * @return the removed handler
+     *
+     * @throws NoSuchElementException
+     *         if there'</span><span class="n">s</span> <span class="n">no</span> <span class="n">such</span> <span class="n">handler</span> <span class="k">of</span> <span class="n">the</span> <span class="n">specified</span> <span class="n">type</span> <span class="k">in</span> <span class="n">this</span> <span class="n">pipeline</span>
+     <span class="p">*</span> <span class="p">@</span><span class="n">throws</span> <span class="n">NullPointerException</span>
+     <span class="p">*</span>         <span class="k">if</span> <span class="n">the</span> <span class="n">specified</span> <span class="n">handler</span> <span class="n">type</span> <span class="n">is</span> <span class="p">{@</span><span class="n">code</span> <span class="n">null</span><span class="p">}</span>
+     <span class="p">*/</span>
+    <span class="p">&lt;</span><span class="n">T</span> <span class="n">extends</span> <span class="n">ChannelHandler</span><span class="p">&gt;</span> <span class="n">T</span> <span class="n">remove</span><span class="p">(</span><span class="n">Class</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="n">handlerType</span><span class="p">);</span>
+
+    <span class="p">/**</span>
+     <span class="p">*</span> <span class="n">Removes</span> <span class="n">the</span> <span class="n">first</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelHandler</span><span class="p">}</span> <span class="k">in</span> <span class="n">this</span> <span class="n">pipeline</span><span class="p">.</span>
+     <span class="p">*</span><span class="err">移除管道线头部的通道处理器</span>
+     <span class="p">*</span> <span class="p">@</span><span class="n">return</span> <span class="n">the</span> <span class="n">removed</span> <span class="n">handler</span>
+     <span class="p">*</span>
+     <span class="p">*</span> <span class="p">@</span><span class="n">throws</span> <span class="n">NoSuchElementException</span>
+     <span class="p">*</span>         <span class="k">if</span> <span class="n">this</span> <span class="n">pipeline</span> <span class="n">is</span> <span class="n">empty</span>
+     <span class="p">*/</span>
+    <span class="n">ChannelHandler</span> <span class="n">removeFirst</span><span class="p">();</span>
+
+    <span class="p">/**</span>
+     <span class="p">*</span> <span class="n">Removes</span> <span class="n">the</span> <span class="n">last</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelHandler</span><span class="p">}</span> <span class="k">in</span> <span class="n">this</span> <span class="n">pipeline</span><span class="p">.</span>
+     <span class="p">*</span><span class="err">移除管道线尾部的通道处理器</span>
+     <span class="p">*</span> <span class="p">@</span><span class="n">return</span> <span class="n">the</span> <span class="n">removed</span> <span class="n">handler</span>
+     <span class="p">*</span>
+     <span class="p">*</span> <span class="p">@</span><span class="n">throws</span> <span class="n">NoSuchElementException</span>
+     <span class="p">*</span>         <span class="k">if</span> <span class="n">this</span> <span class="n">pipeline</span> <span class="n">is</span> <span class="n">empty</span>
+     <span class="p">*/</span>
+    <span class="n">ChannelHandler</span> <span class="n">removeLast</span><span class="p">();</span>
+
+    <span class="p">/**</span>
+     <span class="p">*</span> <span class="n">Replaces</span> <span class="n">the</span> <span class="n">specified</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelHandler</span><span class="p">}</span> <span class="k">with</span> <span class="n">a</span> <span class="n">new</span> <span class="n">handler</span> <span class="k">in</span> <span class="n">this</span> <span class="n">pipeline</span><span class="p">.</span>
+     <span class="p">*</span><span class="err">替换管道中旧的通道处理器</span>
+     <span class="p">*</span> <span class="p">@</span><span class="n">param</span>  <span class="n">oldHandler</span>    <span class="n">the</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelHandler</span><span class="p">}</span> <span class="k">to</span> <span class="n">be</span> <span class="n">replaced</span>
+     <span class="p">*</span> <span class="p">@</span><span class="n">param</span>  <span class="n">newName</span>       <span class="n">the</span> <span class="n">name</span> <span class="n">under</span> <span class="n">which</span> <span class="n">the</span> <span class="n">replacement</span> <span class="n">should</span> <span class="n">be</span> <span class="n">added</span>
+     <span class="p">*</span> <span class="p">@</span><span class="n">param</span>  <span class="n">newHandler</span>    <span class="n">the</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelHandler</span><span class="p">}</span> <span class="n">which</span> <span class="n">is</span> <span class="n">used</span> <span class="k">as</span> <span class="n">replacement</span>
+     <span class="p">*</span>
+     <span class="p">*</span> <span class="p">@</span><span class="n">return</span> <span class="n">itself</span>
+
+     <span class="p">*</span> <span class="p">@</span><span class="n">throws</span> <span class="n">NoSuchElementException</span>
+     <span class="p">*</span>         <span class="k">if</span> <span class="n">the</span> <span class="n">specified</span> <span class="n">old</span> <span class="n">handler</span> <span class="n">does</span> <span class="k">not</span> <span class="n">exist</span> <span class="k">in</span> <span class="n">this</span> <span class="n">pipeline</span>
+     <span class="p">*</span> <span class="p">@</span><span class="n">throws</span> <span class="n">IllegalArgumentException</span>
+     <span class="p">*</span>         <span class="k">if</span> <span class="n">a</span> <span class="n">handler</span> <span class="k">with</span> <span class="n">the</span> <span class="n">specified</span> <span class="n">new</span> <span class="n">name</span> <span class="n">already</span> <span class="nb">exists</span> <span class="k">in</span> <span class="n">this</span>
+     <span class="p">*</span>         <span class="n">pipeline</span><span class="p">,</span> <span class="n">except</span> <span class="n">for</span> <span class="n">the</span> <span class="n">handler</span> <span class="k">to</span> <span class="n">be</span> <span class="n">replaced</span>
+     <span class="p">*</span> <span class="p">@</span><span class="n">throws</span> <span class="n">NullPointerException</span>
+     <span class="p">*</span>         <span class="k">if</span> <span class="n">the</span> <span class="n">specified</span> <span class="n">old</span> <span class="n">handler</span> <span class="k">or</span> <span class="n">new</span> <span class="n">handler</span> <span class="n">is</span>
+     <span class="p">*</span>         <span class="p">{@</span><span class="n">code</span> <span class="n">null</span><span class="p">}</span>
+     <span class="p">*/</span>
+    <span class="n">ChannelPipeline</span> <span class="n">replace</span><span class="p">(</span><span class="n">ChannelHandler</span> <span class="n">oldHandler</span><span class="p">,</span> <span class="k">String</span> <span class="n">newName</span><span class="p">,</span> <span class="n">ChannelHandler</span> <span class="n">newHandler</span><span class="p">);</span>
+
+    <span class="p">/**</span>
+     <span class="p">*</span> <span class="n">Replaces</span> <span class="n">the</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelHandler</span><span class="p">}</span> <span class="k">of</span> <span class="n">the</span> <span class="n">specified</span> <span class="n">name</span> <span class="k">with</span> <span class="n">a</span> <span class="n">new</span> <span class="n">handler</span> <span class="k">in</span> <span class="n">this</span> <span class="n">pipeline</span><span class="p">.</span>
+     <span class="p">*</span><span class="err">与上面方法不同的，指定原始通道处理器的名字</span>
+     <span class="p">*</span> <span class="p">@</span><span class="n">param</span>  <span class="n">oldName</span>       <span class="n">the</span> <span class="n">name</span> <span class="k">of</span> <span class="n">the</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelHandler</span><span class="p">}</span> <span class="k">to</span> <span class="n">be</span> <span class="n">replaced</span>
+     <span class="p">*</span> <span class="p">@</span><span class="n">param</span>  <span class="n">newName</span>       <span class="n">the</span> <span class="n">name</span> <span class="n">under</span> <span class="n">which</span> <span class="n">the</span> <span class="n">replacement</span> <span class="n">should</span> <span class="n">be</span> <span class="n">added</span>
+     <span class="p">*</span> <span class="p">@</span><span class="n">param</span>  <span class="n">newHandler</span>    <span class="n">the</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelHandler</span><span class="p">}</span> <span class="n">which</span> <span class="n">is</span> <span class="n">used</span> <span class="k">as</span> <span class="n">replacement</span>
+     <span class="p">*</span>
+     <span class="p">*</span> <span class="p">@</span><span class="n">return</span> <span class="n">the</span> <span class="n">removed</span> <span class="n">handler</span>
+     <span class="p">*</span>
+     <span class="p">*</span> <span class="p">@</span><span class="n">throws</span> <span class="n">NoSuchElementException</span>
+     <span class="p">*</span>         <span class="k">if</span> <span class="n">the</span> <span class="n">handler</span> <span class="k">with</span> <span class="n">the</span> <span class="n">specified</span> <span class="n">old</span> <span class="n">name</span> <span class="n">does</span> <span class="k">not</span> <span class="n">exist</span> <span class="k">in</span> <span class="n">this</span> <span class="n">pipeline</span>
+     <span class="p">*</span> <span class="p">@</span><span class="n">throws</span> <span class="n">IllegalArgumentException</span>
+     <span class="p">*</span>         <span class="k">if</span> <span class="n">a</span> <span class="n">handler</span> <span class="k">with</span> <span class="n">the</span> <span class="n">specified</span> <span class="n">new</span> <span class="n">name</span> <span class="n">already</span> <span class="nb">exists</span> <span class="k">in</span> <span class="n">this</span>
+     <span class="p">*</span>         <span class="n">pipeline</span><span class="p">,</span> <span class="n">except</span> <span class="n">for</span> <span class="n">the</span> <span class="n">handler</span> <span class="k">to</span> <span class="n">be</span> <span class="n">replaced</span>
+     <span class="p">*</span> <span class="p">@</span><span class="n">throws</span> <span class="n">NullPointerException</span>
+     <span class="p">*</span>         <span class="k">if</span> <span class="n">the</span> <span class="n">specified</span> <span class="n">old</span> <span class="n">handler</span> <span class="k">or</span> <span class="n">new</span> <span class="n">handler</span> <span class="n">is</span>
+     <span class="p">*</span>         <span class="p">{@</span><span class="n">code</span> <span class="n">null</span><span class="p">}</span>
+     <span class="p">*/</span>
+    <span class="n">ChannelHandler</span> <span class="n">replace</span><span class="p">(</span><span class="k">String</span> <span class="n">oldName</span><span class="p">,</span> <span class="k">String</span> <span class="n">newName</span><span class="p">,</span> <span class="n">ChannelHandler</span> <span class="n">newHandler</span><span class="p">);</span>
+
+    <span class="p">/**</span>
+     <span class="p">*</span> <span class="n">Replaces</span> <span class="n">the</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelHandler</span><span class="p">}</span> <span class="k">of</span> <span class="n">the</span> <span class="n">specified</span> <span class="n">type</span> <span class="k">with</span> <span class="n">a</span> <span class="n">new</span> <span class="n">handler</span> <span class="k">in</span> <span class="n">this</span> <span class="n">pipeline</span><span class="p">.</span>
+     <span class="p">*</span><span class="err">与上面方法不同的，指定原始通道处理器的类型</span>
+     <span class="p">*</span> <span class="p">@</span><span class="n">param</span>  <span class="n">oldHandlerType</span>   <span class="n">the</span> <span class="n">type</span> <span class="k">of</span> <span class="n">the</span> <span class="n">handler</span> <span class="k">to</span> <span class="n">be</span> <span class="n">removed</span>
+     <span class="p">*</span> <span class="p">@</span><span class="n">param</span>  <span class="n">newName</span>          <span class="n">the</span> <span class="n">name</span> <span class="n">under</span> <span class="n">which</span> <span class="n">the</span> <span class="n">replacement</span> <span class="n">should</span> <span class="n">be</span> <span class="n">added</span>
+     <span class="p">*</span> <span class="p">@</span><span class="n">param</span>  <span class="n">newHandler</span>       <span class="n">the</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelHandler</span><span class="p">}</span> <span class="n">which</span> <span class="n">is</span> <span class="n">used</span> <span class="k">as</span> <span class="n">replacement</span>
+     <span class="p">*</span>
+     <span class="p">*</span> <span class="p">@</span><span class="n">return</span> <span class="n">the</span> <span class="n">removed</span> <span class="n">handler</span>
+     <span class="p">*</span>
+     <span class="p">*</span> <span class="p">@</span><span class="n">throws</span> <span class="n">NoSuchElementException</span>
+     <span class="p">*</span>         <span class="k">if</span> <span class="n">the</span> <span class="n">handler</span> <span class="k">of</span> <span class="n">the</span> <span class="n">specified</span> <span class="n">old</span> <span class="n">handler</span> <span class="n">type</span> <span class="n">does</span> <span class="k">not</span> <span class="n">exist</span>
+     <span class="p">*</span>         <span class="k">in</span> <span class="n">this</span> <span class="n">pipeline</span>
+     <span class="p">*</span> <span class="p">@</span><span class="n">throws</span> <span class="n">IllegalArgumentException</span>
+     <span class="p">*</span>         <span class="k">if</span> <span class="n">a</span> <span class="n">handler</span> <span class="k">with</span> <span class="n">the</span> <span class="n">specified</span> <span class="n">new</span> <span class="n">name</span> <span class="n">already</span> <span class="nb">exists</span> <span class="k">in</span> <span class="n">this</span>
+     <span class="p">*</span>         <span class="n">pipeline</span><span class="p">,</span> <span class="n">except</span> <span class="n">for</span> <span class="n">the</span> <span class="n">handler</span> <span class="k">to</span> <span class="n">be</span> <span class="n">replaced</span>
+     <span class="p">*</span> <span class="p">@</span><span class="n">throws</span> <span class="n">NullPointerException</span>
+     <span class="p">*</span>         <span class="k">if</span> <span class="n">the</span> <span class="n">specified</span> <span class="n">old</span> <span class="n">handler</span> <span class="k">or</span> <span class="n">new</span> <span class="n">handler</span> <span class="n">is</span>
+     <span class="p">*</span>         <span class="p">{@</span><span class="n">code</span> <span class="n">null</span><span class="p">}</span>
+     <span class="p">*/</span>
+    <span class="p">&lt;</span><span class="n">T</span> <span class="n">extends</span> <span class="n">ChannelHandler</span><span class="p">&gt;</span> <span class="n">T</span> <span class="n">replace</span><span class="p">(</span><span class="n">Class</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="n">oldHandlerType</span><span class="p">,</span> <span class="k">String</span> <span class="n">newName</span><span class="p">,</span>
+                                         <span class="n">ChannelHandler</span> <span class="n">newHandler</span><span class="p">);</span>
+
+    <span class="p">/**</span>
+     <span class="p">*</span> <span class="n">Returns</span> <span class="n">the</span> <span class="n">first</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelHandler</span><span class="p">}</span> <span class="k">in</span> <span class="n">this</span> <span class="n">pipeline</span><span class="p">.</span>
+     <span class="p">*</span><span class="err">返回管道头部的通道处理器</span>
+     <span class="p">*</span> <span class="p">@</span><span class="n">return</span> <span class="n">the</span> <span class="n">first</span> <span class="n">handler</span><span class="p">.</span>  <span class="p">{@</span><span class="n">code</span> <span class="n">null</span><span class="p">}</span> <span class="k">if</span> <span class="n">this</span> <span class="n">pipeline</span> <span class="n">is</span> <span class="n">empty</span><span class="p">.</span>
+     <span class="p">*/</span>
+    <span class="n">ChannelHandler</span> <span class="n">first</span><span class="p">();</span>
+
+    <span class="p">/**</span>
+     <span class="p">*</span> <span class="n">Returns</span> <span class="n">the</span> <span class="n">context</span> <span class="k">of</span> <span class="n">the</span> <span class="n">first</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelHandler</span><span class="p">}</span> <span class="k">in</span> <span class="n">this</span> <span class="n">pipeline</span><span class="p">.</span>
+     <span class="p">*</span><span class="err">返回管道头部的通道处理器的上下文</span>
+     <span class="p">*</span> <span class="p">@</span><span class="n">return</span> <span class="n">the</span> <span class="n">context</span> <span class="k">of</span> <span class="n">the</span> <span class="n">first</span> <span class="n">handler</span><span class="p">.</span>  <span class="p">{@</span><span class="n">code</span> <span class="n">null</span><span class="p">}</span> <span class="k">if</span> <span class="n">this</span> <span class="n">pipeline</span> <span class="n">is</span> <span class="n">empty</span><span class="p">.</span>
+     <span class="p">*/</span>
+    <span class="n">ChannelHandlerContext</span> <span class="n">firstContext</span><span class="p">();</span>
+
+    <span class="p">/**</span>
+     <span class="p">*</span> <span class="n">Returns</span> <span class="n">the</span> <span class="n">last</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelHandler</span><span class="p">}</span> <span class="k">in</span> <span class="n">this</span> <span class="n">pipeline</span><span class="p">.</span>
+     <span class="p">*</span><span class="err">返回管道尾部的通道处理器</span>
+     <span class="p">*</span> <span class="p">@</span><span class="n">return</span> <span class="n">the</span> <span class="n">last</span> <span class="n">handler</span><span class="p">.</span>  <span class="p">{@</span><span class="n">code</span> <span class="n">null</span><span class="p">}</span> <span class="k">if</span> <span class="n">this</span> <span class="n">pipeline</span> <span class="n">is</span> <span class="n">empty</span><span class="p">.</span>
+     <span class="p">*/</span>
+    <span class="n">ChannelHandler</span> <span class="n">last</span><span class="p">();</span>
+
+    <span class="p">/**</span>
+     <span class="p">*</span> <span class="n">Returns</span> <span class="n">the</span> <span class="n">context</span> <span class="k">of</span> <span class="n">the</span> <span class="n">last</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelHandler</span><span class="p">}</span> <span class="k">in</span> <span class="n">this</span> <span class="n">pipeline</span><span class="p">.</span>
+     <span class="p">*</span><span class="err">返回管道尾部的通道处理器的上下文</span>
+     <span class="p">*</span> <span class="p">@</span><span class="n">return</span> <span class="n">the</span> <span class="n">context</span> <span class="k">of</span> <span class="n">the</span> <span class="n">last</span> <span class="n">handler</span><span class="p">.</span>  <span class="p">{@</span><span class="n">code</span> <span class="n">null</span><span class="p">}</span> <span class="k">if</span> <span class="n">this</span> <span class="n">pipeline</span> <span class="n">is</span> <span class="n">empty</span><span class="p">.</span>
+     <span class="p">*/</span>
+    <span class="n">ChannelHandlerContext</span> <span class="n">lastContext</span><span class="p">();</span>
+
+    <span class="p">/**</span>
+     <span class="p">*</span> <span class="n">Returns</span> <span class="n">the</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelHandler</span><span class="p">}</span> <span class="k">with</span> <span class="n">the</span> <span class="n">specified</span> <span class="n">name</span> <span class="k">in</span> <span class="n">this</span>
+     <span class="p">*</span> <span class="n">pipeline</span><span class="p">.</span>
+     <span class="p">*</span><span class="err">根据名字获取管道中的对应的通道处理器</span>
+     <span class="p">*</span> <span class="p">@</span><span class="n">return</span> <span class="n">the</span> <span class="n">handler</span> <span class="k">with</span> <span class="n">the</span> <span class="n">specified</span> <span class="n">name</span><span class="p">.</span>
+     <span class="p">*</span>         <span class="p">{@</span><span class="n">code</span> <span class="n">null</span><span class="p">}</span> <span class="k">if</span> <span class="n">there</span><span class="s1">'s no such handler in this pipeline.
+     */
+    ChannelHandler get(String name);
+
+    /**
+     * Returns the {@link ChannelHandler} of the specified type in this
+     * pipeline.
+     *根据通道处理器类型获取管道中的对应的通道处理器
+     * @return the handler of the specified handler type.
+     *         {@code null} if there'</span><span class="n">s</span> <span class="n">no</span> <span class="n">such</span> <span class="n">handler</span> <span class="k">in</span> <span class="n">this</span> <span class="n">pipeline</span><span class="p">.</span>
+     <span class="p">*/</span>
+    <span class="p">&lt;</span><span class="n">T</span> <span class="n">extends</span> <span class="n">ChannelHandler</span><span class="p">&gt;</span> <span class="n">T</span> <span class="n">get</span><span class="p">(</span><span class="n">Class</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="n">handlerType</span><span class="p">);</span>
+
+    <span class="p">/**</span>
+     <span class="p">*</span> <span class="n">Returns</span> <span class="n">the</span> <span class="n">context</span> <span class="n">object</span> <span class="k">of</span> <span class="n">the</span> <span class="n">specified</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelHandler</span><span class="p">}</span> <span class="k">in</span>
+     <span class="p">*</span> <span class="n">this</span> <span class="n">pipeline</span><span class="p">.</span>
+     <span class="p">*</span><span class="err">获取管道中指定通道处理器的上下文</span>
+     <span class="p">*</span> <span class="p">@</span><span class="n">return</span> <span class="n">the</span> <span class="n">context</span> <span class="n">object</span> <span class="k">of</span> <span class="n">the</span> <span class="n">specified</span> <span class="n">handler</span><span class="p">.</span>
+     <span class="p">*</span>         <span class="p">{@</span><span class="n">code</span> <span class="n">null</span><span class="p">}</span> <span class="k">if</span> <span class="n">there</span><span class="s1">'s no such handler in this pipeline.
+     */
+    ChannelHandlerContext context(ChannelHandler handler);
+
+    /**
+     * Returns the context object of the {@link ChannelHandler} with the
+     * specified name in this pipeline.
+     *获取管道中指定名字对应的通道处理器的上下文
+     * @return the context object of the handler with the specified name.
+     *         {@code null} if there'</span><span class="n">s</span> <span class="n">no</span> <span class="n">such</span> <span class="n">handler</span> <span class="k">in</span> <span class="n">this</span> <span class="n">pipeline</span><span class="p">.</span>
+     <span class="p">*/</span>
+    <span class="n">ChannelHandlerContext</span> <span class="n">context</span><span class="p">(</span><span class="k">String</span> <span class="n">name</span><span class="p">);</span>
+
+    <span class="p">/**</span>
+     <span class="p">*</span> <span class="n">Returns</span> <span class="n">the</span> <span class="n">context</span> <span class="n">object</span> <span class="k">of</span> <span class="n">the</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelHandler</span><span class="p">}</span> <span class="k">of</span> <span class="n">the</span>
+     <span class="p">*</span> <span class="n">specified</span> <span class="n">type</span> <span class="k">in</span> <span class="n">this</span> <span class="n">pipeline</span><span class="p">.</span>
+     <span class="p">*</span><span class="err">获取管道中指定类型对应的通道处理器的上下文</span>
+     <span class="p">*</span> <span class="p">@</span><span class="n">return</span> <span class="n">the</span> <span class="n">context</span> <span class="n">object</span> <span class="k">of</span> <span class="n">the</span> <span class="n">handler</span> <span class="k">of</span> <span class="n">the</span> <span class="n">specified</span> <span class="n">type</span><span class="p">.</span>
+     <span class="p">*</span>         <span class="p">{@</span><span class="n">code</span> <span class="n">null</span><span class="p">}</span> <span class="k">if</span> <span class="n">there</span><span class="s1">'s no such handler in this pipeline.
+     */
+    ChannelHandlerContext context(Class&lt;? extends ChannelHandler&gt; handlerType);
+
+    /**
+     * Returns the {@link Channel} that this pipeline is attached to.
+     *返回管道所属的Channel
+     * @return the channel. {@code null} if this pipeline is not attached yet.
+     */
+    Channel channel();
+
+    /**
+     * Returns the {@link List} of the handler names.
+     获取管道中所有通道处理器的名字
+     */
+    List&lt;String&gt; names();
+
+    /**
+     * Converts this pipeline into an ordered {@link Map} whose keys are
+     * handler names and whose values are handlers.
+     将管道的中通道处理器，转换为name与Handler的Entry Map
+     */
+    Map&lt;String, ChannelHandler&gt; toMap();
+
+    @Override
+    ChannelPipeline fireChannelRegistered();
+
+     @Override
+    ChannelPipeline fireChannelUnregistered();
+
+    @Override
+    ChannelPipeline fireChannelActive();
+
+    @Override
+    ChannelPipeline fireChannelInactive();
+
+    @Override
+    ChannelPipeline fireExceptionCaught(Throwable cause);
+
+    @Override
+    ChannelPipeline fireUserEventTriggered(Object event);
+
+    @Override
+    ChannelPipeline fireChannelRead(Object msg);
+
+    @Override
+    ChannelPipeline fireChannelReadComplete();
+
+    @Override
+    ChannelPipeline fireChannelWritabilityChanged();
+
+    @Override
+    ChannelPipeline flush();
+}
+</span></code></pre></div></div>
+
+<p>从Channel管道线ChannelPipeline定义来看，Channle管道线继承了Inbound、OutBound通道Invoker和Iterable&gt;接口，Channel管道线主要是管理Channel的通道处理器，每个通道有一个Channle管道线。Channle管道线主要定义了添加移除替换通道处理器的相关方法，在添加通道处理器的相关方法中，有一个事件执行器group参数，用于中Inbound和Outbound的相关事件，告诉管道，在不同于IO线程的事件执行器组中，执行通道处理器的事件执行方法，以保证IO线程不会被一个耗时任务阻塞，如果你的业务逻辑完全异步或能够快速的完成，可以添加一个事件执行器组。</p>
+
+<p>**
+总结：**Channle管道线继承了Inbound、OutBound通道Invoker和Iterable&lt;Entry&lt;String, ChannelHandler»接口，Channel管道线主要是管理Channel的通道处理器，每个通道有一个Channle管道线。Channle管道线主要定义了添加移除替换通道处理器的相关方法，在添加通道处理器的相关方法中，有一个事件执行器group参数，用于中Inbound和Outbound的相关事件，告诉管道，在不同于IO线程的事件执行器组中，执行通道处理器的事件执行方法，以保证IO线程不会被一个耗时任务阻塞，如果你的业务逻辑完全异步或能够快速的完成，可以添加一个事件执行器组。Channel管道线中的Inbound和Outbound通道处理器，主要通过通道处理器上下文的相关fire-INBOUND_ENT和OUTBOUND_OPR事件方法，传播Inbound和Outbound事件给管道中的下一个通道处理器。</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/netty%E7%AE%A1%E9%81%93%E7%BA%BF%E5%AE%9A%E4%B9%89channelpipeline.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E5%A4%9A%E7%AA%97%E5%8F%A3%E5%8D%96%E7%A5%A8%E4%BE%8B%E5%AD%90.html">&laquo; 多线程(多窗口卖票例子)</a>
+  
+  
+  <a class="next" href="/2017/rdiframeworknetnet%E5%BF%AB%E9%80%9F%E4%BF%A1%E6%81%AF%E5%8C%96%E7%B3%BB%E7%BB%9F%E5%BC%80%E5%8F%91%E6%A1%86%E6%9E%B6v32winform%E7%89%88%E6%9C%AC%E6%96%B0%E5%A2%9E%E6%96%B0%E7%9A%84%E8%A7%92%E8%89%B2.html">RDIFramework.NET ━ .NET快速信息化系统开发框架 V3.2->WinForm版本新增新的角色授权管理界面效率更高、更规范 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

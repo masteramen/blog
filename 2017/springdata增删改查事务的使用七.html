@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>Spring Data 增删改查事务的使用（七） | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="Spring Data 增删改查事务的使用（七）" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="@Modifying 注解使用" />
+<meta property="og:description" content="@Modifying 注解使用" />
+<link rel="canonical" href="http://www.jfox.info/2017/springdata%E5%A2%9E%E5%88%A0%E6%94%B9%E6%9F%A5%E4%BA%8B%E5%8A%A1%E7%9A%84%E4%BD%BF%E7%94%A8%E4%B8%83.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/springdata%E5%A2%9E%E5%88%A0%E6%94%B9%E6%9F%A5%E4%BA%8B%E5%8A%A1%E7%9A%84%E4%BD%BF%E7%94%A8%E4%B8%83.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:58:27+00:00" />
+<script type="application/ld+json">
+{"description":"@Modifying 注解使用","@type":"BlogPosting","url":"http://www.jfox.info/2017/springdata%E5%A2%9E%E5%88%A0%E6%94%B9%E6%9F%A5%E4%BA%8B%E5%8A%A1%E7%9A%84%E4%BD%BF%E7%94%A8%E4%B8%83.html","headline":"Spring Data 增删改查事务的使用（七）","dateModified":"2017-01-01T15:58:27+00:00","datePublished":"2017-01-01T15:58:27+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/springdata%E5%A2%9E%E5%88%A0%E6%94%B9%E6%9F%A5%E4%BA%8B%E5%8A%A1%E7%9A%84%E4%BD%BF%E7%94%A8%E4%B8%83.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Spring Data 增删改查事务的使用（七）</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:58:27+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>@Modifying 注解使用</p>
+
+<p>@Modifying 结合 @Query注解进行更新操作</p>
+
+<p>咱们单单的一个查询注解是没有办法完成事务的操作的</p>
+
+<p>我们还要结合一点就是@Transaction 在springdata的使用</p>
+
+<p>话不多说 我们开始</p>
+
+<p>　　开始之前我先讲下上篇文章的 漏了一个 查询总记录数的  本来想给大家写个例子   今天在这里补上</p>
+
+<p>　　还是在 EmployeeRepository.java 该类增加新的方法</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>//获取总记录数
+    //nativeQuery =true  表示支持本地sql查询
+    @Query(nativeQuery = true,value = "select count(*) from employee")
+    publiclong getCount();
+
+编写一个测试方法
+
+ @Test
+    publicvoid tesquerayParams(){
+        List&lt;Employee&gt; employees = employeeRepository.querayParams("wangwu",12);
+        for (Employee employee: employees) {
+            System.out.println("id:" + employee.getId()
+                    + " , name:" + employee.getName()
+                    + " ,age:" + employee.getAge());
+        }
+    }
+</code></pre></div></div>
+
+<p>执行结果</p>
+
+<p><img src="681ab73.png" alt="" /></p>
+
+<p><strong>进入正题  咱们讲下事务的操作</strong></p>
+
+<p>　　还是一样 通过例子给大家展示</p>
+
+<p>　　还是在EmployeeRepository.java  ———-&gt;update方法</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">org</span><span class="p">.</span><span class="n">springdata</span><span class="p">.</span><span class="n">repository</span><span class="p">;</span>
+
+<span class="n">import</span> <span class="n">org</span><span class="p">.</span><span class="n">springdata</span><span class="p">.</span><span class="n">domain</span><span class="p">.</span><span class="n">Employee</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">org</span><span class="p">.</span><span class="n">springframework</span><span class="p">.</span><span class="n">data</span><span class="p">.</span><span class="n">jpa</span><span class="p">.</span><span class="n">repository</span><span class="p">.</span><span class="n">Modifying</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">org</span><span class="p">.</span><span class="n">springframework</span><span class="p">.</span><span class="n">data</span><span class="p">.</span><span class="n">jpa</span><span class="p">.</span><span class="n">repository</span><span class="p">.</span><span class="n">Query</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">org</span><span class="p">.</span><span class="n">springframework</span><span class="p">.</span><span class="n">data</span><span class="p">.</span><span class="n">repository</span><span class="p">.</span><span class="n">Repository</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">org</span><span class="p">.</span><span class="n">springframework</span><span class="p">.</span><span class="n">data</span><span class="p">.</span><span class="n">repository</span><span class="p">.</span><span class="n">RepositoryDefinition</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">org</span><span class="p">.</span><span class="n">springframework</span><span class="p">.</span><span class="n">data</span><span class="p">.</span><span class="n">repository</span><span class="p">.</span><span class="n">query</span><span class="p">.</span><span class="n">Param</span><span class="p">;</span>
+
+<span class="n">import</span> <span class="n">java</span><span class="p">.</span><span class="n">util</span><span class="p">.</span><span class="k">List</span><span class="p">;</span>
+
+<span class="p">/***</span>
+ <span class="p">*</span>
+ <span class="p">*/</span>
+<span class="p">@</span><span class="n">RepositoryDefinition</span><span class="p">(</span><span class="n">domainClass</span> <span class="p">=</span> <span class="n">Employee</span><span class="p">.</span><span class="n">class</span><span class="p">,</span> <span class="n">idClass</span> <span class="p">=</span> <span class="k">Integer</span><span class="p">.</span><span class="n">class</span><span class="p">)</span>
+<span class="n">publicinterface</span> <span class="n">EmployeeRepository</span> <span class="p">/*</span><span class="n">extends</span> <span class="n">Repository</span><span class="p">&lt;</span><span class="n">Employee</span><span class="p">,</span><span class="k">Integer</span><span class="p">&gt;*/</span> <span class="p">{</span>
+    <span class="p">/**</span>
+     <span class="p">*</span> <span class="err">根据名字找员工</span>
+     <span class="p">*</span> <span class="n">desc</span>  <span class="err">大家可以发现</span>  <span class="err">我只声明了一个方法</span>  <span class="err">并没有写任何的实现类</span>   <span class="err">哦了</span>  <span class="err">就这样</span>  <span class="err">咱们写个实现类</span>
+     <span class="p">*</span> <span class="p">@</span><span class="n">param</span> <span class="n">name</span>
+     <span class="p">*</span> <span class="p">@</span><span class="n">return</span><span class="p">*/</span><span class="k">public</span> <span class="n">Employee</span> <span class="n">findByName</span><span class="p">(</span><span class="k">String</span> <span class="n">name</span><span class="p">);</span>
+
+
+    <span class="p">//</span> <span class="n">name</span> <span class="err">根据模糊查询</span>  <span class="err">并且</span> <span class="err">年龄</span><span class="p">&lt;</span><span class="err">多少岁的员工</span><span class="k">public</span> <span class="k">List</span><span class="p">&lt;</span><span class="n">Employee</span><span class="p">&gt;</span> <span class="n">findByNameIsStartingWithAndAgeLessThan</span><span class="p">(</span><span class="k">String</span> <span class="n">name</span><span class="p">,</span> <span class="k">Integer</span> <span class="n">gae</span><span class="p">);</span>
+
+
+    <span class="p">//</span> <span class="n">names</span> <span class="k">in</span> <span class="p">(</span><span class="s1">''</span><span class="p">,</span><span class="s1">''</span><span class="p">,</span><span class="s1">''</span><span class="p">)</span> <span class="err">年龄小于多少</span><span class="k">public</span> <span class="k">List</span><span class="p">&lt;</span><span class="n">Employee</span><span class="p">&gt;</span> <span class="n">findByNameInOrAgeLessThan</span><span class="p">(</span><span class="k">List</span><span class="p">&lt;</span><span class="k">String</span><span class="p">&gt;</span> <span class="n">names</span><span class="p">,</span><span class="k">Integer</span> <span class="n">age</span><span class="p">);</span>
+
+
+    <span class="p">//</span><span class="err">获取年龄最大的信息</span>
+    <span class="p">@</span><span class="n">Query</span><span class="p">(</span><span class="s2">" select o  from  Employee o where o.age=(select max(age) from Employee t1)"</span><span class="p">)</span>
+    <span class="k">public</span> <span class="n">Employee</span> <span class="n">getEmployeeByAge</span><span class="p">();</span>
+
+    <span class="p">//</span><span class="err">获取</span><span class="n">name</span><span class="err">包含</span> <span class="err">哪些</span> <span class="err">并且年龄等于多少岁</span>
+    <span class="p">@</span><span class="n">Query</span><span class="p">(</span><span class="s2">"select o from Employee o where o.name like %?1% and o.age = ?2"</span><span class="p">)</span>
+    <span class="k">public</span> <span class="k">List</span><span class="p">&lt;</span><span class="n">Employee</span><span class="p">&gt;</span> <span class="n">querayParams</span><span class="p">(</span><span class="k">String</span> <span class="n">name</span><span class="p">,</span><span class="k">Integer</span> <span class="n">age</span><span class="p">);</span>
+
+
+    <span class="p">//</span><span class="err">获取总记录数</span>
+    <span class="p">//</span><span class="n">nativeQuery</span> <span class="p">=</span><span class="nb">true</span>  <span class="err">表示支持本地</span><span class="n">sql</span><span class="err">查询</span>
+    <span class="p">@</span><span class="n">Query</span><span class="p">(</span><span class="n">nativeQuery</span> <span class="p">=</span> <span class="nb">true</span><span class="p">,</span><span class="n">value</span> <span class="p">=</span> <span class="s2">"select count(*) from employee"</span><span class="p">)</span>
+    <span class="n">publiclong</span> <span class="n">getCount</span><span class="p">();</span>
+
+
+    <span class="p">//</span><span class="err">根据</span><span class="n">id</span><span class="err">修改年龄</span>
+    <span class="p">@</span><span class="n">Modifying</span> <span class="p">//</span><span class="err">该注解表示允许修改</span>
+    <span class="p">@</span><span class="n">Query</span><span class="p">(</span><span class="s2">"update Employee o set o.age=:age where o.id = :id"</span><span class="p">)</span>
+    <span class="n">publicvoid</span> <span class="n">update</span><span class="p">(@</span><span class="n">Param</span><span class="p">(</span><span class="s2">"id"</span><span class="p">)</span><span class="k">Integer</span> <span class="n">id</span><span class="p">,</span> <span class="p">@</span><span class="n">Param</span><span class="p">(</span><span class="s2">"age"</span><span class="p">)</span><span class="k">Integer</span> <span class="n">age</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>写完之后是不是可以马上测试呢？  不是的</p>
+
+<p>　　咱们做过javaee开发的同学都知道  我们事务都是放在service 里面控制的 所以这次也是一样  咱们新建一个service包  见一个EmployeeService类</p>
+
+<p>所以咱们新建一个EmployeeService.java 进行事务控制</p>
+
+<p><img src="e7c9f5c.png" alt="" /></p>
+
+<p>编写一下代码：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">org</span><span class="p">.</span><span class="n">springdata</span><span class="p">.</span><span class="n">service</span><span class="p">;</span>
+
+<span class="n">import</span> <span class="n">org</span><span class="p">.</span><span class="n">springdata</span><span class="p">.</span><span class="n">repository</span><span class="p">.</span><span class="n">EmployeeRepository</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">org</span><span class="p">.</span><span class="n">springframework</span><span class="p">.</span><span class="n">beans</span><span class="p">.</span><span class="n">factory</span><span class="p">.</span><span class="n">annotation</span><span class="p">.</span><span class="n">Autowired</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">org</span><span class="p">.</span><span class="n">springframework</span><span class="p">.</span><span class="n">stereotype</span><span class="p">.</span><span class="n">Service</span><span class="p">;</span>
+
+<span class="n">import</span> <span class="n">javax</span><span class="p">.</span><span class="n">transaction</span><span class="p">.</span><span class="n">Transactional</span><span class="p">;</span>
+
+<span class="p">/**</span>
+ <span class="p">*</span> <span class="n">Employee</span> <span class="err">事务的控制</span>
+ <span class="p">*/</span>
+<span class="p">@</span><span class="n">Service</span>
+<span class="n">publicclass</span> <span class="n">EmployeeService</span> <span class="p">{</span>
+    <span class="p">@</span><span class="n">Autowired</span>
+    <span class="n">private</span> <span class="n">EmployeeRepository</span> <span class="n">employeeRepository</span><span class="p">;</span>
+
+
+    <span class="p">@</span><span class="n">Transactional</span> <span class="p">//</span><span class="err">事务注解</span><span class="n">publicvoid</span> <span class="n">update</span><span class="p">(</span><span class="k">Integer</span> <span class="n">id</span><span class="p">,</span><span class="k">Integer</span> <span class="n">age</span><span class="p">){</span>
+        <span class="n">employeeRepository</span><span class="p">.</span><span class="n">update</span><span class="p">(</span><span class="n">id</span><span class="p">,</span><span class="n">age</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>编写测试类———–testupdate</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">org</span><span class="p">.</span><span class="n">springdata</span><span class="p">.</span><span class="n">service</span><span class="p">;</span>
+
+<span class="n">import</span> <span class="n">org</span><span class="p">.</span><span class="n">junit</span><span class="p">.</span><span class="n">After</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">org</span><span class="p">.</span><span class="n">junit</span><span class="p">.</span><span class="n">Before</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">org</span><span class="p">.</span><span class="n">junit</span><span class="p">.</span><span class="n">Test</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">org</span><span class="p">.</span><span class="n">springdata</span><span class="p">.</span><span class="n">repository</span><span class="p">.</span><span class="n">EmployeeRepository</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">org</span><span class="p">.</span><span class="n">springframework</span><span class="p">.</span><span class="n">context</span><span class="p">.</span><span class="n">ApplicationContext</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">org</span><span class="p">.</span><span class="n">springframework</span><span class="p">.</span><span class="n">context</span><span class="p">.</span><span class="n">support</span><span class="p">.</span><span class="n">ClassPathXmlApplicationContext</span><span class="p">;</span>
+
+<span class="p">/***/</span><span class="n">publicclass</span> <span class="n">SpringDataTransaction</span> <span class="p">{</span>
+
+
+    <span class="n">private</span> <span class="n">ApplicationContext</span> <span class="n">ctx</span> <span class="p">=</span> <span class="n">null</span><span class="p">;</span>
+
+    <span class="n">private</span> <span class="n">EmployeeService</span> <span class="n">employeeService</span> <span class="p">=</span> <span class="n">null</span><span class="p">;</span>
+
+    <span class="p">@</span><span class="n">Before</span>
+    <span class="n">publicvoid</span> <span class="n">setup</span><span class="p">(){</span>
+        <span class="n">ctx</span> <span class="p">=</span> <span class="n">new</span> <span class="n">ClassPathXmlApplicationContext</span><span class="p">(</span><span class="s2">"beans_news.xml"</span><span class="p">);</span>
+        <span class="n">employeeService</span> <span class="p">=</span> <span class="n">ctx</span><span class="p">.</span><span class="n">getBean</span><span class="p">(</span><span class="n">EmployeeService</span><span class="p">.</span><span class="n">class</span><span class="p">);</span>
+        <span class="nf">System</span><span class="p">.</span><span class="n">out</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="s2">"setup"</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="p">@</span><span class="n">After</span>
+    <span class="n">publicvoid</span> <span class="n">tearDown</span><span class="p">(){</span>
+        <span class="n">ctx</span> <span class="p">=</span> <span class="n">null</span><span class="p">;</span>
+        <span class="nf">System</span><span class="p">.</span><span class="n">out</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="s2">"tearDown"</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="p">@</span><span class="n">Test</span>
+    <span class="n">publicvoid</span> <span class="n">testUpdate</span><span class="p">(){</span>
+        <span class="n">employeeService</span><span class="p">.</span><span class="n">update</span><span class="p">(</span><span class="m">1</span><span class="p">,</span><span class="m">52</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/springdata%E5%A2%9E%E5%88%A0%E6%94%B9%E6%9F%A5%E4%BA%8B%E5%8A%A1%E7%9A%84%E4%BD%BF%E7%94%A8%E4%B8%83.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%91%E8%B0%83%E5%BA%A6%E5%A4%84%E7%90%86%E7%B3%BB%E7%BB%9F.html">&laquo; 分布式云调度处理系统 » java面试题</a>
+  
+  
+  <a class="next" href="/2017/nettyinboundoutbound%E4%BF%A1%E9%81%93%E5%A4%84%E7%90%86%E5%99%A8%E5%AE%9A%E4%B9%89.html">Netty Inbound/Outbound信道处理器定义 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

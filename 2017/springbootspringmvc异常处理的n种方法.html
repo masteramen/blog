@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>Spring Boot &amp; Spring MVC 异常处理的N种方法 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="Spring Boot &amp; Spring MVC 异常处理的N种方法" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="根据Spring Boot官方文档的说法：" />
+<meta property="og:description" content="根据Spring Boot官方文档的说法：" />
+<link rel="canonical" href="http://www.jfox.info/2017/springbootspringmvc%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E7%9A%84n%E7%A7%8D%E6%96%B9%E6%B3%95.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/springbootspringmvc%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E7%9A%84n%E7%A7%8D%E6%96%B9%E6%B3%95.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:52:53+00:00" />
+<script type="application/ld+json">
+{"description":"根据Spring Boot官方文档的说法：","@type":"BlogPosting","url":"http://www.jfox.info/2017/springbootspringmvc%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E7%9A%84n%E7%A7%8D%E6%96%B9%E6%B3%95.html","headline":"Spring Boot &amp; Spring MVC 异常处理的N种方法","dateModified":"2017-01-01T15:52:53+00:00","datePublished":"2017-01-01T15:52:53+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/springbootspringmvc%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E7%9A%84n%E7%A7%8D%E6%96%B9%E6%B3%95.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Spring Boot &amp; Spring MVC 异常处理的N种方法</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:52:53+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>根据Spring Boot官方文档的说法：</p>
+
+<p>For machine clients it will produce a JSON response with details of the error, the HTTP status and the exception message. For browser clients there is a ‘whitelabel’ error view that renders the same data in HTML format</p>
+
+<p>也就是说，当发生异常时：</p>
+
+<ul>
+  <li>
+    <p>如果请求是从浏览器发送出来的，那么返回一个<code class="highlighter-rouge">Whitelabel Error Page</code></p>
+  </li>
+  <li>
+    <p>如果请求是从machine客户端发送出来的，那么会返回相同信息的<code class="highlighter-rouge">json</code></p>
+  </li>
+</ul>
+
+<p>你可以在浏览器中依次访问以下地址：</p>
+
+<ol>
+  <li>
+    <p><code class="highlighter-rouge">http://localhost:8080/return-model-and-view</code></p>
+  </li>
+  <li>
+    <p><code class="highlighter-rouge">http://localhost:8080/return-view-name</code></p>
+  </li>
+  <li>
+    <p><code class="highlighter-rouge">http://localhost:8080/return-view</code></p>
+  </li>
+  <li>
+    <p><code class="highlighter-rouge">http://localhost:8080/return-text-plain</code></p>
+  </li>
+  <li>
+    <p><code class="highlighter-rouge">http://localhost:8080/return-json-1</code></p>
+  </li>
+  <li>
+    <p><code class="highlighter-rouge">http://localhost:8080/return-json-2</code></p>
+  </li>
+</ol>
+
+<p>会发现<a href="https://www.jfox.info/go.php?url=https://github.com/chanjarster/spring-mvc-error-handling-example/blob/master/src/main/java/me/chanjar/controllers/FooController.java">FooController</a>和<a href="https://www.jfox.info/go.php?url=https://github.com/chanjarster/spring-mvc-error-handling-example/blob/master/src/main/java/me/chanjar/controllers/FooRestController.java">FooRestController</a>返回的结果都是一个<code class="highlighter-rouge">Whitelabel Error Page</code>也就是html。</p>
+
+<p>但是如果你使用<code class="highlighter-rouge">curl</code>访问上述地址，那么返回的都是如下的<code class="highlighter-rouge">json</code>：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>{
+  "timestamp": 1498886969426,
+  "status": 500,
+  "error": "Internal Server Error",
+  "exception": "me.chanjar.exception.SomeException",
+  "message": "...",
+  "trace": "...",
+  "path": "..."
+}
+</code></pre></div></div>
+
+<p>但是有一个URL除外：<code class="highlighter-rouge">http://localhost:8080/return-text-plain</code>，它不会返回任何结果，原因稍后会有说明。</p>
+
+<p>本章节代码在<a href="https://www.jfox.info/go.php?url=https://github.com/chanjarster/spring-mvc-error-handling-example/blob/master/src/main/java/me/chanjar/boot/def">me.chanjar.boot.def</a>，使用<a href="https://www.jfox.info/go.php?url=https://github.com/chanjarster/spring-mvc-error-handling-example/blob/master/src/main/java/me/chanjar/boot/def/DefaultExample.java">DefaultExample</a>运行。</p>
+
+<p>注意：我们必须在<code class="highlighter-rouge">application.properties</code>添加<code class="highlighter-rouge">server.error.include-stacktrace=always</code>才能够得到stacktrace。</p>
+
+<h3 id="为何curl-textplain资源无法获得error">为何curl text/plain资源无法获得error</h3>
+
+<p>如果你在<a href="https://www.jfox.info/go.php?url=https://github.com/chanjarster/spring-mvc-error-handling-example/blob/master/src/main/resources/logback-spring.xml">logback-spring.xml</a>里一样配置了这么一段：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;logger name="org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod" level="TRACE"/&gt;
+</code></pre></div></div>
+
+<p>那么你就能在日志文件里发现这么一个异常：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>org.springframework.web.HttpMediaTypeNotAcceptableException: Could not find acceptable representation
+...
+</code></pre></div></div>
+
+<p>要理解这个异常是怎么来的，那我们来简单分析以下Spring MVC的处理过程：</p>
+
+<ol>
+  <li>
+    <p><code class="highlighter-rouge">curl http://localhost:8080/return-text-plain</code>，会隐含一个请求头<code class="highlighter-rouge">Accept: */*</code>，会匹配到<code class="highlighter-rouge">FooController.returnTextPlain(produces=text/plain)</code>方法，注意：如果请求头不是<code class="highlighter-rouge">Accept: */*</code>或<code class="highlighter-rouge">Accept: text/plain</code>，那么是匹配不到<code class="highlighter-rouge">FooController.returnTextPlain</code>的。</p>
+  </li>
+  <li>
+    <p><a href="https://www.jfox.info/go.php?url=https://github.com/spring-projects/spring-framework/blob/v4.3.9.RELEASE/spring-webmvc/src/main/java/org/springframework/web/servlet/mvc/method/annotation/RequestMappingHandlerMapping.java">RequestMappingHandlerMapping</a>根据url匹配到了(见<a href="https://www.jfox.info/go.php?url=https://github.com/spring-projects/spring-framework/blob/v4.3.9.RELEASE/spring-webmvc/src/main/java/org/springframework/web/servlet/handler/AbstractHandlerMethodMapping.java#L341">AbstractHandlerMethodMapping.lookupHandlerMethod#L341</a>)<code class="highlighter-rouge">FooController.returnTextPlan</code>(<code class="highlighter-rouge">produces=text/plain</code>)。</p>
+  </li>
+  <li>
+    <p>方法抛出了异常，forward到<code class="highlighter-rouge">/error</code>。</p>
+  </li>
+  <li>
+    <p><a href="https://www.jfox.info/go.php?url=https://github.com/spring-projects/spring-framework/blob/v4.3.9.RELEASE/spring-webmvc/src/main/java/org/springframework/web/servlet/mvc/method/annotation/RequestMappingHandlerMapping.java">RequestMappingHandlerMapping</a>根据url匹配到了(见<a href="https://www.jfox.info/go.php?url=https://github.com/spring-projects/spring-framework/blob/v4.3.9.RELEASE/spring-webmvc/src/main/java/org/springframework/web/servlet/handler/AbstractHandlerMethodMapping.java#L341">AbstractHandlerMethodMapping.lookupHandlerMethod#L341</a>)<a href="https://www.jfox.info/go.php?url=https://github.com/spring-projects/spring-boot/blob/v1.5.4.RELEASE/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/web/BasicErrorController.java">BasicErrorController</a>的两个方法[errorHtml]<a href="BasicErrorController_errorHtml">BasicErrorController_errorHtml</a>和[error]<a href="BasicErrorController_error">BasicErrorController_error</a>。</p>
+  </li>
+  <li>
+    <p>因为请求头<code class="highlighter-rouge">Accept: */*</code>，所以会匹配<a href="https://www.jfox.info/go.php?url=https://github.com/spring-projects/spring-boot/blob/v1.5.4.RELEASE/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/web/BasicErrorController.java#L98">error</a>方法上(见<a href="https://www.jfox.info/go.php?url=https://github.com/spring-projects/spring-framework/blob/v4.3.9.RELEASE/spring-webmvc/src/main/java/org/springframework/web/servlet/handler/AbstractHandlerMethodMapping.java#L352">AbstractHandlerMethodMapping#L352</a>，<a href="https://www.jfox.info/go.php?url=https://github.com/spring-projects/spring-framework/blob/v4.3.9.RELEASE/spring-webmvc/src/main/java/org/springframework/web/servlet/mvc/method/RequestMappingInfo.java#L266">RequestMappingInfo.compareTo</a>，<a href="https://www.jfox.info/go.php?url=https://github.com/spring-projects/spring-framework/blob/v4.3.9.RELEASE/spring-webmvc/src/main/java/org/springframework/web/servlet/mvc/condition/ProducesRequestCondition.java#L235">ProducesRequestCondition.compareTo</a>)。</p>
+  </li>
+  <li>
+    <p><code class="highlighter-rouge">error</code>方法返回的是<code class="highlighter-rouge">ResponseEntity&lt;Map&lt;String, Object&gt;&gt;</code>，会被<a href="https://www.jfox.info/go.php?url=https://github.com/spring-projects/spring-framework/blob/v4.3.9.RELEASE/spring-webmvc/src/main/java/org/springframework/web/servlet/mvc/method/annotation/HttpEntityMethodProcessor.java#L159">HttpEntityMethodProcessor.handleReturnValue</a>处理。</p>
+  </li>
+  <li>
+    <p><a href="https://www.jfox.info/go.php?url=https://github.com/spring-projects/spring-framework/blob/v4.3.9.RELEASE/spring-webmvc/src/main/java/org/springframework/web/servlet/mvc/method/annotation/HttpEntityMethodProcessor.java">HttpEntityMethodProcessor</a>进入<a href="https://www.jfox.info/go.php?url=https://github.com/spring-projects/spring-framework/blob/v4.3.9.RELEASE/spring-webmvc/src/main/java/org/springframework/web/servlet/mvc/method/annotation/AbstractMessageConverterMethodProcessor.java#L163">AbstractMessageConverterMethodProcessor.writeWithMessageConverters</a>，发现请求要求<code class="highlighter-rouge">*/*</code>(<code class="highlighter-rouge">Accept: */*</code>)，而能够产生<code class="highlighter-rouge">text/plain</code>(<code class="highlighter-rouge">FooController.returnTextPlan produces=text/plain</code>)，那它会去找能够将<code class="highlighter-rouge">Map</code>转换成<code class="highlighter-rouge">String</code>的[HttpMessageConverter]<a href="HttpMessageConverter">HttpMessageConverter</a>，结果是找不到。</p>
+  </li>
+  <li>
+    <p><a href="https://www.jfox.info/go.php?url=https://github.com/spring-projects/spring-framework/blob/v4.3.9.RELEASE/spring-webmvc/src/main/java/org/springframework/web/servlet/mvc/method/annotation/AbstractMessageConverterMethodProcessor.java">AbstractMessageConverterMethodProcessor</a>抛出<a href="https://www.jfox.info/go.php?url=https://github.com/spring-projects/spring-framework/blob/v4.3.9.RELEASE/spring-webmvc/src/main/java/org/springframework/web/servlet/mvc/method/annotation/AbstractMessageConverterMethodProcessor.java#L259">HttpMediaTypeNotAcceptableException</a>。</p>
+  </li>
+</ol>
+
+<p>那么为什么浏览器访问<code class="highlighter-rouge">http://localhost:8080/return-text-plain</code>就可以呢？你只需打开浏览器的开发者模式看看请求头就会发现<code class="highlighter-rouge">Accept:text/html,...</code>，所以在第4步会匹配到<a href="https://www.jfox.info/go.php?url=https://github.com/spring-projects/spring-boot/blob/v1.5.4.RELEASE/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/web/BasicErrorController.java#L86">BasicErrorController.errorHtml</a>方法，那结果自然是没有问题了。</p>
+
+<p>那么这个问题怎么解决呢？我会在<em>自定义ErrorController</em>里说明。</p>
+
+<h2 id="自定义error页面">自定义Error页面</h2>
+
+<p>前面看到了，Spring Boot针对浏览器发起的请求的error页面是<code class="highlighter-rouge">Whitelabel Error Page</code>，下面讲解如何自定义error页面。</p>
+
+<p>注意2：自定义Error页面不会影响machine客户端的输出结果</p>
+
+<h3 id="方法1">方法1</h3>
+
+<p>根据Spring Boot官方文档，如果想要定制这个页面只需要：</p>
+
+<p>to customize it just add a <code class="highlighter-rouge">View</code> that resolves to ‘error’</p>
+
+<p>这句话讲的不是很明白，其实只要看<code class="highlighter-rouge">ErrorMvcAutoConfiguration.WhitelabelErrorViewConfiguration</code>的代码就知道，只需注册一个名字叫做<code class="highlighter-rouge">error</code>的<code class="highlighter-rouge">View</code>类型的<code class="highlighter-rouge">Bean</code>就行了。</p>
+
+<p>本例的<a href="https://www.jfox.info/go.php?url=https://github.com/chanjarster/spring-mvc-error-handling-example/blob/master/src/main/java/me/chanjar/boot/customdefaulterrorview/CustomDefaultErrorViewConfiguration.java">CustomDefaultErrorViewConfiguration</a>注册将<code class="highlighter-rouge">error</code>页面改到了<a href="https://www.jfox.info/go.php?url=https://github.com/chanjarster/spring-mvc-error-handling-example/blob/master/src/main/resources/templates/custom-error-page/error.html">templates/custom-error-page/error.html</a>上。</p>
+
+<p>本章节代码在<a href="https://www.jfox.info/go.php?url=https://github.com/chanjarster/spring-mvc-error-handling-example/blob/master/src/main/java/me/chanjar/boot/customdefaulterrorview">me.chanjar.boot.customdefaulterrorview</a>，使用<a href="https://www.jfox.info/go.php?url=https://github.com/chanjarster/spring-mvc-error-handling-example/blob/master/src/main/java/me/chanjar/boot/customdefaulterrorview/CustomDefaultErrorViewExample.java">CustomDefaultErrorViewExample</a>运行。</p>
+
+<h3 id="方法2">方法2</h3>
+
+<p>方法2比方法1简单很多，在Spring官方文档中没有说明。其实只需要提供<code class="highlighter-rouge">error</code><code class="highlighter-rouge">View</code>所对应的页面文件即可。</p>
+
+<p>比如在本例里，因为使用的是Thymeleaf模板发动机，所以在classpath <code class="highlighter-rouge">/templates</code>放一个自定义的<code class="highlighter-rouge">error.html</code>就能够自定义error页面了。</p>
+
+<p>本章节就不提供代码了，有兴趣的你可以自己尝试。</p>
+
+<h2 id="自定义error属性">自定义Error属性</h2>
+
+<p>前面看到了不论error页面还是error json，能够得到的属性就只有：timestamp、status、error、exception、message、trace、path。</p>
+
+<p>如果你想自定义这些属性，可以如Spring Boot官方文档所说的：</p>
+
+<p>simply add a bean of type <code class="highlighter-rouge">ErrorAttributes</code> to use the existing mechanism but replace the contents</p>
+
+<p>在<code class="highlighter-rouge">ErrorMvcAutoConfiguration.errorAttributes</code>提供了<a href="https://www.jfox.info/go.php?url=http://docs.spring.io/spring-boot/docs/1.5.4.RELEASE/api/org/springframework/boot/autoconfigure/web/DefaultErrorAttributes.html">DefaultErrorAttributes</a>，我们也可以参照这个提供一个自己的<a href="https://www.jfox.info/go.php?url=https://github.com/chanjarster/spring-mvc-error-handling-example/blob/master/src/main/java/me/chanjar/boot/customerrorattributes/CustomErrorAttributes.java">CustomErrorAttributes</a>覆盖掉它。</p>
+
+<p>如果使用curl访问相关地址可以看到，返回的json里的出了修改过的属性，还有添加的属性：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>{
+  "exception": "customized exception",
+  "add-attribute": "add-attribute",
+  "path": "customized path",
+  "trace": "customized trace",
+  "error": "customized error",
+  "message": "customized message",
+  "timestamp": 1498892609326,
+  "status": 100
+}
+</code></pre></div></div>
+
+<p>本章节代码在<a href="https://www.jfox.info/go.php?url=https://github.com/chanjarster/spring-mvc-error-handling-example/blob/master/src/main/java/me/chanjar/boot/customerrorattributes">me.chanjar.boot.customerrorattributes</a>，使用<a href="https://www.jfox.info/go.php?url=https://github.com/chanjarster/spring-mvc-error-handling-example/blob/master/src/main/java/me/chanjar/boot/customerrorattributes/CustomErrorAttributesExample.java">CustomErrorAttributesExample</a>运行。</p>
+
+<h2 id="自定义errorcontroller">自定义ErrorController</h2>
+
+<p>在前面提到了<code class="highlighter-rouge">curl http://localhost:8080/return-text-plain</code>得不到error信息，解决这个问题有两个关键点：</p>
+
+<ol>
+  <li>
+    <p>请求的时候指定<code class="highlighter-rouge">Accept</code>头，避免匹配到<a href="https://www.jfox.info/go.php?url=https://github.com/spring-projects/spring-boot/blob/v1.5.4.RELEASE/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/web/BasicErrorController.java#L98">BasicErrorController.error</a>方法。比如：<code class="highlighter-rouge">curl -H 'Accept: text/plain' http://localhost:8080/return-text-plain</code></p>
+  </li>
+  <li>
+    <p>提供自定义的<code class="highlighter-rouge">ErrorController</code>。</p>
+  </li>
+</ol>
+
+<p>下面将如何提供自定义的<code class="highlighter-rouge">ErrorController</code>。按照Spring Boot官方文档的说法：</p>
+
+<p>To do that just extend <code class="highlighter-rouge">BasicErrorController</code> and add a public method with a <code class="highlighter-rouge">@RequestMapping</code> that has a <code class="highlighter-rouge">produces</code> attribute, and create a bean of your new type.</p>
+
+<p>所以我们提供了一个<a href="https://www.jfox.info/go.php?url=https://github.com/chanjarster/spring-mvc-error-handling-example/blob/master/src/main/java/me/chanjar/boot/customerrorcontroller/CustomErrorController.java">CustomErrorController</a>，并且通过<a href="https://www.jfox.info/go.php?url=https://github.com/chanjarster/spring-mvc-error-handling-example/blob/master/src/main/java/me/chanjar/boot/customerrorcontroller/CustomErrorControllerConfiguration.java">CustomErrorControllerConfiguration</a>将其注册为Bean。</p>
+
+<p>本章节代码在<a href="https://www.jfox.info/go.php?url=https://github.com/chanjarster/spring-mvc-error-handling-example/blob/master/src/main/java/me/chanjar/boot/customerrorcontroller">me.chanjar.boot.customerrorcontroller</a>，使用<a href="https://www.jfox.info/go.php?url=https://github.com/chanjarster/spring-mvc-error-handling-example/blob/master/src/main/java/me/chanjar/boot/customerrorcontroller/CustomErrorControllerExample.java">CustomErrorControllerExample</a>运行。</p>
+
+<h2 id="controlleradvice定制特定异常返回结果">ControllerAdvice定制特定异常返回结果</h2>
+
+<p>根据Spring Boot官方文档的例子，可以使用<a href="https://www.jfox.info/go.php?url=http://docs.spring.io/spring/docs/4.3.9.RELEASE/spring-framework-reference/htmlsingle/#mvc-ann-controller-advice">@ControllerAdvice</a>和<a href="https://www.jfox.info/go.php?url=http://docs.spring.io/spring/docs/4.3.9.RELEASE/spring-framework-reference/htmlsingle/#mvc-ann-exceptionhandler">@ExceptionHandler</a>对特定异常返回特定的结果。</p>
+
+<p>我们在这里定义了一个新的异常：AnotherException，然后在<a href="https://www.jfox.info/go.php?url=https://github.com/chanjarster/spring-mvc-error-handling-example/blob/master/src/main/java/me/chanjar/boot/controlleradvice/BarControllerAdvice.java">BarControllerAdvice</a>中对SomeException和AnotherException定义了不同的<a href="https://www.jfox.info/go.php?url=http://docs.spring.io/spring/docs/4.3.9.RELEASE/spring-framework-reference/htmlsingle/#mvc-ann-exceptionhandler">@ExceptionHandler</a>：</p>
+
+<ul>
+  <li>
+    <p>SomeException都返回到<code class="highlighter-rouge">controlleradvice/some-ex-error.html</code>上</p>
+  </li>
+  <li>
+    <p>AnotherException统统返回JSON</p>
+  </li>
+</ul>
+
+<p>在<a href="https://www.jfox.info/go.php?url=https://github.com/chanjarster/spring-mvc-error-handling-example/blob/master/src/main/java/me/chanjar/boot/controlleradvice/BarController.java">BarController</a>中，所有<code class="highlighter-rouge">*-a</code>都抛出<code class="highlighter-rouge">SomeException</code>，所有<code class="highlighter-rouge">*-b</code>都抛出<code class="highlighter-rouge">AnotherException</code>。下面是用浏览器和curl访问的结果：</p>
+
+<p>注意上方表格的<code class="highlighter-rouge">Could not find acceptable representation</code>错误，产生这个的原因和之前<strong>为何curl text/plain资源无法获得error</strong>是一样的：
+无法将<a href="https://www.jfox.info/go.php?url=http://docs.spring.io/spring/docs/4.3.9.RELEASE/spring-framework-reference/htmlsingle/#mvc-ann-exceptionhandler">@ExceptionHandler</a>返回的数据转换<a href="https://www.jfox.info/go.php?url=https://github.com/spring-projects/spring-framework/blob/master/spring-web/src/main/java/org/springframework/web/bind/annotation/RequestMapping.java#L396">@RequestMapping.produces</a>所要求的格式。</p>
+
+<p>所以你会发现如果使用<a href="https://www.jfox.info/go.php?url=http://docs.spring.io/spring/docs/4.3.9.RELEASE/spring-framework-reference/htmlsingle/#mvc-ann-exceptionhandler">@ExceptionHandler</a>，那就得自己根据请求头<code class="highlighter-rouge">Accept</code>的不同而输出不同的结果了，办法就是定义一个<code class="highlighter-rouge">void @ExceptionHandler</code>，具体见<a href="https://www.jfox.info/go.php?url=https://docs.spring.io/spring/docs/4.3.9.RELEASE/javadoc-api/org/springframework/web/bind/annotation/ExceptionHandler.html">@ExceptionHandler javadoc</a>。</p>
+
+<h2 id="定制不同status-code的错误页面">定制不同Status Code的错误页面</h2>
+
+<p>Spring Boot 官方文档提供了一种简单的根据不同Status Code跳到不同error页面的方法，见<a href="https://www.jfox.info/go.php?url=http://docs.spring.io/spring-boot/docs/1.5.4.RELEASE/reference/htmlsingle/#boot-features-error-handling-custom-error-pages">这里</a>。</p>
+
+<p>我们可以将不同的Status Code的页面放在<code class="highlighter-rouge">classpath: public/error</code>或<code class="highlighter-rouge">classpath: templates/error</code>目录下，比如<code class="highlighter-rouge">400.html</code>、<code class="highlighter-rouge">5xx.html</code>、<code class="highlighter-rouge">400.ftl</code>、<code class="highlighter-rouge">5xx.ftl</code>。</p>
+
+<p>打开浏览器访问以下url会获得不同的结果：</p>
+
+<p>注意<code class="highlighter-rouge">/loo/error-600</code>返回的是Whitelabel error page，但是<code class="highlighter-rouge">/loo/error-403</code>和<code class="highlighter-rouge">loo/error-406</code>能够返回我们期望的错误页面，这是为什么？先来看看代码。</p>
+
+<p>在<code class="highlighter-rouge">loo/error-403</code>中，我们抛出了异常<code class="highlighter-rouge">Exception403</code>：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>@ResponseStatus(HttpStatus.FORBIDDEN)
+public class Exception403 extends RuntimeException
+</code></pre></div></div>
+
+<p>在<code class="highlighter-rouge">loo/error-406</code>中，我们抛出了异常<code class="highlighter-rouge">Exception406</code>：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>@ResponseStatus(NOT_ACCEPTABLE)
+public class Exception406 extends RuntimeException
+</code></pre></div></div>
+
+<p>注意到这两个异常都有<a href="https://www.jfox.info/go.php?url=https://docs.spring.io/spring/docs/4.3.9.RELEASE/javadoc-api/org/springframework/web/bind/annotation/ResponseStatus.html">@ResponseStatus</a>注解，这个是注解标明了这个异常所对应的Status Code。
+但是在<code class="highlighter-rouge">loo/error-600</code>中抛出的<a href="https://www.jfox.info/go.php?url=https://github.com/chanjarster/spring-mvc-error-handling-example/blob/master/src/main/java/me/chanjar/exception/SomeException.java">SomeException</a>没有这个注解，而是尝试在<code class="highlighter-rouge">Response.setStatus(600)</code>来达到目的，但结果是失败的，这是为什么呢？：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>@RequestMapping("/error-600")
+public String error600(HttpServletRequest request, HttpServletResponse response) throws SomeException {
+  request.setAttribute(WebUtils.ERROR_STATUS_CODE_ATTRIBUTE, 600);
+  response.setStatus(600);
+  throw new SomeException();
+}
+</code></pre></div></div>
+
+<p>要了解为什么就需要知道Spring MVC对于异常的处理机制，下面简单讲解一下：</p>
+
+<p>Spring MVC处理异常的地方在<a href="https://www.jfox.info/go.php?url=https://github.com/spring-projects/spring-framework/blob/v4.3.9.RELEASE/spring-webmvc/src/main/java/org/springframework/web/servlet/DispatcherServlet.java#L1216">DispatcherServlet.processHandlerException</a>，这个方法会利用<a href="https://www.jfox.info/go.php?url=http://docs.spring.io/spring/docs/4.3.9.RELEASE/spring-framework-reference/htmlsingle/#mvc-exceptionhandlers-resolver">HandlerExceptionResolver</a>来看异常应该返回什么<code class="highlighter-rouge">ModelAndView</code>。</p>
+
+<p>目前已知的<a href="https://www.jfox.info/go.php?url=http://docs.spring.io/spring/docs/4.3.9.RELEASE/spring-framework-reference/htmlsingle/#mvc-exceptionhandlers-resolver">HandlerExceptionResolver</a>有这么几个：</p>
+
+<ol>
+  <li>
+    <p><a href="https://www.jfox.info/go.php?url=http://docs.spring.io/spring-boot/docs/1.5.4.RELEASE/api/org/springframework/boot/autoconfigure/web/DefaultErrorAttributes.html">DefaultErrorAttributes</a>，只负责把异常记录在Request attributes中，name是<code class="highlighter-rouge">org.springframework.boot.autoconfigure.web.DefaultErrorAttributes.ERROR</code></p>
+  </li>
+  <li>
+    <p><a href="https://www.jfox.info/go.php?url=https://docs.spring.io/spring/docs/4.3.9.RELEASE/javadoc-api/org/springframework/web/servlet/mvc/method/annotation/ExceptionHandlerExceptionResolver.html">ExceptionHandlerExceptionResolver</a>，根据<a href="https://www.jfox.info/go.php?url=http://docs.spring.io/spring/docs/4.3.9.RELEASE/spring-framework-reference/htmlsingle/#mvc-ann-exceptionhandler">@ExceptionHandler</a> resolve</p>
+  </li>
+  <li>
+    <p><a href="https://www.jfox.info/go.php?url=https://docs.spring.io/spring/docs/4.3.9.RELEASE/javadoc-api/org/springframework/web/servlet/mvc/annotation/ResponseStatusExceptionResolver.html">ResponseStatusExceptionResolver</a>，根据<a href="https://www.jfox.info/go.php?url=https://docs.spring.io/spring/docs/4.3.9.RELEASE/javadoc-api/org/springframework/web/bind/annotation/ResponseStatus.html">@ResponseStatus</a> resolve</p>
+  </li>
+  <li>
+    <p><a href="https://www.jfox.info/go.php?url=https://docs.spring.io/spring/docs/4.3.9.RELEASE/javadoc-api/org/springframework/web/servlet/mvc/support/DefaultHandlerExceptionResolver.html">DefaultHandlerExceptionResolver</a>，负责处理Spring MVC标准异常</p>
+  </li>
+</ol>
+
+<p><code class="highlighter-rouge">Exception403</code>和<code class="highlighter-rouge">Exception406</code>都有被<a href="https://www.jfox.info/go.php?url=https://docs.spring.io/spring/docs/4.3.9.RELEASE/javadoc-api/org/springframework/web/servlet/mvc/annotation/ResponseStatusExceptionResolver.html">ResponseStatusExceptionResolver</a>处理了，而<code class="highlighter-rouge">SomeException</code>没有任何Handler处理，这样<code class="highlighter-rouge">DispatcherServlet</code>就会将这个异常往上抛至到容器处理（见<a href="https://www.jfox.info/go.php?url=https://github.com/spring-projects/spring-framework/blob/v4.3.9.RELEASE/spring-webmvc/src/main/java/org/springframework/web/servlet/DispatcherServlet.java#L1243">DispatcherServlet#L1243</a>），以Tomcat为例，它在<a href="https://www.jfox.info/go.php?url=https://github.com/apache/tomcat/blob/TONCAT_9_0_0_M23/java/org/apache/catalina/core/StandardHostValve.java#L317">StandardHostValve#L317</a>、<a href="https://www.jfox.info/go.php?url=https://github.com/apache/tomcat/blob/TONCAT_9_0_0_M23/java/org/apache/catalina/core/StandardHostValve.java#L345">StandardHostValve#L345</a>会将Status Code设置成500，然后跳转到<code class="highlighter-rouge">/error</code>，结果就是<a href="https://www.jfox.info/go.php?url=https://github.com/spring-projects/spring-boot/blob/v1.5.4.RELEASE/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/web/BasicErrorController.java">BasicErrorController</a>处理时就看到Status Code=500，然后按照500去找error page找不到，就只能返回White error page了。</p>
+
+<p>实际上，从Request的attributes角度来看，交给<a href="https://www.jfox.info/go.php?url=https://github.com/spring-projects/spring-boot/blob/v1.5.4.RELEASE/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/web/BasicErrorController.java">BasicErrorController</a>处理时，和容器自己处理时，有几个相关属性的内部情况时这样的：
+Attribute nameWhen throw up to TomcatHandled by HandlerExceptionResolver<code class="highlighter-rouge">DefaultErrorAttributes.ERROR</code>Has valueHas Value<code class="highlighter-rouge">DispatcherServlet.EXCEPTION</code>No valueHas Value<code class="highlighter-rouge">javax.servlet.error.exception</code>Has valueNo Value
+PS. <code class="highlighter-rouge">DefaultErrorAttributes.ERROR</code> = <code class="highlighter-rouge">org.springframework.boot.autoconfigure.web.DefaultErrorAttributes.ERROR</code>
+PS. <code class="highlighter-rouge">DispatcherServlet.EXCEPTION</code> = <code class="highlighter-rouge">org.springframework.web.servlet.DispatcherServlet.EXCEPTION</code></p>
+
+<p>解决办法有两个：</p>
+
+<ol>
+  <li>
+    <p>给<code class="highlighter-rouge">SomeException</code>添加<code class="highlighter-rouge">@ResponseStatus</code>，但是这个方法有两个局限：</p>
+  </li>
+  <li>
+    <p>如果这个异常不是你能修改的，比如在第三方的Jar包里</p>
+  </li>
+  <li>
+    <p>如果<code class="highlighter-rouge">@ResponseStatus</code>使用<a href="https://www.jfox.info/go.php?url=https://docs.spring.io/spring/docs/4.3.9.RELEASE/javadoc-api/org/springframework/http/HttpStatus.html">HttpStatus</a>作为参数，但是这个枚举定义的Status Code数量有限</p>
+  </li>
+  <li>
+    <p>使用<a href="https://www.jfox.info/go.php?url=http://docs.spring.io/spring/docs/4.3.9.RELEASE/spring-framework-reference/htmlsingle/#mvc-ann-exceptionhandler">@ExceptionHandler</a>，不过得注意自己决定view以及status code</p>
+  </li>
+</ol>
+
+<p>第二种解决办法的例子<code class="highlighter-rouge">loo/error-601</code>，对应的代码：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>@RequestMapping("/error-601")
+public String error601(HttpServletRequest request, HttpServletResponse response) throws AnotherException {
+  throw new AnotherException();
+}
+
+@ExceptionHandler(AnotherException.class)
+String handleAnotherException(HttpServletRequest request, HttpServletResponse response, Model model)
+    throws IOException {
+  // 需要设置Status Code，否则响应结果会是200
+  response.setStatus(601);
+  model.addAllAttributes(errorAttributes.getErrorAttributes(new ServletRequestAttributes(request), true));
+  return "error/6xx";
+}
+</code></pre></div></div>
+
+<p>总结：</p>
+
+<ol>
+  <li>
+    <p>没有被<a href="https://www.jfox.info/go.php?url=http://docs.spring.io/spring/docs/4.3.9.RELEASE/spring-framework-reference/htmlsingle/#mvc-exceptionhandlers-resolver">HandlerExceptionResolver</a>resolve到的异常会交给容器处理。已知的实现有（按照顺序）：</p>
+  </li>
+  <li>
+    <p><a href="https://www.jfox.info/go.php?url=http://docs.spring.io/spring-boot/docs/1.5.4.RELEASE/api/org/springframework/boot/autoconfigure/web/DefaultErrorAttributes.html">DefaultErrorAttributes</a>，只负责把异常记录在Request attributes中，name是<code class="highlighter-rouge">org.springframework.boot.autoconfigure.web.DefaultErrorAttributes.ERROR</code></p>
+  </li>
+  <li>
+    <p><a href="https://www.jfox.info/go.php?url=https://docs.spring.io/spring/docs/4.3.9.RELEASE/javadoc-api/org/springframework/web/servlet/mvc/method/annotation/ExceptionHandlerExceptionResolver.html">ExceptionHandlerExceptionResolver</a>，根据<a href="https://www.jfox.info/go.php?url=http://docs.spring.io/spring/docs/4.3.9.RELEASE/spring-framework-reference/htmlsingle/#mvc-ann-exceptionhandler">@ExceptionHandler</a> resolve</p>
+  </li>
+  <li>
+    <p><a href="https://www.jfox.info/go.php?url=https://docs.spring.io/spring/docs/4.3.9.RELEASE/javadoc-api/org/springframework/web/servlet/mvc/annotation/ResponseStatusExceptionResolver.html">ResponseStatusExceptionResolver</a>，根据<a href="https://www.jfox.info/go.php?url=https://docs.spring.io/spring/docs/4.3.9.RELEASE/javadoc-api/org/springframework/web/bind/annotation/ResponseStatus.html">@ResponseStatus</a> resolve</p>
+  </li>
+  <li>
+    <p><a href="https://www.jfox.info/go.php?url=https://docs.spring.io/spring/docs/4.3.9.RELEASE/javadoc-api/org/springframework/web/servlet/mvc/support/DefaultHandlerExceptionResolver.html">DefaultHandlerExceptionResolver</a>，负责处理Spring MVC标准异常</p>
+  </li>
+  <li>
+    <p><a href="https://www.jfox.info/go.php?url=https://docs.spring.io/spring/docs/4.3.9.RELEASE/javadoc-api/org/springframework/web/bind/annotation/ResponseStatus.html">@ResponseStatus</a>用来规定异常对应的Status Code，其他异常的Status Code由容器决定，在Tomcat里都认定为500（<a href="https://www.jfox.info/go.php?url=https://github.com/apache/tomcat/blob/TONCAT_9_0_0_M23/java/org/apache/catalina/core/StandardHostValve.java#L317">StandardHostValve#L317</a>、<a href="https://www.jfox.info/go.php?url=https://github.com/apache/tomcat/blob/TONCAT_9_0_0_M23/java/org/apache/catalina/core/StandardHostValve.java#L345">StandardHostValve#L345</a>）</p>
+  </li>
+  <li>
+    <p><a href="https://www.jfox.info/go.php?url=http://docs.spring.io/spring/docs/4.3.9.RELEASE/spring-framework-reference/htmlsingle/#mvc-ann-exceptionhandler">@ExceptionHandler</a>处理的异常不会经过<a href="https://www.jfox.info/go.php?url=https://github.com/spring-projects/spring-boot/blob/v1.5.4.RELEASE/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/web/BasicErrorController.java">BasicErrorController</a>，需要自己决定如何返回页面，并且设置Status Code（如果不设置就是200）</p>
+  </li>
+  <li>
+    <p><a href="https://www.jfox.info/go.php?url=https://github.com/spring-projects/spring-boot/blob/v1.5.4.RELEASE/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/web/BasicErrorController.java">BasicErrorController</a>会尝试根据Status Code找error page，找不到的话就用Whitelabel error page</p>
+  </li>
+</ol>
+
+<p>本章节代码在<a href="https://www.jfox.info/go.php?url=https://github.com/chanjarster/spring-mvc-error-handling-example/blob/master/src/main/java/me/chanjar/boot/customstatuserrorpage">me.chanjar.boot.customstatuserrorpage</a>，使用<a href="https://www.jfox.info/go.php?url=https://github.com/chanjarster/spring-mvc-error-handling-example/blob/master/src/main/java/me/chanjar/boot/customstatuserrorpage/CustomStatusErrorPageExample.java">CustomStatusErrorPageExample</a>运行。</p>
+
+<h2 id="利用errorviewresolver来定制错误页面">利用ErrorViewResolver来定制错误页面</h2>
+
+<p>前面讲到<a href="https://www.jfox.info/go.php?url=https://github.com/spring-projects/spring-boot/blob/v1.5.4.RELEASE/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/web/BasicErrorController.java">BasicErrorController</a>会根据Status Code来跳转对应的error页面，其实这个工作是由<a href="https://www.jfox.info/go.php?url=http://docs.spring.io/spring-boot/docs/1.5.4.RELEASE/api/org/springframework/boot/autoconfigure/web/DefaultErrorViewResolver.html">DefaultErrorViewResolver</a>完成的。</p>
+
+<p>实际上我们也可以提供自己的<a href="https://www.jfox.info/go.php?url=http://docs.spring.io/spring-boot/docs/1.5.4.RELEASE/api/org/springframework/boot/autoconfigure/web/ErrorViewResolver.html">ErrorViewResolver</a>来定制特定异常的error页面。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>@Component
+public class SomeExceptionErrorViewResolver implements ErrorViewResolver {
+
+  @Override
+  public ModelAndView resolveErrorView(HttpServletRequest request, HttpStatus status, Map&lt;String, Object&gt; model) {
+    return new ModelAndView("custom-error-view-resolver/some-ex-error", model);
+  }
+
+}
+</code></pre></div></div>
+
+<p>不过需要注意的是，无法通过<a href="https://www.jfox.info/go.php?url=http://docs.spring.io/spring-boot/docs/1.5.4.RELEASE/api/org/springframework/boot/autoconfigure/web/ErrorViewResolver.html">ErrorViewResolver</a>设定Status Code，Status Code由<a href="https://www.jfox.info/go.php?url=https://docs.spring.io/spring/docs/4.3.9.RELEASE/javadoc-api/org/springframework/web/bind/annotation/ResponseStatus.html">@ResponseStatus</a>或者容器决定（Tomcat里一律是500）。</p>
+
+<p>本章节代码在<a href="https://www.jfox.info/go.php?url=https://github.com/chanjarster/spring-mvc-error-handling-example/blob/master/src/main/java/me/chanjar/boot/customerrorviewresolver">me.chanjar.boot.customerrorviewresolver</a>，使用<a href="https://www.jfox.info/go.php?url=https://github.com/chanjarster/spring-mvc-error-handling-example/blob/master/src/main/java/me/chanjar/boot/customerrorviewresolver/CustomErrorViewResolverExample.java">CustomErrorViewResolverExample</a>运行。</p>
+
+<h2 id="exceptionhandler-和-controlleradvice">@ExceptionHandler 和 @ControllerAdvice</h2>
+
+<p>前面的例子中已经有了对<a href="https://www.jfox.info/go.php?url=http://docs.spring.io/spring/docs/4.3.9.RELEASE/spring-framework-reference/htmlsingle/#mvc-ann-controller-advice">@ControllerAdvice</a>和<a href="https://www.jfox.info/go.php?url=http://docs.spring.io/spring/docs/4.3.9.RELEASE/spring-framework-reference/htmlsingle/#mvc-ann-exceptionhandler">@ExceptionHandler</a>的使用，这里只是在做一些补充说明：</p>
+
+<ol>
+  <li>
+    <p><code class="highlighter-rouge">@ExceptionHandler</code>配合<code class="highlighter-rouge">@ControllerAdvice</code>用时，能够应用到所有被<code class="highlighter-rouge">@ControllerAdvice</code>切到的Controller</p>
+  </li>
+  <li>
+    <p><code class="highlighter-rouge">@ExceptionHandler</code>在Controller里的时候，就只会对那个Controller生效</p>
+  </li>
+</ol>
+
+<h2 id="附录i">附录I</h2>
+
+<p>下表列出哪些特性是Spring Boot的，哪些是Spring MVC的：</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/springbootspringmvc%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E7%9A%84n%E7%A7%8D%E6%96%B9%E6%B3%95.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/%E6%BD%98%E5%A4%9A%E6%8B%89%E9%AD%94%E7%9B%92%E5%BC%80%E5%90%AF%E5%85%A8%E5%9B%BD%E5%A4%9A%E7%9C%81%E7%88%86%E5%8F%91%E5%A4%A7%E8%A7%84%E6%A8%A1%E8%BD%AF%E4%BB%B6%E5%8D%87%E7%BA%A7%E5%8A%AB%E6%8C%81.html">&laquo; 潘多拉魔盒开启：全国多省爆发大规模软件升级劫持攻击</a>
+  
+  
+  <a class="next" href="/2017/hadoopmrmrv2yarn%E7%BC%96%E7%A8%8B%E6%A8%A1%E5%9E%8B.html">Hadoop MR &MRv2（YARN）编程模型 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>卡巴斯基实验室发布开源数字取证工具Bitscout | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="卡巴斯基实验室发布开源数字取证工具Bitscout" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="Bitscout是一款可自定义配置的远程数字取证工具。近日，卡巴斯基实验室的安全研究专家Vitaly Kamluk正式发布了Bitscout的源代码。" />
+<meta property="og:description" content="Bitscout是一款可自定义配置的远程数字取证工具。近日，卡巴斯基实验室的安全研究专家Vitaly Kamluk正式发布了Bitscout的源代码。" />
+<link rel="canonical" href="http://www.jfox.info/2017/%E5%8D%A1%E5%B7%B4%E6%96%AF%E5%9F%BA%E5%AE%9E%E9%AA%8C%E5%AE%A4%E5%8F%91%E5%B8%83%E5%BC%80%E6%BA%90%E6%95%B0%E5%AD%97%E5%8F%96%E8%AF%81%E5%B7%A5%E5%85%B7bitscout.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/%E5%8D%A1%E5%B7%B4%E6%96%AF%E5%9F%BA%E5%AE%9E%E9%AA%8C%E5%AE%A4%E5%8F%91%E5%B8%83%E5%BC%80%E6%BA%90%E6%95%B0%E5%AD%97%E5%8F%96%E8%AF%81%E5%B7%A5%E5%85%B7bitscout.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:53:45+00:00" />
+<script type="application/ld+json">
+{"description":"Bitscout是一款可自定义配置的远程数字取证工具。近日，卡巴斯基实验室的安全研究专家Vitaly Kamluk正式发布了Bitscout的源代码。","@type":"BlogPosting","url":"http://www.jfox.info/2017/%E5%8D%A1%E5%B7%B4%E6%96%AF%E5%9F%BA%E5%AE%9E%E9%AA%8C%E5%AE%A4%E5%8F%91%E5%B8%83%E5%BC%80%E6%BA%90%E6%95%B0%E5%AD%97%E5%8F%96%E8%AF%81%E5%B7%A5%E5%85%B7bitscout.html","headline":"卡巴斯基实验室发布开源数字取证工具Bitscout","dateModified":"2017-01-01T15:53:45+00:00","datePublished":"2017-01-01T15:53:45+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/%E5%8D%A1%E5%B7%B4%E6%96%AF%E5%9F%BA%E5%AE%9E%E9%AA%8C%E5%AE%A4%E5%8F%91%E5%B8%83%E5%BC%80%E6%BA%90%E6%95%B0%E5%AD%97%E5%8F%96%E8%AF%81%E5%B7%A5%E5%85%B7bitscout.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">卡巴斯基实验室发布开源数字取证工具Bitscout</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:53:45+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>Bitscout是一款可自定义配置的远程数字取证工具。近日，卡巴斯基实验室的安全研究专家Vitaly Kamluk正式发布了Bitscout的源代码。</p>
+
+<p><img src="0bec092.gif" alt="" /></p>
+
+<p>实际上，Bitscout并不是卡巴斯基的官方产品，它最开始其实只是卡巴斯基工作人员的一个个人项目，但随着卡巴斯基对数字取证工具方面的需求不断增长，这个项目也一直在被不断地改进。</p>
+
+<p>此次发布的版本为Bitscout v2.0，其1.0版本至今未公开发布过。这款工具可以帮助取证调查人员对目标系统进行远程分析，并允许系统拥有者随时监控调查人员的取证活动以确保他们只能访问受限的目标磁盘。无论是对于安全研究人员、网络犯罪执法部门或是教育机构，这都是一款非常棒的工具。</p>
+
+<p>研究人员此次发布的是Bitscout的镜像文件，因此该工具必须写入一个可移动存储驱动器（U盘）中才可以使用。让系统从U盘启动之后，研究人员可以使用VPN和SSH远程连接至Bitscout。Bitscout中包含了几种专门为取证分析而设计的热门工具，但用户也可以根据自己的需要来自定义配置这些工具或者添加其他工具。值得一提的是，为了方便研究人员进行操作，Bitscout使用的是基于文本的用户交互界面（TUI）。</p>
+
+<p><img src="0bec092.gif" alt="" /></p>
+
+<p>Kamluk表示，Bitscout只为调查人员提供了虚拟容器中的root权限，而目标系统管理员可以通过指定哪一个磁盘能够被取证人员分析来防止未经授权的访问。另一方面，研究人员还可以在这个容器中安装额外软件或对系统进行自定义配置，但所有配置在设备关闭之后都会恢复初始化状态。</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/%E5%8D%A1%E5%B7%B4%E6%96%AF%E5%9F%BA%E5%AE%9E%E9%AA%8C%E5%AE%A4%E5%8F%91%E5%B8%83%E5%BC%80%E6%BA%90%E6%95%B0%E5%AD%97%E5%8F%96%E8%AF%81%E5%B7%A5%E5%85%B7bitscout.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B8%8D%E5%90%8C%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%BD%93%E7%8E%B0ioc%E6%8E%A7%E5%88%B6%E5%8F%8D%E8%BD%AC.html">&laquo; 【设计模式】不同设计模式体现IOC控制反转</a>
+  
+  
+  <a class="next" href="/2017/%E6%BA%90%E8%B5%84%E8%AE%AF%E7%AC%AC34%E6%9C%9F%E7%A8%8B%E5%BA%8F%E5%91%98%E4%B8%8D%E7%94%A8%E4%B8%8A%E7%8F%AD%E8%BF%98%E8%83%BD%E6%8B%BF%E9%AB%98%E8%96%AA%E7%9A%84%E6%96%B9%E6%B3%95.html">【源资讯 第34期】程序员不用上班还能拿高薪的方法…… &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

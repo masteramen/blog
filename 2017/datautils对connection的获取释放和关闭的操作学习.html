@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>DataUtils对Connection的获取、释放和关闭的操作学习 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="DataUtils对Connection的获取、释放和关闭的操作学习" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="DataUtils对Connection的获取、释放和关闭的操作学习" />
+<meta property="og:description" content="DataUtils对Connection的获取、释放和关闭的操作学习" />
+<link rel="canonical" href="http://www.jfox.info/2017/datautils%E5%AF%B9connection%E7%9A%84%E8%8E%B7%E5%8F%96%E9%87%8A%E6%94%BE%E5%92%8C%E5%85%B3%E9%97%AD%E7%9A%84%E6%93%8D%E4%BD%9C%E5%AD%A6%E4%B9%A0.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/datautils%E5%AF%B9connection%E7%9A%84%E8%8E%B7%E5%8F%96%E9%87%8A%E6%94%BE%E5%92%8C%E5%85%B3%E9%97%AD%E7%9A%84%E6%93%8D%E4%BD%9C%E5%AD%A6%E4%B9%A0.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:56:13+00:00" />
+<script type="application/ld+json">
+{"description":"DataUtils对Connection的获取、释放和关闭的操作学习","@type":"BlogPosting","url":"http://www.jfox.info/2017/datautils%E5%AF%B9connection%E7%9A%84%E8%8E%B7%E5%8F%96%E9%87%8A%E6%94%BE%E5%92%8C%E5%85%B3%E9%97%AD%E7%9A%84%E6%93%8D%E4%BD%9C%E5%AD%A6%E4%B9%A0.html","headline":"DataUtils对Connection的获取、释放和关闭的操作学习","dateModified":"2017-01-01T15:56:13+00:00","datePublished":"2017-01-01T15:56:13+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/datautils%E5%AF%B9connection%E7%9A%84%E8%8E%B7%E5%8F%96%E9%87%8A%E6%94%BE%E5%92%8C%E5%85%B3%E9%97%AD%E7%9A%84%E6%93%8D%E4%BD%9C%E5%AD%A6%E4%B9%A0.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">DataUtils对Connection的获取、释放和关闭的操作学习</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:56:13+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<h1 id="datautils对connection的获取释放和关闭的操作学习">DataUtils对Connection的获取、释放和关闭的操作学习</h1>
+
+<h1 id="datasourceuitls介绍">DataSourceUitls介绍</h1>
+
+<p>DataSourceUitls类位于org.springframework.jdbc.datasource包下，提供了很多的静态方法去从一个javax.sql.DataSource下获取JDBC Connection,并且提供了对Spring 事务管理的支持。</p>
+
+<p>在JdbcTemplate类的内部，DataSourceUtils被多次使用。其实，我们还可以在代码中直接使用DataSourceUitls来操作Jdbc。</p>
+
+<h1 id="datasourceuitls获取connection">DataSourceUitls获取Connection</h1>
+
+<h2 id="getconnection方法">getConnection方法</h2>
+
+<h3 id="内部实现">内部实现</h3>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    public static Connection getConnection(DataSource dataSource) throws CannotGetJdbcConnectionException {
+        try {
+            return doGetConnection(dataSource);
+        }
+        catch (SQLException ex) {
+            throw new CannotGetJdbcConnectionException("Failed to obtain JDBC Connection", ex);
+        }
+        catch (IllegalStateException ex) {
+            throw new CannotGetJdbcConnectionException("Failed to obtain JDBC Connection: " + ex.getMessage());
+        }
+    }
+</code></pre></div></div>
+
+<p>可以看出，通过传入一个指定的DataSource，可以获取一个Connection，获取过程由doGetConnection方法实现。如果抛出SQLException和IllegalStateException,则将其包装成CannotGetJdbcConnectionException，事实上也只能抛出SQLException和IllegalStateException这两种异常。通过查看CannotGetJdbcConnectionException的源代码，我们可以发现CannotGetJdbcConnectionException实际上是DataAccessException的子类，因此可以说，getConnection会将抛出的异常统一封装成Spring的DataAccessException。</p>
+
+<h2 id="dogetconnection方法">doGetConnection方法</h2>
+
+<h3 id="内部实现-1">内部实现</h3>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    public static Connection doGetConnection(DataSource dataSource) throws SQLException {
+        Assert.notNull(dataSource, "No DataSource specified");
+
+        ConnectionHolder conHolder = (ConnectionHolder) TransactionSynchronizationManager.getResource(dataSource);
+        if (conHolder != null &amp;&amp; (conHolder.hasConnection() || conHolder.isSynchronizedWithTransaction())) {
+            conHolder.requested();
+            if (!conHolder.hasConnection()) {
+                logger.debug("Fetching resumed JDBC Connection from DataSource");
+                conHolder.setConnection(fetchConnection(dataSource));
+            }
+            return conHolder.getConnection();
+        }
+        // Else we either got no holder or an empty thread-bound holder here.
+
+        logger.debug("Fetching JDBC Connection from DataSource");
+        Connection con = fetchConnection(dataSource);
+
+        if (TransactionSynchronizationManager.isSynchronizationActive()) {
+            logger.debug("Registering transaction synchronization for JDBC Connection");
+            // Use same Connection for further JDBC actions within the transaction.
+            // Thread-bound object will get removed by synchronization at transaction completion.
+            ConnectionHolder holderToUse = conHolder;
+            if (holderToUse == null) {
+                holderToUse = new ConnectionHolder(con);
+            }
+            else {
+                holderToUse.setConnection(con);
+            }
+            holderToUse.requested();
+            TransactionSynchronizationManager.registerSynchronization(
+                    new ConnectionSynchronization(holderToUse, dataSource));
+            holderToUse.setSynchronizedWithTransaction(true);
+            if (holderToUse != conHolder) {
+                TransactionSynchronizationManager.bindResource(dataSource, holderToUse);
+            }
+        }
+
+        return con;
+    }
+</code></pre></div></div>
+
+<p>doGetConnection方法是用于实际操作获取Connection的核心方法。从源代码中可以得出，如果不存在与当前线程绑定的Connection，则新建一个全新的Connection，如果当前线程的事务同步处于活动状态，那么为刚刚创建的Connection添加Spring事务管理的支持；如果当前线程存在一个相应的Connection，那么则有当前的事务管理分配。</p>
+
+<h2 id="fetchconnection方法">fetchConnection方法</h2>
+
+<p>fetchConnection是一个private方法，不对外公开，实际上是做了一个简单的功能：从当前的DastaSource新建一个Connection，如果新建失败，那么抛出IllegalStateException，提示不能获取一个新的Connection。</p>
+
+<h1 id="datasourceuitls释放connection">DataSourceUitls释放Connection</h1>
+
+<h2 id="releaseconnection方法">releaseConnection方法</h2>
+
+<h3 id="内部实现-2">内部实现</h3>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    public static void releaseConnection(@Nullable Connection con, @Nullable DataSource dataSource) {
+        try {
+            doReleaseConnection(con, dataSource);
+        }
+        catch (SQLException ex) {
+            logger.debug("Could not close JDBC Connection", ex);
+        }
+        catch (Throwable ex) {
+            logger.debug("Unexpected exception on closing JDBC Connection", ex);
+        }
+    }
+</code></pre></div></div>
+
+<p>releaseConnection方法的具体实现由doReleaseConnection处理。如果抛出异常，仅仅是在日志中做debug处理，不会对外抛出。该方法的两个参数均存在NULL的情况，
+如果con为NULL，则忽略本次调用；而另一个参数则被允许为NULL。</p>
+
+<h2 id="doreleaseconnection方法">doReleaseConnection方法</h2>
+
+<h3 id="内部实现-3">内部实现</h3>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    public static void doReleaseConnection(@Nullable Connection con, @Nullable DataSource dataSource) throws SQLException {
+        if (con == null) {
+            return;
+        }
+        if (dataSource != null) {
+            ConnectionHolder conHolder = (ConnectionHolder) TransactionSynchronizationManager.getResource(dataSource);
+            if (conHolder != null &amp;&amp; connectionEquals(conHolder, con)) {
+                // It's the transactional Connection: Don't close it.
+                conHolder.released();
+                return;
+            }
+        }
+        logger.debug("Returning JDBC Connection to DataSource");
+        doCloseConnection(con, dataSource);
+    }
+</code></pre></div></div>
+
+<p>doReleaseConnection方法是真正释放了Connection的方法，与releaseConnection方法相比，则完成了对传入的两个参数的校验和抛出更底层的异常。在dataSource不为NULL的情况下，释放此ConnectionHolder保留的当前连接，使得该当前的Connection可以得到复用，对提供Jdbc操作的性能很有帮助。如果dataSource为null的情况下则选择直接关闭连接。</p>
+
+<h1 id="datasourceuitls关闭connection">DataSourceUitls关闭Connection</h1>
+
+<h2 id="docloseconnection方法">doCloseConnection方法</h2>
+
+<h3 id="内部实现-4">内部实现</h3>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    public static void doCloseConnection(Connection con, @Nullable DataSource dataSource) throws SQLException {
+        if (!(dataSource instanceof SmartDataSource) || ((SmartDataSource) dataSource).shouldClose(con)) {
+            con.close();
+        }
+    }
+</code></pre></div></div>
+
+<p>在doReleaseConnection方法中，我们已经得知当datasource为NULL的时候会执行doCloseConnection方法。事实上，只有dataSource没有实现org.springframework.jdbc.datasource.SmartDataSource接口的时候或者dataSource实现了org.springframework.jdbc.datasource.SmartDataSource接口且允许关闭的时候，在真正关闭了Connection。</p>
+
+<p>org.springframework.jdbc.datasource.SmartDataSource接口是 javax.sql.DataSource接口的一个扩展，用一种未包装的形式返回Jdbc的连接。实现该接口的类可以查询Connection在完成操作之后是否应该关闭。在Srping和DataSourceUitls和JdbcTemplate中会自动执行这样的检查。</p>
+
+<h1 id="总结">总结</h1>
+
+<p>DataSourceUitls是一个强大的工具辅助类，不仅仅是提供了Connection的获取、释放和关闭，其实还提供了为Connection提供Spring事务的支持。a</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/datautils%E5%AF%B9connection%E7%9A%84%E8%8E%B7%E5%8F%96%E9%87%8A%E6%94%BE%E5%92%8C%E5%85%B3%E9%97%AD%E7%9A%84%E6%93%8D%E4%BD%9C%E5%AD%A6%E4%B9%A0.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/%E6%85%95%E8%AF%BE%E7%BD%91hibernate%E5%88%9D%E6%8E%A2%E4%B9%8B%E5%A4%9A%E5%AF%B9%E5%A4%9A%E6%98%A0%E5%B0%84%E5%AD%A6%E4%B9%A0%E6%80%BB%E7%BB%93.html">&laquo; 慕课网_《Hibernate初探之多对多映射》学习总结</a>
+  
+  
+  <a class="next" href="/2017/%E5%88%9D%E8%AF%86spring%E4%B8%8Emaven%E9%85%8D%E7%BD%AE.html">初识Spring与Maven配置 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

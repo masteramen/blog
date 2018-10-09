@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>HTML5在浏览器端用JS创建和下载文件 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="HTML5在浏览器端用JS创建和下载文件" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="By Lee - Last updated: 星期四, 二月 20, 2014" />
+<meta property="og:description" content="By Lee - Last updated: 星期四, 二月 20, 2014" />
+<link rel="canonical" href="http://www.jfox.info/2017/html5-zai-liu-lang-qi-duan-yong-js-chuang-jian-xia-zai-wen-jian.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/html5-zai-liu-lang-qi-duan-yong-js-chuang-jian-xia-zai-wen-jian.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:44:34+00:00" />
+<script type="application/ld+json">
+{"description":"By Lee - Last updated: 星期四, 二月 20, 2014","@type":"BlogPosting","url":"http://www.jfox.info/2017/html5-zai-liu-lang-qi-duan-yong-js-chuang-jian-xia-zai-wen-jian.html","headline":"HTML5在浏览器端用JS创建和下载文件","dateModified":"2017-01-01T15:44:34+00:00","datePublished":"2017-01-01T15:44:34+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/html5-zai-liu-lang-qi-duan-yong-js-chuang-jian-xia-zai-wen-jian.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">HTML5在浏览器端用JS创建和下载文件</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:44:34+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>By Lee - Last updated: 星期四, 二月 20, 2014</p>
+
+<p>前端很多项目中，都有文件下载的需求，特别是JS生成文件内容，然后让浏览器执行下载操作（例如在线图片编辑、在线代码编辑、<a href="https://www.jfox.info/go.php?url=http://www.ipresst.com/">iPresst</a>等）。</p>
+
+<p>但受限于浏览器，很多情况下我们都只能给出个链接，让用户点击打开-》另存为。如下面这个链接：</p>
+
+<blockquote>
+  <p>&lt;a href=”file.js”&gt;file.js&lt;/a&gt;</p>
+</blockquote>
+
+<p>用户点击这个链接的时候，浏览器会打开并显示链接指向的文件内容，显然，这并没有实现我们的需求。</p>
+
+<p>HTML5中给a标签增加了一个download属性，只要有这个属性，点击这个链接时浏览器就不在打开链接指向的文件，而是改为下载（目前只有chrome、firefox和opera支持）。</p>
+
+<p><a href="https://www.jfox.info/go.php?url=http://www.jfox.info/wp-content/uploads/2014/02/230613BV-.png"><img src="af9833a.png" alt="230613BV-" /></a></p>
+
+<p>下载时会直接使用链接的名字来作为文件名，但是是可以改的，只要给download加上想要的文件名即可，如：download=“not-a-file.js”。</p>
+
+<p><a href="https://www.jfox.info/go.php?url=http://www.jfox.info/wp-content/uploads/2014/02/23061360a-.png"><img src="639f477.png" alt="23061360a-" /></a></p>
+
+<h4 id="not-enough">Not enough！</h4>
+
+<p>但是这样还不够，以上的方法只适合用在文件是在服务器上的情况。如果在浏览器端js生成的内容，想让浏览器进行下载要如何办到呢？</p>
+
+<p>其实还是有办法办到的，相信很多人都多少听过了DataURI这个词，比较常见的就是图片的src，如：</p>
+
+<blockquote>
+  <p>&lt;img src=”<code class="highlighter-rouge">data:image/gif;base64,R0lGOXXXXX"&gt;</code></p>
+</blockquote>
+
+<p>DataURI的解释可以移步<a href="https://www.jfox.info/go.php?url=http://sjolzy.cn/What-is-the-data-URI-scheme-and-how-to-use-the-data-URI-scheme.html">这里</a>，本人就不在解释了。</p>
+
+<p>那么，现在要将js生成的内容进行下载就有法可依了。封装成一个方法如下：</p>
+
+<p><code class="highlighter-rouge">function</code> <code class="highlighter-rouge">downloadFile(aLink, fileName, content){</code></p>
+
+<p><code class="highlighter-rouge">aLink.download = fileName;</code></p>
+
+<p><code class="highlighter-rouge">aLink.href = </code><code class="highlighter-rouge">"data:text/plain,"</code> <code class="highlighter-rouge">+ content;</code></p>
+
+<p><code class="highlighter-rouge">}</code></p>
+
+<p>调用downloadFile之后，用户点击链接，就能触发浏览器下载。</p>
+
+<h4 id="not-enough-1">Not enough！</h4>
+
+<p>但是，还不够，上面的办法有两个硬伤，会导致流失很多懒人美眉：</p>
+
+<ol>
+  <li>下载的文件类型限制死了，美眉要下载处理后的果照怎么办？</li>
+  <li>下载还要再点击一下，太麻烦啦。</li>
+</ol>
+
+<p>要解决文件类型的问题，可以用浏览器的新API（<a href="https://www.jfox.info/go.php?url=https://developer.mozilla.org/en-US/docs/Web/API/URL.createObjectURL">URL.createObjectURL</a>）来解决问题，URL.createObjectURL通常都是用来创建图片的DataURI用来显示图片，这里用来下载文件，让浏览器来帮我们设定好文件类型。</p>
+
+<p>URL.createObjectURL的参数是File对象或者Blob对象，File对象也就是通过input[type=file]选择的文件，Blob对象是二进制大对象，详细说明可参考<a href="https://www.jfox.info/go.php?url=https://developer.mozilla.org/en-US/docs/Web/API/Blob">这里</a>。</p>
+
+<p>现在，我们只要用content创建一个ObjectURL并赋值给aLink即可解决文件类型的限制问题。</p>
+
+<p>文件的自动下载也挺好办，自己构建一个UI点击事件，再自动触发下，就能实现自动下载啦。</p>
+
+<p>现在来看看最终代码：</p>
+
+<p><code class="highlighter-rouge">function</code> <code class="highlighter-rouge">downloadFile(fileName, content){</code></p>
+
+<p><code class="highlighter-rouge">var</code> <code class="highlighter-rouge">aLink = document.createElement(</code><code class="highlighter-rouge">'a'</code><code class="highlighter-rouge">);</code></p>
+
+<p><code class="highlighter-rouge">var</code> <code class="highlighter-rouge">blob = </code><code class="highlighter-rouge">new</code> <code class="highlighter-rouge">Blob([content]);</code></p>
+
+<p><code class="highlighter-rouge">var</code> <code class="highlighter-rouge">evt = document.createEvent(</code><code class="highlighter-rouge">"HTMLEvents"</code><code class="highlighter-rouge">);</code></p>
+
+<p><code class="highlighter-rouge">evt.initEvent(</code><code class="highlighter-rouge">"click"</code><code class="highlighter-rouge">);</code></p>
+
+<p><code class="highlighter-rouge">aLink.download = fileName;</code></p>
+
+<p><code class="highlighter-rouge">aLink.href = URL.createObjectURL(blob);</code></p>
+
+<p><code class="highlighter-rouge">aLink.dispatchEvent(evt);</code></p>
+
+<p><code class="highlighter-rouge">}</code></p>
+
+<p>现在，只要一调用downloadFile，文件就自动下载了，是不是很爽咧，^_^。</p>
+
+<p><strong>注：</strong>目前（2014-01-02）Blob和URL.createObjectURL在标准浏览器里面都不再需要加私有前缀，可以放心使用啦啦啦～～如果你不放心，可以查查<a href="https://www.jfox.info/go.php?url=http://caniuse.com/#search=Blob">Can I Use</a>。</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/html5-zai-liu-lang-qi-duan-yong-js-chuang-jian-xia-zai-wen-jian.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/html5-zai-liu-lang-qi-duan-yong-js-chuang-jian-xia-zai-wen-jian.html">&laquo; HTML5在浏览器端用JS创建和下载文件</a>
+  
+  
+  <a class="next" href="/2017/java-bing-fa-duo-xian-cheng-de-mian-shi-wen-ti-ji-da-an-ji-shu-bu-feng.html">JAVA并发多线程的面试问题及答案（基础部分） &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

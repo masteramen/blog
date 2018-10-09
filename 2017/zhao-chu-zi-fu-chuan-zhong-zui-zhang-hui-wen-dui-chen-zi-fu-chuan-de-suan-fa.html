@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>找出字符串中最长回文(对称字符串)的算法 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="找出字符串中最长回文(对称字符串)的算法" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="By Lee - Last updated: 星期一, 二月 17, 2014" />
+<meta property="og:description" content="By Lee - Last updated: 星期一, 二月 17, 2014" />
+<link rel="canonical" href="http://www.jfox.info/2017/zhao-chu-zi-fu-chuan-zhong-zui-zhang-hui-wen-dui-chen-zi-fu-chuan-de-suan-fa.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/zhao-chu-zi-fu-chuan-zhong-zui-zhang-hui-wen-dui-chen-zi-fu-chuan-de-suan-fa.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:44:25+00:00" />
+<script type="application/ld+json">
+{"description":"By Lee - Last updated: 星期一, 二月 17, 2014","@type":"BlogPosting","url":"http://www.jfox.info/2017/zhao-chu-zi-fu-chuan-zhong-zui-zhang-hui-wen-dui-chen-zi-fu-chuan-de-suan-fa.html","headline":"找出字符串中最长回文(对称字符串)的算法","dateModified":"2017-01-01T15:44:25+00:00","datePublished":"2017-01-01T15:44:25+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/zhao-chu-zi-fu-chuan-zhong-zui-zhang-hui-wen-dui-chen-zi-fu-chuan-de-suan-fa.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">找出字符串中最长回文(对称字符串)的算法</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:44:25+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>By Lee - Last updated: 星期一, 二月 17, 2014</p>
+
+<p>这是一个非常常见的java面试问题，要解决这个问题，首先，我们要确定解决问题的基本思路。</p>
+
+<p>这里关键是要先找到回文的中间点位置，然后比较它左右位置的字符是否相同。例如12321，这里的中间点为3，然后依次比较两侧的字符2和1。如果回文长度为偶数，例如12333321，这里中间点为33，然后依次比较3,2,1。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public class LongestPalindromeFinder {
+ 
+    public static void main(String[] args) {
+        System.out.println(longestPalindromeString("1234"));
+        System.out.println(longestPalindromeString("12321"));
+        System.out.println(longestPalindromeString("9912321456"));
+        System.out.println(longestPalindromeString("9912333321456"));
+        System.out.println(longestPalindromeString("12145445499"));
+    }
+ 
+    /**
+     * 此方法返回输入字符串中的最长回文
+     * 
+     * @param in
+     * @return
+     */
+    public static String longestPalindromeString(String in) {
+        char[] input = in.toCharArray();
+        int longestPalindromeStart = 0;
+        int longestPalindromeEnd = 0;
+ 
+        for (int mid = 0; mid &lt; input.length; mid++) {
+            // for odd palindrom case like 12321, 3 will be the mid
+            int left = mid-1;
+            int right = mid+1;
+            // we need to move in the left and right side by 1 place till they reach the end
+            while (left &gt;= 0 &amp;&amp; right &lt; input.length) {
+                // below check to find out if its a palindrome
+                if (input[left] == input[right]) {
+                    // update global indexes only if this is the longest one till now
+                    if (right - left &gt; longestPalindromeEnd
+                            - longestPalindromeStart) {
+                        longestPalindromeStart = left;
+                        longestPalindromeEnd = right;
+                    }
+                }
+                left--;
+                right++;
+            }
+            // for even palindrome, we need to have similar logic with mid size 2
+            // for that we will start right from one extra place
+            left = mid-1;
+            right = mid + 2;// for example 12333321 when we choose 33 as mid
+            while (left &gt;= 0 &amp;&amp; right &lt; input.length)
+            {
+                if (input[left] == input[right]) {
+                    if (right - left &gt; longestPalindromeEnd
+                            - longestPalindromeStart) {
+                        longestPalindromeStart = left;
+                        longestPalindromeEnd = right;
+                    }
+                }
+                left--;
+                right++;
+            }
+        }
+        // we have the start and end indexes for longest palindrome now
+        return in.substring(longestPalindromeStart, longestPalindromeEnd + 1);
+    }
+ 
+}
+Output of the above program is:
+
+1
+2
+3
+4
+5
+1
+12321
+12321
+</code></pre></div></div>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/zhao-chu-zi-fu-chuan-zhong-zui-zhang-hui-wen-dui-chen-zi-fu-chuan-de-suan-fa.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/zhao-chu-zi-fu-chuan-zhong-zui-zhang-hui-wen-dui-chen-zi-fu-chuan-de-suan-fa.html">&laquo; 找出字符串中最长回文(对称字符串)的算法</a>
+  
+  
+  <a class="next" href="/2017/web-she-ji-html5-he-css3-xin-jiao-hu-te-xing.html">Web设计:HTML5和CSS3新交互特性 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

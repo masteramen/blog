@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>【Motan源码学习】2-与Spring集成 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="【Motan源码学习】2-与Spring集成" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="ServiceConfig motanDemoService = new ServiceConfig(); // 设置接口及实现类 motanDemoService.setInterface(MotanDemoService.class); motanDemoService.setRef(new MotanDemoServiceImpl()); // 配置服务的group以及版本号 motanDemoService.setGroup(&quot;motan-demo-rpc&quot;); motanDemoService.setVersion(&quot;1.0&quot;); // 配置ZooKeeper注册中心 RegistryConfig zookeeperRegistry = new RegistryConfig(); zookeeperRegistry.setRegProtocol(&quot;zookeeper&quot;); zookeeperRegistry.setAddress(&quot;127.0.0.1:2181&quot;); motanDemoService.setRegistry(zookeeperRegistry); // 配置RPC协议 ProtocolConfig protocol = new ProtocolConfig(); protocol.setId(&quot;motan&quot;); protocol.setName(&quot;motan&quot;); motanDemoService.setProtocol(protocol); motanDemoService.setExport(&quot;motan:8002&quot;); // 服务发布 motanDemoService.export();" />
+<meta property="og:description" content="ServiceConfig motanDemoService = new ServiceConfig(); // 设置接口及实现类 motanDemoService.setInterface(MotanDemoService.class); motanDemoService.setRef(new MotanDemoServiceImpl()); // 配置服务的group以及版本号 motanDemoService.setGroup(&quot;motan-demo-rpc&quot;); motanDemoService.setVersion(&quot;1.0&quot;); // 配置ZooKeeper注册中心 RegistryConfig zookeeperRegistry = new RegistryConfig(); zookeeperRegistry.setRegProtocol(&quot;zookeeper&quot;); zookeeperRegistry.setAddress(&quot;127.0.0.1:2181&quot;); motanDemoService.setRegistry(zookeeperRegistry); // 配置RPC协议 ProtocolConfig protocol = new ProtocolConfig(); protocol.setId(&quot;motan&quot;); protocol.setName(&quot;motan&quot;); motanDemoService.setProtocol(protocol); motanDemoService.setExport(&quot;motan:8002&quot;); // 服务发布 motanDemoService.export();" />
+<link rel="canonical" href="http://www.jfox.info/2017/motan%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A02%E4%B8%8Espring%E9%9B%86%E6%88%90.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/motan%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A02%E4%B8%8Espring%E9%9B%86%E6%88%90.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:57:48+00:00" />
+<script type="application/ld+json">
+{"description":"ServiceConfig motanDemoService = new ServiceConfig(); // 设置接口及实现类 motanDemoService.setInterface(MotanDemoService.class); motanDemoService.setRef(new MotanDemoServiceImpl()); // 配置服务的group以及版本号 motanDemoService.setGroup(&quot;motan-demo-rpc&quot;); motanDemoService.setVersion(&quot;1.0&quot;); // 配置ZooKeeper注册中心 RegistryConfig zookeeperRegistry = new RegistryConfig(); zookeeperRegistry.setRegProtocol(&quot;zookeeper&quot;); zookeeperRegistry.setAddress(&quot;127.0.0.1:2181&quot;); motanDemoService.setRegistry(zookeeperRegistry); // 配置RPC协议 ProtocolConfig protocol = new ProtocolConfig(); protocol.setId(&quot;motan&quot;); protocol.setName(&quot;motan&quot;); motanDemoService.setProtocol(protocol); motanDemoService.setExport(&quot;motan:8002&quot;); // 服务发布 motanDemoService.export();","@type":"BlogPosting","url":"http://www.jfox.info/2017/motan%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A02%E4%B8%8Espring%E9%9B%86%E6%88%90.html","headline":"【Motan源码学习】2-与Spring集成","dateModified":"2017-01-01T15:57:48+00:00","datePublished":"2017-01-01T15:57:48+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/motan%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A02%E4%B8%8Espring%E9%9B%86%E6%88%90.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">【Motan源码学习】2-与Spring集成</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:57:48+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>ServiceConfig<MotanDemoService> motanDemoService = new ServiceConfig<MotanDemoService>();
+    // 设置接口及实现类
+    motanDemoService.setInterface(MotanDemoService.class);
+    motanDemoService.setRef(new MotanDemoServiceImpl());
+    // 配置服务的group以及版本号
+    motanDemoService.setGroup("motan-demo-rpc");
+    motanDemoService.setVersion("1.0");
+    // 配置ZooKeeper注册中心
+    RegistryConfig zookeeperRegistry = new RegistryConfig();
+    zookeeperRegistry.setRegProtocol("zookeeper");
+    zookeeperRegistry.setAddress("127.0.0.1:2181");
+    motanDemoService.setRegistry(zookeeperRegistry);
+    // 配置RPC协议
+    ProtocolConfig protocol = new ProtocolConfig();
+    protocol.setId("motan");
+    protocol.setName("motan");
+    motanDemoService.setProtocol(protocol);
+    motanDemoService.setExport("motan:8002");
+    // 服务发布
+    motanDemoService.export();</MotanDemoService></MotanDemoService></p>
+
+<h4 id="2-服务引用">2. 服务引用</h4>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>RefererConfig&lt;MotanDemoService&gt; motanDemoServiceReferer = new RefererConfig&lt;MotanDemoService&gt;();
+// 设置接口及实现类
+motanDemoServiceReferer.setInterface(MotanDemoService.class);
+// 配置服务的group以及版本号
+motanDemoServiceReferer.setGroup("motan-demo-rpc");
+motanDemoServiceReferer.setVersion("1.0");
+motanDemoServiceReferer.setRequestTimeout(2000);
+// 配置ZooKeeper注册中心
+RegistryConfig zookeeperRegistry = new RegistryConfig();
+zookeeperRegistry.setRegProtocol("zookeeper");
+zookeeperRegistry.setAddress("127.0.0.1:2181");
+motanDemoServiceReferer.setRegistry(zookeeperRegistry);
+// 配置RPC协议
+ProtocolConfig protocol = new ProtocolConfig();
+protocol.setId("motan");
+protocol.setName("motan");
+motanDemoServiceReferer.setProtocol(protocol);
+// 使用服务
+MotanDemoService service = motanDemoServiceReferer.getRef();
+service.hello("motan");
+</code></pre></div></div>
+
+<h3 id="与-spring-集成的-xml-配置">与 Spring 集成的 XML 配置</h3>
+
+<p>接下来看下上面这两段 <a href="https://www.jfox.info/go.php?url=http://www.liuhaihua.cn/archives/tag/%e4%bb%a3%e7%a0%81"> 代码 </a> 是如何通过XML来玩的.</p>
+
+<ol>
+  <li>
+    <p>服务发布</p>
+
+    <p>&lt;beansxmlns=”http://www.springframework.org/schema/beans”
+       xmlns:xsi=”http://www.w3.org/2001/XMLSchema-instance”
+       xmlns:motan=”http://api.weibo.com/schema/motan”
+       xsi:schemaLocation=”http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+       http://api.weibo.com/schema/motan http://api.weibo.com/schema/motan.xsd”&gt;</p>
+
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;!-- 业务具体实现类 --&gt;
+&lt;beanid="motanDemoServiceImpl"class="com.weibo.motan.demo.server.MotanDemoServiceImpl"/&gt;
+&lt;!-- 注册中心配置 使用不同注册中心需要依赖对应的jar包。如果不使用注册中心，可以把check属性改为false，忽略注册失败。--&gt;
+&lt;motan:registryregProtocol="zookeeper"name="registry"address="127.0.0.1:2181"/&gt; 
+&lt;!-- 协议配置。为防止多个业务配置冲突，推荐使用id表示具体协议。--&gt;
+&lt;motan:protocolid="demoMotan"default="true"name="motan"
+                maxServerConnection="80000" maxContentLength="1048576"
+                maxWorkerThread="800" minWorkerThread="20"/&gt;
+&lt;!-- 通用配置，多个rpc服务使用相同的基础配置. group和module定义具体的服务池。export格式为“protocol id:提供服务的端口”--&gt;
+&lt;motan:basicServiceexport="demoMotan:8002"
+                    group="motan-demo-rpc" accessLog="false" shareChannel="true" module="motan-demo-rpc"
+                    application="myMotanDemo" registry="registry" id="serviceBasicConfig"/&gt;
+&lt;!-- 具体rpc服务配置，声明实现的接口类。--&gt;
+&lt;motan:serviceinterface="com.weibo.motan.demo.service.MotanDemoService"
+               ref="motanDemoServiceImpl" export="demoMotan:8002" basicService="serviceBasicConfig"&gt;
+&lt;/motan:service&gt;
+</code></pre></div>    </div>
+    <p>&lt;/beans&gt;</p>
+
+    <p>在基于Spring的项目中，引用这个配置文件即可完成服务的发布。那么 Motan 是怎么与Spring集成的呢？
+Motan 自定义了一个 shcema motan.xsd，然后在 motan-core # META-INF/spring.handlers 中定义了 这个 schema 的 handler.
+```sh
+http/://api.weibo.com/schema/motan=com.weibo.api.motan.config.springsupport.MotanNamespaceHandler</p>
+  </li>
+</ol>
+
+<p>MotanNamespaceHandler 中定义了</p>
+
+<p><a href="void(0)">点赞</a><a href="https://www.jfox.info/go.php?url=http://ju.outofmemory.cn/tag/ACE/">ACE</a><a href="https://www.jfox.info/go.php?url=http://ju.outofmemory.cn/tag/Spring/">Spring</a><a href="https://www.jfox.info/go.php?url=http://ju.outofmemory.cn/tag/App/">App</a><a href="https://www.jfox.info/go.php?url=http://ju.outofmemory.cn/tag/cat/">cat</a><a href="https://www.jfox.info/go.php?url=http://ju.outofmemory.cn/tag/bean/">bean</a><a href="https://www.jfox.info/go.php?url=http://ju.outofmemory.cn/tag/API/">API</a></p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/motan%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A02%E4%B8%8Espring%E9%9B%86%E6%88%90.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/java%E8%99%9A%E6%8B%9F%E6%9C%BAjvm%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%98%E5%AE%9E%E6%88%98.html">&laquo; Java虚拟机JVM性能调优实战</a>
+  
+  
+  <a class="next" href="/2017/%E7%A7%BB%E8%8A%B1%E6%8E%A5%E6%9C%A8%E9%92%88%E5%AF%B9oauth2%E7%9A%84%E6%94%BB%E5%87%BB.html">移花接木：针对OAuth2的攻击 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

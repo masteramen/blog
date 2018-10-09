@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>mybatis的简单使用调用mapper接口 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="mybatis的简单使用调用mapper接口" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="mybatis 是apache下的一个面向sql编程的半自动化的ORM持久层的框架。特点：面向sql编程，达到高性能的使用目的。" />
+<meta property="og:description" content="mybatis 是apache下的一个面向sql编程的半自动化的ORM持久层的框架。特点：面向sql编程，达到高性能的使用目的。" />
+<link rel="canonical" href="http://www.jfox.info/2017/mybatis%E7%9A%84%E7%AE%80%E5%8D%95%E4%BD%BF%E7%94%A8%E8%B0%83%E7%94%A8mapper%E6%8E%A5%E5%8F%A3.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/mybatis%E7%9A%84%E7%AE%80%E5%8D%95%E4%BD%BF%E7%94%A8%E8%B0%83%E7%94%A8mapper%E6%8E%A5%E5%8F%A3.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:58:36+00:00" />
+<script type="application/ld+json">
+{"description":"mybatis 是apache下的一个面向sql编程的半自动化的ORM持久层的框架。特点：面向sql编程，达到高性能的使用目的。","@type":"BlogPosting","url":"http://www.jfox.info/2017/mybatis%E7%9A%84%E7%AE%80%E5%8D%95%E4%BD%BF%E7%94%A8%E8%B0%83%E7%94%A8mapper%E6%8E%A5%E5%8F%A3.html","headline":"mybatis的简单使用调用mapper接口","dateModified":"2017-01-01T15:58:36+00:00","datePublished":"2017-01-01T15:58:36+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/mybatis%E7%9A%84%E7%AE%80%E5%8D%95%E4%BD%BF%E7%94%A8%E8%B0%83%E7%94%A8mapper%E6%8E%A5%E5%8F%A3.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">mybatis的简单使用调用mapper接口</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:58:36+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>mybatis 是apache下的一个面向sql编程的半自动化的ORM持久层的框架。特点：面向sql编程，达到高性能的使用目的。</p>
+
+<p>下面是简单使用</p>
+
+<p>现导入jar包,只有mybatis和数据库驱动包(这里用的是mysql的驱动包)是必须的,其余是日志需要的包</p>
+
+<p><img src="8675e99.png" alt="" /></p>
+
+<p>db.properties配置连接池的配置文件</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1 jdbc.driverClassName=com.mysql.jdbc.Driver
+2 jdbc.url=jdbc:mysql://localhost:3306/mybatis3 jdbc.username=root
+4 jdbc.password=12
+</code></pre></div></div>
+
+<p>创建一个mybatis数据库,执行下面的生sql语句插入数据</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>DROPTABLEIFEXISTS `user`;
+CREATETABLE `user` (
+  `id` int(11) NOTNULL AUTO_INCREMENT,
+  `username` varchar(32) NOTNULL COMMENT '用户名称',
+  `birthday` date DEFAULTNULL COMMENT '生日',
+  `sex` char(1) DEFAULTNULL COMMENT '性别',
+  `address` varchar(256) DEFAULTNULL COMMENT '地址',
+  PRIMARYKEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=27DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Records of user
+-- ----------------------------INSERTINTO `user` VALUES ('1', '王五', null, '2', null);
+INSERTINTO `user` VALUES ('10', '张三', '2014-07-10', '1', '北京市');
+INSERTINTO `user` VALUES ('16', '张小明', null, '1', '河南郑州');
+INSERTINTO `user` VALUES ('22', '陈小明', null, '1', '河南郑州');
+INSERTINTO `user` VALUES ('24', '张三丰', null, '1', '河南郑州');
+INSERTINTO `user` VALUES ('25', '陈小明', null, '1', '河南郑州');
+INSERTINTO `user` VALUES ('26', '王五', null, null, null);
+</code></pre></div></div>
+
+<p>log4j.properties  日志的配置文件</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> 1### direct log messages to stdout ###
+ 2 log4j.appender.stdout=org.apache.log4j.ConsoleAppender
+ 3 log4j.appender.stdout.Target=System.err
+ 4 log4j.appender.stdout.layout=org.apache.log4j.PatternLayout
+ 5 log4j.appender.stdout.layout.ConversionPattern=%d{ABSOLUTE} %5p %c{1}:%L - %m%n
+ 6 7### direct messages to file mylog.log ###
+ 8 log4j.appender.file=org.apache.log4j.FileAppender
+ 9 log4j.appender.file.File=d:/mylog.log
+10 log4j.appender.file.layout=org.apache.log4j.PatternLayout
+11 log4j.appender.file.layout.ConversionPattern=%d{ABSOLUTE} %5p %c{1}:%L - %m%n
+1213 ### set log levels - for more verbose logging change 'info' to 'debug' ###
+1415 log4j.rootLogger=info, stdout
+</code></pre></div></div>
+
+<p>SqlMapConfig.xml  是mybatis全局的配置文件</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="cp">&lt;!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd"&gt;</span>
+<span class="nt">&lt;configuration&gt;</span>
+        <span class="nt">&lt;properties</span> <span class="na">resource=</span><span class="s">"db.properties"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;/properties&gt;</span>
+        <span class="nt">&lt;typeAliases&gt;</span>
+        <span class="c">&lt;!-- 单个别名定义 ,后面就可用直接写user,不用写全路径名--&gt;</span>
+        <span class="c">&lt;!-- &lt;typeAlias type="com.baoyuan.domain.User" alias="user"/&gt; --&gt;</span>
+        <span class="c">&lt;!-- 批量别名定义，扫描整个包下的类，别名为类名（大小写不敏感） --&gt;</span>
+        <span class="nt">&lt;package</span> <span class="na">name=</span><span class="s">"com.baoyuan.domain"</span><span class="nt">/&gt;</span>
+        <span class="nt">&lt;/typeAliases&gt;</span>
+                            <span class="c">&lt;!--名称随意  --&gt;</span>
+    <span class="nt">&lt;environments</span> <span class="na">default=</span><span class="s">"development"</span><span class="nt">&gt;</span>
+            <span class="c">&lt;!--id必须和上面的一致  --&gt;</span>
+        <span class="nt">&lt;environment</span> <span class="na">id=</span><span class="s">"development"</span><span class="nt">&gt;</span>
+                                <span class="c">&lt;!--固定格式JDBC  --&gt;</span>
+            <span class="nt">&lt;transactionManager</span> <span class="na">type=</span><span class="s">"JDBC"</span><span class="nt">&gt;&lt;/transactionManager&gt;</span>
+            <span class="nt">&lt;dataSource</span> <span class="na">type=</span><span class="s">"POOLED"</span><span class="nt">&gt;</span>
+                <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"driver"</span> <span class="na">value=</span><span class="s">"${jdbc.driverClassName}"</span><span class="nt">/&gt;</span>
+                <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"url"</span> <span class="na">value=</span><span class="s">"${jdbc.url}"</span><span class="nt">/&gt;</span>
+                <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"username"</span> <span class="na">value=</span><span class="s">"${jdbc.username}"</span><span class="nt">/&gt;</span>
+                <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"password"</span> <span class="na">value=</span><span class="s">"${jdbc.password}"</span><span class="nt">/&gt;</span>
+            <span class="nt">&lt;/dataSource&gt;</span>
+        <span class="nt">&lt;/environment&gt;</span>
+    <span class="nt">&lt;/environments&gt;</span>
+    
+    <span class="nt">&lt;mappers&gt;</span>
+      
+        
+        <span class="c">&lt;!-- 使用mapper接口类路径 注意：此种方法要求mapper接口名称和mapper映射文件名称相同，且放在同一个目录中--&gt;</span>
+        <span class="c">&lt;!-- &lt;mapper class="com.baoyuan.mapper.dao.UserMapper"/&gt; --&gt;</span>
+
+    <span class="c">&lt;!-- 注意：此种方法要求mapper接口名称和mapper映射文件名称相同，且放在同一个目录中。 --&gt;</span>
+    <span class="nt">&lt;package</span> <span class="na">name=</span><span class="s">"com.baoyuan.mapper.dao"</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;/mappers&gt;</span>
+<span class="nt">&lt;/configuration&gt;</span>
+</code></pre></div></div>
+
+<p>创建一个pojo类User类</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">com</span><span class="p">.</span><span class="n">baoyuan</span><span class="p">.</span><span class="n">domain</span><span class="p">;</span>
+
+<span class="n">import</span> <span class="n">java</span><span class="p">.</span><span class="n">util</span><span class="p">.</span><span class="n">Date</span><span class="p">;</span>
+
+<span class="n">publicclass</span> <span class="n">User</span> <span class="p">{</span>
+
+    <span class="n">private</span> <span class="k">Integer</span> <span class="n">id</span><span class="p">;</span>
+    <span class="n">private</span> <span class="k">String</span> <span class="n">username</span><span class="p">;//</span> <span class="err">用户姓名</span><span class="n">private</span> <span class="k">String</span> <span class="n">sex</span><span class="p">;//</span> <span class="err">性别</span><span class="n">private</span> <span class="n">Date</span> <span class="n">birthday</span><span class="p">;//</span> <span class="err">生日</span><span class="n">private</span> <span class="k">String</span> <span class="n">address</span><span class="p">;//</span> <span class="err">地址</span><span class="k">public</span> <span class="k">Integer</span> <span class="nf">getId</span><span class="p">()</span> <span class="p">{</span>
+        <span class="n">return</span> <span class="n">id</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="n">publicvoid</span> <span class="n">setId</span><span class="p">(</span><span class="k">Integer</span> <span class="n">id</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">this</span><span class="p">.</span><span class="n">id</span> <span class="p">=</span> <span class="n">id</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">public</span> <span class="k">String</span> <span class="n">getUsername</span><span class="p">()</span> <span class="p">{</span>
+        <span class="n">return</span> <span class="n">username</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="n">publicvoid</span> <span class="n">setUsername</span><span class="p">(</span><span class="k">String</span> <span class="n">username</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">this</span><span class="p">.</span><span class="n">username</span> <span class="p">=</span> <span class="n">username</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">public</span> <span class="k">String</span> <span class="n">getSex</span><span class="p">()</span> <span class="p">{</span>
+        <span class="n">return</span> <span class="n">sex</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="n">publicvoid</span> <span class="n">setSex</span><span class="p">(</span><span class="k">String</span> <span class="n">sex</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">this</span><span class="p">.</span><span class="n">sex</span> <span class="p">=</span> <span class="n">sex</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">public</span> <span class="n">Date</span> <span class="n">getBirthday</span><span class="p">()</span> <span class="p">{</span>
+        <span class="n">return</span> <span class="n">birthday</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="n">publicvoid</span> <span class="n">setBirthday</span><span class="p">(</span><span class="n">Date</span> <span class="n">birthday</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">this</span><span class="p">.</span><span class="n">birthday</span> <span class="p">=</span> <span class="n">birthday</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">public</span> <span class="k">String</span> <span class="n">getAddress</span><span class="p">()</span> <span class="p">{</span>
+        <span class="n">return</span> <span class="n">address</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="n">publicvoid</span> <span class="n">setAddress</span><span class="p">(</span><span class="k">String</span> <span class="n">address</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">this</span><span class="p">.</span><span class="n">address</span> <span class="p">=</span> <span class="n">address</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="p">@</span><span class="n">Override</span>
+    <span class="k">public</span> <span class="k">String</span> <span class="n">toString</span><span class="p">()</span> <span class="p">{</span>
+        <span class="n">return</span> <span class="s2">"User [id="</span> <span class="p">+</span> <span class="n">id</span> <span class="p">+</span> <span class="s2">", username="</span> <span class="p">+</span> <span class="n">username</span> <span class="p">+</span> <span class="s2">", sex="</span> <span class="p">+</span> <span class="n">sex</span> <span class="p">+</span> <span class="s2">", birthday="</span> <span class="p">+</span> <span class="n">birthday</span> <span class="p">+</span> <span class="s2">", address="</span>
+                <span class="p">+</span> <span class="n">address</span> <span class="p">+</span> <span class="s2">"]"</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>在src目录下建立一个com.baoyuan.mapper.dao的包</p>
+
+<p>在com.baoyuan.mapper.dao创建一个UserMapper.xml的映射文件</p>
+
+<p>Mapper接口开发需要遵循以下规范：</p>
+
+<p>1、 Mapper.xml文件中的namespace与mapper接口的类路径相同。</p>
+
+<p>2、 Mapper接口方法名和Mapper.xml中定义的每个statement的id相同</p>
+
+<p>3、 Mapper接口方法的输入参数类型和mapper.xml中定义的每个sql 的parameterType的类型相同</p>
+
+<p>4、 Mapper接口方法的输出参数类型和mapper.xml中定义的每个sql的resultType的类型相同</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="cp">&lt;!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd"&gt;</span>
+<span class="nt">&lt;mapper</span> <span class="na">namespace=</span><span class="s">"com.baoyuan.mapper.dao.UserMapper"</span><span class="nt">&gt;</span>
+<span class="c">&lt;!--　Id表示statement的id唯一标识符,resultType表示结果集的类型,parameterType表示形式参数类型　,如果SqlMapConfig.xml中配置了别名,就可以直接谢别名user,不用再写全路径com.baoyuan.domain.User --&gt;</span>
+    <span class="nt">&lt;select</span> <span class="na">id=</span><span class="s">"findUserById"</span> <span class="na">resultType=</span><span class="s">"com.baoyuan.domain.User"</span>  <span class="na">parameterType=</span><span class="s">"int"</span> <span class="nt">&gt;</span>
+<span class="c">&lt;!--#{}大括号类随意写只是表示一个占位符,相当于statment中的"?"  --&gt;</span>
+        select * from user where id =#{id}
+    <span class="nt">&lt;/select&gt;</span>
+<span class="c">&lt;!--这里返回的类型虽然是list,resultType表示list泛型的类型  --&gt;</span>
+    <span class="nt">&lt;select</span> <span class="na">id=</span><span class="s">"findUserByUsername"</span> <span class="na">resultType=</span><span class="s">"com.baoyuan.domain.User"</span>  <span class="na">parameterType=</span><span class="s">"java.lang.String"</span> <span class="nt">&gt;</span>
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　<span class="c">&lt;!--这里必须写value,${value}表示拼接字符串,如果用其他会报错,用#{}只是表示占位符,可以在调用时传"%条件%的参数"  --&gt;</span>
+        select * from user where username like '%${value}%'
+    <span class="nt">&lt;/select&gt;</span>
+    <span class="nt">&lt;insert</span> <span class="na">id=</span><span class="s">"saveUser"</span>  <span class="na">parameterType=</span><span class="s">"com.baoyuan.domain.User"</span> <span class="nt">&gt;</span>
+<span class="c">&lt;!--配置在插入一条数据后返回主键,会自动保存到pojo对象的主键属性中  --&gt;</span>
+<span class="nt">&lt;selectKey</span> <span class="na">keyProperty=</span><span class="s">"id"</span> <span class="na">resultType=</span><span class="s">"java.lang.Integer"</span> <span class="na">order=</span><span class="s">"AFTER"</span><span class="nt">&gt;</span> 
+select LAST_INSERT_ID()
+<span class="c">&lt;!--必须是主键自增长 是mysql的函数，返回auto_increment自增列新记录id值 --&gt;</span>
+<span class="nt">&lt;/selectKey&gt;</span>
+<span class="c">&lt;!-- &lt;selectKey resultType="java.lang.String" order="BEFORE" keyProperty="id"&gt;
+select uuid()
+需要增加通过select uuid()得到uuid值（前提是用户表中的id必须是字符串类型）
+&lt;/selectKey&gt; --&gt;</span>
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　<span class="c">&lt;!--这里由于 parameterType形式参数的类型是user,所以这里#{}大括号中不能随便写,写的是user的属性 --&gt;</span>
+        insert INTO user(username,birthday,sex,address) VALUES(#{username},#{birthday},#{sex},#{address})
+    <span class="nt">&lt;/insert&gt;</span>
+    <span class="nt">&lt;delete</span> <span class="na">id=</span><span class="s">"deleteUserById"</span>  <span class="na">parameterType=</span><span class="s">"int"</span><span class="nt">&gt;</span>
+        delete from user where id =#{id}
+    <span class="nt">&lt;/delete&gt;</span>
+    <span class="nt">&lt;update</span> <span class="na">id=</span><span class="s">"updateUserById"</span> <span class="na">parameterType=</span><span class="s">"com.baoyuan.domain.User"</span><span class="nt">&gt;</span>
+        update user set username=#{username},birthday=#{birthday},sex=#{sex},address=#{address} where id=#{id}
+    <span class="nt">&lt;/update&gt;</span>
+<span class="nt">&lt;/mapper&gt;</span>
+</code></pre></div></div>
+
+<p>创建UserMapper的接口</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">com</span><span class="p">.</span><span class="n">baoyuan</span><span class="p">.</span><span class="n">mapper</span><span class="p">.</span><span class="n">dao</span><span class="p">;</span>
+
+<span class="n">import</span> <span class="n">java</span><span class="p">.</span><span class="n">util</span><span class="p">.</span><span class="k">List</span><span class="p">;</span>
+
+<span class="n">import</span> <span class="n">com</span><span class="p">.</span><span class="n">baoyuan</span><span class="p">.</span><span class="n">domain</span><span class="p">.</span><span class="n">User</span><span class="p">;</span>
+<span class="p">//</span><span class="err">类名必须和</span>
+<span class="n">publicinterface</span> <span class="n">UserMapper</span> <span class="p">{</span>
+    <span class="k">public</span> <span class="n">User</span> <span class="n">findUserById</span><span class="p">(</span><span class="k">Integer</span> <span class="n">id</span><span class="p">);</span>
+    <span class="k">public</span> <span class="k">List</span><span class="p">&lt;</span><span class="n">User</span><span class="p">&gt;</span> <span class="n">findUserByUsername</span><span class="p">(</span><span class="k">String</span> <span class="n">username</span><span class="p">);</span>
+    <span class="n">publicvoid</span> <span class="n">saveUser</span><span class="p">(</span><span class="n">User</span> <span class="n">user</span><span class="p">);</span>
+    <span class="n">publicvoid</span> <span class="n">deleteUserById</span><span class="p">(</span><span class="k">Integer</span> <span class="n">id</span><span class="p">);</span>
+    <span class="n">publicvoid</span> <span class="n">updateUserById</span><span class="p">(</span><span class="n">User</span> <span class="n">user</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>测试代码</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">com</span><span class="p">.</span><span class="n">baoyuan</span><span class="p">.</span><span class="n">test</span><span class="p">;</span>
+
+<span class="n">import</span> <span class="n">java</span><span class="p">.</span><span class="n">io</span><span class="p">.</span><span class="n">IOException</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">java</span><span class="p">.</span><span class="n">io</span><span class="p">.</span><span class="n">InputStream</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">java</span><span class="p">.</span><span class="n">util</span><span class="p">.</span><span class="n">Date</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">java</span><span class="p">.</span><span class="n">util</span><span class="p">.</span><span class="k">List</span><span class="p">;</span>
+
+<span class="n">import</span> <span class="n">org</span><span class="p">.</span><span class="n">apache</span><span class="p">.</span><span class="n">ibatis</span><span class="p">.</span><span class="n">io</span><span class="p">.</span><span class="n">Resources</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">org</span><span class="p">.</span><span class="n">apache</span><span class="p">.</span><span class="n">ibatis</span><span class="p">.</span><span class="n">session</span><span class="p">.</span><span class="n">SqlSession</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">org</span><span class="p">.</span><span class="n">apache</span><span class="p">.</span><span class="n">ibatis</span><span class="p">.</span><span class="n">session</span><span class="p">.</span><span class="n">SqlSessionFactory</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">org</span><span class="p">.</span><span class="n">apache</span><span class="p">.</span><span class="n">ibatis</span><span class="p">.</span><span class="n">session</span><span class="p">.</span><span class="n">SqlSessionFactoryBuilder</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">org</span><span class="p">.</span><span class="n">junit</span><span class="p">.</span><span class="n">Before</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">org</span><span class="p">.</span><span class="n">junit</span><span class="p">.</span><span class="n">Test</span><span class="p">;</span>
+
+<span class="n">import</span> <span class="n">com</span><span class="p">.</span><span class="n">baoyuan</span><span class="p">.</span><span class="n">domain</span><span class="p">.</span><span class="n">User</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">com</span><span class="p">.</span><span class="n">baoyuan</span><span class="p">.</span><span class="n">mapper</span><span class="p">.</span><span class="n">dao</span><span class="p">.</span><span class="n">UserMapper</span><span class="p">;</span>
+
+<span class="n">publicclass</span> <span class="n">TestUserMapper</span> <span class="p">{</span>
+    <span class="n">private</span> <span class="n">SqlSessionFactory</span> <span class="n">sqlSessionFactory</span> <span class="p">;</span>
+<span class="p">//</span><span class="err">表示运行测试代码前执行</span><span class="p">,</span><span class="err">给</span><span class="n">sqlSessionFactory</span><span class="err">赋值</span>
+    <span class="p">@</span><span class="n">Before</span>
+    <span class="n">publicvoid</span> <span class="n">InitialContext</span><span class="p">()</span> <span class="n">throws</span> <span class="n">IOException</span><span class="p">{</span>
+        <span class="n">SqlSessionFactoryBuilder</span> <span class="n">builder</span> <span class="p">=</span> <span class="n">new</span> <span class="n">SqlSessionFactoryBuilder</span><span class="p">();</span>
+        <span class="n">InputStream</span> <span class="n">inputStream</span><span class="p">=</span><span class="n">Resources</span><span class="p">.</span><span class="n">getResourceAsStream</span><span class="p">(</span><span class="s2">"SqlMapConfig.xml"</span><span class="p">);</span>
+        <span class="n">SqlSessionFactory</span> <span class="n">sqlSessionFactory</span> <span class="p">=</span> <span class="n">builder</span><span class="p">.</span><span class="n">build</span><span class="p">(</span><span class="n">inputStream</span><span class="p">);</span>
+        <span class="n">this</span><span class="p">.</span><span class="n">sqlSessionFactory</span><span class="p">=</span><span class="n">sqlSessionFactory</span><span class="p">;</span>
+        
+    <span class="p">}</span>
+<span class="p">//</span><span class="err">通过</span><span class="n">id</span><span class="err">查询用户</span>
+    <span class="p">@</span><span class="n">Test</span>
+    <span class="n">publicvoid</span> <span class="n">findUserById</span><span class="p">(){</span>
+        <span class="p">//</span><span class="err">获取</span><span class="n">sqlsession</span>
+        <span class="n">SqlSession</span> <span class="n">sqlSession</span><span class="p">=</span><span class="n">null</span><span class="p">;</span>
+        <span class="n">try</span> <span class="p">{</span>
+            <span class="n">sqlSession</span> <span class="p">=</span> <span class="n">sqlSessionFactory</span><span class="p">.</span><span class="n">openSession</span><span class="p">();</span>
+            <span class="p">//</span><span class="err">获取</span><span class="n">mapper</span><span class="err">接口代理对象</span>
+            <span class="n">UserMapper</span> <span class="n">userMapper</span> <span class="p">=</span> <span class="n">sqlSession</span><span class="p">.</span><span class="n">getMapper</span><span class="p">(</span><span class="n">UserMapper</span><span class="p">.</span><span class="n">class</span><span class="p">);</span>
+            <span class="n">User</span> <span class="n">user</span> <span class="p">=</span> <span class="n">userMapper</span><span class="p">.</span><span class="n">findUserById</span><span class="p">(</span><span class="m">1</span><span class="p">);</span>
+            <span class="nf">System</span><span class="p">.</span><span class="n">out</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="n">user</span><span class="p">);</span>
+        <span class="p">}</span> <span class="n">catch</span> <span class="p">(</span><span class="n">Exception</span> <span class="n">e</span><span class="p">)</span> <span class="p">{</span>
+            <span class="p">//</span> <span class="n">TODO</span> <span class="n">Auto</span><span class="p">-</span><span class="n">generated</span> <span class="n">catch</span> <span class="n">block</span>            <span class="n">e</span><span class="p">.</span><span class="n">printStackTrace</span><span class="p">();</span> 
+        <span class="p">}</span><span class="n">finally</span><span class="p">{</span>
+            <span class="k">if</span><span class="p">(</span><span class="n">sqlSession</span><span class="c1">!=null){
+</span>                <span class="n">sqlSession</span><span class="p">.</span><span class="n">close</span><span class="p">();</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">//</span><span class="err">通过用户名模糊查询用户</span>
+    <span class="p">@</span><span class="n">Test</span>
+    <span class="n">publicvoid</span> <span class="n">findUserByUsername</span><span class="p">(){</span>
+        <span class="p">//</span><span class="err">获取</span><span class="n">sqlsession</span>
+        <span class="n">SqlSession</span> <span class="n">sqlSession</span><span class="p">=</span><span class="n">null</span><span class="p">;</span>
+        <span class="n">try</span> <span class="p">{</span>
+            <span class="n">sqlSession</span> <span class="p">=</span> <span class="n">sqlSessionFactory</span><span class="p">.</span><span class="n">openSession</span><span class="p">();</span>
+            <span class="p">//</span><span class="err">获取</span><span class="n">mapper</span><span class="err">接口代理对象</span>
+            <span class="n">UserMapper</span> <span class="n">userMapper</span> <span class="p">=</span> <span class="n">sqlSession</span><span class="p">.</span><span class="n">getMapper</span><span class="p">(</span><span class="n">UserMapper</span><span class="p">.</span><span class="n">class</span><span class="p">);</span>
+             <span class="k">List</span><span class="p">&lt;</span><span class="n">User</span><span class="p">&gt;</span> <span class="k">list</span> <span class="p">=</span> <span class="n">userMapper</span><span class="p">.</span><span class="n">findUserByUsername</span><span class="p">(</span><span class="s2">"张"</span><span class="p">);</span> 
+            <span class="nf">System</span><span class="p">.</span><span class="n">out</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="k">list</span><span class="p">);</span>
+        <span class="p">}</span> <span class="n">catch</span> <span class="p">(</span><span class="n">Exception</span> <span class="n">e</span><span class="p">)</span> <span class="p">{</span>
+            <span class="p">//</span> <span class="n">TODO</span> <span class="n">Auto</span><span class="p">-</span><span class="n">generated</span> <span class="n">catch</span> <span class="n">block</span>            <span class="n">e</span><span class="p">.</span><span class="n">printStackTrace</span><span class="p">();</span> 
+        <span class="p">}</span><span class="n">finally</span><span class="p">{</span>
+            <span class="k">if</span><span class="p">(</span><span class="n">sqlSession</span><span class="c1">!=null){
+</span>                <span class="n">sqlSession</span><span class="p">.</span><span class="n">close</span><span class="p">();</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">//</span><span class="err">保存用户</span>
+    <span class="p">@</span><span class="n">Test</span>
+    <span class="n">publicvoid</span> <span class="n">saveUser</span><span class="p">(){</span>
+        <span class="p">//</span><span class="err">获取</span><span class="n">sqlsession</span>
+        <span class="n">SqlSession</span> <span class="n">sqlSession</span><span class="p">=</span><span class="n">null</span><span class="p">;</span>
+        <span class="n">try</span> <span class="p">{</span>
+            <span class="n">sqlSession</span> <span class="p">=</span> <span class="n">sqlSessionFactory</span><span class="p">.</span><span class="n">openSession</span><span class="p">();</span>
+            <span class="p">//</span><span class="err">获取</span><span class="n">mapper</span><span class="err">接口代理对象</span>
+            <span class="n">UserMapper</span> <span class="n">userMapper</span> <span class="p">=</span> <span class="n">sqlSession</span><span class="p">.</span><span class="n">getMapper</span><span class="p">(</span><span class="n">UserMapper</span><span class="p">.</span><span class="n">class</span><span class="p">);</span>
+            <span class="n">User</span> <span class="n">user</span><span class="p">=</span><span class="n">new</span> <span class="n">User</span><span class="p">();</span>
+            <span class="n">user</span><span class="p">.</span><span class="n">setUsername</span><span class="p">(</span><span class="s2">"李四"</span><span class="p">);</span>
+            <span class="n">user</span><span class="p">.</span><span class="n">setBirthday</span><span class="p">(</span><span class="n">new</span> <span class="n">Date</span><span class="p">());</span>
+            <span class="n">user</span><span class="p">.</span><span class="n">setSex</span><span class="p">(</span><span class="s2">"1"</span><span class="p">);</span>
+            <span class="n">user</span><span class="p">.</span><span class="n">setAddress</span><span class="p">(</span><span class="s2">"深圳"</span><span class="p">);</span>
+<span class="nf">System</span><span class="p">.</span><span class="n">out</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="n">user</span><span class="p">.</span><span class="nf">getId</span><span class="p">());</span>
+            <span class="n">userMapper</span><span class="p">.</span><span class="n">saveUser</span><span class="p">(</span><span class="n">user</span><span class="p">);</span>
+            <span class="n">sqlSession</span><span class="p">.</span><span class="n">commit</span><span class="p">();</span>
+<span class="nf">System</span><span class="p">.</span><span class="n">out</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="n">user</span><span class="p">.</span><span class="nf">getId</span><span class="p">());</span>
+        <span class="p">}</span> <span class="n">catch</span> <span class="p">(</span><span class="n">Exception</span> <span class="n">e</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">e</span><span class="p">.</span><span class="n">printStackTrace</span><span class="p">();</span> 
+        <span class="p">}</span><span class="n">finally</span><span class="p">{</span>
+            <span class="k">if</span><span class="p">(</span><span class="n">sqlSession</span><span class="c1">!=null){
+</span>                <span class="n">sqlSession</span><span class="p">.</span><span class="n">close</span><span class="p">();</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">//</span><span class="err">更新用户</span>
+    <span class="p">@</span><span class="n">Test</span>
+    <span class="n">publicvoid</span> <span class="n">updateUserById</span><span class="p">(){</span>
+        <span class="p">//</span><span class="err">获取</span><span class="n">sqlsession</span>
+        <span class="n">SqlSession</span> <span class="n">sqlSession</span><span class="p">=</span><span class="n">null</span><span class="p">;</span>
+        <span class="n">try</span> <span class="p">{</span>
+            <span class="n">sqlSession</span> <span class="p">=</span> <span class="n">sqlSessionFactory</span><span class="p">.</span><span class="n">openSession</span><span class="p">();</span>
+            <span class="p">//</span><span class="err">获取</span><span class="n">mapper</span><span class="err">接口代理对象</span>
+            <span class="n">UserMapper</span> <span class="n">userMapper</span> <span class="p">=</span> <span class="n">sqlSession</span><span class="p">.</span><span class="n">getMapper</span><span class="p">(</span><span class="n">UserMapper</span><span class="p">.</span><span class="n">class</span><span class="p">);</span>
+            <span class="n">User</span> <span class="n">user</span><span class="p">=</span><span class="n">new</span> <span class="n">User</span><span class="p">();</span>
+            <span class="n">user</span><span class="p">.</span><span class="n">setId</span><span class="p">(</span><span class="m">30</span><span class="p">);</span>
+            <span class="n">user</span><span class="p">.</span><span class="n">setUsername</span><span class="p">(</span><span class="s2">"李四"</span><span class="p">);</span>
+            <span class="n">user</span><span class="p">.</span><span class="n">setBirthday</span><span class="p">(</span><span class="n">new</span> <span class="n">Date</span><span class="p">());</span>
+            <span class="n">user</span><span class="p">.</span><span class="n">setSex</span><span class="p">(</span><span class="s2">"1"</span><span class="p">);</span>
+            <span class="n">user</span><span class="p">.</span><span class="n">setAddress</span><span class="p">(</span><span class="s2">"深圳"</span><span class="p">);</span>
+            <span class="n">userMapper</span><span class="p">.</span><span class="n">updateUserById</span><span class="p">(</span><span class="n">user</span><span class="p">);;</span>
+            <span class="n">sqlSession</span><span class="p">.</span><span class="n">commit</span><span class="p">();</span>
+        <span class="p">}</span> <span class="n">catch</span> <span class="p">(</span><span class="n">Exception</span> <span class="n">e</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">e</span><span class="p">.</span><span class="n">printStackTrace</span><span class="p">();</span> 
+        <span class="p">}</span><span class="n">finally</span><span class="p">{</span>
+            <span class="k">if</span><span class="p">(</span><span class="n">sqlSession</span><span class="c1">!=null){
+</span>                <span class="n">sqlSession</span><span class="p">.</span><span class="n">close</span><span class="p">();</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">//</span><span class="err">删除用户</span>
+    <span class="p">@</span><span class="n">Test</span>
+    <span class="n">publicvoid</span> <span class="n">deleteUserById</span><span class="p">(){</span>
+        <span class="p">//</span><span class="err">获取</span><span class="n">sqlsession</span>
+        <span class="n">SqlSession</span> <span class="n">sqlSession</span><span class="p">=</span><span class="n">null</span><span class="p">;</span>
+        <span class="n">try</span> <span class="p">{</span>
+            <span class="n">sqlSession</span> <span class="p">=</span> <span class="n">sqlSessionFactory</span><span class="p">.</span><span class="n">openSession</span><span class="p">();</span>
+            <span class="p">//</span><span class="err">获取</span><span class="n">mapper</span><span class="err">接口代理对象</span>
+            <span class="n">UserMapper</span> <span class="n">userMapper</span> <span class="p">=</span> <span class="n">sqlSession</span><span class="p">.</span><span class="n">getMapper</span><span class="p">(</span><span class="n">UserMapper</span><span class="p">.</span><span class="n">class</span><span class="p">);</span>
+            <span class="n">userMapper</span><span class="p">.</span><span class="n">deleteUserById</span><span class="p">(</span><span class="m">30</span><span class="p">);;</span>
+            <span class="n">sqlSession</span><span class="p">.</span><span class="n">commit</span><span class="p">();</span>
+        <span class="p">}</span> <span class="n">catch</span> <span class="p">(</span><span class="n">Exception</span> <span class="n">e</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">e</span><span class="p">.</span><span class="n">printStackTrace</span><span class="p">();</span> 
+        <span class="p">}</span><span class="n">finally</span><span class="p">{</span>
+            <span class="k">if</span><span class="p">(</span><span class="n">sqlSession</span><span class="c1">!=null){
+</span>                <span class="n">sqlSession</span><span class="p">.</span><span class="n">close</span><span class="p">();</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/mybatis%E7%9A%84%E7%AE%80%E5%8D%95%E4%BD%BF%E7%94%A8%E8%B0%83%E7%94%A8mapper%E6%8E%A5%E5%8F%A3.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/%E6%B3%A8%E8%A7%A3%E5%BA%93%E4%B9%8Bbutterknife.html">&laquo; 注解库之ButterKnife</a>
+  
+  
+  <a class="next" href="/2017/java%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%B3%BB%E5%88%97%E5%9B%9Block%E7%9A%84%E4%BD%BF%E7%94%A8.html">java多线程系列(四)—Lock的使用 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

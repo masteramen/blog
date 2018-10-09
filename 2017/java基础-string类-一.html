@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>Java基础——String类（一） | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="Java基础——String类（一）" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="一、String 类代表字符串" />
+<meta property="og:description" content="一、String 类代表字符串" />
+<link rel="canonical" href="http://www.jfox.info/2017/java%E5%9F%BA%E7%A1%80-string%E7%B1%BB-%E4%B8%80.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/java%E5%9F%BA%E7%A1%80-string%E7%B1%BB-%E4%B8%80.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:50:06+00:00" />
+<script type="application/ld+json">
+{"description":"一、String 类代表字符串","@type":"BlogPosting","url":"http://www.jfox.info/2017/java%E5%9F%BA%E7%A1%80-string%E7%B1%BB-%E4%B8%80.html","headline":"Java基础——String类（一）","dateModified":"2017-01-01T15:50:06+00:00","datePublished":"2017-01-01T15:50:06+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/java%E5%9F%BA%E7%A1%80-string%E7%B1%BB-%E4%B8%80.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Java基础——String类（一）</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:50:06+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p><strong><code class="highlighter-rouge">一、String</code> 类代表字符串</strong></p>
+
+<p>Java 程序中的所有字符串字面值（如 <code class="highlighter-rouge">"abc"</code> ）都作为此类的实例实现。</p>
+
+<p>字符串是常量；它们的值在创建之后不能更改。字符串缓冲区支持可变的字符串。因为 String 对象是不可变的，所以可以共享。例如：</p>
+
+<p>1 String str = “abc”;</p>
+
+<p>等效于：</p>
+
+<p>1char data[] = {‘a’, ‘b’, ‘c’}; 2 String str = new String(data);</p>
+
+<p>下面给出了一些如何使用字符串的更多示例：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1 System.out.println("abc");
+2      String cde = "cde";
+3      System.out.println("abc" + cde);
+4      String c = "abc".substring(2,3);
+5      String d = cde.substring(1, 2);
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">String</code> 类包括的方法可用于检查序列的单个字符、比较字符串、搜索字符串、提取子字符串、创建字符串副本并将所有字符全部转换为大写或小写。大小写映射基于Character类指定的 Unicode 标准版。</p>
+
+<p>Java 语言提供对字符串串联符号（”+”）以及将其他对象转换为字符串的特殊支持。字符串串联是通过 <code class="highlighter-rouge">StringBuilder</code>（或 <code class="highlighter-rouge">StringBuffer</code>）类及其 <code class="highlighter-rouge">append</code> 方法实现的。字符串转换是通过 <code class="highlighter-rouge">toString</code> 方法实现的，该方法由 <code class="highlighter-rouge">Object</code> 类定义，并可被 Java 中的所有类继承。有关字符串串联和转换的更多信息，请参阅 Gosling、Joy 和 Steele 合著的 The Java Language Specification。</p>
+
+<p>除非另行说明，否则将 null 参数传递给此类中的构造方法或方法将抛出空指针异常。</p>
+
+<p><code class="highlighter-rouge">String</code> 表示一个 UTF-16 格式的字符串，其中的增补字符由代理项对表示。索引值是指 <code class="highlighter-rouge">char</code> 代码单元，因此增补字符在 <code class="highlighter-rouge">String</code> 中占用两个位置。</p>
+
+<p><code class="highlighter-rouge">String</code> 类提供处理 Unicode 代码点（即字符）和 Unicode 代码单元（即 <code class="highlighter-rouge">char</code> 值）的方法。</p>
+
+<p><strong>二、字符串的创建方式</strong></p>
+
+<p>1 String s=”abc”;</p>
+
+<p>表示，先在栈上创建一个引用s ,它会先去常量池中看有没有 “abc” 这个常量,如果有,则把s指向常量池中的 “abc”。</p>
+
+<p>如果没有,则在常量池中创建 abc,</p>
+
+<p>1 String s=new String(“abc”);</p>
+
+<p>相当于 String obj=”abc”; String s=new String(obj) ; 经过这个操作以后,内存中有两份数据: 常量池中一份,堆上一份。由于有了 new 这个操作,不管常量池中原来有没有 “abc” ,它都会在堆上创建一份</p>
+
+<p><strong>三、字符串的比较</strong></p>
+
+<p>例1：字符串常量池的使用</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1 String s0 = "abc"; 
+2 String s1 = "abc"; 
+3 System.out.println(s0==s1); //true 
+4//s0  和  s1 都指向了常量池中的同一个 "abc"
+</code></pre></div></div>
+
+<p>例2：String中 == 与equals的区别</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1 String s0 =new String ("abc");   //new 这个操作,将在堆上产生对象,s0指向了堆2 String s1 =new String ("abc"); 
+3 System.out.println(s0==s1); //false  s0 和 s1 指向的是堆上不同de的对象System.out.println(s0.equals(s1)); //true 因为String类重写了equals方法,比的是实体的内容 
+</code></pre></div></div>
+
+<p>例3：编译期确定</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1 String s0="helloworld";
+2 String s1="helloworld";
+3 String s2="hello" + "world";   //编译的时候,直接就编译成了 helloworld4 System.out.println( s0==s1 );   //true5 System.out.println( s0==s2 );   //true
+</code></pre></div></div>
+
+<p>例4：编译期无法确定</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1 String s0="helloworld";
+2 String s1=new String("helloworld");
+3 String s2="hello" + new String("world");
+4 System.out.println( s0==s1 ); //false  一个指向常量池,一个指向堆System.out.println( s0==s2 ); //false5 System.out.println( s1==s2 ); //false
+</code></pre></div></div>
+
+<p>例5：编译期优化</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> 1 String s0 = "a1";
+ 2 String s1 = "a" + 1;
+ 3 System.out.println((s0 == s1)); //true 4 5 String s2 = "atrue";
+ 6 String s3= "a" + "true";
+ 7 System.out.println((s2 == s3))  //true 8 9 String s4 = "a3.4";
+10 String s5 = "a" + 3.4;
+11 System.out.println((s4 == s5));  //true
+</code></pre></div></div>
+
+<p>例6 编译期无法确定</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1 String s0 = "ab";
+2 String s1 = "b";
+3 String s2 = "a" + s1;   //s1不是常量,编译期无法确定4 System.out.println((s0 == s2)); //false
+</code></pre></div></div>
+
+<p>例7：编译期确定</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1 String s0 = "ab";
+2final String s1 = "b";     //加上final 就变成了常量3 String s2 = "a" + s1;  //对于两个常量相加,编译器能确定它的值4 System.out.println((s0 == s2));     //true
+</code></pre></div></div>
+
+<p><strong>四、String对象内存分析</strong></p>
+
+<p>//例一</p>
+
+<p>String a = “abc”; ①　　</p>
+
+<p>String b = “abc”; ②　</p>
+
+<p>分析：</p>
+
+<p>①代码执行后在常量池(constant pool)中创建了一个值为abc的String对象，</p>
+
+<p>②执行时，因为常量池中存在 “abc” 所以就不再创建新的String对象了。</p>
+
+<p>//例二</p>
+
+<p>String c = new String(“xyz”);①　　</p>
+
+<p>String d = new String(“xyz”);②　　</p>
+
+<p>分析：</p>
+
+<p>①Class被加载时，”xyz”被作为常量读入，在常量池(constant pool)里创建了一个共享的值为”xyz”的String对象；</p>
+
+<p>然后当调用到new String(“xyz”)的时候，会在堆(heap)里创建这个new String(“xyz”)对象;</p>
+
+<p>②由于常量池(constant pool)中存在”xyz”所以不再创建”xyz”，然后创建新的new String(“xyz”)。</p>
+
+<p>//例三</p>
+
+<p>String s1 = new String(“xyz”); //创建二个对象(常量池和堆中)，一个引用 　　</p>
+
+<p>String s2 = new String(“xyz”); //创建一个对象(堆中)，并且以后每执行一次创建一个对象，一个引用 　　</p>
+
+<p>String s3 = “abc”; //创建一个对象(常量池中)，一个引用 　　</p>
+
+<p>String s4 = “abc”; //不创建对象(共享上次常量池中的数据)，只是创建一个新的引用s4)</p>
+
+<p>//例四</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> 1publicstaticvoid main(String[] args) {    
+ 2//以下两条语句创建了1个对象。"凤山"存储在字符串常量池中     3 String str1 = "凤山";    
+ 4 String str2 = "凤山";     
+ 5 System.out.println(str1==str2);//true     
+ 6//以下两条语句创建了3个对象。"天峨"，存储在字符串常量池中，两个new String()对象存储在堆内存中      7 String str3 = new String("天峨");     
+ 8 String str4 = new String("天峨");     
+ 9 System.out.println(str3==str4);//false      
+10//以下两条语句创建了1个对象。9是存储在栈内存中   //这里所说的一个对象,是指的9 , i 和 j 则是对9的引用  11int i = 9;     
+12int j = 9;     
+13 System.out.println(i==j);//true      
+14//由于没有了装箱，以下两条语句创建了2个对象。两个1对象存储在堆内存中    15 Integer l1 = new Integer(1);    注意这里是没有装箱操作的
+16 Integer k1 = new Integer(1);    
+17 System.out.println(l1==k1);//false 　
+18//以下两条语句创建了1个对象。1对象存储在栈内存中。自动装箱时对于值从127之间的值，使用一个实例。    19 Integer l = 20;//装箱     20 Integer k = 20;//装箱     21 System.out.println(l==k);//true    22 Integer i1 = 256;     //以下两条语句创建了2个对象。i1,i2变量存储在栈内存中，两个256对象存储在堆内存中   23 Integer i2 = 256;     
+24 System.out.println(i1==i2);//false  25 }
+</code></pre></div></div>
+
+<p><strong>五、String 类常见操作</strong></p>
+
+<p>字符串的常见操作，大致有以下几类 获取,判断,转换,替换和切割</p>
+
+<p>1) 获取类操作</p>
+
+<p>String str=”春花秋月何时了,往事知多少?小楼昨夜又东风,故国不堪回首月明中”;</p>
+
+<p>1 这个字符串到底有多长</p>
+
+<p>2 第4个字是什么 即根据索引获取字符</p>
+
+<p>3 第一个逗号是第几个字符 即根据字符取索引（ 取字符(或字符串)的位置）</p>
+
+<p>4 最后一个“月”字的索引</p>
+
+<p>5 是否含有“月明” 这个字符序列</p>
+
+<p>6 是不是以”春花”开头，是否以“月明中”结尾</p>
+
+<p>7 这个串是否为空</p>
+
+<p>8 是否和另一个串相等</p>
+
+<p>String str=”春花秋月何时了,往事知多少?小楼昨夜又东风,故国不堪回首月明中”;</p>
+
+<p>System.out.println(“长度:” + str.length()); //31</p>
+
+<p>System.out.println(“第四个字是”+str.charAt(3)); //月</p>
+
+<p>System.out.println(“第一个逗号的位置是”+str.indexOf(‘,’)); //7</p>
+
+<p>System.out.println(“第一个逗号的位置是”+str.indexOf(“,”)); //7</p>
+
+<p>System.out.println(“第一个往事的位置是”+str.indexOf(“往事”)); //8</p>
+
+<p>System.out.println(“最后一个月字的索引”+str.lastIndexOf(“月”)); //28</p>
+
+<p>System.out.println(“是否含有月明”+str.contains(“月明”)); //true</p>
+
+<p>System.out.println(“是否以春花开头”+str.startsWith(“春花”)); //true</p>
+
+<p>System.out.println(“是否以月明中结尾”+str.endsWith(“月明中”)); //true</p>
+
+<p>System.out.println(“是否为空”+str.isEmpty()); //false</p>
+
+<p>System.out.println(str.equals(“另一个字符串”)); //false</p>
+
+<p>String s1=”abc”;</p>
+
+<p>String s2=”aBC”;</p>
+
+<p>System.out.println(s1.equalsIgnoreCase(s2)); //true equalsIgnoreCase 比较的时候忽略大小写。</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/java%E5%9F%BA%E7%A1%80-string%E7%B1%BB-%E4%B8%80.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/lucenc.html">&laquo; Lucenc » java面试题</a>
+  
+  
+  <a class="next" href="/2017/bencode%E8%A7%A3%E7%A0%81%E5%AE%9E%E7%8E%B0.html">bencode解码实现 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>如何用Java编写一段代码引发内存泄露 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="如何用Java编写一段代码引发内存泄露" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="本文来自StackOverflow问答网站的一个热门讨论：如何用Java编写一段会发生内存泄露的代码。" />
+<meta property="og:description" content="本文来自StackOverflow问答网站的一个热门讨论：如何用Java编写一段会发生内存泄露的代码。" />
+<link rel="canonical" href="http://www.jfox.info/2017/ru-he-yong-java-bian-xie-yi-duan-dai-ma-yin-fa-na-cun-xie-lu.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/ru-he-yong-java-bian-xie-yi-duan-dai-ma-yin-fa-na-cun-xie-lu.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:47:18+00:00" />
+<script type="application/ld+json">
+{"description":"本文来自StackOverflow问答网站的一个热门讨论：如何用Java编写一段会发生内存泄露的代码。","@type":"BlogPosting","url":"http://www.jfox.info/2017/ru-he-yong-java-bian-xie-yi-duan-dai-ma-yin-fa-na-cun-xie-lu.html","headline":"如何用Java编写一段代码引发内存泄露","dateModified":"2017-01-01T15:47:18+00:00","datePublished":"2017-01-01T15:47:18+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/ru-he-yong-java-bian-xie-yi-duan-dai-ma-yin-fa-na-cun-xie-lu.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">如何用Java编写一段代码引发内存泄露</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:47:18+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>本文来自StackOverflow问答网站的一个热门讨论：如何用Java编写一段会发生内存泄露的代码。</p>
+
+<p><strong>Q：</strong>刚才我参加了面试，面试官问我如何写出会发生内存泄露的Java代码。这个问题我一点思路都没有，好囧。</p>
+
+<p><strong>A1：</strong>通过以下步骤可以很容易产生内存泄露（程序代码不能访问到某些对象，但是它们仍然保存在内存中）:</p>
+
+<ol>
+  <li>应用程序创建一个长时间运行的线程（或者使用线程池，会更快地发生内存泄露）。</li>
+  <li>线程通过某个类加载器（可以自定义）加载一个类。</li>
+  <li>该类分配了大块内存（比如<code class="highlighter-rouge">new byte[1000000]</code>），在某个静态变量存储一个强引用，然后在ThreadLocal中存储它自身的引用。分配额外的内存<code class="highlighter-rouge">new byte[1000000]</code>是可选的(类实例泄露已经足够了)，但是这样会使内存泄露更快。</li>
+  <li>线程清理自定义的类或者加载该类的类加载器。</li>
+  <li>重复以上步骤。</li>
+</ol>
+
+<p>由于没有了对类和类加载器的引用，ThreadLocal中的存储就不能被访问到。ThreadLocal持有该对象的引用，它也就持有了这个类及其类加载器的引用，类加载器持有它所加载的类的所有引用，这样GC无法回收ThreadLocal中存储的内存。在很多JVM的实现中Java类和类加载器直接分配到permgen区域不执行GC，这样导致了更严重的内存泄露。</p>
+
+<p>这种泄露模式的变种之一就是如果你经常重新部署以任何形式使用了ThreadLocal的应用程序、应用容器（比如Tomcat）会很容易发生内存泄露（由于应用容器使用了如前所述的线程，每次重新部署应用时将使用新的类加载器）。</p>
+
+<p><strong>A2：</strong></p>
+
+<p><strong>静态变量引用对象</strong></p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>class MemorableClass {
+    static final ArrayList list = new ArrayList(100);
+}
+</code></pre></div></div>
+
+<p><strong>调用长字符串的</strong><code class="highlighter-rouge">String.intern()</code></p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>String str=readString(); // read lengthy string any source db,textbox/jsp etc..
+// This will place the string in memory pool from which you cant remove
+str.intern();
+</code></pre></div></div>
+
+<p><strong>未关闭已打开流(文件，网络等)</strong></p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>try {
+    BufferedReader br = new BufferedReader(new FileReader(inputFile));
+    ...
+    ...
+} catch (Exception e) {
+    e.printStacktrace();
+}
+</code></pre></div></div>
+
+<p><strong>未关闭连接</strong></p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>try {
+    Connection conn = ConnectionFactory.getConnection();
+    ...
+    ...
+} catch (Exception e) {
+    e.printStacktrace();
+}
+</code></pre></div></div>
+
+<p><strong>JVM的GC不可达区域</strong></p>
+
+<p>比如通过native方法分配的内存。</p>
+
+<p><strong>web应用在application范围的对象，应用未重启或者没有显式移除</strong></p>
+
+<p><code class="highlighter-rouge">getServletContext().setAttribute("SOME_MAP", map);</code></p>
+
+<p><strong>web应用在session范围的对象，未失效或者没有显式移除</strong></p>
+
+<p><code class="highlighter-rouge">session.setAttribute("SOME_MAP", map);</code></p>
+
+<p><strong>不正确或者不合适的JVM选项</strong></p>
+
+<p>比如IBM JDK的noclassgc阻止了无用类的垃圾回收</p>
+
+<p><strong>A3：</strong>如果HashSet未正确实现(或者未实现)<code class="highlighter-rouge">hashCode()</code>或者<code class="highlighter-rouge">equals()</code>,会导致集合中持续增加“副本”。如果集合不能地忽略掉它应该忽略的元素，它的大小就只能持续增长，而且不能删除这些元素。</p>
+
+<p>如果你想要生成错误的键值对，可以像下面这样做：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>class BadKey {
+   // no hashCode or equals();
+   public final String key;
+   public BadKey(String key) { this.key = key; }
+}
+
+Map map = System.getProperties();
+map.put(new BadKey("key"), "value"); // Memory leak even if your threads die.
+</code></pre></div></div>
+
+<p><strong>A4：</strong>除了被遗忘的监听器，静态引用，hashmap中key错误/被修改或者线程阻塞不能结束生命周期等典型内存泄露场景，下面介绍一些不太明显的Java发生内存泄露的情况，主要是线程相关的。</p>
+
+<ul>
+  <li><code class="highlighter-rouge">Runtime.addShutdownHook</code>后没有移除，即使使用了removeShutdownHook，由于ThreadGroup类对于未启动线程的bug，它可能不被回收，导致ThreadGroup发生内存泄露。</li>
+  <li>创建但未启动线程，与上面的情形相同</li>
+  <li>创建继承了<code class="highlighter-rouge">ContextClassLoader</code>和<code class="highlighter-rouge">AccessControlContext</code>的线程，<code class="highlighter-rouge">ThreadGroup</code>和<code class="highlighter-rouge">InheritedThreadLocal</code>的使用，所有这些引用都是潜在的泄露，以及所有被类加载器加载的类和所有静态引用等等。这对<code class="highlighter-rouge">ThreadFactory</code>接口作为重要组成元素整个j.u.c.Executor框架(java.util.concurrent)的影响非常明显，很多开发人员没有注意到它潜在的危险。而且很多库都会按照请求启动线程。</li>
+  <li><code class="highlighter-rouge">ThreadLocal</code>缓存，很多情况下不是好的做法。有很多基于ThreadLocal的简单缓存的实现，但是如果线程在它的期望生命周期外继续运行ContextClassLoader将发生泄露。除非真正必要不要使用ThreadLocal缓存。</li>
+  <li>当ThreadGroup自身没有线程但是仍然有子线程组时调用<code class="highlighter-rouge">ThreadGroup.destroy()</code>。发生内存泄露将导致该线程组不能从它的父线程组移除，不能枚举子线程组。</li>
+  <li>使用WeakHashMap，value直接(间接)引用key，这是个很难发现的情形。这也适用于继承<code class="highlighter-rouge">Weak/SoftReference</code>的类可能持有对被保护对象的强引用。</li>
+  <li>使用http(s)协议的<code class="highlighter-rouge">java.net.URL</code>下载资源。<code class="highlighter-rouge">KeepAliveCache</code>在系统ThreadGroup创建新线程，导致当前线程的上下文类加载器内存泄露。没有存活线程时线程在第一次请求时创建，所以很有可能发生泄露。<em>(在Java7中已经修正了，创建线程的代码合理地移除了上下文类加载器。)</em></li>
+  <li>使用<code class="highlighter-rouge">InflaterInputStream</code>在构造函数(比如<code class="highlighter-rouge">PNGImageDecoder</code>)中传递<code class="highlighter-rouge">new java.util.zip.Inflater()</code>，不调用inflater的<code class="highlighter-rouge">end()</code>。仅仅是new的话非常安全，但如果自己创建该类作为构造函数参数时调用流的<code class="highlighter-rouge">close()</code>不能关闭inflater，可能发生内存泄露。这并不是真正的内存泄露因为它会被finalizer释放。但这消耗了很多native内存，导致linux的oom_killer杀掉进程。所以这给我们的教训是：尽可能早地释放native资源。</li>
+  <li><code class="highlighter-rouge">java.util.zip.Deflater</code>也一样，它的情况更加严重。好的地方可能是很少用到<code class="highlighter-rouge">Deflater</code>。如果自己创建了<code class="highlighter-rouge">Deflater</code>或者<code class="highlighter-rouge">Inflater</code>记住必须调用<code class="highlighter-rouge">end()</code>。</li>
+</ul>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/ru-he-yong-java-bian-xie-yi-duan-dai-ma-yin-fa-na-cun-xie-lu.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/cheng-xu-yuan-ji-shu-lian-ji-gong-lue.html">&laquo; 程序员技术练级攻略 » java面试题</a>
+  
+  
+  <a class="next" href="/2017/5-ge-chang-yong-java-dai-ma-hun-xiao-qi-zhu-ni-bao-hu-ni-de-dai-ma.html">5个常用Java 代码混淆器 助你保护你的代码 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

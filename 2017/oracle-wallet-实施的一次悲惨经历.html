@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>Oracle Wallet 实施的一次悲惨经历 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="Oracle Wallet 实施的一次悲惨经历" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="前几天一个运营商客户被某O记忽悠之后，准备上一个安全解决方案，其目的是为了" />
+<meta property="og:description" content="前几天一个运营商客户被某O记忽悠之后，准备上一个安全解决方案，其目的是为了" />
+<link rel="canonical" href="http://www.jfox.info/2017/oracle-wallet-%E5%AE%9E%E6%96%BD%E7%9A%84%E4%B8%80%E6%AC%A1%E6%82%B2%E6%83%A8%E7%BB%8F%E5%8E%86.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/oracle-wallet-%E5%AE%9E%E6%96%BD%E7%9A%84%E4%B8%80%E6%AC%A1%E6%82%B2%E6%83%A8%E7%BB%8F%E5%8E%86.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:51:59+00:00" />
+<script type="application/ld+json">
+{"description":"前几天一个运营商客户被某O记忽悠之后，准备上一个安全解决方案，其目的是为了","@type":"BlogPosting","url":"http://www.jfox.info/2017/oracle-wallet-%E5%AE%9E%E6%96%BD%E7%9A%84%E4%B8%80%E6%AC%A1%E6%82%B2%E6%83%A8%E7%BB%8F%E5%8E%86.html","headline":"Oracle Wallet 实施的一次悲惨经历","dateModified":"2017-01-01T15:51:59+00:00","datePublished":"2017-01-01T15:51:59+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/oracle-wallet-%E5%AE%9E%E6%96%BD%E7%9A%84%E4%B8%80%E6%AC%A1%E6%82%B2%E6%83%A8%E7%BB%8F%E5%8E%86.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Oracle Wallet 实施的一次悲惨经历</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:51:59+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>前几天一个运营商客户被某O记忽悠之后，准备上一个安全解决方案，其目的是为了</p>
+
+<p>能够对rman备份文件进行加密处理。我们这里姑且不论rman 备份就可以进行加密。只讨论这里的wallet 实施方案。</p>
+
+<p>当时的实施步骤如下（主库为4节点rac，dg备库是2节点rac）：</p>
+
+<p>1、停主库业务、停adg同步</p>
+
+<p>2、主库创建wallet目录mkdir /u01/app/oracle/admin/crmdbn/wallet</p>
+
+<p>3、配置主库grid用户的sqlnet.ora,添加如下内容：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ENCRYPTION_WALLET_LOCATION = (SOURCE =
+                                  (METHOD = FILE)
+                                  (METHOD_DATA =
+                                  (DIRECTORY =
+                                   /u01/app/oracle/admin/crmdbn/wallet)))
+</code></pre></div></div>
+
+<p>4、在主库设置安全码</p>
+
+<p>alter system set encryption key identified by “Oracle_xxx”;</p>
+
+<p>5、主库打开wallet</p>
+
+<p>alter system set encryption wallet open identified by “Oracle_xxx”;</p>
+
+<p>这里只在一个主库rac节点1执行了，其他几个节点并未执行；</p>
+
+<p>6、在adg备库创建wallet</p>
+
+<p>mkstore -wrl /u01/app/oracle/admin/crmdbns/wallet -create</p>
+
+<p>7、在dg备库打开wallet</p>
+
+<p>然后启动dg的时候，很显然会报错。实际上上述的操作步骤是有问题的；有如下几点操作不对：</p>
+
+<p>1）如果主库是rac，wallet必须存放在共享磁盘上；否则在其中一个节点创建之前，就先将其他节点停掉，避免产生归档日志。</p>
+
+<p>2）当主库rac其中一个节点创建好wallet之后，将wallet目录中的key scp拷贝到rac的其他节点对应wallet目录中。</p>
+
+<p>当然，如果wallet存在共享磁盘上，也不需要这么麻烦了。</p>
+
+<p>3）在dataguard备库上创建wallet根本就不需要操作，只需要创建对应的wallet目录（如果备库是rac，一样建议是共享目录来存放），然后将主库wallet master key 通过scp拷贝到备库wallet目录中（建议提前配置好备库监听的sqlnet.ora文件）。</p>
+
+<p>4）备库启动wallet即可；另外对于wallet的创建，建议使用auto login 方式（直接创建wallet目录，并通过alter database 命令open wallet的方式，这并非自动打开wallet模式）。建议通过如下命令进行修改，将其修改为auto login方式（当然也可以使用owm图形界面来进行管理）</p>
+
+<p>orapki wallet create -wallet /u01/app/oracle/admin/crmdbns/wallet -auto_login</p>
+
+<p>由于最开始的方案有问题，导致后面adg无法同步，启动mrp进程就报错，如下是错误：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Thu Jun 29 00:17:28 2017
+Completed:  alter database recover managed standby database using current logfile disconnect from session
+Media Recovery Log +ARCH/crmdbns/archivelog/2017_06_28/thread_3_seq_31785.364.947825515
+Media Recovery Log +ARCH/crmdbns/archivelog/2017_06_28/thread_4_seq_29565.985.947825489
+Force closing the keystore for standby rekey.
+Please re-copy the keystore from primary before re-open as needed.
+Apply redo for database master key re-key failed: new master key does not exist in the keystore
+Errors with log +ARCH/crmdbns/archivelog/2017_06_28/thread_4_seq_29565.985.947825489
+MRP0: Background Media Recovery terminated with error 28374
+Errors in file /u01/app/oracle/diag/rdbms/crmdbns/crmdbn1/trace/crmdbn1_pr00_107831.trc:
+ORA-28374: typed master key not found in wallet
+</code></pre></div></div>
+
+<p>我们可以看出，Oracle 在启动mrp进程时提示在备库的wallet中找不到对应的master key。在开始我并不明白，及时最开始mkstore 的操作是多余的，那么将主库的key文件scp到备库之后，不就完全一样了吗？为什么会提示找不到key呢？</p>
+
+<p>而且我通过如下的方式对比了主库和备库的wallet内容信息，发现是匹配的，如下：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>—node4
+[oracle@crmdbn4 wallet]$ mkstore -wrl . -list
+Oracle Secret Store Tool : Version 11.2.0.4.0 - Production
+Copyright (c) 2004, 2013, Oracle and/or its affiliates. All rights reserved.
+
+Enter wallet password:             
+
+Oracle Secret Store entries:
+ORACLE.SECURITY.DB.ENCRYPTION.Aa2psY/5bk9Sv4JEVRn29G0AAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+ORACLE.SECURITY.DB.ENCRYPTION.MASTERKEY
+ORACLE.SECURITY.TS.ENCRYPTION.BS4mhLbiOqGrY3MfAQrWCsUCAwAAAAAAAAAAAAAAAAAAAAAAAAAA
+[oracle@crmdbn4 wallet]$ 
+
+—adg1
+[oracle@crm2dbn1 wallet]$ mkstore -wrl . -list
+Oracle Secret Store Tool : Version 11.2.0.4.0 - Production
+Copyright (c) 2004, 2013, Oracle and/or its affiliates. All rights reserved.
+
+Enter wallet password:   Oracle_123
+
+Oracle Secret Store entries:
+ORACLE.SECURITY.DB.ENCRYPTION.Aa2psY/5bk9Sv4JEVRn29G0AAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+ORACLE.SECURITY.DB.ENCRYPTION.MASTERKEY
+ORACLE.SECURITY.TS.ENCRYPTION.BS4mhLbiOqGrY3MfAQrWCsUCAwAAAAAAAAAAAAAAAAAAAAAAAAAA
+[oracle@crm2dbn1 wallet]$
+</code></pre></div></div>
+
+<p>由此可见，上述这个报错应该另有隐情。我们需要进一步研究分析Oracle wallet打开之后，会做哪些事情。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>www.killdb.com@startup
+ORACLE instance started.
+
+Total System Global Area  271400960 bytes
+Fixed Size                  2252424 bytes
+Variable Size             167772536 bytes
+Database Buffers           96468992 bytes
+Redo Buffers                4907008 bytes
+Database mounted.
+Database opened.
+www.killdb.com@ alter system set encryption key identified by "Oracle_123";
+
+System altered.
+www.killdb.com@select * from v$encryption_wallet;
+
+WRL_TYPE
+--------------------
+WRL_PARAMETER
+------------------------------------------------------------------
+STATUS
+------------------
+file
+/u01/app/oracle/product/11.2.0/dbhome_1/network/admin/wallet
+OPEN
+
+www.killdb.com@column name format a40
+www.killdb.com@column masterkeyid_base64 format a60
+www.killdb.com@select  name,utl_raw.cast_to_varchar2( utl_encode.base64_encode('01'||substr(mkeyid,1,4))) || utl_raw.cast_to_varchar2( utl_encode.base64_encode(substr(mkeyid,5,length(mkeyid)))) masterkeyid_base64  FROM (select t.name, RAWTOHEX(x.mkid) mkeyid from v$tablespace t, x$kcbtek x where t.ts#=x.ts#);
+
+NAME                MASTERKEYID_BASE64
+------------------- ------------------------------------
+SYSTEM              AXzox4IR/k+yv2liagPwxyA=
+SYSAUX              AQAAAAAAAAAAAAAAAAAAAAA=
+UNDOTBS1            AQAAAAAAAAAAAAAAAAAAAAA=
+USERS               AQAAAAAAAAAAAAAAAAAAAAA=
+TEMP                AQAAAAAAAAAAAAAAAAAAAAA=
+
+www.killdb.com@select  utl_raw.cast_to_varchar2( utl_encode.base64_encode('01'||substr(mkeyid,1,4))) || utl_raw.cast_to_varchar2( utl_encode.base64_encode(substr(mkeyid,5,length(mkeyid)))) masterkeyid_base64  FROM (select RAWTOHEX(mkid) mkeyid from x$kcbdbk);
+
+MASTERKEYID_BASE64
+------------------------------------------------------------
+AXzox4IR/k+yv2liagPwxyA=
+
+[oracle@killdb trace]$ orapki wallet display -wallet  /u01/app/oracle/product/11.2.0/dbhome_1/network/admin/wallet
+Oracle PKI Tool : Version 11.2.0.4.0 - Production
+Copyright (c) 2004, 2013, Oracle and/or its affiliates. All rights reserved.
+
+Enter wallet password:   Oracle_   
+
+Requested Certificates:
+Subject:        CN=oracle
+User Certificates:
+Oracle Secret Store entries:
+ORACLE.SECURITY.DB.ENCRYPTION.AXzox4IR/k+yv2liagPwxyAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+ORACLE.SECURITY.DB.ENCRYPTION.MASTERKEY
+ORACLE.SECURITY.TS.ENCRYPTION.BSf3bB90ikAgSJxHC0YxduACAwAAAAAAAAAAAAAAAAAAAAAAAAAA
+Trusted Certificates:
+</code></pre></div></div>
+
+<p>我们不难看出，当wallet打开之后，Oracle其实会产生2种key，一种是db的key一种是talespace 级别的key。如下是关于2个x$试图的说明：</p>
+
+<p>x$kcbtek – for tablespaces 
+x$kcbdbk – the controlfile holds a copy of the master key ID as well.</p>
+
+<p>这2个试图的信息其实都来源于控制文件，这一点我通过10046 trace跟踪可以进行确认，如下是跟踪的结果：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>select  name,utl_raw.cast_to_varchar2( utl_encode.base64_encode('01'||substr(mkeyid,1,4))) || utl_raw.cast_to_varchar2( utl_encode.base64_encode(substr(mkeyid,5,length(mkeyid)))) masterkeyid_base64  FROM (select t.name, RAWTOHEX(x.mkid) mkeyid from v$tablespace t, x$kcbtek x where t.ts#=x.ts#)
+END OF STMT
+PARSE #140449938441232:c=7000,e=9686,p=0,cr=0,cu=0,mis=1,r=0,dep=0,og=1,plh=1547126948,tim=1476007495117573
+EXEC #140449938441232:c=1000,e=33,p=0,cr=0,cu=0,mis=0,r=0,dep=0,og=1,plh=1547126948,tim=1476007495117682
+WAIT #140449938441232: nam='SQL*Net message to client' ela= 2 driver id=1650815232 #bytes=1 p3=0 obj#=555 tim=1476007495117700
+WAIT #140449938441232: nam='control file sequential read' ela= 8 file#=0 block#=1 blocks=1 obj#=555 tim=1476007495117783
+WAIT #140449938441232: nam='control file sequential read' ela= 4 file#=0 block#=16 blocks=1 obj#=555 tim=1476007495117799
+WAIT #140449938441232: nam='control file sequential read' ela= 2 file#=0 block#=18 blocks=1 obj#=555 tim=1476007495117806
+WAIT #140449938441232: nam='control file sequential read' ela= 2 file#=0 block#=180 blocks=1 obj#=555 tim=1476007495117814
+FETCH #140449938441232:c=0,e=898,p=0,cr=0,cu=0,mis=0,r=1,dep=0,og=1,plh=1547126948,tim=1476007495118611
+WAIT #140449938441232: nam='SQL*Net message from client' ela= 203 driver id=1650815232 #bytes=1 p3=0 obj#=555 tim=1476007495118877
+WAIT #140449938441232: nam='SQL*Net message to client' ela= 1 driver id=1650815232 #bytes=1 p3=0 obj#=555 tim=1476007495118996
+FETCH #140449938441232:c=0,e=141,p=0,cr=0,cu=0,mis=0,r=4,dep=0,og=1,plh=1547126948,tim=1476007495119067
+STAT #140449938441232 id=1 cnt=5 pid=0 pos=1 obj=0 op='HASH JOIN  (cr=0 pr=0 pw=0 time=672 us cost=0 size=66 card=1)'
+STAT #140449938441232 id=2 cnt=5 pid=1 pos=1 obj=0 op='FIXED TABLE FULL X$KCCTS (cr=0 pr=0 pw=0 time=78 us cost=0 size=43 card=1)'
+STAT #140449938441232 id=3 cnt=5 pid=1 pos=2 obj=0 op='FIXED TABLE FULL X$KCBTEK (cr=0 pr=0 pw=0 time=6 us cost=0 size=2300 card=100)'
+WAIT #140449938441232: nam='SQL*Net message from client' ela= 358 driver id=1650815232 #bytes=1 p3=0 obj#=555 tim=1476007495119541
+</code></pre></div></div>
+
+<p>换句话讲，Oracle这里判断key是否匹配只是通过controlfile来判断的。</p>
+
+<p>在其中进行恢复的过程中，进行了多次增量，我们可以基于scn进行全库级别或者文件级别的增量，如下：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>run
+{
+allocate channel d1 type disk;
+allocate channel d2 type disk;
+allocate channel d3 type disk;
+allocate channel d4 type disk;
+backup datafile 471,472,473,474,475,476,477,478,479  format '/backup/crmdb_incr_%U.bak';
+release channel d1;
+release channel d2;
+release channel d3;
+release channel d4;
+}
+</code></pre></div></div>
+
+<p>最后我们通过替换了system文件和重建standby controlfile来完美解决这个问题，如下：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>RFS[36]: Selected log 23 for thread 2 sequence 44329 dbid 1035112739 branch 938199971
+Fri Jun 30 23:34:36 2017
+Archived Log entry 4487 added for thread 2 sequence 44328 ID 0x3ddadfb3 dest 1:
+Fri Jun 30 23:35:14 2017
+Media Recovery Log +ARCH/crmdbns/archivelog/2017_06_30/thread_2_seq_43927.1864.948021793
+Media Recovery Log +ARCH/crmdbns/archivelog/2017_06_30/thread_1_seq_31887.1227.948021775
+Fri Jun 30 23:36:42 2017
+Media Recovery Log +ARCH/crmdbns/archivelog/2017_06_30/thread_2_seq_43928.1957.948021797
+Media Recovery Log +ARCH/crmdbns/archivelog/2017_06_30/thread_4_seq_29958.1806.948021775
+Media Recovery Log +ARCH/crmdbns/archivelog/2017_06_30/thread_3_seq_32174.1473.948021775
+Fri Jun 30 23:37:40 2017
+RFS[32]: Selected log 9 for thread 1 sequence 32254 dbid 1035112739 branch 938199971
+</code></pre></div></div>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/oracle-wallet-%E5%AE%9E%E6%96%BD%E7%9A%84%E4%B8%80%E6%AC%A1%E6%82%B2%E6%83%A8%E7%BB%8F%E5%8E%86.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/sql%E8%A1%8C%E7%BB%93%E6%9E%9C%E8%BD%AC%E5%88%97%E7%8E%B0%E5%AE%9E,%E4%BB%A5%E5%8F%8A%E6%95%B0%E5%80%BC%2F%E7%99%BE%E5%88%86%E6%AF%94%E6%98%BE%E7%A4%BA%E5%88%87%E6%8D%A2.html">&laquo; sql行结果转列现实，以及数值／百分比显示切换</a>
+  
+  
+  <a class="next" href="/2017/springboot%E7%BB%93%E5%90%88%E6%9C%8D%E5%8A%A1%E5%8C%96%E6%A1%86%E6%9E%B6motan.html">springboot结合服务化框架motan &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

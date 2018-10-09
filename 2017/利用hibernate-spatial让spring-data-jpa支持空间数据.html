@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>利用hibernate-spatial让Spring Data JPA支持空间数据 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="利用hibernate-spatial让Spring Data JPA支持空间数据" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="Spring Data JPA的极度简便的使用方式让我们爱不释手，但是我们在项目中经常会有使用空间数据的场景，而不同的数据库对空间数据实现的方式不同，而这些不仅是JPA或者Spring Data JPA都是不支持的这时我们需要引入hibernate-spatial来去除数据库支持的异构性。 在本例中集成了Spring Data JPA、hibernate -spatial、PostGIS一起的使用方式。" />
+<meta property="og:description" content="Spring Data JPA的极度简便的使用方式让我们爱不释手，但是我们在项目中经常会有使用空间数据的场景，而不同的数据库对空间数据实现的方式不同，而这些不仅是JPA或者Spring Data JPA都是不支持的这时我们需要引入hibernate-spatial来去除数据库支持的异构性。 在本例中集成了Spring Data JPA、hibernate -spatial、PostGIS一起的使用方式。" />
+<link rel="canonical" href="http://www.jfox.info/2017/%E5%88%A9%E7%94%A8hibernate-spatial%E8%AE%A9spring-data-jpa%E6%94%AF%E6%8C%81%E7%A9%BA%E9%97%B4%E6%95%B0%E6%8D%AE.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/%E5%88%A9%E7%94%A8hibernate-spatial%E8%AE%A9spring-data-jpa%E6%94%AF%E6%8C%81%E7%A9%BA%E9%97%B4%E6%95%B0%E6%8D%AE.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:50:55+00:00" />
+<script type="application/ld+json">
+{"description":"Spring Data JPA的极度简便的使用方式让我们爱不释手，但是我们在项目中经常会有使用空间数据的场景，而不同的数据库对空间数据实现的方式不同，而这些不仅是JPA或者Spring Data JPA都是不支持的这时我们需要引入hibernate-spatial来去除数据库支持的异构性。 在本例中集成了Spring Data JPA、hibernate -spatial、PostGIS一起的使用方式。","@type":"BlogPosting","url":"http://www.jfox.info/2017/%E5%88%A9%E7%94%A8hibernate-spatial%E8%AE%A9spring-data-jpa%E6%94%AF%E6%8C%81%E7%A9%BA%E9%97%B4%E6%95%B0%E6%8D%AE.html","headline":"利用hibernate-spatial让Spring Data JPA支持空间数据","dateModified":"2017-01-01T15:50:55+00:00","datePublished":"2017-01-01T15:50:55+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/%E5%88%A9%E7%94%A8hibernate-spatial%E8%AE%A9spring-data-jpa%E6%94%AF%E6%8C%81%E7%A9%BA%E9%97%B4%E6%95%B0%E6%8D%AE.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">利用hibernate-spatial让Spring Data JPA支持空间数据</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:50:55+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p><code class="highlighter-rouge">Spring Data JPA</code>的极度简便的使用方式让我们爱不释手，但是我们在项目中经常会有使用空间数据的场景，而不同的数据库对空间数据实现的方式不同，而这些不仅是<code class="highlighter-rouge">JPA</code>或者<code class="highlighter-rouge">Spring Data JPA</code>都是不支持的这时我们需要引入<code class="highlighter-rouge">hibernate-spatial</code>来去除数据库支持的异构性。
+在本例中集成了<code class="highlighter-rouge">Spring Data JPA</code>、<code class="highlighter-rouge">hibernate -spatial</code>、<code class="highlighter-rouge">PostGIS</code>一起的使用方式。</p>
+
+<h3 id="1-添加依赖">1. 添加依赖</h3>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;dependency&gt;
+    &lt;groupId&gt;org.hibernate&lt;/groupId&gt;
+    &lt;artifactId&gt;hibernate-spatial&lt;/artifactId&gt;
+    &lt;version&gt;5.2.10.Final&lt;/version&gt;
+&lt;/dependency&gt;
+</code></pre></div></div>
+
+<h3 id="2-数据库方言指定">2. 数据库方言指定</h3>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>spring.jpa.database-platform: org.hibernate.spatial.dialect.postgis.PostgisPG9Dialect
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">org.hibernate.spatial.dialect</code>下还有<code class="highlighter-rouge">h2</code>,<code class="highlighter-rouge">mysql</code>,<code class="highlighter-rouge">oracle</code>,<code class="highlighter-rouge">sqlserver</code>的方言。</p>
+
+<h3 id="3-属性映射">3. 属性映射</h3>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> @Column(columnDefinition = "geometry(Point,4326)")
+ private Point point;
+</code></pre></div></div>
+
+<h3 id="4-定义spring-data-repository">4. 定义Spring Data Repository</h3>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public interface CityRepository extends JpaRepository&lt;City,Long&gt; {
+    @Query("select city from City as city where equals(city.point,:point) = TRUE")
+    List&lt;City&gt; findByPoint(@Param("point") Point point);
+}
+</code></pre></div></div>
+
+<h3 id="5-保存测试">5. 保存测试</h3>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>@Bean
+CommandLineRunner geometrySave(CityRepository cityRepository){
+    return e -&gt;{
+        City city = new City();
+        city.setName("合肥");
+        Geometry point = wktReader().read("POINT (117.2 31.8)");
+        Point pointToSave = point.getInteriorPoint();
+        pointToSave.setSRID(4326);
+        city.setPoint(pointToSave);
+        cityRepository.save(city);
+    };
+}
+</code></pre></div></div>
+
+<h3 id="6-读取测试">6. 读取测试</h3>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>@Bean
+CommandLineRunner geometryRead(CityRepository cityRepository){
+    return e -&gt; {
+        City city = cityRepository.findOne(3l);
+        Point point = city.getPoint();
+        log.info("经度:" + point.getX() + " 维度:" + point.getY() + " 坐标系统:" + point.getSRID());
+    };
+}
+</code></pre></div></div>
+
+<h3 id="7-查询测试">7. 查询测试</h3>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>@Bean
+CommandLineRunner geometryQuery(CityRepository cityRepository){
+    return e -&gt; {
+        Geometry point = wktReader().read("POINT (117.2 31.8)");
+        Point pointToQuery = point.getInteriorPoint();
+        pointToQuery.setSRID(4326);
+        List&lt;City&gt; cities = cityRepository.findByPoint(pointToQuery);
+        for (City city : cities) {
+            log.info("查询结果为:" + city.getId() + "/" +city.getName() + "/" +city.getPoint());
+        }
+    };
+}
+</code></pre></div></div>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/%E5%88%A9%E7%94%A8hibernate-spatial%E8%AE%A9spring-data-jpa%E6%94%AF%E6%8C%81%E7%A9%BA%E9%97%B4%E6%95%B0%E6%8D%AE.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/%E6%95%B0%E6%8D%AE%E5%BA%94%E7%94%A8%E8%BE%BE%E4%BA%BA%E4%B9%8Bsql%E5%9F%BA%E7%A1%80%E6%95%99%E7%A8%8B%E5%88%86%E4%BA%AB8-%E5%AD%90%E6%9F%A5%E8%AF%A2-%E8%BF%9E%E6%8E%A5-%E7%BB%84%E5%90%88%E6%9F%A5.html">&laquo; 数据应用达人之SQL基础教程分享8-子查询、连接、组合查询</a>
+  
+  
+  <a class="next" href="/2017/%E4%BB%8E%E4%B8%80%E9%81%93%E4%BE%8B%E9%A2%98%E8%B0%88arrays-tostring-%E4%B8%8E%E5%85%B6%E4%BB%96string%E7%9A%84%E8%BD%AC%E6%8D%A2%E6%96%B9%E6%B3%95.html">从一道例题谈Arrays.toString()与其他String的转换方法 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

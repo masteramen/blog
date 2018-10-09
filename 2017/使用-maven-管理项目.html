@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>使用 Maven 管理项目 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="使用 Maven 管理项目" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="最近的练手项目使用的是 Maven 在管理项目，在使用 Maven 管理项目时，三层的开发时分模块开发的，parent-dao-service-web，所有的spring+struts + Hibernate的依赖都是加在 parent 上，dao-service-web都是作为子模块，在模块之间的关系处理的时候出现了几个问题：" />
+<meta property="og:description" content="最近的练手项目使用的是 Maven 在管理项目，在使用 Maven 管理项目时，三层的开发时分模块开发的，parent-dao-service-web，所有的spring+struts + Hibernate的依赖都是加在 parent 上，dao-service-web都是作为子模块，在模块之间的关系处理的时候出现了几个问题：" />
+<link rel="canonical" href="http://www.jfox.info/2017/%E4%BD%BF%E7%94%A8-maven-%E7%AE%A1%E7%90%86%E9%A1%B9%E7%9B%AE.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/%E4%BD%BF%E7%94%A8-maven-%E7%AE%A1%E7%90%86%E9%A1%B9%E7%9B%AE.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:50:28+00:00" />
+<script type="application/ld+json">
+{"description":"最近的练手项目使用的是 Maven 在管理项目，在使用 Maven 管理项目时，三层的开发时分模块开发的，parent-dao-service-web，所有的spring+struts + Hibernate的依赖都是加在 parent 上，dao-service-web都是作为子模块，在模块之间的关系处理的时候出现了几个问题：","@type":"BlogPosting","url":"http://www.jfox.info/2017/%E4%BD%BF%E7%94%A8-maven-%E7%AE%A1%E7%90%86%E9%A1%B9%E7%9B%AE.html","headline":"使用 Maven 管理项目","dateModified":"2017-01-01T15:50:28+00:00","datePublished":"2017-01-01T15:50:28+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/%E4%BD%BF%E7%94%A8-maven-%E7%AE%A1%E7%90%86%E9%A1%B9%E7%9B%AE.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">使用 Maven 管理项目</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:50:28+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>最近的练手项目使用的是 Maven 在管理项目，在使用 Maven 管理项目时，三层的开发时分模块开发的，parent-dao-service-web，所有的spring+struts + Hibernate的依赖都是加在 parent 上，dao-service-web都是作为子模块，在模块之间的关系处理的时候出现了几个问题：</p>
+
+<ol>
+  <li>junit测试包的传递依赖失效了</li>
+  <li>多个配置文件的读取问题</li>
+</ol>
+
+<p>我在 parent 工程没有添加 Junit 的依赖，在编写 dao 模块是添加了 Junit 的 jar 包，理所当然的在 scope 中写了 test 范围，但是在 service 模块中进行 Junit 测试时，显示没有依赖上 Junit 包，那是为什么呢？百度了才想通，原来是 service 依赖的 dao 模块的 install 之后的 jar 包，当 dao 模块 install 时，scope 为 test 的 Junit包当然没有被发布出来，service中也就不能传递依赖到 Junit了，这样的解决办法只能在 service 中添加 Junit 包的依赖。</p>
+
+<p>因为采取的是模块式的开发，spring的配置文件就被分布在各个模块中了，在测试项目时需要读取多个模块中的 spring 配置文件时，使用到了之前没有使用到的一个注解：</p>
+
+<p>@ContextConfiguration(locations={“classpath<em>:applicationContext-</em>.xml”}) 这个注解中的*号通配符表示会加载本模块和依赖的jar包中的类路径下的applicationContext-开头的配置文件（只有spring配置文件才会这样命名）</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>//@ContextConfiguration(locations={"classpath*:applicationContext-*.xml"})
+@ContextConfiguration(locations={"classpath:applicationContext-dao.xml","classpath:applicationContext-service.xml"})
+@RunWith(SpringJUnit4ClassRunner.class)
+publicclass CustomerServiceImplTest {
+    @Autowired
+    private CustomerService customerService;
+    @Test
+    publicvoid test() {
+        Customer customer = customerService.findById(1L);
+        System.out.println("********************"+customer.getCustName());
+    }
+}
+</code></pre></div></div>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/%E4%BD%BF%E7%94%A8-maven-%E7%AE%A1%E7%90%86%E9%A1%B9%E7%9B%AE.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/bencode%E5%AF%B9%E8%B1%A1%E7%BC%96%E7%A0%81%E5%AE%9E%E7%8E%B0.html">&laquo; bencode对象编码实现</a>
+  
+  
+  <a class="next" href="/2017/mybatis%E5%AD%A6%E4%B9%A0%E4%B9%8B%E6%9F%A5%E8%AF%A2%E7%BC%93%E5%AD%98.html">mybatis学习之查询缓存 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

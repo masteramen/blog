@@ -112,6 +112,7 @@ code {
   background-color: #eef; }
 
 code {
+word-break: break-word;
   padding: 1px 5px; }
 
 pre {
@@ -120,6 +121,8 @@ pre {
   pre > code {
     border: 0;
     padding-right: 0;
+    white-space:pre-wrap;
+word-wrap: break-word;
     padding-left: 0; }
 
 /**

@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>SpringBoot的事务管理 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="SpringBoot的事务管理" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="By go - Last updated: 星期二, 四月 11, 2017" />
+<meta property="og:description" content="By go - Last updated: 星期二, 四月 11, 2017" />
+<link rel="canonical" href="http://www.jfox.info/2017/springboot-de-shi-wu-guan-li.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/springboot-de-shi-wu-guan-li.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:48:40+00:00" />
+<script type="application/ld+json">
+{"description":"By go - Last updated: 星期二, 四月 11, 2017","@type":"BlogPosting","url":"http://www.jfox.info/2017/springboot-de-shi-wu-guan-li.html","headline":"SpringBoot的事务管理","dateModified":"2017-01-01T15:48:40+00:00","datePublished":"2017-01-01T15:48:40+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/springboot-de-shi-wu-guan-li.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">SpringBoot的事务管理</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:48:40+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>By go - Last updated: 星期二, 四月 11, 2017</p>
+
+<p>原文出处： <a href="https://www.jfox.info/go.php?url=http://fangjian0423.github.io/2016/10/07/springboot-transaction/">fangjian0423</a></p>
+
+<p>Springboot内部提供的事务管理器是根据autoconfigure来进行决定的。</p>
+
+<p>比如当使用jpa的时候，也就是pom中加入了spring-boot-starter-data-jpa这个starter之后(之前我们分析过<a href="https://www.jfox.info/go.php?url=http://fangjian0423.github.io/2016/06/12/springboot-autoconfig-analysis/">springboot的自动化配置原理</a>)。</p>
+
+<p>Springboot会构造一个JpaTransactionManager这个事务管理器。</p>
+
+<p>而当我们使用spring-boot-starter-jdbc的时候，构造的事务管理器则是DataSourceTransactionManager。</p>
+
+<p>这2个事务管理器都实现了spring中提供的PlatformTransactionManager接口，这个接口是spring的事务核心接口。</p>
+
+<p>这个核心接口有以下这几个常用的实现策略：</p>
+
+<p>HibernateTransactionManager DataSourceTransactionManager JtaTransactionManager JpaTransactionManager</p>
+
+<p>具体的PlatformTransactionManager继承关系如下：</p>
+
+<p><a href="/wp-content/uploads/2017/04/transactionmanager.png"><img src="d5d1789.png" alt="" /></a></p>
+
+<p>spring-boot-starter-data-jpa这个starter会触发HibernateJpaAutoConfiguration这个自动化配置类，HibernateJpaAutoConfiguration继承了JpaBaseConfiguration基础类。</p>
+
+<p>在JpaBaseConfiguration中构造了事务管理器：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>@Bean
+@ConditionalOnMissingBean(PlatformTransactionManager.class)
+public PlatformTransactionManager transactionManager() {
+    return new JpaTransactionManager();
+}
+</code></pre></div></div>
+
+<p>spring-boot-starter-jdbc会触发DataSourceTransactionManagerAutoConfiguration这个自动化配置类，也会构造事务管理器：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>@Bean
+@ConditionalOnMissingBean(PlatformTransactionManager.class)
+@ConditionalOnBean(DataSource.class)
+public DataSourceTransactionManager transactionManager() {
+    return new DataSourceTransactionManager(this.dataSource);
+}
+</code></pre></div></div>
+
+<p>Spring的事务管理器PlatformTransactionManager接口中定义了3个方法：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// 基于事务的传播特性，返回一个已经存在的事务或者创建一个新的事务
+TransactionStatus getTransaction(TransactionDefinition definition) throws TransactionException;
+
+// 提交事务
+void commit(TransactionStatus status) throws TransactionException;
+
+// 回滚事务
+void rollback(TransactionStatus status) throws TransactionException;
+</code></pre></div></div>
+
+<p>其中TransactionDefinition接口表示跟spring兼容的事务属性，比如传播行为、隔离级别、超时时间、是否只读等属性。</p>
+
+<p>DefaultTransactionDefinition类是一个默认的TransactionDefinition实现，它的传播行为是PROPAGATION_REQUIRED(如果当前没事务，则创建一个，否则加入到当前事务中)，隔离级别是数据库默认级别。</p>
+
+<p>TransactionStatus接口表示事务的状态，比如事务是否是一个刚构造的事务、事务是否已经完成等状态。</p>
+
+<p>下面这段代码就是传统事务的常见写法：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>transaction.begin();
+try {
+    ...
+    transaction.commit();
+} catch(Exception e) {
+    ...
+    transaction.rollback();
+} finally {
+
+}
+</code></pre></div></div>
+
+<p>由于spring的事务操作被封装到了PlatformTransactionManager接口中，commit和rollback方法对应接口中的方法，begin方法在getTransaction方法中会被调用。</p>
+
+<p>细心的读者发现文章前面构造事务管理器的时候都会加上这段注解：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>@ConditionalOnMissingBean(PlatformTransactionManager.class)
+</code></pre></div></div>
+
+<p>也就是说如果我们手动配置了事务管理器，Springboot就不会再为我们自动配置事务管理器。</p>
+
+<p>如果要使用多个事务管理器的话，那么需要手动配置多个：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>@Configuration
+public class DatabaseConfiguration {
+
+    @Bean
+    public PlatformTransactionManager transactionManager1(EntityManagerFactory entityManagerFactory) {
+        return new JpaTransactionManager(entityManagerFactory);
+    }
+
+    @Bean
+    public PlatformTransactionManager transactionManager2(DataSource dataSource) {
+        return new DataSourceTransactionManager(dataSource);
+    }
+
+}
+</code></pre></div></div>
+
+<p>然后使用Transactional注解的时候需要声明是哪个事务管理器：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>@Transactional(value="transactionManager1")
+public void save() {
+    doSave();
+}
+</code></pre></div></div>
+
+<p>Spring给我们提供了一个TransactionManagementConfigurer接口，该接口只有一个方法返回PlatformTransactionManager。其中返回的PlatformTransactionManager就表示这是默认的事务处理器，这样在Transactional注解上就不需要声明是使用哪个事务管理器了。</p>
+
+<p>参考资料：</p>
+
+<p><a href="https://www.jfox.info/go.php?url=http://www.cnblogs.com/davidwang456/p/4309038.html">http://www.cnblogs.com/davidwang456/p/4309038.html</a></p>
+
+<p><a href="https://www.jfox.info/go.php?url=http://blog.csdn.net/chjttony/article/details/6528344">http://blog.csdn.net/chjttony/article/details/6528344</a></p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/springboot-de-shi-wu-guan-li.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/jquery-scrollfix-gun-dong-ding-wei-cha-jian.html">&laquo; jQuery scrollFix滚动定位插件</a>
+  
+  
+  <a class="next" href="/2017/guan-yu-java-mian-shi-ni-ying-gai-zhun-bei-zhe-xie-zhi-shi-dian.html">关于Java面试，你应该准备这些知识点 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

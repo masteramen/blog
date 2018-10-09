@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>5款工具助你写出更好的Java代码 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="5款工具助你写出更好的Java代码" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="By Lee - Last updated: 星期六, 二月 22, 2014" />
+<meta property="og:description" content="By Lee - Last updated: 星期六, 二月 22, 2014" />
+<link rel="canonical" href="http://www.jfox.info/2017/5-tools-help-you-to-write-better-java-code.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/5-tools-help-you-to-write-better-java-code.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:44:41+00:00" />
+<script type="application/ld+json">
+{"description":"By Lee - Last updated: 星期六, 二月 22, 2014","@type":"BlogPosting","url":"http://www.jfox.info/2017/5-tools-help-you-to-write-better-java-code.html","headline":"5款工具助你写出更好的Java代码","dateModified":"2017-01-01T15:44:41+00:00","datePublished":"2017-01-01T15:44:41+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/5-tools-help-you-to-write-better-java-code.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">5款工具助你写出更好的Java代码</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:44:41+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>By Lee - Last updated: 星期六, 二月 22, 2014</p>
+
+<p><strong>摘要：</strong>工欲善其事，必先利其器。一名优秀的开发者手里肯定握着不少秘密武器，本文开发者分享了他在开发Java项目时，所用到的5款有助于提高代码质量的工具。</p>
+
+<p>在本文，将介绍5款在IDR解决方案的（开发语言为Java）中，最常用也最实用的工具给Java开发人员，希望它们帮你开发出更好的代码。</p>
+
+<p><strong>1.<a href="https://www.jfox.info/go.php?url=http://findbugs.sourceforge.net/">FindBugs</a></strong></p>
+
+<p><a href="https://www.jfox.info/go.php?url=http://www.jfox.info/wp-content/uploads/2014/02/21163631_NTdl.png"><img src="c33cb83.png" alt="21163631_NTdl" /></a></p>
+
+<p>顾名思义，FindBugs是一款帮助开发者发现bug的工具，它是一个开源项目，遵循GNU公共许可协议，运行的是Java字节码而不是源码。</p>
+
+<p>它是一款静态分析工具，它检查类或者JAR文件，将字节码与一组缺陷模式进行对比来发现可能存在的问题，这些问题包括空指针引用、无限递归循环、死锁等。</p>
+
+<p>FindBugs在发现错误后，会进行等级划分，它把发现的错误分为四个等级：</p>
+
+<p>FindBugs是一个独立的GUI应用程序，有多种使用方式，可以作为Eclipse、NetBeans、IntelliJ IDEA插件使用，也可以从命令行、Ant、Maven使用。</p>
+
+<p><strong>2.<a href="https://www.jfox.info/go.php?url=http://ant.apache.org/">Apache Ant</a></strong></p>
+
+<p><a href="https://www.jfox.info/go.php?url=http://www.jfox.info/wp-content/uploads/2014/02/21163631_yMcT.png"><img src="5fc5bdf.png" alt="21163631_yMcT" /></a></p>
+
+<p>Apache Ant是由Apache软件基金会所提供的一款开源软件，是一个将软件编译、测试、部署等步骤联系在一起加以自动化的一个工具，主要用于Java环境中进行软件开发，它还可以用于构建C或C++应用程序，也可以针对目标任务运用在多种软件开发过程上。</p>
+
+<p>Apache Ant有大量商用或开源的“antlibs”供大家使用，它非常灵活，因为他对编码约定或目录布局都是没有任何限制的。Apache Ant被广泛运用在各种Java IDE环境中，如Eclipse、NetBeans、IntelliJ IDEA等。</p>
+
+<p><strong>3.<a href="https://www.jfox.info/go.php?url=http://www.ej-technologies.com/products/jprofiler/overview.html">JProfiler</a></strong></p>
+
+<p><img src="7f77c1a.gif" alt="21163631_JIKk" /></p>
+
+<p>JProfiler是一个商业授权的Java剖析工具，由EJ技术有限公司开发，主要是针对Java EE和Java SE应用程序使用。它把CPU、内存和线程分析析组合在一个强大的应用中，从而可以用来分析性能瓶颈、内存泄漏、CPU负载以及线程问题。</p>
+
+<p>JProfiler支持多种剖析模式：本地会话实时分析模式、远程会话实时分析模式、离线分析模式、快照比较、查看HPROF快照。此外，JProfiler既可以作为单独的应用程序使用，也可以作为一个插件使用，也可以在Adobes Coldfusion和Glassfish中作为应用服务器集成的一部分。</p>
+
+<p><strong>4.<a href="https://www.jfox.info/go.php?url=http://www.gnu.org/software/bash/bash.html">Bash</a></strong></p>
+
+<p><img src="d92ad33.png" alt="21163632_xKTq" /></p>
+
+<p>全称是Bourne-Again SHell，发布于1989年。它是一个Unix shell或命令式语言解析器，它作为GNU项目，是Bourne shell的一个免费替代。它在GNU操作系统上作为shell被广泛运用，它已是大多数Linux系统以及Mac OS X v10.4默认的shell，它能运行于大多数Unix风格的操作系统之上，甚至被移植到了Microsoft Windows上的Cygwin系统中，以实现Windows的POSIX虚拟接口。此外，它也被DJGPP项目移植到了MS-DOS上。</p>
+
+<p>它通常被用作一个命令处理器，通常运行在一个文本窗口，它还可以从文件中读取各种命令、支持通配符的文件名、piping、命令替换、变量、控制结构等用来进行条件或迭代测试。</p>
+
+<p><strong>5.<a href="https://www.jfox.info/go.php?url=http://www.sonarqube.org/">Sonarqube</a></strong></p>
+
+<p><img src="ac05057.png" alt="21163632_f31M" /></p>
+
+<p>Sonarqube是一个开源平台，是一款代码质量管理和环境搭建工具。它目前支持25种以上语言，包括Java、C/C++、C#、PHP、Flex、JavaScript、Python、PL/SQL、COBOL等，此外，它还可以作为Android开发的一部分。</p>
+
+<p>它提供了完全自动化的分析工具，并且可以与Maven、Ant、Gradle和其它集成工具很好地集成，也可以与Java IDE进行很好的集成。它还可以用于报告重复的代码、编码标准、单元测试、代码覆盖率、复杂的代码、潜在的bug、评论、设计和架构。</p>
+
+<p>参考来源 <a href="https://www.jfox.info/go.php?url=http://www.jfox.info/url.php?url=http%3A%2F%2Fmy.oschina.net%2Fu%2F865092%2Fblog%2F201888">5款工具助你写出更好的Java代码</a>.</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/5-tools-help-you-to-write-better-java-code.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/html5-zengjia-de-xin-tag-he-zuoyong-jieshao.html">&laquo; HTML5增加的新标记和作用介绍</a>
+  
+  
+  <a class="next" href="/2017/the-differentce-of-hibernate-saveorupdate-and-merge-method.html">hibernate saveOrUpdate方法和merge的区别 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

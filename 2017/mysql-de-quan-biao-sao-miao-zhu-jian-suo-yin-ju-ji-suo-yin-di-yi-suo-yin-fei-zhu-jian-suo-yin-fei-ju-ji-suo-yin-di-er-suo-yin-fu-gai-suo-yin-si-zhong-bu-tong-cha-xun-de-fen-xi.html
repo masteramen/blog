@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>MYSQL的全表扫描，主键索引(聚集索引、第一索引)，非主键索引(非聚集索引、第二索引)，覆盖索引四种不同查询的分析 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="MYSQL的全表扫描，主键索引(聚集索引、第一索引)，非主键索引(非聚集索引、第二索引)，覆盖索引四种不同查询的分析" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="By Lee - Last updated: 星期二, 九月 10, 2013" />
+<meta property="og:description" content="By Lee - Last updated: 星期二, 九月 10, 2013" />
+<link rel="canonical" href="http://www.jfox.info/2017/mysql-de-quan-biao-sao-miao-zhu-jian-suo-yin-ju-ji-suo-yin-di-yi-suo-yin-fei-zhu-jian-suo-yin-fei-ju-ji-suo-yin-di-er-suo-yin-fu-gai-suo-yin-si-zhong-bu-tong-cha-xun-de-fen-xi.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/mysql-de-quan-biao-sao-miao-zhu-jian-suo-yin-ju-ji-suo-yin-di-yi-suo-yin-fei-zhu-jian-suo-yin-fei-ju-ji-suo-yin-di-er-suo-yin-fu-gai-suo-yin-si-zhong-bu-tong-cha-xun-de-fen-xi.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:42:31+00:00" />
+<script type="application/ld+json">
+{"description":"By Lee - Last updated: 星期二, 九月 10, 2013","@type":"BlogPosting","url":"http://www.jfox.info/2017/mysql-de-quan-biao-sao-miao-zhu-jian-suo-yin-ju-ji-suo-yin-di-yi-suo-yin-fei-zhu-jian-suo-yin-fei-ju-ji-suo-yin-di-er-suo-yin-fu-gai-suo-yin-si-zhong-bu-tong-cha-xun-de-fen-xi.html","headline":"MYSQL的全表扫描，主键索引(聚集索引、第一索引)，非主键索引(非聚集索引、第二索引)，覆盖索引四种不同查询的分析","dateModified":"2017-01-01T15:42:31+00:00","datePublished":"2017-01-01T15:42:31+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/mysql-de-quan-biao-sao-miao-zhu-jian-suo-yin-ju-ji-suo-yin-di-yi-suo-yin-fei-zhu-jian-suo-yin-fei-ju-ji-suo-yin-di-er-suo-yin-fu-gai-suo-yin-si-zhong-bu-tong-cha-xun-de-fen-xi.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">MYSQL的全表扫描，主键索引(聚集索引、第一索引)，非主键索引(非聚集索引、第二索引)，覆盖索引四种不同查询的分析</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:42:31+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>By Lee - Last updated: 星期二, 九月 10, 2013</p>
+
+<p>MYSQL的全表扫描，主键索引(聚集索引、第一索引)，非主键索引(非聚集索引、第二索引)，覆盖索引四种不同查询的分析</p>
+
+<p>1.前置条件：
+本次是基于小数据量，且数据块在一个页中的最理想情况进行分析，可能无具体的实际意义，但是可以借鉴到各种复杂条件下，因为原理是相同的,知小见大，见微知著！</p>
+
+<p>打开语句分析并确认是否已经打开</p>
+
+<p>Java代码 收藏代码
+mysql&gt; set profiling=1; 
+Query OK, 0 rows affected (0.00 sec)</p>
+
+<p>mysql&gt; select @@profiling; 
++————-+ 
+| @@profiling | 
++————-+ 
+| 1 | 
++————-+ 
+1 row in set (0.01 sec)</p>
+
+<p>2.数据准备：
+2.1全表扫描数据</p>
+
+<p>Java代码 收藏代码
+create table person4all(id int not null auto_increment, name varchar(30) not null, gender varchar(10) not null ,primary key(id)); 
+insert into person4all(name,gender) values(“zhaoming”,”male”); 
+insert into person4all(name,gender) values(“wenwen”,”female”);</p>
+
+<p>2.2根据主键查看数据</p>
+
+<p>Java代码 收藏代码
+create table person4pri(id int not null auto_increment, name varchar(30) not null, gender varchar(10) not null ,primary key(id)); 
+insert into person4pri(name,gender) values(“zhaoming”,”male”); 
+insert into person4pri(name,gender) values(“wenwen”,”female”);</p>
+
+<p>2.3根据非聚集索引查数据</p>
+
+<p>Java代码 收藏代码
+create table person4index(id int not null auto_increment, name varchar(30) not null, gender varchar(10) not null ,primary key(id) , index(gender)); 
+insert into person4index(name,gender) values(“zhaoming”,”male”); 
+insert into person4index(name,gender) values(“wenwen”,”female”);</p>
+
+<p>2.4根据覆盖索引查数据</p>
+
+<p>Java代码 收藏代码
+create table person4cindex(id int not null auto_increment, name varchar(30) not null, gender varchar(10) not null ,primary key(id) , index(name,gender)); 
+insert into person4cindex(name,gender) values(“zhaoming”,”male”); 
+insert into person4cindex(name,gender) values(“wenwen”,”female”);</p>
+
+<p>主要从以下几个方面分析：查询消耗的时间，走的执行计划等方面。</p>
+
+<p>3.开工测试：
+第一步：全表扫描</p>
+
+<p>Java代码 收藏代码
+mysql&gt; select * from person4all ; 
++—-+———-+——–+ 
+| id | name | gender | 
++—-+———-+——–+ 
+| 1 | zhaoming | male | 
+| 2 | wenwen | female | 
++—-+———-+——–+ 
+2 rows in set (0.00 sec)</p>
+
+<p>查看其执行计划：</p>
+
+<p>Java代码 收藏代码
+mysql&gt; explain select * from person4all; 
++—-+————-+————+——+—————+——+———+——+——+——-+ 
+| id | select_type | table | type | possible_keys | key | key_len | ref | rows | Extra | 
++—-+————-+————+——+—————+——+———+——+——+——-+ 
+| 1 | SIMPLE | person4all | ALL | NULL | NULL | NULL | NULL | 2 | | 
++—-+————-+————+——+—————+——+———+——+——+——-+ 
+1 row in set (0.01 sec)</p>
+
+<p>我们可以很清晰的看到走的是全表扫描，而没有走索引！</p>
+
+<p>查询消耗的时间：</p>
+
+<p>Java代码 收藏代码
+mysql&gt; show profiles; 
++———-+————+———————————————————————————————————————————–+ 
+| Query_ID | Duration | Query | 
+| 54 | 0.00177300 | select * from person4all | 
+| 55 | 0.00069200 | explain select * from person4all | 
++———-+————+———————————————————————————————————————————–+</p>
+
+<p>全表扫描总共话了0.0017730秒</p>
+
+<p>各个阶段消耗的时间是：</p>
+
+<p>Java代码 收藏代码
+mysql&gt; show profile for query 54; 
++——————————–+———-+ 
+| Status | Duration | 
++——————————–+———-+ 
+| starting | 0.000065 | 
+| checking query cache for query | 0.000073 | 
+| Opening tables | 0.000037 | 
+| System lock | 0.000024 | 
+| Table lock | 0.000053 | 
+| init | 0.000044 | 
+| optimizing | 0.000022 | 
+| statistics | 0.000032 | 
+| preparing | 0.000030 | 
+| executing | 0.000020 | 
+| Sending data | 0.001074 | 
+| end | 0.000091 | 
+| query end | 0.000020 | 
+| freeing items | 0.000103 | 
+| storing result in query cache | 0.000046 | 
+| logging slow query | 0.000019 | 
+| cleaning up | 0.000020 | 
++——————————–+———-+ 
+17 rows in set (0.00 sec)</p>
+
+<p>第一次不走缓存的话，需要检查是否存在缓存中，打开表，初始化等操作，最大的开销在于返回数据。</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/mysql-de-quan-biao-sao-miao-zhu-jian-suo-yin-ju-ji-suo-yin-di-yi-suo-yin-fei-zhu-jian-suo-yin-fei-ju-ji-suo-yin-di-er-suo-yin-fu-gai-suo-yin-si-zhong-bu-tong-cha-xun-de-fen-xi.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/mysql-de-quan-biao-sao-miao-zhu-jian-suo-yin-ju-ji-suo-yin-di-yi-suo-yin-fei-zhu-jian-suo-yin-fei-ju-ji-suo-yin-di-er-suo-yin-fu-gai-suo-yin-si-zhong-bu-tong-cha-xun-de-fen-xi.html">&laquo; MYSQL的全表扫描，主键索引(聚集索引、第一索引)，非主键索引(非聚集索引、第二索引)，覆盖索引四种不同查询的分析</a>
+  
+  
+  <a class="next" href="/2017/ji-he-lei-set-list-map-ji-qi-zi-lei-de-lei-ji-cheng-tu.html">集合类 Set List Map及其子类的类继承图 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

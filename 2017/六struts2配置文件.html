@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>(六)Struts2 配置文件 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="(六)Struts2 配置文件" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="本章节将带你学习Struts2 应用程序所需的基本配置。在这里可以看到哪些将被配置到一些重要的配置文件中：web.xml、struts.xml、struts-config.xml以及struts.properties。" />
+<meta property="og:description" content="本章节将带你学习Struts2 应用程序所需的基本配置。在这里可以看到哪些将被配置到一些重要的配置文件中：web.xml、struts.xml、struts-config.xml以及struts.properties。" />
+<link rel="canonical" href="http://www.jfox.info/2017/%E5%85%ADstruts2%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/%E5%85%ADstruts2%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:59:31+00:00" />
+<script type="application/ld+json">
+{"description":"本章节将带你学习Struts2 应用程序所需的基本配置。在这里可以看到哪些将被配置到一些重要的配置文件中：web.xml、struts.xml、struts-config.xml以及struts.properties。","@type":"BlogPosting","url":"http://www.jfox.info/2017/%E5%85%ADstruts2%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6.html","headline":"(六)Struts2 配置文件","dateModified":"2017-01-01T15:59:31+00:00","datePublished":"2017-01-01T15:59:31+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/%E5%85%ADstruts2%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">(六)Struts2 配置文件</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:59:31+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>本章节将带你学习Struts2 应用程序所需的基本配置。在这里可以看到哪些将被配置到一些重要的配置文件中：<strong>web.xml</strong>、<strong>struts.xml</strong>、<strong>struts-config.xml</strong>以及<strong>struts.properties</strong>。</p>
+
+<p>实际上，你可以继续依赖于使用web.xml和struts.xml配置文件，并且你已经在前面的章节中了解到，我们的示例是使用这两个文件运作的，不过为了让你了解更多，我们还是再来说明一下其他的文件。</p>
+
+<h2 id="webxml文件">web.xml文件</h2>
+
+<p>web.xml配置文件是一种J2EE配置文件，决定servlet容器的HTTP元素需求如何进行处理。它严格来说不是一个Struts2 配置文件，但它是Struts2 运作所需要进行配置的文件。</p>
+
+<p>正如前面所讨论的，这个文件为每个web应用程序提供接入点。在部署描述符（web.xml）中，Struts2 应用程序的接入点将会定义为一个过滤器。因此我们将在web.xml里定义一个FilterDispatcher类的接入点，而这个web.xml文件需要在<strong>WebContent/WEB-INF</strong>文件夹下创建。</p>
+
+<p>如果你开始时没有模板或工具（比如Eclipse或Maven2）的辅助来生成，那这就是第一个你需要配置的文件。下面是我们在上一个例子中用到的web.xml的内容。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;web-app</span> <span class="na">xmlns:xsi=</span><span class="s">"http://www.w3.org/2001/XMLSchema-instance"</span>
+   <span class="na">xmlns=</span><span class="s">"http://java.sun.com/xml/ns/javaee"</span> 
+   <span class="na">xmlns:web=</span><span class="s">"http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"</span>
+   <span class="na">xsi:schemaLocation=</span><span class="s">"http://java.sun.com/xml/ns/javaee 
+   http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"</span>
+   <span class="na">id=</span><span class="s">"WebApp_ID"</span> <span class="na">version=</span><span class="s">"3.0"</span><span class="nt">&gt;</span>
+   
+   <span class="nt">&lt;display-name&gt;</span>Struts 2<span class="nt">&lt;/display-name&gt;</span>
+   <span class="nt">&lt;welcome-file-list&gt;</span>
+      <span class="nt">&lt;welcome-file&gt;</span>index.jsp<span class="nt">&lt;/welcome-file&gt;</span>
+   <span class="nt">&lt;/welcome-file-list&gt;</span>
+   
+   <span class="nt">&lt;filter&gt;</span>
+      <span class="nt">&lt;filter-name&gt;</span>struts2<span class="nt">&lt;/filter-name&gt;</span>
+      <span class="nt">&lt;filter-class&gt;</span>
+         org.apache.struts2.dispatcher.FilterDispatcher
+      <span class="nt">&lt;/filter-class&gt;</span>
+   <span class="nt">&lt;/filter&gt;</span>
+
+   <span class="nt">&lt;filter-mapping&gt;</span>
+      <span class="nt">&lt;filter-name&gt;</span>struts2<span class="nt">&lt;/filter-name&gt;</span>
+      <span class="nt">&lt;url-pattern&gt;</span>/*<span class="nt">&lt;/url-pattern&gt;</span>
+   <span class="nt">&lt;/filter-mapping&gt;</span>
+
+<span class="nt">&lt;/web-app&gt;</span>
+</code></pre></div></div>
+
+<p>注意，我们将Struts2 过滤器映射到 <strong>/* **，而不是</strong> /*.action **，这意味着所有的url都会被Struts过滤器解析。当我们学到关于注解的章节时会对这个进行讨论。</p>
+
+<h2 id="strutsxml文件">struts.xml文件</h2>
+<p><strong>struts.xml</strong>文件包含有随着Actions的开发你将要修改的配置信息。它可用于覆盖应用程序的默认设置，例如：struts.devMode=false 以及其他定义为属性文件的设置。这个文件可在 
+ <strong>WEB-INF/classes</strong>文件夹下创建。</p>
+
+<p>让我们来看一下在前一章节中阐述的Hello World示例里创建的struts.xml文件。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="cp">&lt;!DOCTYPE struts PUBLIC
+   "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+   "http://struts.apache.org/dtds/struts-2.0.dtd"&gt;</span>
+<span class="nt">&lt;struts&gt;</span>
+   <span class="nt">&lt;constant</span> <span class="na">name=</span><span class="s">"struts.devMode"</span> <span class="na">value=</span><span class="s">"true"</span> <span class="nt">/&gt;</span>
+   <span class="nt">&lt;package</span> <span class="na">name=</span><span class="s">"helloworld"</span> <span class="na">extends=</span><span class="s">"struts-default"</span><span class="nt">&gt;</span>
+     
+      <span class="nt">&lt;action</span> <span class="na">name=</span><span class="s">"hello"</span> 
+            <span class="na">class=</span><span class="s">"cn.w3cschool.struts2.HelloWorldAction"</span> 
+            <span class="na">method=</span><span class="s">"execute"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;result</span> <span class="na">name=</span><span class="s">"success"</span><span class="nt">&gt;</span>/HelloWorld.jsp<span class="nt">&lt;/result&gt;</span>
+      <span class="nt">&lt;/action&gt;</span>
+      <span class="nt">&lt;--</span> <span class="err">more</span> <span class="err">actions</span> <span class="err">can</span> <span class="err">be</span> <span class="err">listed</span> <span class="err">here</span> <span class="err">--</span><span class="nt">&gt;</span>
+
+   <span class="nt">&lt;/package&gt;</span>
+   <span class="nt">&lt;--</span> <span class="err">more</span> <span class="err">packages</span> <span class="err">can</span> <span class="err">be</span> <span class="err">listed</span> <span class="err">here</span> <span class="err">--</span><span class="nt">&gt;</span>
+
+<span class="nt">&lt;/struts&gt;</span>
+</code></pre></div></div>
+
+<p>首先要注意的是<strong>DOCTYPE</strong>（文档类型）。如我们的示例所示，所有的Struts配置文件都需要有正确的doctype。<struts>是根标记元素，在其下，我们使用<package>标签声明不同的包。 这里的<package>标签允许配置的分离和模块化。这在你进行一个大的项目并且项目分为多个不同的模块时，是非常有用的。</package></package></struts></p>
+
+<p>如果您的项目有三个域：business_applicaiton、customer_application和staff_application的话，你可以创建三个包，并将相关的Actions存储到相应的包中。 <package>标签具有以下属性：
+属性描述name（必需）为package的唯一标识extends指定package继承另一package的所有配置。通常情况下，我们使用struts-default作为package的基础。abstract定义package为抽象的。如果标记为true，则package不能被最终用户使用。namespaceActions的唯一命名空间
+**<constant>**标签以及name和value属性将用于覆盖**default.properties**中定义的任一属性，就像我们设置的**struts.devMode**属性一样。设置**struts.devMode**属性允许我们在日志文件中查看更多的调试消息。</constant></package></p>
+
+<p>我们定义**<action>**标签对应于我们想要访问的每个URL，并且使用execute()方法定义一个访问相应的URL时将要访问的类。</action></p>
+
+<p>Results（结果）确定在执行操作后返回到浏览器的内容，而从操作返回的字符串应该是结果的名称。 Results按上述方式配置，或作为“全局”结果配置，可用于包中的每个操作。 Results有<strong>name</strong>和<strong>type</strong>属性可选，默认的name值是“success”。
+Struts.xml文件可以随着时间的推移而增长，因此通过包打破它是使它模块化的一种方式，但struts提供了另一种模块化struts.xml文件的方法，你可以将文件拆分为多个xml文件，并用以下方式导入它们。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="cp">&lt;!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd"&gt;</span>
+<span class="nt">&lt;struts&gt;</span>
+     <span class="nt">&lt;include</span> <span class="na">file=</span><span class="s">"my-struts1.xml"</span><span class="nt">/&gt;</span>
+     <span class="nt">&lt;include</span> <span class="na">file=</span><span class="s">"my-struts2.xml"</span><span class="nt">/&gt;</span>
+<span class="nt">&lt;/struts&gt;</span>
+</code></pre></div></div>
+
+<p>我们没有覆盖的另一个配置文件是struts-default.xml。此文件包含Struts的标准配置设置，你不必再为99.99％的项目重复这些设置。 因此，我们不会深入了解这个文件的太多细节。如果你有兴趣，可以查看在struts2-core-2.2.3.jar文件中可用的<strong>default.properties</strong>文件。</p>
+
+<h2 id="struts-configxml文件">struts-config.xml文件</h2>
+
+<p>struts-config.xml配置文件是Web Client中View和Model组件之间的链接，但在你99.99％的项目里你不必使用这些设置。 struts-config.xml配置文件包含以下主要元素：
+序号拦截器和说明1<strong>struts-config</strong>
+这是配置文件的根节点。
+2<strong>form-beans</strong>
+这是你将ActionForm子类映射到name的位置，你可以在struts-config.xml文件的其余部分，甚至在JSP页面上，将这个name用作ActionForm的别名。
+3<strong>global forwards</strong>
+此部分将你在webapp上的页面映射到name，你可以使用这个name来引用实际页面。这避免了对你网页上的URL进行硬编码。
+4<strong>action-mappings</strong>
+这是你声明表单处理程序的地方，也被称为<strong>操作映射（action mappings）</strong>。
+5<strong>controller</strong>
+这部分是配置Struts的内部，在实际情况中很少使用。
+6<strong>plug-in</strong>
+这部分告诉Struts在哪里找到属性文件，它包含提示和错误消息。</p>
+
+<p>下面是struts-config.xml文件的示例：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;?xml version="1.0" encoding="ISO-8859-1" ?&gt;</span>
+<span class="cp">&lt;!DOCTYPE struts-config PUBLIC
+"-//Apache Software Foundation//DTD Struts Configuration 1.0//EN"
+"http://jakarta.apache.org/struts/dtds/struts-config_1_0.dtd"&gt;</span>
+
+<span class="nt">&lt;struts-config&gt;</span>
+
+   <span class="c">&lt;!-- ========== Form Bean Definitions ============ --&gt;</span>
+   <span class="nt">&lt;form-beans&gt;</span>
+      <span class="nt">&lt;form-bean</span> <span class="na">name=</span><span class="s">"login"</span> <span class="na">type=</span><span class="s">"test.struts.LoginForm"</span> <span class="nt">/&gt;</span>
+   <span class="nt">&lt;/form-beans&gt;</span>
+
+   <span class="c">&lt;!-- ========== Global Forward Definitions ========= --&gt;</span>
+   <span class="nt">&lt;global-forwards&gt;</span>
+   <span class="nt">&lt;/global-forwards&gt;</span>
+
+   <span class="c">&lt;!-- ========== Action Mapping Definitions ======== --&gt;</span>
+   <span class="nt">&lt;action-mappings&gt;</span>
+      <span class="nt">&lt;action</span>
+         <span class="na">path=</span><span class="s">"/login"</span>
+         <span class="na">type=</span><span class="s">"test.struts.LoginAction"</span> <span class="nt">&gt;</span>
+
+         <span class="nt">&lt;forward</span> <span class="na">name=</span><span class="s">"valid"</span> <span class="na">path=</span><span class="s">"/jsp/MainMenu.jsp"</span> <span class="nt">/&gt;</span>
+         <span class="nt">&lt;forward</span> <span class="na">name=</span><span class="s">"invalid"</span> <span class="na">path=</span><span class="s">"/jsp/LoginView.jsp"</span> <span class="nt">/&gt;</span>
+      <span class="nt">&lt;/action&gt;</span>
+   <span class="nt">&lt;/action-mappings&gt;</span>
+
+   <span class="c">&lt;!-- ========== Controller Definitions ======== --&gt;</span>
+   <span class="nt">&lt;controller</span> 
+      <span class="na">contentType=</span><span class="s">"text/html;charset=UTF-8"</span>
+      <span class="na">debug=</span><span class="s">"3"</span>
+      <span class="na">maxFileSize=</span><span class="s">"1.618M"</span>
+      <span class="na">locale=</span><span class="s">"true"</span>
+      <span class="na">nocache=</span><span class="s">"true"</span><span class="nt">/&gt;</span>
+
+<span class="nt">&lt;/struts-config&gt;</span>
+</code></pre></div></div>
+
+<p>有关struts-config.xml文件的更多详细内容，可查看Struts Documentation。</p>
+
+<h2 id="strutsproperties文件">struts.properties文件</h2>
+
+<p>这个配置文件提供了一种机制来改变框架的默认行为。实际上，<strong>struts.properties</strong>配置文件中包含的所有属性也可以在<strong>web.xml</strong>中配置使用<strong>init-param</strong>，以及在<strong>struts.xml</strong>配置文件中使用<strong>constant</strong>标签。 但如果你想保持事件独立以及保留更多struts细节，那么你可以在<strong>WEB-INF/classes</strong>文件夹下创建这个文件。</p>
+
+<p>struts.properties文件中配置的值将覆盖<strong>default.properties</strong>中配置的默认值，这些值包含在struts2-core-x.y.z.jar分布中。有一些属性，你可以考虑改为使用<strong>struts.properties</strong>文件：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>### When set to true, Struts will act much more friendly for developers
+struts.devMode = true
+
+### Enables reloading of internationalization files
+struts.i18n.reload = true
+
+### Enables reloading of XML configuration files
+struts.configuration.xml.reload = true
+
+### Sets the port that the server is run on
+struts.url.http.port = 8080
+</code></pre></div></div>
+
+<p>这里任何以＃（hash）开头的行都将被假定为注释，并且它会被Struts 2默认忽略。</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/%E5%85%ADstruts2%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/spring%E7%9A%84transactional%E6%B3%A8%E8%A7%A3%E8%AF%A6%E7%BB%86%E7%94%A8%E6%B3%95.html">&laquo; spring的@Transactional注解详细用法</a>
+  
+  
+  <a class="next" href="/2017/springmvc%E7%9A%84%E6%95%B0%E6%8D%AE%E8%BD%AC%E6%8D%A2%E5%8F%8A%E6%95%B0%E6%8D%AE%E6%A0%BC%E5%BC%8F%E5%8C%96.html">Spring MVC的数据转换及数据格式化 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

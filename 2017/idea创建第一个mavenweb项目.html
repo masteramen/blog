@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>idea创建第一个maven web项目 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="idea创建第一个maven web项目" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="idea创建第一个maven web项目" />
+<meta property="og:description" content="idea创建第一个maven web项目" />
+<link rel="canonical" href="http://www.jfox.info/2017/idea%E5%88%9B%E5%BB%BA%E7%AC%AC%E4%B8%80%E4%B8%AAmavenweb%E9%A1%B9%E7%9B%AE.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/idea%E5%88%9B%E5%BB%BA%E7%AC%AC%E4%B8%80%E4%B8%AAmavenweb%E9%A1%B9%E7%9B%AE.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:52:45+00:00" />
+<script type="application/ld+json">
+{"description":"idea创建第一个maven web项目","@type":"BlogPosting","url":"http://www.jfox.info/2017/idea%E5%88%9B%E5%BB%BA%E7%AC%AC%E4%B8%80%E4%B8%AAmavenweb%E9%A1%B9%E7%9B%AE.html","headline":"idea创建第一个maven web项目","dateModified":"2017-01-01T15:52:45+00:00","datePublished":"2017-01-01T15:52:45+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/idea%E5%88%9B%E5%BB%BA%E7%AC%AC%E4%B8%80%E4%B8%AAmavenweb%E9%A1%B9%E7%9B%AE.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">idea创建第一个maven web项目</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:52:45+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<h1 id="idea创建第一个maven-web项目">idea创建第一个maven web项目</h1>
+
+<h1 id="一打开ideafile-new-project选择mavne勾选create-from-archtype选择orgapachemavenarchtypesmaven-archtype-webapp点击next">一、打开idea，File-&gt;New-&gt;Project。选择Mavne，勾选Create from archtype，选择org.apache.maven.archtypes:maven-archtype-webapp，点击Next。</h1>
+
+<p><img src="25dc4a3.png" alt="" /></p>
+
+<h1 id="二填写这个maven项目的groupidartifactidversion信息这是标识maven项目的三维坐标点击next">二、填写这个maven项目的GroupId、ArtifactId、Version信息。这是标识maven项目的三维坐标。点击Next</h1>
+
+<p><img src="ff36ea8.png" alt="" /></p>
+
+<h1 id="三下面的是一些属性除了已有的6个我们需要添加一个archetypecataloginternal这个参数的意义是让这个maven项目的骨架不要到远程下载而是本地获取如果你没加这个参数那么项目创建可能在卡在downloading-maven-plugins继续点击next">三、下面的是一些属性，除了已有的6个，我们需要添加一个archetypeCatalog=internal。这个参数的意义是让这个maven项目的骨架不要到远程下载而是本地获取。如果你没加这个参数，那么项目创建可能在卡在downloading maven plugins…继续点击Next</h1>
+
+<p><img src="5a34c16.png" alt="" /></p>
+
+<h1 id="四为项目命名点击finish项目一瞬间就创建好了">四、为项目命名，点击Finish，项目一瞬间就创建好了！</h1>
+
+<p><img src="0a56523.png" alt="" /></p>
+
+<h1 id="五查看项目的结构">五、查看项目的结构</h1>
+
+<p><img src="0cb14c2.png" alt="" /></p>
+
+<h1 id="六pomxml添加依赖">六、pom.xml添加依赖</h1>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;dependency&gt;
+    &lt;groupId&gt;javax.servlet&lt;/groupId&gt;
+    &lt;artifactId&gt;javax.servlet-api&lt;/artifactId&gt;
+    &lt;version&gt;3.1.0&lt;/version&gt;
+    &lt;scope&gt;provided&lt;/scope&gt;
+&lt;/dependency&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;javax.servlet.jsp&lt;/groupId&gt;
+    &lt;artifactId&gt;jsp-api&lt;/artifactId&gt;
+    &lt;version&gt;2.2&lt;/version&gt;
+    &lt;scope&gt;provided&lt;/scope&gt;
+&lt;/dependency&gt;
+</code></pre></div></div>
+
+<p><strong>需要注意的是scope都要设置为provided，因为接下来使用maven-tomcat容器运行，这2个组件tomcat中已存在，所以不需要打包</strong></p>
+
+<h1 id="七pomxml添加bulid-plugins">七、pom.xml添加bulid-plugins</h1>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;plugins&gt;
+    &lt;plugin&gt;
+        &lt;groupId&gt;org.apache.tomcat.maven&lt;/groupId&gt;
+        &lt;artifactId&gt;tomcat7-maven-plugin&lt;/artifactId&gt;
+        &lt;version&gt;2.2&lt;/version&gt;
+        &lt;configuration&gt;
+            &lt;port&gt;8080&lt;/port&gt;
+            &lt;charset&gt;${project.build.sourceEncoding}&lt;/charset&gt;
+            &lt;server&gt;tomcat7&lt;/server&gt;
+        &lt;/configuration&gt;
+    &lt;/plugin&gt;
+&lt;/plugins&gt;
+</code></pre></div></div>
+
+<h1 id="八编译">八、编译</h1>
+
+<p>命令：mvn compile</p>
+
+<h1 id="九打包">九、打包</h1>
+
+<p>命令：mvn package</p>
+
+<h1 id="十运行">十、运行</h1>
+
+<p>命令：mvn tomcat7:run</p>
+
+<p><img src="24251a2.png" alt="" /></p>
+
+<h1 id="十一异常现象">十一、异常现象</h1>
+
+<p><strong>1.如果使用命令(mvn tomcat:run)运行，打开网站报错</strong></p>
+
+<p><img src="f58f3c2.png" alt="" /></p>
+
+<p><strong>2.pom.xml不设置bulid-plugins，不指定tomcat版本为7，运行也报错，默认运行的是tomcat6，这个哪个高手解释下，是不是tomcat版本低了</strong></p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/idea%E5%88%9B%E5%BB%BA%E7%AC%AC%E4%B8%80%E4%B8%AAmavenweb%E9%A1%B9%E7%9B%AE.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/%E8%B0%B7%E6%AD%8C%E6%B5%8F%E8%A7%88%E5%99%A8%E8%AE%BF%E9%97%AE%E7%BD%91%E7%AB%99%E6%8F%90%E7%A4%BA%E6%82%A8%E8%A6%81%E8%AE%BF%E9%97%AE%E7%9A%84%E7%BD%91%E7%AB%99%E5%8C%85%E5%90%AB%E6%81%B6%E6%84%8F.html">&laquo; 谷歌浏览器访问网站提示“您要访问的网站包含恶意软件”</a>
+  
+  
+  <a class="next" href="/2017/java%E5%A6%82%E4%BD%95%E8%8E%B7%E5%8F%96hdd%E5%BA%8F%E5%88%97%E5%8F%B7.html">java如何获取hdd序列号 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

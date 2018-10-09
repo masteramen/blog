@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>Java单元测试(Junit+Mock+代码覆盖率) | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="Java单元测试(Junit+Mock+代码覆盖率)" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="By Lee - Last updated: 星期四, 十一月 21, 2013" />
+<meta property="og:description" content="By Lee - Last updated: 星期四, 十一月 21, 2013" />
+<link rel="canonical" href="http://www.jfox.info/2017/java-dan-yuan-ce-shi-junit-mock-dai-ma-fu-gai-lv.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/java-dan-yuan-ce-shi-junit-mock-dai-ma-fu-gai-lv.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:43:11+00:00" />
+<script type="application/ld+json">
+{"description":"By Lee - Last updated: 星期四, 十一月 21, 2013","@type":"BlogPosting","url":"http://www.jfox.info/2017/java-dan-yuan-ce-shi-junit-mock-dai-ma-fu-gai-lv.html","headline":"Java单元测试(Junit+Mock+代码覆盖率)","dateModified":"2017-01-01T15:43:11+00:00","datePublished":"2017-01-01T15:43:11+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/java-dan-yuan-ce-shi-junit-mock-dai-ma-fu-gai-lv.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Java单元测试(Junit+Mock+代码覆盖率)</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:43:11+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>By Lee - Last updated: 星期四, 十一月 21, 2013</p>
+
+<p>单元测试是编写测试代码，用来检测特定的、明确的、细颗粒的功能。单元测试并不一定保证程序功能是正确的，更不保证整体业务是准备的。</p>
+
+<p>单元测试不仅仅用来保证当前代码的正确性，更重要的是用来保证代码<strong>修复</strong>、<strong>改进</strong>或<strong>重构</strong>之后的正确性。</p>
+
+<p>一般来说，单元测试任务包括</p>
+
+<ol>
+  <li>接口功能测试：用来保证接口功能的正确性。</li>
+  <li>局部数据结构测试（不常用）：用来保证接口中的数据结构是正确的</li>
+  <li>比如变量有无初始值</li>
+  <li>
+    <p>变量是否溢出</p>
+  </li>
+  <li>边界条件测试</li>
+  <li><strong>变量没有赋值</strong>（即为NULL）</li>
+  <li>变量是数值（或字符)</li>
+  <li><strong>主要边界</strong>：最小值，最大值，无穷大（对于DOUBLE等）</li>
+  <li><strong>溢出边界</strong>（期望异常或拒绝服务）：最小值-1，最大值+1</li>
+  <li>
+    <p><strong>临近边界</strong>：最小值+1，最大值-1</p>
+  </li>
+  <li>变量是字符串</li>
+  <li>引用“字符变量”的边界</li>
+  <li><strong>空字符串</strong></li>
+  <li>
+    <p>对字符串长度应用“数值变量”的边界</p>
+  </li>
+  <li>变量是集合</li>
+  <li><strong>空集合</strong></li>
+  <li><strong>对集合的大小应用“数值变量”的边界</strong></li>
+  <li>
+    <p><strong>调整次序</strong>：升序、降序</p>
+  </li>
+  <li>变量有规律</li>
+  <li>
+    <p>比如对于Math.sqrt，给出n^2-1，和n^2+1的边界</p>
+  </li>
+  <li>所有独立执行通路测试：保证每一条代码，每个分支都经过测试</li>
+  <li>代码覆盖率</li>
+  <li><strong>语句覆盖</strong>：保证每一个语句都执行到了</li>
+  <li>判定覆盖（分支覆盖）：保证每一个分支都执行到</li>
+  <li>条件覆盖：保证每一个条件都覆盖到true和false（即if、while中的条件语句）</li>
+  <li>
+    <p>路径覆盖：保证每一个路径都覆盖到</p>
+  </li>
+  <li>相关软件</li>
+  <li>Cobertura：语句覆盖</li>
+  <li>
+    <p>Emma: Eclipse插件Eclemma</p>
+  </li>
+  <li>各条错误处理通路测试：保证每一个异常都经过测试</li>
+</ol>
+
+<h2 id="junit">JUNIT</h2>
+
+<p>JUnit是Java单元测试框架，已经在Eclipse中默认安装。目前主流的有JUnit3和JUnit4。JUnit3中，测试用例需要继承<code class="highlighter-rouge">TestCase</code>类。JUnit4中，测试用例无需继承<code class="highlighter-rouge">TestCase</code>类，只需要使用<code class="highlighter-rouge">@Test</code>等注解。</p>
+
+<h4 id="junit3">Junit3</h4>
+
+<p>先看一个Junit3的样例</p>
+
+<p>Java代码  <a href="![收藏代码](http://thihy.iteye.com/images/icon_star.png)"><img src="6fd02fe.png" alt="收藏代码" /></a></p>
+
+<ol>
+  <li>// 测试java.lang.Math</li>
+  <li>// 必须继承TestCase</li>
+  <li>public class Junit3TestCase extends TestCase {</li>
+  <li>public Junit3TestCase() {</li>
+  <li>super();</li>
+  <li>}</li>
+  <li></li>
+  <li>// 传入测试用例名称</li>
+  <li>public Junit3TestCase(String name) {</li>
+  <li>super(name);</li>
+  <li>}</li>
+  <li></li>
+  <li>// 在每个Test运行之前运行</li>
+  <li>@Override</li>
+  <li>protected void setUp() throws Exception {</li>
+  <li>System.out.println(“Set up”);</li>
+  <li>}</li>
+  <li>// 测试方法。</li>
+  <li>// 方法名称必须以test开头，没有参数，无返回值，是公开的，可以抛出异常</li>
+  <li>// 也即类似public void testXXX() throws Exception {}</li>
+  <li>public void testMathPow() {</li>
+  <li>System.out.println(“Test Math.pow”);</li>
+  <li>Assert.assertEquals(4.0, Math.pow(2.0, 2.0));</li>
+  <li>}</li>
+  <li></li>
+  <li>public void testMathMin() {</li>
+  <li>System.out.println(“Test Math.min”);</li>
+  <li>Assert.assertEquals(2.0, Math.min(2.0, 4.0));</li>
+  <li>}</li>
+  <li></li>
+  <li>// 在每个Test运行之后运行</li>
+  <li>@Override</li>
+  <li>protected void tearDown() throws Exception {</li>
+  <li>System.out.println(“Tear down”);</li>
+  <li>}</li>
+  <li>}</li>
+</ol>
+
+<p>如果采用默认的TestSuite，则测试方法必须是<code class="highlighter-rouge">public void testXXX() [throws Exception] {}</code>的形式，并且不能存在依赖关系，因为测试方法的调用顺序是不可预知的。
+上例执行后，控制台会输出</p>
+
+<p>Text代码  <a href="![收藏代码](http://thihy.iteye.com/images/icon_star.png)"><img src="6fd02fe.png" alt="收藏代码" /></a></p>
+
+<ol>
+  <li>Set up</li>
+  <li>Test Math.pow</li>
+  <li>Tear down</li>
+  <li>Set up</li>
+  <li>Test Math.min</li>
+  <li>Tear down</li>
+</ol>
+
+<p>从中，可以猜测到，对于每个测试方法，调用的形式是：</p>
+
+<p>Java代码  <a href="![收藏代码](http://thihy.iteye.com/images/icon_star.png)"><img src="6fd02fe.png" alt="收藏代码" /></a></p>
+
+<ol>
+  <li>testCase.setUp();</li>
+  <li>testCase.testXXX();</li>
+  <li>testCase.tearDown();</li>
+</ol>
+
+<h5 id="运行测试方法">运行测试方法</h5>
+
+<p>在Eclipse中，可以直接在类名或测试方法上右击，在弹出的右击菜单中选择Run As -&gt; JUnit Test。
+在Mvn中，可以直接通过<code class="highlighter-rouge">mvn test</code>命令运行测试用例。
+也可以通过Java方式调用，创建一个<code class="highlighter-rouge">TestCase</code>实例，然后重载<code class="highlighter-rouge">runTest()</code>方法，在其方法内调用测试方法（可以多个）。</p>
+
+<p>Java代码  <a href="![收藏代码](http://thihy.iteye.com/images/icon_star.png)"><img src="6fd02fe.png" alt="收藏代码" /></a></p>
+
+<ol>
+  <li>TestCase test = new Junit3TestCase(“mathPow”) {</li>
+  <li>// 重载</li>
+  <li>protected void runTest() throws Throwable {</li>
+  <li>testMathPow();</li>
+  <li>};</li>
+  <li>};</li>
+  <li>test.run();</li>
+</ol>
+
+<p>更加便捷地，可以在创建<code class="highlighter-rouge">TestCase</code>实例时直接传入测试方法名称，JUnit会自动调用此测试方法，如</p>
+
+<p>Java代码  <a href="![收藏代码](http://thihy.iteye.com/images/icon_star.png)"><img src="6fd02fe.png" alt="收藏代码" /></a></p>
+
+<ol>
+  <li>TestCase test = new Junit3TestCase(“testMathPow”);</li>
+  <li>test.run();</li>
+</ol>
+
+<h5 id="junit-testsuite">Junit TestSuite</h5>
+
+<p>TestSuite是测试用例套件，能够运行过个测试方法。如果不指定TestSuite，会创建一个默认的TestSuite。默认TestSuite会扫描当前内中的所有测试方法，然后运行。
+如果不想采用默认的TestSuite，则可以自定义TestSuite。在TestCase中，可以通过静态方法<code class="highlighter-rouge">suite()</code>返回自定义的suite。</p>
+
+<p>Java代码  <a href="![收藏代码](http://thihy.iteye.com/images/icon_star.png)"><img src="6fd02fe.png" alt="收藏代码" /></a></p>
+
+<ol>
+  <li>import junit.framework.Assert;</li>
+  <li>import junit.framework.Test;</li>
+  <li>import junit.framework.TestCase;</li>
+  <li>import junit.framework.TestSuite;</li>
+  <li></li>
+  <li>public class Junit3TestCase extends TestCase {</li>
+  <li>//…</li>
+  <li>public static Test suite() {</li>
+  <li>System.out.println(“create suite”);</li>
+  <li>TestSuite suite = new TestSuite();</li>
+  <li>suite.addTest(new Junit3TestCase(“testMathPow”));</li>
+  <li>return suite;</li>
+  <li>}</li>
+  <li>}</li>
+</ol>
+
+<p>允许上述方法，控制台输出</p>
+
+<p>写道</p>
+
+<p>create suite
+Set up
+Test Math.pow
+Tear down</p>
+
+<p>并且只运行了<code class="highlighter-rouge">testMathPow</code>测试方法，而没有运行<code class="highlighter-rouge">testMathMin</code>测试方法。通过显式指定测试方法，可以控制测试执行的顺序。</p>
+
+<p>也可以通过Java的方式创建TestSuite，然后调用TestCase，如</p>
+
+<p>Java代码  <a href="![收藏代码](http://thihy.iteye.com/images/icon_star.png)"><img src="6fd02fe.png" alt="收藏代码" /></a></p>
+
+<ol>
+  <li>// 先创建TestSuite，再添加测试方法</li>
+  <li>TestSuite testSuite = new TestSuite();</li>
+  <li>testSuite.addTest(new Junit3TestCase(“testMathPow”));</li>
+  <li></li>
+  <li>// 或者 传入Class，TestSuite会扫描其中的测试方法。</li>
+  <li>TestSuite testSuite = new TestSuite(Junit3TestCase.class,Junit3TestCase2.class,Junit3TestCase3.class);</li>
+  <li></li>
+  <li>// 运行testSuite</li>
+  <li>TestResult testResult = new TestResult();</li>
+  <li>testSuite.run(testResult);</li>
+</ol>
+
+<p>testResult中保存了很多测试数据，包括运行测试方法数目(<code class="highlighter-rouge">runCount</code>)等。</p>
+
+<h4 id="junit4">JUnit4</h4>
+
+<p>与JUnit3不同，JUnit4通过注解的方式来识别测试方法。目前支持的主要注解有：</p>
+
+<ul>
+  <li><code class="highlighter-rouge">@BeforeClass</code> 全局只会执行一次，而且是第一个运行</li>
+  <li><code class="highlighter-rouge">@Before</code> 在测试方法运行之前运行</li>
+  <li><code class="highlighter-rouge">@Test</code> 测试方法</li>
+  <li><code class="highlighter-rouge">@After</code> 在测试方法运行之后允许</li>
+  <li><code class="highlighter-rouge">@AfterClass</code> 全局只会执行一次，而且是最后一个运行</li>
+  <li><code class="highlighter-rouge">@Ignore</code> 忽略此方法</li>
+</ul>
+
+<p>下面举一个样例：</p>
+
+<p>Java代码  <a href="![收藏代码](http://thihy.iteye.com/images/icon_star.png)"><img src="6fd02fe.png" alt="收藏代码" /></a></p>
+
+<ol>
+  <li>import org.junit.After;</li>
+  <li>import org.junit.AfterClass;</li>
+  <li>import org.junit.Assert;</li>
+  <li>import org.junit.Before;</li>
+  <li>import org.junit.BeforeClass;</li>
+  <li>import org.junit.Ignore;</li>
+  <li>import org.junit.Test;</li>
+  <li></li>
+  <li>public class Junit4TestCase {</li>
+  <li></li>
+  <li>@BeforeClass</li>
+  <li>public static void setUpBeforeClass() {</li>
+  <li>System.out.println(“Set up before class”);</li>
+  <li>}</li>
+  <li></li>
+  <li>@Before</li>
+  <li>public void setUp() throws Exception {</li>
+  <li>System.out.println(“Set up”);</li>
+  <li>}</li>
+  <li></li>
+  <li>@Test</li>
+  <li>public void testMathPow() {</li>
+  <li>System.out.println(“Test Math.pow”);</li>
+  <li>Assert.assertEquals(4.0, Math.pow(2.0, 2.0), 0.0);</li>
+  <li>}</li>
+  <li></li>
+  <li>@Test</li>
+  <li>public void testMathMin() {</li>
+  <li>System.out.println(“Test Math.min”);</li>
+  <li>Assert.assertEquals(2.0, Math.min(2.0, 4.0), 0.0);</li>
+  <li>}</li>
+  <li></li>
+  <li>// 期望此方法抛出NullPointerException异常</li>
+  <li>@Test(expected = NullPointerException.class)</li>
+  <li>public void testException() {</li>
+  <li>System.out.println(“Test exception”);</li>
+  <li>Object obj = null;</li>
+  <li>obj.toString();</li>
+  <li>}</li>
+  <li></li>
+  <li>// 忽略此测试方法</li>
+  <li>@Ignore</li>
+  <li>@Test</li>
+  <li>public void testMathMax() {</li>
+  <li>Assert.fail(“没有实现”);</li>
+  <li>}</li>
+  <li>// 使用“假设”来忽略测试方法</li>
+  <li>@Test</li>
+  <li>public void testAssume(){</li>
+  <li>System.out.println(“Test assume”);</li>
+  <li>// 当假设失败时，则会停止运行，但这并不会意味测试方法失败。</li>
+  <li>Assume.assumeTrue(false);</li>
+  <li>Assert.fail(“没有实现”);</li>
+  <li>}</li>
+  <li></li>
+  <li>@After</li>
+  <li>public void tearDown() throws Exception {</li>
+  <li>System.out.println(“Tear down”);</li>
+  <li>}</li>
+  <li></li>
+  <li>@AfterClass</li>
+  <li>public static void tearDownAfterClass() {</li>
+  <li>System.out.println(“Tear down After class”);</li>
+  <li>}</li>
+  <li></li>
+  <li>}</li>
+</ol>
+
+<p>如果细心的话，会发现Junit3的package是<code class="highlighter-rouge">junit.framework</code>，而Junit4是<code class="highlighter-rouge">org.junit</code>。
+执行此用例后，控制台会输出</p>
+
+<p>写道</p>
+
+<p>Set up before class
+Set up
+Test Math.pow
+Tear down
+Set up
+Test Math.min
+Tear down
+Set up
+Test exception
+Tear down
+Set up
+Test assume
+Tear down
+Tear down After class</p>
+
+<p>可以看到，执行次序是<code class="highlighter-rouge">@BeforeClass</code> -&gt; <code class="highlighter-rouge">@Before</code> -&gt; <code class="highlighter-rouge">@Test</code> -&gt; <code class="highlighter-rouge">@After</code> -&gt; <code class="highlighter-rouge">@Before</code> -&gt; <code class="highlighter-rouge">@Test</code> -&gt; <code class="highlighter-rouge">@After</code> -&gt; <code class="highlighter-rouge">@AfterClass</code>。<code class="highlighter-rouge">@Ignore</code>会被忽略。</p>
+
+<h5 id="运行测试方法-1">运行测试方法</h5>
+
+<p>与Junit3类似，可以在Eclipse中运行，也可以通过<code class="highlighter-rouge">mvn test</code>命令运行。</p>
+
+<h4 id="assert">Assert</h4>
+
+<p>Junit3和Junit4都提供了一个Assert类（虽然package不同，但是大致差不多）。Assert类中定义了很多静态方法来进行断言。列表如下：</p>
+
+<ul>
+  <li>assertTrue(String message, boolean condition) 要求condition == true</li>
+  <li>assertFalse(String message, boolean condition) 要求condition == false</li>
+  <li>fail(String message) 必然失败，同样要求代码不可达</li>
+  <li>assertEquals(String message, XXX expected,XXX actual) 要求expected.equals(actual)</li>
+  <li>assertArrayEquals(String message, XXX[] expecteds,XXX [] actuals) 要求expected.equalsArray(actual)</li>
+  <li>assertNotNull(String message, Object object) 要求object!=null</li>
+  <li>assertNull(String message, Object object) 要求object==null</li>
+  <li>assertSame(String message, Object expected, Object actual) 要求expected == actual</li>
+  <li>assertNotSame(String message, Object unexpected,Object actual) 要求expected != actual</li>
+  <li>assertThat(String reason, T actual, Matcher matcher) 要求matcher.matches(actual) == true</li>
+</ul>
+
+<h2 id="mockstub">Mock/Stub</h2>
+
+<p>Mock和Stub是两种测试代码功能的方法。Mock测重于对功能的模拟。Stub测重于对功能的测试重现。比如对于List接口，Mock会直接对List进行模拟，而Stub会新建一个实现了List的TestList，在其中编写测试的代码。
+强烈建议优先选择Mock方式，因为Mock方式下，模拟代码与测试代码放在一起，易读性好，而且扩展性、灵活性都比Stub好。
+比较流行的Mock有：</p>
+
+<p>其 中EasyMock和Mockito对于Java接口使用接口代理的方式来模拟，对于Java类使用继承的方式来模拟（也即会创建一个新的Class 类）。Mockito支持spy方式，可以对实例进行模拟。但它们都不能对静态方法和final类进行模拟，powermock通过修改字节码来支持了此 功能。</p>
+
+<h4 id="easymock">EasyMock</h4>
+
+<p>IBM上有几篇介绍EasyMock使用方法和原理的文章：<a href="https://www.jfox.info/go.php?url=http://www.ibm.com/developerworks/cn/opensource/os-cn-easymock/">EasyMock 使用方法与原理剖析</a>，<a href="https://www.jfox.info/go.php?url=http://www.ibm.com/developerworks/cn/java/j-easymock.html">使用 EasyMock 更轻松地进行测试</a>。
+EasyMock把测试过程分为三步：录制、运行测试代码、验证期望。
+录制过程大概就是：期望method(params)执行times次（默认一次），返回result（可选），抛出exception异常（可选）。
+验证期望过程将会检查方法的调用次数。
+一个简单的样例是：</p>
+
+<p>Java代码  <a href="![收藏代码](http://thihy.iteye.com/images/icon_star.png)"><img src="6fd02fe.png" alt="收藏代码" /></a></p>
+
+<ol>
+  <li>@Test</li>
+  <li>public void testListInEasyMock() {</li>
+  <li>List list = EasyMock.createMock(List.class);</li>
+  <li>// 录制过程</li>
+  <li></li>
+  <li>// 期望方法list.set(0,1)执行2次，返回null，不抛出异常</li>
+  <li>expect1: EasyMock.expect(list.set(0, 1)).andReturn(null).times(2);</li>
+  <li>// 期望方法list.set(0,1)执行1次，返回null，不抛出异常</li>
+  <li>expect2: EasyMock.expect(list.set(0, 1)).andReturn(1);</li>
+  <li></li>
+  <li>// 执行测试代码</li>
+  <li>EasyMock.replay(list);</li>
+  <li>// 执行list.set(0,1)，匹配expect1期望，会返回null</li>
+  <li>Assert.assertNull(list.set(0, 1));</li>
+  <li>// 执行list.set(0,1)，匹配expect1（因为expect1期望执行此方法2次），会返回null</li>
+  <li>Assert.assertNull(list.set(0, 1));</li>
+  <li>// 执行list.set(0,1)，匹配expect2，会返回1</li>
+  <li>Assert.assertEquals(1, list.set(0, 1));</li>
+  <li></li>
+  <li>// 验证期望</li>
+  <li>EasyMock.verify(list);</li>
+  <li>}</li>
+</ol>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/java-dan-yuan-ce-shi-junit-mock-dai-ma-fu-gai-lv.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/java-dan-yuan-ce-shi-junit-mock-dai-ma-fu-gai-lv.html">&laquo; Java单元测试(Junit+Mock+代码覆盖率)</a>
+  
+  
+  <a class="next" href="/2017/oracle-pl-sql-developer-de-yi-xie-shi-yong-ji-qiao.html">Oracle PL/SQL Developer的一些实用使用技巧 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

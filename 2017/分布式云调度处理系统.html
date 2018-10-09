@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>分布式云调度处理系统 » java面试题 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="分布式云调度处理系统 » java面试题" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="项目参考xxl-job进行若干改动。" />
+<meta property="og:description" content="项目参考xxl-job进行若干改动。" />
+<link rel="canonical" href="http://www.jfox.info/2017/%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%91%E8%B0%83%E5%BA%A6%E5%A4%84%E7%90%86%E7%B3%BB%E7%BB%9F.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%91%E8%B0%83%E5%BA%A6%E5%A4%84%E7%90%86%E7%B3%BB%E7%BB%9F.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:58:26+00:00" />
+<script type="application/ld+json">
+{"description":"项目参考xxl-job进行若干改动。","@type":"BlogPosting","url":"http://www.jfox.info/2017/%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%91%E8%B0%83%E5%BA%A6%E5%A4%84%E7%90%86%E7%B3%BB%E7%BB%9F.html","headline":"分布式云调度处理系统 » java面试题","dateModified":"2017-01-01T15:58:26+00:00","datePublished":"2017-01-01T15:58:26+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%91%E8%B0%83%E5%BA%A6%E5%A4%84%E7%90%86%E7%B3%BB%E7%BB%9F.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">分布式云调度处理系统 » java面试题</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:58:26+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>项目参考xxl-job进行若干改动。</p>
+
+<p>项目基于quartz并进行若干扩展而成，适用于公司内部做定时调度处理，方便，快捷，简单。</p>
+
+<p>支持<strong>bean</strong>, <strong>groovy</strong>, <strong>shell</strong>, <strong>python</strong>四种任务处理方式。</p>
+
+<p>项目架构图</p>
+
+<p><img src="dd3335e.png" alt="" /></p>
+
+<ul>
+  <li>core: 云调度核心，封装了各种工具，基础组件。</li>
+  <li>job: quartz可视化控制台及quartz调度器，去调度具体的executor, 内置了一个最简单的executor.</li>
+  <li>executor: 可选处理器，可扩展，可自定义，可分布式部署。</li>
+</ul>
+
+<p>技术选型</p>
+
+<p><img src="e4f6f75.png" alt="" /></p>
+
+<p>业务架构图</p>
+
+<p><img src="c1d735d.png" alt="" /></p>
+
+<p>job可视化控制台架构图</p>
+
+<p><img src="283f149.png" alt="" /></p>
+
+<p>控制台首页</p>
+
+<p><img src="7a67f1d.png" alt="" /></p>
+
+<p>任务管理</p>
+
+<p><img src="25e38b3.png" alt="" /></p>
+
+<p>脚本编辑器</p>
+
+<p><img src="5fd2afe.png" alt="" /></p>
+
+<p>日志管理</p>
+
+<p><img src="8959b5d.png" alt="" /></p>
+
+<p>日志控制台</p>
+
+<p><img src="6267993.png" alt="" /></p>
+
+<p>集群管理</p>
+
+<p><img src="8546dcd.png" alt="" /></p>
+
+<h2 id="项目配置">项目配置</h2>
+
+<p>项目采用分模块开发，其中的微服务模块：facade, facade-impl, integration为测试模块，没有使用，可以自行去掉。</p>
+
+<p>项目下载下来，只需要更改日志路径及数据库相关配置即可正常使用。</p>
+
+<p>日志配置在：conf/config/logback.xml</p>
+
+<p>数据库配置在：conf/config/application.properties</p>
+
+<p>执行器模块比较简单，主要用来开发一些自定义的bean处理类。默认job模块中已经内置了一个基础处理器。</p>
+
+<p>数据库表定义在：dal 模块中的 qs_scheduler.sql 中，创建所需要的表即可。其中11张表是quartz的表，另外5张表是业务扩展表。</p>
+
+<h2 id="项目站点">项目站点</h2>
+
+<p>项目集成了一些maven的插件，如findbugs, taglist, 你可以有选择的生成项目站点，查看项目报告。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mvn clean site
+</code></pre></div></div>
+
+<p>即可在target目录下得到 site 信息。</p>
+
+<p><img src="3a9fe84.png" alt="" /></p>
+
+<p>各个子模块的target目录下都有 site 信息，可以查看项目报告，如findbugs。</p>
+
+<p><img src="e7ebbe5.png" alt="" /></p>
+
+<h2 id="项目启动">项目启动</h2>
+
+<p>数据库和配置修改完毕后，直接在项目目录执行：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mvn clean package -DskipTests
+</code></pre></div></div>
+
+<p>将项目 <code class="highlighter-rouge">job/target/job.war</code> 拷贝到 tomcat 的webapps下，启动tomcat即可。</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%91%E8%B0%83%E5%BA%A6%E5%A4%84%E7%90%86%E7%B3%BB%E7%BB%9F.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/%E8%B5%A2%E5%9C%A8%E9%9D%A2%E8%AF%95%E4%B9%8Bjava%E5%9F%BA%E7%A1%80%E7%AF%872.html">&laquo; 赢在面试之Java基础篇（2）</a>
+  
+  
+  <a class="next" href="/2017/springdata%E5%A2%9E%E5%88%A0%E6%94%B9%E6%9F%A5%E4%BA%8B%E5%8A%A1%E7%9A%84%E4%BD%BF%E7%94%A8%E4%B8%83.html">Spring Data 增删改查事务的使用（七） &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

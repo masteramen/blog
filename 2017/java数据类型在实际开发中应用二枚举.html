@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>Java 数据类型在实际开发中应用二枚举 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="Java 数据类型在实际开发中应用二枚举" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="在实际编程中，往往存在着这样的“数据集”，它们的数值在程序中是稳定的，而且“数据集”中的元素是有限的。在JDK1.5之前，人们用接口来描述这一种数据类型。" />
+<meta property="og:description" content="在实际编程中，往往存在着这样的“数据集”，它们的数值在程序中是稳定的，而且“数据集”中的元素是有限的。在JDK1.5之前，人们用接口来描述这一种数据类型。" />
+<link rel="canonical" href="http://www.jfox.info/2017/java%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E5%9C%A8%E5%AE%9E%E9%99%85%E5%BC%80%E5%8F%91%E4%B8%AD%E5%BA%94%E7%94%A8%E4%BA%8C%E6%9E%9A%E4%B8%BE.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/java%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E5%9C%A8%E5%AE%9E%E9%99%85%E5%BC%80%E5%8F%91%E4%B8%AD%E5%BA%94%E7%94%A8%E4%BA%8C%E6%9E%9A%E4%B8%BE.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:57:39+00:00" />
+<script type="application/ld+json">
+{"description":"在实际编程中，往往存在着这样的“数据集”，它们的数值在程序中是稳定的，而且“数据集”中的元素是有限的。在JDK1.5之前，人们用接口来描述这一种数据类型。","@type":"BlogPosting","url":"http://www.jfox.info/2017/java%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E5%9C%A8%E5%AE%9E%E9%99%85%E5%BC%80%E5%8F%91%E4%B8%AD%E5%BA%94%E7%94%A8%E4%BA%8C%E6%9E%9A%E4%B8%BE.html","headline":"Java 数据类型在实际开发中应用二枚举","dateModified":"2017-01-01T15:57:39+00:00","datePublished":"2017-01-01T15:57:39+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/java%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E5%9C%A8%E5%AE%9E%E9%99%85%E5%BC%80%E5%8F%91%E4%B8%AD%E5%BA%94%E7%94%A8%E4%BA%8C%E6%9E%9A%E4%B8%BE.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Java 数据类型在实际开发中应用二枚举</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:57:39+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>在实际编程中，往往存在着这样的“数据集”，它们的数值在程序中是稳定的，而且“数据集”中的元素是有限的。在JDK1.5之前，人们用接口来描述这一种数据类型。</p>
+
+<p>1.5以后引入枚举</p>
+
+<h2 id="一枚举类基本语法">一：枚举类基本语法</h2>
+
+<h3 id="定义">定义：</h3>
+
+<p>　　创建枚举类型要使用 enum 关键字，如果是想声明简单枚举，属性之间用逗号相隔 ；如果是属性带id，类似（male(1)）这种还需要一个带id的构造方法</p>
+
+<p>简单枚举类：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>publicenum ColorEnum {
+        red, green, yellow, blue;
+ }
+</code></pre></div></div>
+
+<p>枚举像普通的类一样可以添加属性和方法，如下</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>publicenum Gender {
+    MALE(0), // 男
+    FEMALE(1); // 女int id;
+    Gender(int id) {
+        this.id = id;
+    }
+    publicint getId() {
+        return id;
+    }
+}
+</code></pre></div></div>
+
+<p>如果不加构造器，直接在 “类型后边加（1）”  这种形式会报错，如下：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>enum ColorEnum {
+    red(1), green(2), yellow(3), blue(4);//编译出错：The constructor ColorEnum(int) is undefined
+}
+</code></pre></div></div>
+
+<p>因为枚举类的本质是一个Enum类，所以它可以加一些自定义的方法：比如·上边的getId()</p>
+
+<h3 id="使用">使用：</h3>
+
+<p>可以用来foreach,switch传入枚举变量， case 是枚举内定义的每一个类型。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Gender gender = Gender.women
+switch (gender) {
+     case male:
+         System.out.println("male");
+          break;
+     case female:
+         System.out.println("female");
+          break;
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">int </code><code class="highlighter-rouge">**compareTo**(E o)</code> 
+比较此枚举与指定对象的顺序。</p>
+
+<p><code class="highlighter-rouge">Class&lt;E&gt; </code><code class="highlighter-rouge">**getDeclaringClass**()</code> 
+返回与此枚举常量的枚举类型相对应的 Class 对象。</p>
+
+<p><code class="highlighter-rouge">String </code><code class="highlighter-rouge">**name**()</code> 
+返回此枚举常量的名称，在其枚举声明中对其进行声明。</p>
+
+<p><code class="highlighter-rouge">int </code><code class="highlighter-rouge">**ordinal**()</code> 
+返回枚举常量的序数（它在枚举声明中的位置，其中初始常量序数为零）。</p>
+
+<p><code class="highlighter-rouge">String </code><code class="highlighter-rouge">**toString**()</code></p>
+
+<p><code class="highlighter-rouge"> </code>          返回枚举常量的名称，它包含在声明中。</p>
+
+<p><code class="highlighter-rouge">static </code>&lt;T extends Enum<T>&gt; T ```**valueOf**(Class<T> enumType, String name)` 
+返回带指定名称的指定枚举类型的枚举常量。</T></T></p>
+
+<p>二：web项目中应用枚举</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>@Enumerated
+private Gender gender;//entity类
+</code></pre></div></div>
+
+<p>我们看一下Gender的配置</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ublic enum Gender {
+    MALE(0), // 男
+    FEMALE(1); // 女int id;
+
+    Gender(int id) {
+        this.id = id;
+    }
+    publicint getId() {
+        return id;
+    }
+}
+</code></pre></div></div>
+
+<p>,如果调用的原声的dao,查询出来的结果是Map</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>userVO.setGender(Gender.valueOf((String) map.get("gender")));//如果查询出来的是Map,则通过 Gender.valueOf（方法得到想要的枚举
+</code></pre></div></div>
+
+<p>如果是hibernate,则会不需要我们去关系到底查询出来的是什么，只需要指导是枚举类型即可</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>List&lt;UserVO&gt; userVOList = new ArrayList&lt;UserVO&gt;();
+try {
+    String queryString = "select *  from User U left join U.institutions INS where INS.institution.id = '"
+                    + id + "' order by U.code";
+    userList = userDao.query(queryString);//如果是调用hibernate，查询出来不需要调用valueOf()方法
+    if (userList != null &amp;&amp; userList.size() &gt; 0) {
+                
+    }
+ }
+</code></pre></div></div>
+
+<h2 id="三-原理分析">三 ：原理分析</h2>
+
+<p>　　　参照了<a href="https://www.jfox.info/go.php?url=http://www.cnblogs.com/hemingwang0902/archive/2011/12/29/2306263.html">java enum(枚举)使用详解 + 总结</a>，非常感谢</p>
+
+<p>　　　enum 的语法结构尽管和 class 的语法不一样，但是经过编译器编译之后产生的是一个class文件。该class文件经过反编译实际上是生成了一个类，该类继承了java.lang.Enum<E>。所以， enum本质上 java 编译器帮我们做了语法的解析和编译的一个普通的类。</E></p>
+
+<p>　　　唯一的区别，是枚举隐式继承了Enum，所以不可以在继承 ..</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>* EnumTest test = EnumTest.TUE; ... System.out.println("getDeclaringClass(): " + test.getDeclaringClass().getName()); //输出结果是getDeclaringClass(): com.dtsz.enumTest.EnumTest *
+</code></pre></div></div>
+
+<h2 id="四enumsetenummap-的应用">四：EnumSet，EnumMap 的应用</h2>
+
+<p>　　　EnumSet和EnumMap是枚举的比较重要的用处。他们是操作枚举对象的工具类。具体的细节推荐去看一下<a href="https://www.jfox.info/go.php?url=http://www.cnblogs.com/jingmoxukong/p/6098351.html">Java 枚举用法详解</a>，在这里，我简单的总结一下：</p>
+
+<p><code class="highlighter-rouge">　　EnumSet</code> 是枚举类型的高性能<code class="highlighter-rouge">Set</code>实现。它要求放入它的枚举常量必须属于同一枚举类型。
+<code class="highlighter-rouge">　　EnumMap</code> 是专门为枚举类型量身定做的<code class="highlighter-rouge">Map</code>实现。虽然使用其它的Map实现（如HashMap）也能完成枚举类型实例到值得映射，但是使用EnumMap会更加高效：它只能接收同一枚举类型的实例作为键值，并且由于枚举类型实例的数量相对固定并且有限，所以EnumMap使用数组来存放与枚举类型对应的值。这使得EnumMap的效率非常高。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/ EnumSet的使用
+System.out.println("EnumSet展示");
+EnumSet&lt;ErrorCodeEn&gt; errSet = EnumSet.allOf(ErrorCodeEn.class);
+for (ErrorCodeEn e : errSet) {
+    System.out.println(e.name() + " : " + e.ordinal());
+}
+
+// EnumMap的使用
+System.out.println("EnumMap展示");
+EnumMap&lt;StateMachine.Signal, String&gt; errMap = new EnumMap(StateMachine.Signal.class);
+errMap.put(StateMachine.Signal.RED, "红灯");
+errMap.put(StateMachine.Signal.YELLOW, "黄灯");
+errMap.put(StateMachine.Signal.GREEN, "绿灯");
+for (Iterator&lt;Map.Entry&lt;StateMachine.Signal, String&gt;&gt; iter = errMap.entrySet().iterator(); iter.hasNext();) {
+    Map.Entry&lt;StateMachine.Signal, String&gt; entry = iter.next();
+    System.out.println(entry.getKey().name() + " : " + entry.getValue());
+}
+
+        *推荐和反对*/ #div_digg { padding: 10px; position: fixed; _position: absolute; z-index: 1000; bottom: 20px; right: 0; _right: 17px; border: 1px solid #D9DBE1; background-color: #FFFFFF; filter: alpha(Opacity=80); -moz-opacity: 0.8; opacity: 0.8; } .icon_favorite { background: transparent url(‘http://files.cnblogs.com/files/jackson0714/kj.gif’) no-repeat 0 0; padding-left: 16px; } #blog_post_info_block a { text-decoration: none; color: #5B9DCA; padding: 3px; }
+</code></pre></div></div>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/java%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E5%9C%A8%E5%AE%9E%E9%99%85%E5%BC%80%E5%8F%91%E4%B8%AD%E5%BA%94%E7%94%A8%E4%BA%8C%E6%9E%9A%E4%B8%BE.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/testingspringbootwithtestng%E7%B3%BB%E5%88%97%E6%96%87%E7%AB%A0.html">&laquo; Testing Spring Boot with TestNG系列文章</a>
+  
+  
+  <a class="next" href="/2017/%E7%90%86%E8%A7%A3javaaopjdk%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86%E4%BA%8C.html">理解 Java AOP – JDK动态代理《二》 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>一颗简单的hibernate栗子 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="一颗简单的hibernate栗子" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="一颗简单的hibernate栗子" />
+<meta property="og:description" content="一颗简单的hibernate栗子" />
+<link rel="canonical" href="http://www.jfox.info/2017/%E4%B8%80%E9%A2%97%E7%AE%80%E5%8D%95%E7%9A%84hibernate%E6%A0%97%E5%AD%90.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/%E4%B8%80%E9%A2%97%E7%AE%80%E5%8D%95%E7%9A%84hibernate%E6%A0%97%E5%AD%90.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:57:18+00:00" />
+<script type="application/ld+json">
+{"description":"一颗简单的hibernate栗子","@type":"BlogPosting","url":"http://www.jfox.info/2017/%E4%B8%80%E9%A2%97%E7%AE%80%E5%8D%95%E7%9A%84hibernate%E6%A0%97%E5%AD%90.html","headline":"一颗简单的hibernate栗子","dateModified":"2017-01-01T15:57:18+00:00","datePublished":"2017-01-01T15:57:18+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/%E4%B8%80%E9%A2%97%E7%AE%80%E5%8D%95%E7%9A%84hibernate%E6%A0%97%E5%AD%90.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">一颗简单的hibernate栗子</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:57:18+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<h1 id="一颗简单的hibernate栗子">一颗简单的hibernate栗子</h1>
+
+<p>　　Hibernate是一个开源的ORM框架,顾名思义，它的核心思想即ORM（Object Relational Mapping,对象关系映射），可以通过对象来操作数据库中的信息，据说开发者一开始是不太熟悉数据库SQL语句的，这也造就了hibernate的强大之处，它不强求开发者熟悉SQL语句也可以操作数据库,hibernate可以自动生成SQL语句，自动执行。</p>
+
+<p>　　利用hibernate可以让开发者完全使用面想对象思维来操作数据库，所以接下来的演示不会有一句SQL语句，如果有的话，请当我这句话没说！</p>
+
+<p>　　本文使用hibernate实现了简单的对一个person数据表的基本增删改查操作。<img src="05f73f3.png" alt="" /></p>
+
+<h1 id="准备工作">准备工作</h1>
+
+<p>环境：win7+eclipse</p>
+
+<p>工具包:hibernate包，可前往http://hibernate.org/orm/downloads/下载，本例中使用的是4版本；</p>
+
+<p>数据库连接驱动包，本例中使用的是mysql的</p>
+
+<h1 id="程序结构图示">程序结构图示</h1>
+
+<p><img src="bd47d85.png" alt="" /></p>
+
+<h1 id="pojo层实体类">pojo层实体类</h1>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">demo</span><span class="p">.</span><span class="n">pojo</span><span class="p">;</span>
+
+<span class="k">public</span> <span class="n">class</span> <span class="n">Person</span> <span class="p">{</span>
+	
+	<span class="n">private</span> <span class="k">Integer</span> <span class="n">id</span><span class="p">;</span>
+	<span class="n">private</span> <span class="k">String</span> <span class="n">name</span><span class="p">;</span>
+	<span class="n">private</span> <span class="k">String</span> <span class="n">gender</span><span class="p">;</span>
+	<span class="n">private</span> <span class="k">Integer</span> <span class="n">age</span><span class="p">;</span>
+	
+	<span class="k">public</span> <span class="k">Integer</span> <span class="nf">getId</span><span class="p">()</span> <span class="p">{</span>
+		<span class="n">return</span> <span class="n">id</span><span class="p">;</span>
+	<span class="p">}</span>
+	<span class="k">public</span> <span class="n">void</span> <span class="n">setId</span><span class="p">(</span><span class="k">Integer</span> <span class="n">id</span><span class="p">)</span> <span class="p">{</span>
+		<span class="n">this</span><span class="p">.</span><span class="n">id</span> <span class="p">=</span> <span class="n">id</span><span class="p">;</span>
+	<span class="p">}</span>
+	<span class="k">public</span> <span class="k">String</span> <span class="n">getName</span><span class="p">()</span> <span class="p">{</span>
+		<span class="n">return</span> <span class="n">name</span><span class="p">;</span>
+	<span class="p">}</span>
+	<span class="k">public</span> <span class="n">void</span> <span class="n">setName</span><span class="p">(</span><span class="k">String</span> <span class="n">name</span><span class="p">)</span> <span class="p">{</span>
+		<span class="n">this</span><span class="p">.</span><span class="n">name</span> <span class="p">=</span> <span class="n">name</span><span class="p">;</span>
+	<span class="p">}</span>
+	<span class="k">public</span> <span class="k">String</span> <span class="n">getGender</span><span class="p">()</span> <span class="p">{</span>
+		<span class="n">return</span> <span class="n">gender</span><span class="p">;</span>
+	<span class="p">}</span>
+	<span class="k">public</span> <span class="n">void</span> <span class="n">setGender</span><span class="p">(</span><span class="k">String</span> <span class="n">gender</span><span class="p">)</span> <span class="p">{</span>
+		<span class="n">this</span><span class="p">.</span><span class="n">gender</span> <span class="p">=</span> <span class="n">gender</span><span class="p">;</span>
+	<span class="p">}</span>
+	<span class="k">public</span> <span class="k">Integer</span> <span class="n">getAge</span><span class="p">()</span> <span class="p">{</span>
+		<span class="n">return</span> <span class="n">age</span><span class="p">;</span>
+	<span class="p">}</span>
+	<span class="k">public</span> <span class="n">void</span> <span class="n">setAge</span><span class="p">(</span><span class="k">Integer</span> <span class="n">age</span><span class="p">)</span> <span class="p">{</span>
+		<span class="n">this</span><span class="p">.</span><span class="n">age</span> <span class="p">=</span> <span class="n">age</span><span class="p">;</span>
+	<span class="p">}</span>
+	<span class="p">@</span><span class="n">Override</span>
+	<span class="k">public</span> <span class="k">String</span> <span class="n">toString</span><span class="p">()</span> <span class="p">{</span>
+		<span class="n">return</span> <span class="s2">"Person [id="</span> <span class="p">+</span> <span class="n">id</span> <span class="p">+</span> <span class="s2">", name="</span> <span class="p">+</span> <span class="n">name</span> <span class="p">+</span> <span class="s2">", gender="</span> <span class="p">+</span> <span class="n">gender</span> <span class="p">+</span> <span class="s2">", age="</span> <span class="p">+</span> <span class="n">age</span> <span class="p">+</span> <span class="s2">"]"</span><span class="p">;</span>
+	<span class="p">}</span>
+	
+	
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h1 id="核心配置文件hibernatecfgxml">核心配置文件hibernate.cfg.xml</h1>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> 1&lt;?xml version="1.0" encoding="UTF-8"?&gt; 2&lt;!DOCTYPE hibernate-configuration PUBLIC
+ 3    "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+ 4    "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd"&gt; 5&lt;hibernate-configuration&gt; 6&lt;session-factory&gt; 7&lt;!-- 以下四行分别为：数据库驱动类、Drivermanager获取连接的参数URL、用户名、密码  --&gt; 8&lt;property name="connection.driver_class"&gt;com.mysql.jdbc.Driver&lt;/property&gt; 9&lt;property name="connection.url"&gt;jdbc:mysql://127.0.0.1/web?characterEcoding=utf-8&lt;/property&gt;10&lt;property name="connection.username"&gt;root&lt;/property&gt;11&lt;property name="connection.password"&gt;123456&lt;/property&gt;12&lt;!-- 设置方言，hibernate会根据数据库的类型相应生成SQL语句 --&gt;13&lt;property name="dialect"&gt;org.hibernate.dialect.MySQLDialect&lt;/property&gt;1415&lt;!-- 控制台显示生成的sql语句，默认为false --&gt;16&lt;property name="show_sql"&gt;true&lt;/property&gt;17&lt;!-- 映射配置源文件的位置 --&gt;18&lt;mapping resource="demo/pojo/Person.hbm.xml"/&gt;19&lt;/session-factory&gt;2021&lt;/hibernate-configuration&gt;
+</code></pre></div></div>
+
+<h1 id="映射文件personhbmxml">映射文件Person.hbm.xml</h1>
+<p><img src="ea725e0.gif" alt="" /><img src="/wp-content/uploads/2017/07/15000404071.gif" alt="" />
+     1<?xml version="1.0" encoding="UTF-8"?> 2&lt;!DOCTYPE hibernate-mapping PUBLIC 
+     3    “-//Hibernate/Hibernate Mapping DTD 3.0//EN”
+     4    “http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd”&gt; 5<hibernate-mapping> 6<!-- name是实体类全名，table为数据表名 --> 7<class name="demo.pojo.Person" table="Person"> 8<id name="id" column="id"> 9<!-- 主键生成方式，native是让hibernate自动识别 -->10<generator class="native"></generator>11</id>12<!--13        注意点：
+    14        0.name值为实体类中属性名，column为数据表中字段名；
+    15        1.当实体类中属性名与对应数据表字段名相同时，后面的column可以省略，hibernate会自动匹配，例如下面age ；
+    16        2.反之当实体类中属性名与对应数据表字段名不相同时，两项都要写上，例如下面gender和sex
+    17-->18<property name="name" column="name"></property>19<property name="gender" column="sex"></property>20<property name="age"></property>21</class>22</hibernate-mapping></p>
+
+<p>View Code</p>
+<h1 id="session工厂类">Session工厂类</h1>
+<p><img src="ea725e0.gif" alt="" /><img src="/wp-content/uploads/2017/07/15000404071.gif" alt="" />
+     1package demo.util;
+     2 3import org.hibernate.Session;
+     4import org.hibernate.SessionFactory;
+     5import org.hibernate.cfg.Configuration;
+     6import org.hibernate.service.ServiceRegistry;
+     7import org.hibernate.service.ServiceRegistryBuilder;
+     8 9publicclass HibernateSessionFactory {
+    10privatestatic SessionFactory factory;
+    11privatestatic ThreadLocal<Session> thread = new ThreadLocal<Session>();
+    12privatestatic String path = "hibernate.cfg.xml";
+    13privatestatic Configuration config = new Configuration();
+    14static {
+    15        config.configure(path);
+    16         ServiceRegistry service = new ServiceRegistryBuilder()//定义一个服务注册机17            .applySettings(config.getProperties()).buildServiceRegistry();
+    18         factory = config.buildSessionFactory(service);//创建Session工厂类19    }
+    2021publicstatic Session getSession() {
+    22         Session session = thread.get();
+    23if(session == null || !session.isOpen()) {
+    24             session = factory.openSession();
+    25            thread.set(session);
+    26        }
+    27return session;
+    28    }
+    2930publicstaticvoid closeSession() {
+    31         Session session = thread.get();
+    32if(session != null &amp;&amp; session.isOpen()) {
+    33            session.close();
+    34             thread.set(null);
+    35        }
+    36    }
+    3738 }</Session></Session></p>
+
+<p>View Code</p>
+<h1 id="dao层封装数据各项操作的方法">DAO层封装数据各项操作的方法</h1>
+<p><img src="ea725e0.gif" alt="" /><img src="/wp-content/uploads/2017/07/15000404071.gif" alt="" />
+     1package demo.dao;
+     2 3import java.io.Serializable;
+     4import org.hibernate.Session;
+     5import org.hibernate.Transaction;
+     6import demo.pojo.Person;
+     7import demo.util.HibernateSessionFactory;
+     8 9publicclass PersonDaoImpl {
+    10//增删改查，此处以增为例11publicboolean add(Person p) {
+    12         Session session = HibernateSessionFactory.getSession();//创建Session13         Transaction trans = session.beginTransaction();//开启事务14try {
+    15             Serializable id = session.save(p);//添加记录并获取主键值16             System.out.println(id+”为获取的主键值”);//控制台查看主键值17             trans.commit();//提交事务18returntrue;
+    19         } catch (Exception e) {
+    20             trans.rollback();//获取异常，则事务回滚21         } finally {
+    22             HibernateSessionFactory.closeSession();//关闭Session23        }
+    24returnfalse;
+    25    }
+    26 }</p>
+
+<p>View Code</p>
+<h1 id="测试类testperson">测试类TestPerson</h1>
+<p><img src="ea725e0.gif" alt="" /><img src="/wp-content/uploads/2017/07/15000404071.gif" alt="" />
+     1package demo.test;
+     2 3import org.junit.Test;
+     4import demo.dao.PersonDaoImpl;
+     5import demo.pojo.Person;
+     6 7publicclass TestPerson {
+     8    @Test
+     9publicvoid testAdd() {
+    10//创建一个人类对象11         Person p = new Person();
+    12         p.setName(“张三”);
+    13         p.setGender(“男”);
+    14         p.setAge(18);
+    15//创建dao层类对象并调用添加方法16         PersonDaoImpl dao = new PersonDaoImpl();
+    17        dao.add(p);
+    18    }
+    19 }</p>
+
+<p>View Code</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/%E4%B8%80%E9%A2%97%E7%AE%80%E5%8D%95%E7%9A%84hibernate%E6%A0%97%E5%AD%90.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/jboot10beta1%E5%8F%91%E5%B8%83%E5%9F%BA%E4%BA%8Ejfinal%E7%B1%BB%E4%BC%BCspringboot%E7%9A%84%E6%A1%86%E6%9E%B6.html">&laquo; jboot 1.0-beta1 发布，基于 Jfinal 类似 Springboot 的框架</a>
+  
+  
+  <a class="next" href="/2017/kotlin%E5%92%8Cjavaee%E8%AE%A9%E4%BA%8C%E8%80%85%E7%9A%84%E8%BD%AC%E6%8D%A2%E6%9B%B4%E9%A1%BA%E7%95%85.html">Kotlin和Java EE: 让二者的转换更顺畅 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

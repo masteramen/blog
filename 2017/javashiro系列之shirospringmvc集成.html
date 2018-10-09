@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>【Java】Shiro系列之Shiro+Spring MVC集成 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="【Java】Shiro系列之Shiro+Spring MVC集成" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="第一步，Shiro Filter" />
+<meta property="og:description" content="第一步，Shiro Filter" />
+<link rel="canonical" href="http://www.jfox.info/2017/javashiro%E7%B3%BB%E5%88%97%E4%B9%8Bshirospringmvc%E9%9B%86%E6%88%90.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/javashiro%E7%B3%BB%E5%88%97%E4%B9%8Bshirospringmvc%E9%9B%86%E6%88%90.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:56:36+00:00" />
+<script type="application/ld+json">
+{"description":"第一步，Shiro Filter","@type":"BlogPosting","url":"http://www.jfox.info/2017/javashiro%E7%B3%BB%E5%88%97%E4%B9%8Bshirospringmvc%E9%9B%86%E6%88%90.html","headline":"【Java】Shiro系列之Shiro+Spring MVC集成","dateModified":"2017-01-01T15:56:36+00:00","datePublished":"2017-01-01T15:56:36+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/javashiro%E7%B3%BB%E5%88%97%E4%B9%8Bshirospringmvc%E9%9B%86%E6%88%90.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">【Java】Shiro系列之Shiro+Spring MVC集成</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:56:36+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<h2 id="第一步shiro-filter">第一步，Shiro Filter</h2>
+
+<p>在web.xml文件中增加以下代码，确保Web项目中需要权限管理的URL都可以被Shiro拦截过滤。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;!-- Shiro Filter --&gt;  
+    &lt;filter&gt;  
+        &lt;filter-name&gt;shiroFilter&lt;/filter-name&gt;  
+        &lt;filter-class&gt;org.springframework.web.filter.DelegatingFilterProxy&lt;/filter-class&gt;  
+        &lt;init-param&gt;  
+            &lt;param-name&gt;targetFilterLifecycle&lt;/param-name&gt;  
+            &lt;param-value&gt;true&lt;/param-value&gt;  
+        &lt;/init-param&gt;  
+    &lt;/filter&gt;  
+    &lt;filter-mapping&gt;  
+        &lt;filter-name&gt;shiroFilter&lt;/filter-name&gt;  
+
+
+        &lt;url-pattern&gt;/*&lt;/url-pattern&gt;  
+    &lt;/filter-mapping&gt;
+</code></pre></div></div>
+
+<p>通常将这段代码中的filter-mapping放在所有filter-mapping之前，以达到shiro是第一个对web请求进行拦截过滤之目的。这里的fileter-name应该要和第二步中配置的 
+<a href="https://www.jfox.info/go.php?url=http://lib.csdn.net/base/java">Java</a>
+bean的id一致。</p>
+
+<h2 id="第二步配置各种java-bean">第二步，配置各种Java Bean</h2>
+
+<p>在root-context.xml文件中配置Shiro</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>  
+    <span class="nt">&lt;beans</span> <span class="na">xmlns=</span><span class="s">"http://www.springframework.org/schema/beans"</span>  
+        <span class="na">xmlns:xsi=</span><span class="s">"http://www.w3.org/2001/XMLSchema-instance"</span>  
+        <span class="na">xsi:schemaLocation=</span><span class="s">"http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd"</span><span class="nt">&gt;</span>  
+      
+        <span class="c">&lt;!-- Root Context: defines shared resources visible to all other web components --&gt;</span>  
+      
+        <span class="c">&lt;!-- dataSource --&gt;</span>  
+        <span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">"dataSource"</span>  
+            <span class="na">class=</span><span class="s">"org.springframework.jdbc.datasource.DriverManagerDataSource"</span><span class="nt">&gt;</span>  
+            <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"driverClassName"</span> <span class="na">value=</span><span class="s">"com.mysql.jdbc.Driver"</span> <span class="nt">/&gt;</span>  
+            <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"url"</span> <span class="na">value=</span><span class="s">"jdbc:mysql://127.0.0.1:3306/etao_java"</span> <span class="nt">/&gt;</span>  
+            <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"username"</span> <span class="na">value=</span><span class="s">"root"</span> <span class="nt">/&gt;</span>  
+            <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"password"</span> <span class="na">value=</span><span class="s">"cope9020"</span> <span class="nt">/&gt;</span>  
+        <span class="nt">&lt;/bean&gt;</span>  
+      
+        <span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">"lifecycleBeanPostProcessor"</span> <span class="na">class=</span><span class="s">"org.apache.shiro.spring.LifecycleBeanPostProcessor"</span><span class="nt">&gt;&lt;/bean&gt;</span>  
+      
+        <span class="c">&lt;!-- 数据库保存的密码是使用MD5算法加密的，所以这里需要配置一个密码匹配对象 --&gt;</span>  
+        <span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">"credentialsMatcher"</span> <span class="na">class=</span><span class="s">"org.apache.shiro.authc.credential.Md5CredentialsMatcher"</span><span class="nt">&gt;&lt;/bean&gt;</span>  
+      
+        <span class="c">&lt;!-- 缓存管理 --&gt;</span>  
+        <span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">"cacheManager"</span> <span class="na">class=</span><span class="s">"org.apache.shiro.cache.MemoryConstrainedCacheManager"</span><span class="nt">&gt;&lt;/bean&gt;</span>  
+      
+        <span class="c">&lt;!--   
+          使用Shiro自带的JdbcRealm类  
+          指定密码匹配所需要用到的加密对象  
+          指定存储用户、角色、权限许可的数据源及相关查询语句  
+         --&gt;</span>  
+        <span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">"jdbcRealm"</span> <span class="na">class=</span><span class="s">"org.apache.shiro.realm.jdbc.JdbcRealm"</span><span class="nt">&gt;</span>  
+            <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"credentialsMatcher"</span> <span class="na">ref=</span><span class="s">"credentialsMatcher"</span><span class="nt">&gt;&lt;/property&gt;</span>  
+            <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"permissionsLookupEnabled"</span> <span class="na">value=</span><span class="s">"true"</span><span class="nt">&gt;&lt;/property&gt;</span>  
+            <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"dataSource"</span> <span class="na">ref=</span><span class="s">"dataSource"</span><span class="nt">&gt;&lt;/property&gt;</span>  
+            <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"authenticationQuery"</span>  
+                <span class="na">value=</span><span class="s">"SELECT password FROM sec_user WHERE user_name = ?"</span><span class="nt">&gt;&lt;/property&gt;</span>  
+            <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"userRolesQuery"</span>  
+                <span class="na">value=</span><span class="s">"SELECT role_name from sec_user_role left join sec_role using(role_id) left join sec_user using(user_id) WHERE user_name = ?"</span><span class="nt">&gt;&lt;/property&gt;</span>  
+            <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"permissionsQuery"</span>  
+                <span class="na">value=</span><span class="s">"SELECT permission_name FROM sec_role_permission left join sec_role using(role_id) left join sec_permission using(permission_id) WHERE role_name = ?"</span><span class="nt">&gt;&lt;/property&gt;</span>  
+        <span class="nt">&lt;/bean&gt;</span>  
+      
+        <span class="c">&lt;!-- Shiro安全管理器 --&gt;</span>  
+        <span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">"securityManager"</span> <span class="na">class=</span><span class="s">"org.apache.shiro.web.mgt.DefaultWebSecurityManager"</span><span class="nt">&gt;</span>  
+            <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"realm"</span> <span class="na">ref=</span><span class="s">"jdbcRealm"</span><span class="nt">&gt;&lt;/property&gt;</span>  
+            <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"cacheManager"</span> <span class="na">ref=</span><span class="s">"cacheManager"</span><span class="nt">&gt;&lt;/property&gt;</span>  
+        <span class="nt">&lt;/bean&gt;</span>  
+      
+        <span class="c">&lt;!--   
+           Shiro主过滤器本身功能十分强大，其强大之处就在于它支持任何基于URL路径表达式的、自定义的过滤器的执行  
+           Web应用中，Shiro可控制的Web请求必须经过Shiro主过滤器的拦截，Shiro对基于Spring的Web应用提供了完美的支持   
+        --&gt;</span>  
+        <span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">"shiroFilter"</span> <span class="na">class=</span><span class="s">"org.apache.shiro.spring.web.ShiroFilterFactoryBean"</span><span class="nt">&gt;</span>  
+            <span class="c">&lt;!-- Shiro的核心安全接口，这个属性是必须的 --&gt;</span>  
+            <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"securityManager"</span> <span class="na">ref=</span><span class="s">"securityManager"</span><span class="nt">&gt;&lt;/property&gt;</span>  
+            <span class="c">&lt;!-- 要求登录时的链接(登录页面地址)，非必须的属性，默认会自动寻找Web工程根目录下的"/login.jsp"页面 --&gt;</span>  
+            <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"loginUrl"</span> <span class="na">value=</span><span class="s">"/security/login"</span><span class="nt">&gt;&lt;/property&gt;</span>  
+            <span class="c">&lt;!-- 登录成功后要跳转的连接(本例中此属性用不到，因为登录成功后的处理逻辑在LoginController里硬编码) --&gt;</span>  
+            <span class="c">&lt;!-- &lt;property name="successUrl" value="/" &gt;&lt;/property&gt; --&gt;</span>  
+            <span class="c">&lt;!-- 用户访问未对其授权的资源时，所显示的连接 --&gt;</span>  
+            <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"unauthorizedUrl"</span> <span class="na">value=</span><span class="s">"/"</span><span class="nt">&gt;&lt;/property&gt;</span>  
+            <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"filterChainDefinitions"</span><span class="nt">&gt;</span>  
+                <span class="nt">&lt;value&gt;</span>  
+                    /security/*=anon  
+                    /tag=authc  
+                <span class="nt">&lt;/value&gt;</span>  
+            <span class="nt">&lt;/property&gt;</span>  
+        <span class="nt">&lt;/bean&gt;</span>  
+      
+        <span class="c">&lt;!--   
+           开启Shiro的注解(如@RequiresRoles，@RequiresPermissions)，需借助SpringAOP扫描使用Shiro注解的类，  
+           并在必要时进行安全逻辑验证  
+        --&gt;</span>  
+        <span class="c">&lt;!--  
+        &lt;bean  
+            class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"&gt;&lt;/bean&gt;  
+        &lt;bean  
+            class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor"&gt;  
+            &lt;property name="securityManager" ref="securityManager"&gt;&lt;/property&gt;  
+        &lt;/bean&gt;  
+        --&gt;</span>  
+    <span class="nt">&lt;/beans&gt;</span>
+</code></pre></div></div>
+
+<p>上述代码中已经对每个 <a href="https://www.jfox.info/go.php?url=http://lib.csdn.net/base/java">java</a> bean的用途做了详细的注释说明，这里仅对FilterChain过滤链的定义详细阐述一下：</p>
+
+<ul>
+  <li>测试用例中对/security/*的访问是不需要认证控制的，这主要是用于用户登录和退出的</li>
+  <li>测试用例中对/tag的访问是需要认证控制的，就是说只有通过认证的用户才可以访问该资源。如果用户直接在地址栏中访问http://localhost:8880/learning/tag，系统会自动跳转至登录页面，要求用户先进行身份认证。</li>
+</ul>
+
+<p>完成这两步之后，我们可以Run一下程序，如果可以看到以下页面，就表明我们的配置文件没有错误，Shiro和 <a href="https://www.jfox.info/go.php?url=http://lib.csdn.net/base/javaee">spring</a> MVC的集成已经完成了。后继的步骤可以视为是对集成后的框进行的一个 <a href="https://www.jfox.info/go.php?url=http://lib.csdn.net/base/softwaretest">测试</a> 。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;</span><span class="err">%@</span> <span class="na">page</span> <span class="na">language=</span><span class="s">"java"</span> <span class="na">contentType=</span><span class="s">"text/html; charset=UTF-8"</span>  
+        <span class="na">pageEncoding=</span><span class="s">"UTF-8"</span><span class="err">%</span><span class="nt">&gt;</span>  
+    <span class="nt">&lt;</span><span class="err">%@</span> <span class="na">taglib</span> <span class="na">uri=</span><span class="s">"http://java.sun.com/jsp/jstl/core"</span> <span class="na">prefix=</span><span class="s">"c"</span><span class="err">%</span><span class="nt">&gt;</span>  
+      
+    <span class="cp">&lt;!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"&gt;</span>  
+    <span class="nt">&lt;html&gt;</span>  
+    <span class="nt">&lt;head&gt;</span>  
+    <span class="nt">&lt;meta</span> <span class="na">http-equiv=</span><span class="s">"Content-Type"</span> <span class="na">content=</span><span class="s">"text/html; charset=UTF-8"</span><span class="nt">&gt;</span>  
+    <span class="nt">&lt;title&gt;</span>Login Page<span class="nt">&lt;/title&gt;</span>  
+    <span class="nt">&lt;/head&gt;</span>  
+    <span class="nt">&lt;body&gt;</span>  
+        <span class="nt">&lt;h1&gt;</span>login page<span class="nt">&lt;/h1&gt;</span>  
+        <span class="nt">&lt;form</span> <span class="na">id=</span><span class="s">""</span> <span class="na">action=</span><span class="s">"dologin"</span> <span class="na">method=</span><span class="s">"post"</span><span class="nt">&gt;</span>  
+            <span class="nt">&lt;label&gt;</span>User Name<span class="nt">&lt;/label&gt;</span> <span class="nt">&lt;input</span> <span class="na">tyep=</span><span class="s">"text"</span> <span class="na">name=</span><span class="s">"userName"</span>  
+                <span class="na">maxLength=</span><span class="s">"40"</span> <span class="nt">/&gt;</span> <span class="nt">&lt;label&gt;</span>Password<span class="nt">&lt;/label&gt;&lt;input</span> <span class="na">type=</span><span class="s">"password"</span>  
+                <span class="na">name=</span><span class="s">"password"</span> <span class="nt">/&gt;</span> <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">"submit"</span> <span class="na">value=</span><span class="s">"login"</span> <span class="nt">/&gt;</span>  
+        <span class="nt">&lt;/form&gt;</span>  
+        <span class="nt">&lt;</span><span class="err">%</span><span class="na">--</span><span class="err">用于输入后台返回的验证错误信息</span> <span class="na">--</span><span class="err">%</span><span class="nt">&gt;</span>  
+        <span class="nt">&lt;P&gt;&lt;c:out</span> <span class="na">value=</span><span class="s">"${message }"</span> <span class="nt">/&gt;&lt;/P&gt;</span>  
+    <span class="nt">&lt;/body&gt;</span>  
+    <span class="nt">&lt;/html&gt;</span>
+</code></pre></div></div>
+
+<p>后台登录代码</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/** 
+     * 实际的登录代码 
+     * 如果登录成功，跳转至首页；登录失败，则将失败信息反馈对用户 
+     *  
+     * @param request 
+     * @param model 
+     * @return 
+     */  
+    @RequestMapping(value = "/dologin")  
+    public String doLogin(HttpServletRequest request, Model model) {  
+        String msg = "";  
+        String userName = request.getParameter("userName");  
+        String password = request.getParameter("password");  
+        System.out.println(userName);  
+        System.out.println(password);  
+        UsernamePasswordToken token = new UsernamePasswordToken(userName, password);  
+        token.setRememberMe(true);  
+        Subject subject = SecurityUtils.getSubject();  
+        try {  
+            subject.login(token);  
+            if (subject.isAuthenticated()) {  
+                return "redirect:/";  
+            } else {  
+                return "login";  
+            }  
+        } catch (IncorrectCredentialsException e) {  
+            msg = "登录密码错误. Password for account " + token.getPrincipal() + " was incorrect.";  
+            model.addAttribute("message", msg);  
+            System.out.println(msg);  
+        } catch (ExcessiveAttemptsException e) {  
+            msg = "登录失败次数过多";  
+            model.addAttribute("message", msg);  
+            System.out.println(msg);  
+        } catch (LockedAccountException e) {  
+            msg = "帐号已被锁定. The account for username " + token.getPrincipal() + " was locked.";  
+            model.addAttribute("message", msg);  
+            System.out.println(msg);  
+        } catch (DisabledAccountException e) {  
+            msg = "帐号已被禁用. The account for username " + token.getPrincipal() + " was disabled.";  
+            model.addAttribute("message", msg);  
+            System.out.println(msg);  
+        } catch (ExpiredCredentialsException e) {  
+            msg = "帐号已过期. the account for username " + token.getPrincipal() + "  was expired.";  
+            model.addAttribute("message", msg);  
+            System.out.println(msg);  
+        } catch (UnknownAccountException e) {  
+            msg = "帐号不存在. There is no user with username of " + token.getPrincipal();  
+            model.addAttribute("message", msg);  
+            System.out.println(msg);  
+        } catch (UnauthorizedException e) {  
+            msg = "您没有得到相应的授权！" + e.getMessage();  
+            model.addAttribute("message", msg);  
+            System.out.println(msg);  
+        }  
+        return "login";  
+    }
+</code></pre></div></div>
+
+<p>登录成功后，会转至首页，并显示出当前用户名。</p>
+
+<p>登录成功后，会转至首页，并显示出当前用户名。</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/javashiro%E7%B3%BB%E5%88%97%E4%B9%8Bshirospringmvc%E9%9B%86%E6%88%90.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/tkinter%E5%AE%9E%E7%8E%B0%E5%8D%95%E9%80%89%E6%A1%86%E5%92%8C%E5%A4%8D%E9%80%89%E6%A1%86.html">&laquo; tkinter实现单选框和复选框</a>
+  
+  
+  <a class="next" href="/2017/hibernate%E4%B9%8B%E4%B8%BB%E9%94%AE%E7%94%9F%E6%88%90%E7%AD%96%E7%95%A5%E5%B0%8F%E6%80%BB%E7%BB%93.html">Hibernate 之主键生成策略小总结 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

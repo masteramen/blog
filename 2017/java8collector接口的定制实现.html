@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>Java8 collector接口的定制实现 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="Java8 collector接口的定制实现" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="问题主要就是把集合里的数据按照一定大小顺序平均分成若干组的问题，看起来挺简单的，不过我开始看到就想用用stream来实现，但是想了想Collectors里并没有适合的方法，所以就想到了用定制的collector来实现了。 原问题的截图：" />
+<meta property="og:description" content="问题主要就是把集合里的数据按照一定大小顺序平均分成若干组的问题，看起来挺简单的，不过我开始看到就想用用stream来实现，但是想了想Collectors里并没有适合的方法，所以就想到了用定制的collector来实现了。 原问题的截图：" />
+<link rel="canonical" href="http://www.jfox.info/2017/java8collector%E6%8E%A5%E5%8F%A3%E7%9A%84%E5%AE%9A%E5%88%B6%E5%AE%9E%E7%8E%B0.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/java8collector%E6%8E%A5%E5%8F%A3%E7%9A%84%E5%AE%9A%E5%88%B6%E5%AE%9E%E7%8E%B0.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:55:45+00:00" />
+<script type="application/ld+json">
+{"description":"问题主要就是把集合里的数据按照一定大小顺序平均分成若干组的问题，看起来挺简单的，不过我开始看到就想用用stream来实现，但是想了想Collectors里并没有适合的方法，所以就想到了用定制的collector来实现了。 原问题的截图：","@type":"BlogPosting","url":"http://www.jfox.info/2017/java8collector%E6%8E%A5%E5%8F%A3%E7%9A%84%E5%AE%9A%E5%88%B6%E5%AE%9E%E7%8E%B0.html","headline":"Java8 collector接口的定制实现","dateModified":"2017-01-01T15:55:45+00:00","datePublished":"2017-01-01T15:55:45+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/java8collector%E6%8E%A5%E5%8F%A3%E7%9A%84%E5%AE%9A%E5%88%B6%E5%AE%9E%E7%8E%B0.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Java8 collector接口的定制实现</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:55:45+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>问题主要就是把集合里的数据按照一定大小顺序平均分成若干组的问题，看起来挺简单的，不过我开始看到就想用用stream来实现，但是想了想Collectors里并没有适合的方法，所以就想到了用定制的collector来实现了。
+原问题的截图：</p>
+
+<p><img src="9faa4b8.png" alt="" /></p>
+
+<p>正式开始回答（我是直接把之前的回答copy过来的哈）：</p>
+
+<p>集合处理的话，我还是推荐<code class="highlighter-rouge">Java8</code>的<code class="highlighter-rouge">stream</code>，题主这个问题设计到分组，那自然就要涉及到<code class="highlighter-rouge">stream</code>的<code class="highlighter-rouge">collect</code>方法了，这个方法是收集数据的意思，该方法的参数就是一个<code class="highlighter-rouge">Collector</code>接口，只要传入一个<code class="highlighter-rouge">Collector</code>的实现类就可以了，常用的实现比如在工具类<code class="highlighter-rouge">Collectors</code>里有<code class="highlighter-rouge">toList</code>,<code class="highlighter-rouge">toMap</code>等，已经帮你默认写了收集为集合或者Map的实现类了，但是明显这些实现类都不合适，所以这里需要定制一个<code class="highlighter-rouge">Collector</code>接口的实现啦</p>
+
+<p>其实就是仿照<code class="highlighter-rouge">Collectors</code>里的内部类<code class="highlighter-rouge">CollectorImpl</code>写一个就是了…</p>
+
+<p>=====================（<code class="highlighter-rouge">Collector</code>介绍，如果你已经清楚可以略过的…）==================</p>
+
+<p>介绍哈<code class="highlighter-rouge">Collector&lt;T, A, R&gt;</code>接口的方法，一共5个</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Supplier&lt;A&gt; supplier()
+BiConsumer&lt;A, T&gt; accumulator()
+BinaryOperator&lt;A&gt; combiner()
+Function&lt;A, R&gt; finisher()
+Set&lt;Characteristics&gt; characteristics()
+</code></pre></div></div>
+
+<p>方法中有泛型，所以要先要介绍哈<code class="highlighter-rouge">Collector</code>中的三个泛型<code class="highlighter-rouge">T, A, R</code>
+<code class="highlighter-rouge">T</code>：<code class="highlighter-rouge">stream</code>在调用<code class="highlighter-rouge">collect</code>方法收集前的数据类型
+<code class="highlighter-rouge">A</code>：<code class="highlighter-rouge">A</code>是<code class="highlighter-rouge">T</code>的累加器，遍历<code class="highlighter-rouge">T</code>的时候，会把<code class="highlighter-rouge">T</code>按照一定的方式添加到A中，换句话说就是把一些<code class="highlighter-rouge">T</code>通过一种方式变成<code class="highlighter-rouge">A</code>
+<code class="highlighter-rouge">R</code>：<code class="highlighter-rouge">R</code>可以看成是<code class="highlighter-rouge">A</code>的累加器，是最终的结果，是把<code class="highlighter-rouge">A</code>汇聚之后的数据类型，换句话说就是把一些<code class="highlighter-rouge">A</code>通过一种方式变成<code class="highlighter-rouge">R</code></p>
+
+<p>了解了泛型的意思，咱们结合<code class="highlighter-rouge">Collectors.toList</code>构造的默认实现类的实现方式来看看<code class="highlighter-rouge">Collector</code>接口的方法</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public static &lt;T&gt;
+    Collector&lt;T, ?, List&lt;T&gt;&gt; toList() {
+        return new CollectorImpl&lt;&gt;((Supplier&lt;List&lt;T&gt;&gt;) ArrayList::new, List::add,
+                                   (left, right) -&gt; { left.addAll(right); return left; },
+                                   CH_ID);
+    }
+</code></pre></div></div>
+
+<p>官方写的很简单，很随意…</p>
+
+<p>前三个参数分别对应了<code class="highlighter-rouge">Collector</code>的前三个方法，也就是</p>
+
+<p><code class="highlighter-rouge">(Supplier&lt;List&lt;T&gt;&gt;) ArrayList::new</code> 对应<code class="highlighter-rouge">Supplier&lt;A&gt; supplier()</code>第一个方法
+<code class="highlighter-rouge">List::add</code> 对应<code class="highlighter-rouge">BiConsumer&lt;A, T&gt; accumulator()</code>第二个方法
+<code class="highlighter-rouge">(left, right) -&gt; { left.addAll(right); return left; }</code>对应<code class="highlighter-rouge">BinaryOperator&lt;A&gt; combiner()</code>第三个方法</p>
+
+<p>所以对应着来看就清楚了
+<code class="highlighter-rouge">Supplier&lt;A&gt; supplier()</code> 怎么创建一个累加器（这里对应的是如何创建一个<code class="highlighter-rouge">List</code>）
+<code class="highlighter-rouge">BiConsumer&lt;A, T&gt; accumulator()</code>怎么把一个对象添加到累加器中（这里对应的是如何在<code class="highlighter-rouge">List</code>里添加一个对象，当然是调用<code class="highlighter-rouge">add</code>方法咯）
+<code class="highlighter-rouge">BinaryOperator&lt;A&gt; combiner()</code>怎么把一个累加器和另一个累加器合并起来（这里对应的是如何把<code class="highlighter-rouge">List</code>和<code class="highlighter-rouge">List</code>合并起来，当然是调用<code class="highlighter-rouge">addAll</code>，这里由于最终要返回List，所以A和R是一个类型，都是List所以才调用<code class="highlighter-rouge">addAll</code>）</p>
+
+<p>再来看看第四个方法<code class="highlighter-rouge">Function&lt;A, R&gt; finisher()</code>，其实就是怎么把<code class="highlighter-rouge">A</code>转化为<code class="highlighter-rouge">R</code>，由于是<code class="highlighter-rouge">toList</code>，所以<code class="highlighter-rouge">A</code>和<code class="highlighter-rouge">R</code>是一样的类型，这里其实用就是<code class="highlighter-rouge">Function.identity</code>
+最后第五个方法<code class="highlighter-rouge">Set&lt;Characteristics&gt; characteristics()</code>其实就是这个<code class="highlighter-rouge">Collector</code>的一些性质，<code class="highlighter-rouge">toList</code>这里只用了<code class="highlighter-rouge">Characteristics.IDENTITY_FINISH</code>，表示第四个方法可以不用设置，<code class="highlighter-rouge">A</code>类型就是最终的结果</p>
+
+<p>=====================（<code class="highlighter-rouge">Collector</code>介绍完了）==================</p>
+
+<p>现在创建自定义的<code class="highlighter-rouge">collector</code>，类名我就叫<code class="highlighter-rouge">NumberCollectorImpl</code>，由于<code class="highlighter-rouge">collector</code>这里要求有三个泛型，根据题主的需求，这三个泛型只有第一个是未知的，另外两个应该是确认的<code class="highlighter-rouge">List&lt;List&gt;</code>结构，所以写出来应该是这么个效果</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>static class NumberCollectorImpl&lt;T&gt; implements Collector&lt;T, List&lt;List&lt;T&gt;&gt;, List&lt;List&lt;T&gt;&gt;&gt;
+</code></pre></div></div>
+
+<p>ok，针对<code class="highlighter-rouge">collector</code>要求实现的5个方法来依次说明
+第一个方法<code class="highlighter-rouge">Supplier&lt;List&lt;List&lt;T&gt;&gt;&gt; supplier()</code>，很明显应该就是<code class="highlighter-rouge">ArrayList::new</code>
+第二个方法<code class="highlighter-rouge">BiConsumer&lt;List&lt;List&lt;T&gt;&gt;, T&gt;</code>，这个稍微麻烦点，起始应该写成<code class="highlighter-rouge">(list, item) -&gt; {}</code>，主要就是补充{}中的代码了
+最开始的遍历的时候，这个<code class="highlighter-rouge">list</code>其实是父<code class="highlighter-rouge">list</code>，它肯定是空的，所以这个时候要创建一个新子<code class="highlighter-rouge">List</code>，然后把<code class="highlighter-rouge">item</code>塞进子<code class="highlighter-rouge">list</code>中，最后再把创建的新子<code class="highlighter-rouge">list</code>放入到父<code class="highlighter-rouge">list</code>中</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>if (list.isEmpty()){
+  list.add(this.createNewList(item));
+}
+</code></pre></div></div>
+
+<p>这里简单封了一个小方法<code class="highlighter-rouge">createNewList</code>，因为待会还要用</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>private List&lt;T&gt; createNewList(T item){
+   List&lt;T&gt; newOne = new ArrayList&lt;T&gt;();
+   newOne.add(item);
+   return newOne;
+}
+</code></pre></div></div>
+
+<p>若父<code class="highlighter-rouge">list</code>不为空，那就要把当前父<code class="highlighter-rouge">list</code>中最后一个子list取出来，若空的话，当然又是要创建一个新子<code class="highlighter-rouge">list</code>然后按照之前的方法做，若不为空，就判断子<code class="highlighter-rouge">list</code>大小咯，若大小超过2，就再次创建一个新子<code class="highlighter-rouge">list</code>然后塞<code class="highlighter-rouge">item</code>，若没有超过就在之前子<code class="highlighter-rouge">list</code>中塞入<code class="highlighter-rouge">item</code>，写出来大概就是这个样子</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>List&lt;T&gt; last = (List&lt;T&gt;) list.get(list.size() - 1);
+if (last.size() &lt; 2){
+    last.add(item);
+}else{
+    list.add(this.createNewList(item));
+}
+</code></pre></div></div>
+
+<p>第三个方法<code class="highlighter-rouge">BinaryOperator&lt;List&lt;List&lt;T&gt;&gt;&gt; combiner()</code>，其实就是两个<code class="highlighter-rouge">List</code>如何合并，当然是<code class="highlighter-rouge">addAll</code>方法</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>(list1, list2) -&gt; {
+   list1.addAll(list2);
+   return list1;
+};
+</code></pre></div></div>
+
+<p>第四个方法<code class="highlighter-rouge">Function&lt;List&lt;List&lt;T&gt;&gt;, List&lt;List&lt;T&gt;&gt;&gt; finisher()</code>，由于这个时候A和R的类型一样，都是<code class="highlighter-rouge">List&lt;List&lt;T&gt;&gt;</code>，所以这里直接就是<code class="highlighter-rouge">Function.identity()</code>啦</p>
+
+<p>最后一个方法<code class="highlighter-rouge">Set&lt;Characteristics&gt; characteristics()</code>这里直接可以按照<code class="highlighter-rouge">Collectors.toList</code>来弄就行了，也就是直接采用<code class="highlighter-rouge">Collections.unmodifiableSet(EnumSet.of(Collector.Characteristics.IDENTITY_FINISH))</code></p>
+
+<p>综上所述，完整代码如下</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/**
+ * 自定义Collector
+ *
+ * @author imango
+ * @since 2017/7/13
+ */
+public class CustomCollectors {
+
+    // 默认采用2个一起分组
+    public static &lt;T&gt; Collector&lt;T, List&lt;List&lt;T&gt;&gt;, List&lt;List&lt;T&gt;&gt;&gt; groupByNumber(){
+        return CustomCollectors.groupByNumber(2);
+    }
+    
+    // 根据number的大小进行分组
+    public static &lt;T&gt; Collector&lt;T, List&lt;List&lt;T&gt;&gt;, List&lt;List&lt;T&gt;&gt;&gt; groupByNumber(int number){
+        return new NumberCollectorImpl(number);
+    }
+
+    /**
+     * 个数分组器
+     * @param &lt;T&gt;
+     */
+    static class NumberCollectorImpl&lt;T&gt; implements Collector&lt;T, List&lt;List&lt;T&gt;&gt;, List&lt;List&lt;T&gt;&gt;&gt; {
+        // 每组的个数
+        private int number;
+
+        public NumberCollectorImpl(int number) {
+            this.number = number;
+        }
+
+        @Override
+        public Supplier&lt;List&lt;List&lt;T&gt;&gt;&gt; supplier() {
+            return ArrayList::new;
+        }
+
+        @Override
+        public BiConsumer&lt;List&lt;List&lt;T&gt;&gt;, T&gt; accumulator() {
+            return (list, item) -&gt; {
+                if (list.isEmpty()){
+                    list.add(this.createNewList(item));
+                }else {
+                    List&lt;T&gt; last = (List&lt;T&gt;) list.get(list.size() - 1);
+                    if (last.size() &lt; number){
+                        last.add(item);
+                    }else{
+                        list.add(this.createNewList(item));
+                    }
+                }
+            };
+        }
+
+        @Override
+        public BinaryOperator&lt;List&lt;List&lt;T&gt;&gt;&gt; combiner() {
+            return (list1, list2) -&gt; {
+                list1.addAll(list2);
+                return list1;
+            };
+        }
+
+        @Override
+        public Function&lt;List&lt;List&lt;T&gt;&gt;, List&lt;List&lt;T&gt;&gt;&gt; finisher() {
+            return Function.identity();
+        }
+
+        @Override
+        public Set&lt;Characteristics&gt; characteristics() {
+            return Collections.unmodifiableSet(EnumSet.of(Collector.Characteristics.IDENTITY_FINISH));
+        }
+
+        private List&lt;T&gt; createNewList(T item){
+            List&lt;T&gt; newOne = new ArrayList&lt;T&gt;();
+            newOne.add(item);
+            return newOne;
+        }
+    }
+}
+</code></pre></div></div>
+
+<p>外面那个类<code class="highlighter-rouge">CustomCollectors</code> 主要是为了封装<code class="highlighter-rouge">NumberCollectorImpl</code>类，以后也可以把其他自定义的收集器实现放在这里面，并对外提供工具方法，并且我在<code class="highlighter-rouge">NumberCollectorImpl</code>类中新增了一个number成员变量，这样就可以自定义分组大小了，<code class="highlighter-rouge">CustomCollectors</code>提供了两个对外方法<code class="highlighter-rouge">groupByNumber</code>，带参数的那个就是可以自定义分组个数的了，没有参数的就是默认按照2个分组了，这样的话，测试写法就是这样</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public static void main(String[] args) {
+   List&lt;Integer&gt; list = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+   // 按照2个分组
+   List&lt;List&lt;Integer&gt;&gt; twoNumberList = list.stream().collect(CustomCollectors.groupByNumber());
+   // 按照5个分组
+   List&lt;List&lt;Integer&gt;&gt; fiveNumberList = list.stream().collect(CustomCollectors.groupByNumber(5));
+}
+</code></pre></div></div>
+
+<p>这样代码就非常漂亮了~哈哈哈~~</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/java8collector%E6%8E%A5%E5%8F%A3%E7%9A%84%E5%AE%9A%E5%88%B6%E5%AE%9E%E7%8E%B0.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/pushbasedmonitoringservicewithprometheus.html">&laquo; Push Based Monitoring Service with Prometheus</a>
+  
+  
+  <a class="next" href="/2017/%E6%B5%85%E5%85%A5%E6%B7%B1%E5%87%BA%E4%B9%8Bjava%E9%9B%86%E5%90%88%E6%A1%86%E6%9E%B6%E4%B8%AD-2.html">浅入深出之Java集合框架（中） &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

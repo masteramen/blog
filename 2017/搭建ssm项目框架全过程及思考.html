@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>搭建SSM项目框架全过程及思考 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="搭建SSM项目框架全过程及思考" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="之前都是在现有框架下进行写代码或者总是看一些别人的架构，总会眼高手低。于是打算自己完整的走一遍流程，同时把所遇到的问题，思考的问题记下来，供大家参考。由于是工作年限不高，属于新手，不足之处还请各位大牛指正。" />
+<meta property="og:description" content="之前都是在现有框架下进行写代码或者总是看一些别人的架构，总会眼高手低。于是打算自己完整的走一遍流程，同时把所遇到的问题，思考的问题记下来，供大家参考。由于是工作年限不高，属于新手，不足之处还请各位大牛指正。" />
+<link rel="canonical" href="http://www.jfox.info/2017/%E6%90%AD%E5%BB%BAssm%E9%A1%B9%E7%9B%AE%E6%A1%86%E6%9E%B6%E5%85%A8%E8%BF%87%E7%A8%8B%E5%8F%8A%E6%80%9D%E8%80%83.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/%E6%90%AD%E5%BB%BAssm%E9%A1%B9%E7%9B%AE%E6%A1%86%E6%9E%B6%E5%85%A8%E8%BF%87%E7%A8%8B%E5%8F%8A%E6%80%9D%E8%80%83.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:56:43+00:00" />
+<script type="application/ld+json">
+{"description":"之前都是在现有框架下进行写代码或者总是看一些别人的架构，总会眼高手低。于是打算自己完整的走一遍流程，同时把所遇到的问题，思考的问题记下来，供大家参考。由于是工作年限不高，属于新手，不足之处还请各位大牛指正。","@type":"BlogPosting","url":"http://www.jfox.info/2017/%E6%90%AD%E5%BB%BAssm%E9%A1%B9%E7%9B%AE%E6%A1%86%E6%9E%B6%E5%85%A8%E8%BF%87%E7%A8%8B%E5%8F%8A%E6%80%9D%E8%80%83.html","headline":"搭建SSM项目框架全过程及思考","dateModified":"2017-01-01T15:56:43+00:00","datePublished":"2017-01-01T15:56:43+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/%E6%90%AD%E5%BB%BAssm%E9%A1%B9%E7%9B%AE%E6%A1%86%E6%9E%B6%E5%85%A8%E8%BF%87%E7%A8%8B%E5%8F%8A%E6%80%9D%E8%80%83.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">搭建SSM项目框架全过程及思考</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:56:43+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>之前都是在现有框架下进行写代码或者总是看一些别人的架构，总会眼高手低。于是打算自己完整的走一遍流程，同时把所遇到的问题，思考的问题记下来，供大家参考。由于是工作年限不高，属于新手，不足之处还请各位大牛指正。</p>
+
+<p>　项目选用Spring为基础框架，由于目前项目中采用的是Hibernate（在多表关联查询方面以及复杂的统计计算方面，同时要兼顾性能的时候吃了不少苦头），所以这里采取Mybatis做持久化框架（没实战搭建过），Spring MVC框架。在权限控制方面现有项目中采用的是shiro（为了学习，这里使用spring security）。其他的细节问题会在下面各小节中叙述。</p>
+
+<p>　另说明一点的是操作系统是mac。</p>
+
+<p>　github项目源码在<a href="https://www.jfox.info/go.php?url=https://github.com/sjlian/sjlian">https://github.com/sjlian/sjlian</a> 欢迎clone并提出意见。</p>
+
+<h2 id="2-创建mvn项目完善目录结构">2. 创建mvn项目、完善目录结构</h2>
+
+<p>　　首先安装和配置环境，主要包括jdk、mysql、maven等，其他如redis、nginx、ActiveMQ等在初始版本还暂时没上传和使用。这些入门知识不再赘述。</p>
+
+<p>　　在idea上新建一个mvn项目，然后有一个create from archetype，里面有很多选项，于是有个疑问到底用哪个呢？遂逐一查看名字，看到mvn-archetypr-webapp，听名字就觉得和自己的预期是一样的啊，于是果断选择。期间又试了下其他的各个archetype，发现这这是一个模板，可以根据自己需要选择，也可以默认缺省的。这里附上mvn官方标准化的目录结构如下图：</p>
+
+<p><img src="bb42e62.png" alt="" /></p>
+
+<p>　一个好的程序员都善于用命令行的方式解决问题，于是思考怎么用mvn命令行创建项目。最简单的方式就是mvn archetype:generate，这个命令是默认的 archetype，如果需要生成特定模板的项目呢？从maven的Repository里查找arche types发现有几百个，我们平时用的也就那么几个，由于太多就变得很不方便起来，于是搜索资料，查到 <a href="https://www.jfox.info/go.php?url=http://maven.40175.n5.nabble.com/archetype-catalog-xml-location-archetype-crawl-versus-archetype-generate-td113741.html">http://maven.40175.n5.nabble.com/archetype-catalog-xml-location-archetype-crawl-versus-archetype-generate-td113741.html</a></p>
+
+<p><img src="fea5fbc.png" alt="" /></p>
+
+<p>　　完善目录结构大致如上图（是demo最终版本），这个时候只需要在java目录下新建几个包，进行分层，使项目结构变得清晰。</p>
+
+<p>　　common主要放置一些通用的非工具类，如exception相关，结果相关，拦截器，servlet，VO类等。</p>
+
+<p>　　Controller、DAO、model、service顾名思义，分别是控制层、持久层、数据模型层、业务处理层。</p>
+
+<p>　　util主要存放各种工具类，例如字符串、时间、poi、邮件、ip等</p>
+
+<p>　　resource主要是配置文件，包括spring相关配置文件、mybatis配置文件、mybatis映射文件、日志配置文件等</p>
+
+<p>　　web-inf下最重要是web.xml，作为启动需要首先加载的文件，引入其他配置文件、配置listener、servlet、filter、Interceptor等。</p>
+
+<p>　　其他是和前端相关文件</p>
+
+<p>　　test是和测试相关。</p>
+
+<p>　　建好以上目录，开始进入正题。</p>
+
+<h2 id="3-引入spring">　3. 引入Spring</h2>
+
+<h3 id="31-webxml">　　3.1 web.xml</h3>
+
+<p>　　web程序启动会去读取它的配置文件 web.xml，首先需要配置web.xml，添加上spring的监听器、spring mvc的Servlet。</p>
+
+<p>　　ContextLoaderListener 它实现了ServletContextListener这个接口，在web.xml配置这个监听器，启动容器时，就会默认执行它实现的方法。在ContextLoaderListener中关联了ContextLoader这个类，所以整个加载配置过程由ContextLoader来完成。</p>
+
+<p>　　RequestContextListener implements ServletRequestListener，监听用户的请求，用于日志系统，不是必需的。</p>
+
+<p>　　IntrospectorCleanupListener监听器主要用于解决java.beans.Introspector导致的内存泄漏的问题(Quartz,Struts)，如果没有struts和quartz不是必需的。</p>
+
+<p>　　Spring MVC 以自启动servlet的形式加载，同时引入相关spring/spring-mvc.xml配置文件。文件路径classpath:开头,从classpath加载,否则尝试URL,如果失败,调用 getResourceByPath。</p>
+
+<p><img src="afc3574.png" alt="" /></p>
+
+<p>　　此外，为了防止中文乱码，需要encodingFilter；设置session超时时间、用户自定义Listener、servlet、filter、interceptor等。</p>
+
+<h3 id="32-pomxml">　　3.2 pom.xml</h3>
+
+<p>　　直接把Listener复制到xml中，会发现ide并不识别，是因为相关依赖还没有导入项目中的原因。 在pom.xml中引入spring相关，引入的时候会发现depency有一些属性值，如groupId、artifactId等，对于开源项目来说，这两项是固定的，按照文档导入即可，version是版本号，为了便于升级和管理，建议版本号统一配置。</p>
+
+<p><img src="bef325f.png" alt="" /></p>
+
+<p><img src="a0db703.png" alt="" /></p>
+
+<p>　　有时候会发现还有scope属性，如junit的scope属性值是test用于test任务时使用；compile(default)编译时使用；provided类似于编译但支持你期待jdk或者容器提供，类似于classpath；runtime在执行时需要使用；system需要外在提供相应得元素。通过systemPath来取得；</p>
+
+<p>　　有时候会遇到依赖冲突，例如同时导入了A、B包，但是A包又引用了B包，当版本不一致时就会冲突，解决方式是mvn dependency:tree 分析冲突的包，然后在相应的A包中配置<exclusions> 把B包排除在外。</exclusions></p>
+
+<p>　　如果想引入本地依赖，1、使用scope system和systemPath指向依赖包；2、mvn install命令进行安装并配置group和artifact，然后直接引入。3、创建pom依赖关系。POM关系主要为依赖，继承，合成，在这个小项目中用不到，且不是重点，故略去。</p>
+
+<h3 id="33-其他配置文件">　　3.3 其他配置文件</h3>
+
+<p>　　spring-mvc.xml主要配置如下。</p>
+
+<p>　　1.开启注解模式就可以使用注解方式@ResponseBody,@RequestMapping等。</p>
+
+<p>　　2.对于静态的jpg、css等不需要通过mvc。</p>
+
+<p>　　3.添加前后缀，注意路径。　　</p>
+
+<p>　　4.扫描controller的bean，让spring知道哪些是controller（@Controller）。</p>
+
+<p><img src="bdff292.png" alt="" /></p>
+
+<p>　　如果需要对返回值进行json统一化处理，在这里可以引入json处理，如fastJson、jackson等。fastJson轻量级速度快，但是支持有轻微漏洞，jackson灵活性好，但是比较笨重，这里选用的是fastJson，配置如下。</p>
+
+<p><img src="3569056.png" alt="" /></p>
+
+<p>　　如果需要上传文件，还需要配置文件上传，如下：</p>
+
+<p><img src="5248376.png" alt="" /></p>
+
+<p>　　　web.xml中引入配置文件，该配置文件作为spring基础配置文件，再引入其他文件。</p>
+
+<p><img src="fa25558.png" alt="" /></p>
+
+<p>　　spring.xml中配置如下,这里注入service、引入mybatis、security配置，配置事务管理、开启声明是式事务（@transtraction）。</p>
+
+<p><img src="ab0e011.png" alt="" /></p>
+
+<h2 id="4引入mybatis">　4.引入Mybatis</h2>
+
+<h3 id="41-文件配置">　　4.1 文件配置</h3>
+
+<p>　　在spring.xml中引入了spring-mybatis.xml，用于Mybatis和spring的集成配置。同时pom.xml中引入相关依赖。</p>
+
+<p>　　1.配置数据源，数据库连接池，可以选择的有c3p0、druid、dbcp、HikariCP等，这里选择阿里的开源框架druid,配置如下。url、username等建议写在property文件中。</p>
+
+<p><img src="effa3b1.png" alt="" /></p>
+
+<p>　　2. 配置sessionFactory, 引入mybatis全局配置文件、entity使用别名，扫描mapping.xml</p>
+
+<p>　　 3. 配置DAO接口，注入Srping容器中。</p>
+
+<p><img src="ade13da.png" alt="" /></p>
+
+<p>　4. 配置mybatis-config.xml</p>
+
+<p><img src="d036fea.png" alt="" /></p>
+
+<h2 id="5-mvc层搭建">　5. mvc层搭建</h2>
+
+<h3 id="51-dao层">　　5.1 DAO层</h3>
+
+<p>　　　　由于mybatis不支持jpa，不能由实体映射数据表，所以需要自己新建数据表和数据实体。</p>
+
+<p>　　　　可以使用工具由数据表生成数据实体。</p>
+
+<p>　　　　数据实体在model目录下。</p>
+
+<p>　　　　映射文件在resources/mapper下，如果设置了自动转换对象关系名，这里不在需要配置对象关系的名称映射，但是需要注意命名的书写，注意namespace一致。</p>
+
+<p>　　　　DAO接口文件在dao目录下，DAO实现在mapper的xml中，select/update id和接口中的方法对应即可。在service注入dao的时候会提示无法注入的错误，忽略即可。</p>
+
+<h3 id="52-service层">　　5.2 service层</h3>
+
+<p>　　　在service下定义接口，在service/impl/下定义实现，加上@Service注解</p>
+
+<h3 id="53-controller层">　　5.3 Controller层</h3>
+
+<p>　　　在Controller目录下，可以实现封装好的json数据、string连接、ModelAndView。</p>
+
+<h2 id="6-demo完善">　6. DEMO完善</h2>
+
+<h3 id="51-加入日志系统">　　5.1 加入日志系统</h3>
+
+<p>　　　　log4j,配置log4j.properties。如下　　</p>
+
+<p><img src="83fb982.png" alt="" /></p>
+
+<p>　　　然后可以利用filter做请求参数日志输出。</p>
+
+<p>　　　利用aop做一些其他日志输入。</p>
+
+<h3 id="52-封装统一化返回值">　　5.2 封装统一化返回值</h3>
+
+<p>　　前后端json数据交互，自定义ResponseResult，包括头信息（状态码，错误信息说明，异常），数据信息。</p>
+
+<p>　　异常通过@ControllerAdvice 捕获到然后封装处理返回给前端，不至于页面报错，或者自定义异常弹窗。</p>
+
+<h3 id="53-工具类准备">　　5.3 工具类准备</h3>
+
+<p>　　各种工具类提取</p>
+
+<h3 id="54-权限控制">　　5.4 权限控制</h3>
+
+<p>　　使用spring security，目前还是半成品，以后完善。</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/%E6%90%AD%E5%BB%BAssm%E9%A1%B9%E7%9B%AE%E6%A1%86%E6%9E%B6%E5%85%A8%E8%BF%87%E7%A8%8B%E5%8F%8A%E6%80%9D%E8%80%83.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/spring%E5%AD%A6%E4%B9%A0%E4%B9%8B%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86.html">&laquo; Spring学习之动态代理</a>
+  
+  
+  <a class="next" href="/2017/%E4%BD%BF%E7%94%A8javajconsole%E7%9B%91%E6%8E%A7tomcat.html">使用Java JConsole监控Tomcat &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

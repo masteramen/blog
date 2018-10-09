@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>Eclipse Remote Debug 远程调试 Java 程序 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="Eclipse Remote Debug 远程调试 Java 程序" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="今天同事问我怎么远程调试 java 程序。我不会，那马上搜索看看。在被高度的程序中加个数据就行。然后 eclipse 调试时指定端口就行，太方便了。" />
+<meta property="og:description" content="今天同事问我怎么远程调试 java 程序。我不会，那马上搜索看看。在被高度的程序中加个数据就行。然后 eclipse 调试时指定端口就行，太方便了。" />
+<link rel="canonical" href="http://www.jfox.info/2017/eclipse-remote-debug-yuan-cheng-diao-shi-java-cheng-xu.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/eclipse-remote-debug-yuan-cheng-diao-shi-java-cheng-xu.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:47:21+00:00" />
+<script type="application/ld+json">
+{"description":"今天同事问我怎么远程调试 java 程序。我不会，那马上搜索看看。在被高度的程序中加个数据就行。然后 eclipse 调试时指定端口就行，太方便了。","@type":"BlogPosting","url":"http://www.jfox.info/2017/eclipse-remote-debug-yuan-cheng-diao-shi-java-cheng-xu.html","headline":"Eclipse Remote Debug 远程调试 Java 程序","dateModified":"2017-01-01T15:47:21+00:00","datePublished":"2017-01-01T15:47:21+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/eclipse-remote-debug-yuan-cheng-diao-shi-java-cheng-xu.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Eclipse Remote Debug 远程调试 Java 程序</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:47:21+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>今天同事问我怎么远程调试 java 程序。我不会，那马上搜索看看。在被高度的程序中加个数据就行。然后 eclipse 调试时指定端口就行，太方便了。</p>
+
+<p>比如，现在有一个代码：</p>
+
+<p><img src="7f5b113.gif" alt="remoting-debug-java" /></p>
+
+<p>把这个java 导出为 remoting-debug.jar 上传到目标机器（当然本地也行）。然后在目标机器上运行：</p>
+
+<p>java -Xdebug -Xrunjdwp:transport=dt_socket,server=y,address=8000 -jar remoting-debug.jar</p>
+
+<p>会出现：Listening for transport dt_socket at address: 8000</p>
+
+<p>程序正在等待调试。</p>
+
+<p>右击 eclipse 中的 RemotingDebug 代码 -&gt; Debug As … -&gt; Debug configurations … 中，双击 Remote Java Application，如：</p>
+
+<p><img src="000afbb.jpg" alt="eclpse-remoting-debug-java" /></p>
+
+<p>192.168.1.100 是本地虚拟机。然后就可以方便调试了，太方便了。</p>
+
+<p>延伸：Eclipse 远程调试 Tomcat 程序。</p>
+
+<p>在 tomcat 6 中可以在 startup.bat 尾加 jpda，如下：</p>
+
+<p>set JPDA_ADDRESS=8017
+call “%EXECUTABLE%” jpda start %CMD_LINE_ARGS%</p>
+
+<p>如果不要 set JPDA_ADDRESS=8017 也可以，这样就会默认的 8000 端口。</p>
+
+<p>相关词语：</p>
+
+<ul>
+  <li><strong>JDI</strong> — Java 调试接口（Java Debug Interface）</li>
+  <li><strong>JDT</strong> — Java 开发工具（Java Development Tools）</li>
+  <li><strong>JDWP</strong> — Java 调试网络协议（Java Debug Wire Protocol）</li>
+  <li><strong>JPDA</strong> — Java 平台调试器架构（Java Platform Debugger Architecture）</li>
+  <li><strong>JVM</strong> — Java 虚拟机（Java Virtual Machine）</li>
+  <li><strong>JVMDI</strong> — JVM 调试接口（JVM Debug Interface）</li>
+  <li><strong>JVMTI</strong> — JVM 工具接口（JVM Tool Interface）</li>
+  <li><strong>VM</strong> — 虚拟机（Virtual Machine）</li>
+</ul>
+
+<p>参考：<a href="/url.php?_src=&amp;isencode=1&amp;content=dGltZT0xNDI4MTE3NTM5MTA5JnVybD1odHRwJTNBJTJGJTJGd3d3LmlibS5jb20lMkZkZXZlbG9wZXJ3b3JrcyUyRmNuJTJGb3BlbnNvdXJjZSUyRm9zLWVjbGlwc2UtamF2YWRlYnVnJTJG">http://www.ibm.com/developerworks/cn/opensource/os-eclipse-javadebug/</a></p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/eclipse-remote-debug-yuan-cheng-diao-shi-java-cheng-xu.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/windows-xia-de-chcp-ming-ling-geng-gai-gai-kong-zhi-tai-de-huo-dong-kong-zhi-tai-dai-ma-ye.html">&laquo; Windows下的chcp命令（更改该控制台的活动控制台代码页）</a>
+  
+  
+  <a class="next" href="/2017/guan-yu-huo-hu-he-ie-xia-href-javascript-void-0-jian-rong-xing-de-wen-ti.html">关于火狐和IE下href=”javascript:void(0)”兼容性的问题 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

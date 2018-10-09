@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>少打一局王者荣耀就能上手Spring Cloud？！ | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="少打一局王者荣耀就能上手Spring Cloud？！" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="大神的操作当然离不开合适的装备。（框架说明-组件架构）" />
+<meta property="og:description" content="大神的操作当然离不开合适的装备。（框架说明-组件架构）" />
+<link rel="canonical" href="http://www.jfox.info/2017/%E5%B0%91%E6%89%93%E4%B8%80%E5%B1%80%E7%8E%8B%E8%80%85%E8%8D%A3%E8%80%80%E5%B0%B1%E8%83%BD%E4%B8%8A%E6%89%8Bspringcloud.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/%E5%B0%91%E6%89%93%E4%B8%80%E5%B1%80%E7%8E%8B%E8%80%85%E8%8D%A3%E8%80%80%E5%B0%B1%E8%83%BD%E4%B8%8A%E6%89%8Bspringcloud.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:57:15+00:00" />
+<script type="application/ld+json">
+{"description":"大神的操作当然离不开合适的装备。（框架说明-组件架构）","@type":"BlogPosting","url":"http://www.jfox.info/2017/%E5%B0%91%E6%89%93%E4%B8%80%E5%B1%80%E7%8E%8B%E8%80%85%E8%8D%A3%E8%80%80%E5%B0%B1%E8%83%BD%E4%B8%8A%E6%89%8Bspringcloud.html","headline":"少打一局王者荣耀就能上手Spring Cloud？！","dateModified":"2017-01-01T15:57:15+00:00","datePublished":"2017-01-01T15:57:15+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/%E5%B0%91%E6%89%93%E4%B8%80%E5%B1%80%E7%8E%8B%E8%80%85%E8%8D%A3%E8%80%80%E5%B0%B1%E8%83%BD%E4%B8%8A%E6%89%8Bspringcloud.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">少打一局王者荣耀就能上手Spring Cloud？！</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:57:15+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>大神的操作当然离不开合适的装备。（框架说明-组件架构）</p>
+
+<p>Piggymetrics基础服务设施中用到了 
+ Spring Cloud Config、Netflix Eureka、Netflix Hystrix、Netflix Zuul、Netflix Ribbon、Netflix Feign等组件，而这也正是Spring Cloud分布式开发中最核心的组件。</p>
+
+<p>组件架构如下图所示：</p>
+
+<p><img src="47ac301.jpeg" alt="" /></p>
+
+<p>• 账户服务通过远程客户端（Feign）调用统计服务及通知服务，通过Ribbon实现负载均衡，并在调用过程中增加了断路器（Hystrix）的功能；</p>
+
+<p>• 由于服务发现后才能调用，因此账户服务、统计服务、通知服务通过注册中心（Eureka）实现互相发现；</p>
+
+<p>• API Gateway（Zuul）提供对外统一的服务网关，首先从注册中心（Eureka）处获取相应服务，再根据服务调用各个服务的真实业务逻辑；</p>
+
+<p>• 服务调用过程通过聚合器（Turbine）统一所有断路信息；</p>
+
+<p>• 整个业务过程中所有服务的配置文件通过Spring Cloud Config来管理，即起什么端口、配置什么参数等；</p>
+
+<p>• 认证机制通过Auth service实现，提供基本认证服务；</p>
+
+<p>• Spring Cloud Config、Eureka、Ribbon、Hystrix、Feign以及Turbine均为标准组件，与业务之间没有强关系，不涉及到业务代码，仅需简单配置即可工作。</p>
+
+<p>那么如何变成自己的项目呢？</p>
+
+<p>总共有5步。</p>
+
+<ol>
+  <li>
+    <p>git clone项目到本地，并基于该项目创建自己的mvn项目</p>
+  </li>
+  <li>
+    <p>将auth-service、account-service、notification-service、statistics-service替换成自己的服务，构造成docker镜像并上传至官方镜像库</p>
+
+    <p>PS: config、registry、gateway、monitoring代码无需修改</p>
+  </li>
+  <li>
+    <p>在config中修改统一的配置文件，比如新增服务的服务名、端口等，构造成docker镜像并上传至官方镜像库</p>
+  </li>
+  <li>
+    <p>将前文提到的docker-compose（贴个url）例子中对应service的“image”改为修改后上传的官方镜像库地址</p>
+  </li>
+</ol>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/%E5%B0%91%E6%89%93%E4%B8%80%E5%B1%80%E7%8E%8B%E8%80%85%E8%8D%A3%E8%80%80%E5%B0%B1%E8%83%BD%E4%B8%8A%E6%89%8Bspringcloud.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/struts2%E6%A1%86%E6%9E%B606valuestack.html">&laquo; Struts2框架06 ValueStack</a>
+  
+  
+  <a class="next" href="/2017/%E8%AE%A9%E8%87%AA%E5%B7%B1%E7%9A%84jar%E5%8C%85%E6%94%AF%E6%8C%81springboot%E7%9A%84%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E8%87%AA%E5%8A%A8%E6%8F%90%E7%A4%BA.html">让自己的jar包支持spring-boot的配置文件自动提示 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>Webpack 常见静态资源处理 – 模块加载器（Loaders）+ExtractTextPlugin插件 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="Webpack 常见静态资源处理 – 模块加载器（Loaders）+ExtractTextPlugin插件" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="By Lee - Last updated: 星期二, 四月 4, 2017" />
+<meta property="og:description" content="By Lee - Last updated: 星期二, 四月 4, 2017" />
+<link rel="canonical" href="http://www.jfox.info/2017/webpack-chang-jian-jing-tai-zi-yuan-chu-li-mo-kuai-jia-zai-qi-loaders-extracttextplugin-cha-jian.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/webpack-chang-jian-jing-tai-zi-yuan-chu-li-mo-kuai-jia-zai-qi-loaders-extracttextplugin-cha-jian.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:48:38+00:00" />
+<script type="application/ld+json">
+{"description":"By Lee - Last updated: 星期二, 四月 4, 2017","@type":"BlogPosting","url":"http://www.jfox.info/2017/webpack-chang-jian-jing-tai-zi-yuan-chu-li-mo-kuai-jia-zai-qi-loaders-extracttextplugin-cha-jian.html","headline":"Webpack 常见静态资源处理 – 模块加载器（Loaders）+ExtractTextPlugin插件","dateModified":"2017-01-01T15:48:38+00:00","datePublished":"2017-01-01T15:48:38+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/webpack-chang-jian-jing-tai-zi-yuan-chu-li-mo-kuai-jia-zai-qi-loaders-extracttextplugin-cha-jian.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Webpack 常见静态资源处理 – 模块加载器（Loaders）+ExtractTextPlugin插件</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:48:38+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>By Lee - Last updated: 星期二, 四月 4, 2017</p>
+
+<p>Webpack 常见静态资源处理 – 模块加载器（Loaders）+ExtractTextPlugin插件</p>
+
+<p>webpack系列目录</p>
+
+<p><a href="https://www.jfox.info/go.php?url=http://www.cnblogs.com/sloong/p/5570774.html">webpack 系列 一：模块系统的演进</a><a href="https://www.jfox.info/go.php?url=http://www.cnblogs.com/sloong/p/5584684.html">webpack 系列 二：webpack 介绍&amp;安装</a><a href="https://www.jfox.info/go.php?url=http://www.cnblogs.com/sloong/p/5689135.html">webpack 系列 三：webpack 如何集成第三方js库</a><a href="https://www.jfox.info/go.php?url=http://www.cnblogs.com/sloong/p/5689162.html">webpack 系列 四：webpack 多页面支持 &amp; 公共组件单独打包</a><a href="https://www.jfox.info/go.php?url=http://www.cnblogs.com/sloong/p/5826818.html">webpack 系列 五：webpack Loaders 模块加载器</a><a href="https://www.jfox.info/go.php?url=http://www.cnblogs.com/sloong/p/5826859.html">webpack 系列 六：前端项目模板-webpack+gulp实现自动构建部署</a></p>
+
+<p>基于webpack搭建纯静态页面型前端工程解决方案模板， 最终形态源码见github: <a href="https://www.jfox.info/go.php?url=https://github.com/ifengkou/webpack-template">https://github.com/ifengkou/webpack-template</a></p>
+
+<p>正文</p>
+
+<p>Webpack将所有静态资源都认为是模块，比如JavaScript，CSS，LESS，TypeScript，JSX，CoffeeScript，图片等等，从而可以对其进行统一管理。为此Webpack引入了加载器的概念，除了纯JavaScript之外，每一种资源都可以通过对应的加载器处理成模块。和大多数包管理器不一样的是，Webpack的加载器之间可以进行串联，一个加载器的输出可以成为另一个加载器的输入。比如LESS文件先通过less-load处理成css，然后再通过css-loader加载成css模块，最后由style-loader加载器对其做最后的处理，从而运行时可以通过style标签将其应用到最终的浏览器环境。</p>
+
+<p>一 常用loader</p>
+
+<p>安装css/sass/less loader加载器</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>cnpm install file-loader css-loader style-loader sass-loader ejs-loader html-loader jsx-loader image-webpack-loader --save-dev
+</code></pre></div></div>
+
+<p>webpack.config.js配置：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>module: {
+ loaders: [
+ {
+ test: /.((woff2?|svg)(?v=[0-9].[0-9].[0-9]))|(woff2?|svg|jpe?g|png|gif|ico)$/,
+ loaders: [
+ // 小于10KB的图片会自动转成dataUrl
+ 'url?limit=10240&amp;name=img/[hash:8].[name].[ext]',
+ 'image?{bypassOnDebug:true, progressive:true,optimizationLevel:3,pngquant:{quality:"65-80",speed:4}}'
+ ]
+ },
+ {
+ test: /.((ttf|eot)(?v=[0-9].[0-9].[0-9]))|(ttf|eot)$/,
+ loader: 'url?limit=10000&amp;name=fonts/[hash:8].[name].[ext]'
+ },
+ {test: /.(tpl|ejs)$/, loader: 'ejs'},
+ {test: /.css$/, loader: 'style-loader!css-loader'},
+ { test: /.scss$/, loader: 'style!css!sass'}
+ ]
+},
+</code></pre></div></div>
+
+<p>index.html 新增两个div</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;div class="small-webpack"&gt;&lt;/div&gt;
+&lt;div class="webpack"&gt;&lt;/div&gt;
+</code></pre></div></div>
+
+<p>index.css 增加两个图片，同时将webpack.png（53kb) 和 small-webpack.png(9.8k)</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>.webpack {
+ background: url(../img/webpack.png) no-repeat center;
+ height:500px;
+}
+.small-webpack {
+ background: url(../img/small-webpack.png) no-repeat center;
+ height:250px;
+}
+</code></pre></div></div>
+
+<p>index.js 引入css</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>require('../css/index.css');
+</code></pre></div></div>
+
+<p>执行webpack指令</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ webpack
+</code></pre></div></div>
+
+<p>查看生成的目录结构</p>
+
+<p><img src="27374c8.png" alt="" /></p>
+
+<p>其中并没有css文件，css被写入到了index.js中，index.js 部分截图
+<img src="ede39c3.png" alt="" /></p>
+
+<p>总结：</p>
+
+<p>图片采用了url-loader加载，如果小于10kb，图片则被转化成 base64 格式的 dataUrl css文件被打包进了js文件中</p>
+
+<p>css被打包进了js文件，如果接受不了，可以强制把css从js文件中独立出来。官方文档是以插件形式实现：<a href="https://www.jfox.info/go.php?url=http://webpack.github.io/docs/stylesheets.html#separate-css-bundle">文档docs点这</a>，<a href="https://www.jfox.info/go.php?url=https://github.com/webpack/extract-text-webpack-plugin">插件的github点这</a></p>
+
+<p>二：extract-text-webpack-plugin 插件介绍</p>
+
+<p>Extract text from bundle into a file.从bundle中提取出特定的text到一个文件中。使用 extract-text-webpack-plugin就可以把css从js中独立抽离出来</p>
+
+<p>安装</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ npm install extract-text-webpack-plugin --save-dev
+</code></pre></div></div>
+
+<p>使用（css为例）</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var ExtractTextPlugin = require("extract-text-webpack-plugin");
+module.exports = {
+ module: {
+ loaders: [
+ { test: /.css$/, loader: ExtractTextPlugin.extract("style-loader", "css-loader") }
+ ]
+ },
+ plugins: [
+ new ExtractTextPlugin("styles.css")
+ ]
+}
+</code></pre></div></div>
+
+<p>它将从每一个用到了require(“style.css”)的entry chunks文件中抽离出css到单独的output文件</p>
+
+<p>API</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>new ExtractTextPlugin([id: string], filename: string, [options])
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">id</code> Unique ident for this plugin instance. (For advanded usage only, by default automatic generated) <code class="highlighter-rouge">filename</code> the filename of the result file. May contain [name], [id] and [contenthash]. <code class="highlighter-rouge">[name]</code> the name of the chunk <code class="highlighter-rouge">[id]</code> the number of the chunk <code class="highlighter-rouge">[contenthash]</code> a hash of the content of the extracted file <code class="highlighter-rouge">options</code><code class="highlighter-rouge">allChunks</code> extract from all additional chunks too (by default it extracts only from the initial chunk(s)) <code class="highlighter-rouge">disable</code> disables the plugin ExtractTextPlugin.extract([notExtractLoader], loader, [options])</p>
+
+<p>根据已有的loader，创建一个提取器（loader的再封装）</p>
+
+<p><code class="highlighter-rouge">notExtractLoader</code> （可选）当css没有被抽离时，加载器不应该使用（例如：当allChunks:false时，在一个additional 的chunk中） <code class="highlighter-rouge">loader</code> 数组，用来转换css资源的加载器s <code class="highlighter-rouge">options</code><code class="highlighter-rouge">publicPath</code> 重写该加载器(loader)的 <code class="highlighter-rouge">publicPath</code> 的设置</p>
+
+<p>多入口文件的extract的使用示例：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>let ExtractTextPlugin = require('extract-text-webpack-plugin');
+
+// multiple extract instances
+let extractCSS = new ExtractTextPlugin('stylesheets/[name].css');
+let extractLESS = new ExtractTextPlugin('stylesheets/[name].less');
+
+module.exports = {
+ ...
+ module: {
+ loaders: [
+ {test: /.scss$/i, loader: extractCSS.extract(['css','sass'])},
+ {test: /.less$/i, loader: extractLESS.extract(['css','less'])},
+ ...
+ ]
+ },
+ plugins: [
+ extractCSS,
+ extractLESS
+ ]
+};
+</code></pre></div></div>
+
+<p>三：改造项目-抽离css</p>
+
+<p>安装插件到项目</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>npm install extract-text-webpack-plugin --save-dev
+</code></pre></div></div>
+
+<p>配置webpack.config.js，加入ExtractTextPlugin和相关处理：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var webpack = require("webpack");
+var path = require("path");
+var srcDir = path.resolve(process.cwd(), 'src');
+var nodeModPath = path.resolve(__dirname, './node_modules');
+var pathMap = require('./src/pathmap.json');
+var glob = require('glob')
+var CommonsChunkPlugin = webpack.optimize.CommonsChunkPlugin;
+var HtmlWebpackPlugin = require('html-webpack-plugin');
+var ExtractTextPlugin = require('extract-text-webpack-plugin');
+var entries = function () {
+ var jsDir = path.resolve(srcDir, 'js')
+ var entryFiles = glob.sync(jsDir + '/*.{js,jsx}')
+ var map = {};
+
+ for (var i = 0; i &lt; entryFiles.length; i++) {
+ var filePath = entryFiles[i];
+ var filename = filePath.substring(filePath.lastIndexOf('/') + 1, filePath.lastIndexOf('.'));
+ map[filename] = filePath;
+ }
+ return map;
+}
+
+var html_plugins = function () {
+ var entryHtml = glob.sync(srcDir + '/*.html')
+ var r = []
+ var entriesFiles = entries()
+ for (var i = 0; i &lt; entryHtml.length; i++) {
+ var filePath = entryHtml[i];
+ var filename = filePath.substring(filePath.lastIndexOf('/') + 1, filePath.lastIndexOf('.'));
+ var conf = {
+ template: 'html!' + filePath,
+ filename: filename + '.html'
+ }
+ //如果和入口js文件同名
+ if (filename in entriesFiles) {
+ conf.inject = 'body'
+ conf.chunks = ['vendor', filename]
+ }
+ //跨页面引用，如pageA,pageB 共同引用了common-a-b.js，那么可以在这单独处理
+ //if(pageA|pageB.test(filename)) conf.chunks.splice(1,0,'common-a-b')
+ r.push(new HtmlWebpackPlugin(conf))
+ }
+ return r
+}
+var plugins = [];
+var extractCSS = new ExtractTextPlugin('css/[name].css?[contenthash]')
+var cssLoader = extractCSS.extract(['css'])
+var sassLoader = extractCSS.extract(['css', 'sass'])
+
+plugins.push(extractCSS);
+
+plugins.push(new CommonsChunkPlugin({
+ name: 'vendor',
+ minChunks: Infinity
+}));
+
+module.exports = {
+ entry: Object.assign(entries(), {
+ // 用到什么公共lib（例如jquery.js），就把它加进vendor去，目的是将公用库单独提取打包
+ 'vendor': ['jquery', 'avalon']
+ }),
+ output: {
+ path: path.join(__dirname, "dist"),
+ filename: "[name].js",
+ chunkFilename: '[chunkhash:8].chunk.js',
+ publicPath: "/"
+ },
+ module: {
+ loaders: [
+ {
+ test: /.((woff2?|svg)(?v=[0-9].[0-9].[0-9]))|(woff2?|svg|jpe?g|png|gif|ico)$/,
+ loaders: [
+ //小于10KB的图片会自动转成dataUrl，
+ 'url?limit=10000&amp;name=img/[hash:8].[name].[ext]',
+ 'image?{bypassOnDebug:true, progressive:true,optimizationLevel:3,pngquant:{quality:"65-80",speed:4}}'
+ ]
+ },
+ {
+ test: /.((ttf|eot)(?v=[0-9].[0-9].[0-9]))|(ttf|eot)$/,
+ loader: 'url?limit=10000&amp;name=fonts/[hash:8].[name].[ext]'
+ },
+ {test: /.(tpl|ejs)$/, loader: 'ejs'},
+ {test: /.css$/, loader: cssLoader},
+ {test: /.scss$/, loader: sassLoader}
+ ]
+ },
+ resolve: {
+ extensions: ['', '.js', '.css', '.scss', '.tpl', '.png', '.jpg'],
+ root: [srcDir, nodeModPath],
+ alias: pathMap,
+ publicPath: '/'
+ },
+ plugins: plugins.concat(html_plugins())
+}
+</code></pre></div></div>
+
+<p>其中，用ExtractTextPlugin 来抽离css</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var ExtractTextPlugin = require('extract-text-webpack-plugin');
+var extractCSS = new ExtractTextPlugin('css/[name].css?[contenthash]')
+var cssLoader = extractCSS.extract(['css'])
+var sassLoader = extractCSS.extract(['css', 'sass'])
+
+plugins.push(extractCSS);
+......
+//conf - module - loaders
+{test: /.css$/, loader: cssLoader},
+{test: /.scss$/, loader: sassLoader}
+</code></pre></div></div>
+
+<p>注意事项：</p>
+
+<p>css中img的路径会出现问题，通过设置publicPath 解决，采用绝对路径</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>output: {
+ ......
+ publicPath: "/"
+},
+</code></pre></div></div>
+
+<p>运行：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ webpack
+</code></pre></div></div>
+
+<p>期望</p>
+
+<p>css单独抽离，打包成单独的css文件 html自动引用css文件 小于10k的图片，转成base64 格式的 dataUrl webpack.png 会被压缩，减少文件大小</p>
+
+<p>运行webpack后的项目的目录结构：</p>
+
+<p><img src="b1ffc44.png" alt="" /></p>
+
+<p>生成的 dist/index.html 自动引用了 index.css 和相关的js，由于设置了publicPath 所以相应的链接都采用了绝对路径</p>
+
+<p><img src="7864518.png" alt="" /></p>
+
+<p>生成的 dist/index.css 小图片被转成了data:image形式：</p>
+
+<p><img src="686f15b.png" alt="" /></p>
+
+<p>结果：</p>
+
+<p>css单独打包到css目录 html自动注入了<code class="highlighter-rouge">link</code> 标签 small-webpack.png 小于10k，被打包进了index.css webpack.png 由原来的50+k 被压缩成 10- k</p>
+
+<p>最后，运行 <code class="highlighter-rouge">webpack-dev-server</code> 看一下运行结果：</p>
+
+<p><img src="89158ce.png" alt="" /></p>
+
+<p>总结</p>
+
+<p>Webpack将所有静态资源都认为是模块，而通过loader，几乎可以处理所有的静态资源，图片、css、sass之类的。并且通过一些插件如extract-text-webpack-plugin，可以将共用的css抽离出来</p>
+
+<p>下篇介绍改进webpack.config.js：</p>
+
+<p>区分开发环境和生产环境 集成 gulp 实现自动构建打包部署 github 发布 前端自动化构建的项目模板</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/webpack-chang-jian-jing-tai-zi-yuan-chu-li-mo-kuai-jia-zai-qi-loaders-extracttextplugin-cha-jian.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/webpack-da-bao-hou-shi-yong-jquery-de-wen-ti.html">&laquo; webpack打包后使用jQuery的问题</a>
+  
+  
+  <a class="next" href="/2017/jquery-scrollfix-gun-dong-ding-wei-cha-jian.html">jQuery scrollFix滚动定位插件 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>JAVA基础——重新认识String字符串 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="JAVA基础——重新认识String字符串" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="在程序开发中字符串无处不在，如用户登陆时输入的用户名、密码等使用的就是字符串。" />
+<meta property="og:description" content="在程序开发中字符串无处不在，如用户登陆时输入的用户名、密码等使用的就是字符串。" />
+<link rel="canonical" href="http://www.jfox.info/2017/java%E5%9F%BA%E7%A1%80%E9%87%8D%E6%96%B0%E8%AE%A4%E8%AF%86string%E5%AD%97%E7%AC%A6%E4%B8%B2.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/java%E5%9F%BA%E7%A1%80%E9%87%8D%E6%96%B0%E8%AE%A4%E8%AF%86string%E5%AD%97%E7%AC%A6%E4%B8%B2.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:52:31+00:00" />
+<script type="application/ld+json">
+{"description":"在程序开发中字符串无处不在，如用户登陆时输入的用户名、密码等使用的就是字符串。","@type":"BlogPosting","url":"http://www.jfox.info/2017/java%E5%9F%BA%E7%A1%80%E9%87%8D%E6%96%B0%E8%AE%A4%E8%AF%86string%E5%AD%97%E7%AC%A6%E4%B8%B2.html","headline":"JAVA基础——重新认识String字符串","dateModified":"2017-01-01T15:52:31+00:00","datePublished":"2017-01-01T15:52:31+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/java%E5%9F%BA%E7%A1%80%E9%87%8D%E6%96%B0%E8%AE%A4%E8%AF%86string%E5%AD%97%E7%AC%A6%E4%B8%B2.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">JAVA基础——重新认识String字符串</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:52:31+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>在程序开发中字符串无处不在，如用户登陆时输入的用户名、密码等使用的就是字符串。</p>
+
+<p>在 Java 中，字符串被作为 String 类型的对象处理。 String 类位于 java.lang 包中。<strong>默认情况下，该包被自动导入所有的程序。</strong></p>
+
+<h3 id="创建-string-对象有三种方法">创建 String 对象有三种方法</h3>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>String s1="我是字符串1";
+String s2=new String();//创建一个空的字符串对象
+String s3=new String("我是字符串2");//创建一个空的字符串对象
+</code></pre></div></div>
+
+<p>创建String对象要<strong>注意</strong>下面这个问题：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1//申明一个string类型的s1，即没有在申请内存地址，更没有在内存任何指向引用地址；2String s1;
+3//申明一个string类型的s2，同时在内存里申请了一个地址，但是该地址不指向任何引用地址；4 String s2=null;
+5//申明一个string类型的s3，既在内存里申请了地址，该地址又指向一个引用该字符串的引用地址；6 String s3="";
+7//同理s3;8 String s4=new String();
+</code></pre></div></div>
+
+<p>虽然new String()与””值一样，但是<strong>内存地址不一样</strong>。</p>
+
+<p><em>一般来说 字符串的使用 最好用String str = “”;语句，可以防止后面的程序因引用地址混乱而找不到的异常！String s = null;String s;劲量少用！能不用就不要使用！</em></p>
+
+<blockquote>
+  <blockquote>
+    <blockquote>
+      <blockquote>
+        <blockquote>
+          <blockquote>
+            <blockquote>
+              <blockquote>
+                <blockquote>
+                  <blockquote>
+                    <blockquote>
+                      <blockquote>
+                        <blockquote>
+                          <blockquote>
+                            <blockquote>
+                              <blockquote>
+                                <blockquote>
+                                  <blockquote>
+                                    <blockquote>
+                                      <blockquote>
+                                        <blockquote>
+                                          <blockquote>
+                                            <blockquote>
+                                              <blockquote>
+                                                <blockquote>
+                                                  <blockquote>
+                                                    <blockquote>
+                                                      <blockquote>
+                                                        <blockquote>
+                                                          <blockquote>
+                                                            <blockquote>
+                                                              <blockquote>
+                                                                <blockquote>
+                                                                  <blockquote>
+                                                                    <blockquote>
+                                                                      <blockquote>
+                                                                        <blockquote>
+                                                                          <blockquote>
+                                                                            <blockquote>
+                                                                              <blockquote>
+
+                                                                              </blockquote>
+                                                                            </blockquote>
+                                                                          </blockquote>
+                                                                        </blockquote>
+                                                                      </blockquote>
+                                                                    </blockquote>
+                                                                  </blockquote>
+                                                                </blockquote>
+                                                              </blockquote>
+                                                            </blockquote>
+                                                          </blockquote>
+                                                        </blockquote>
+                                                      </blockquote>
+                                                    </blockquote>
+                                                  </blockquote>
+                                                </blockquote>
+                                              </blockquote>
+                                            </blockquote>
+                                          </blockquote>
+                                        </blockquote>
+                                      </blockquote>
+                                    </blockquote>
+                                  </blockquote>
+                                </blockquote>
+                              </blockquote>
+                            </blockquote>
+                          </blockquote>
+                        </blockquote>
+                      </blockquote>
+                    </blockquote>
+                  </blockquote>
+                </blockquote>
+              </blockquote>
+            </blockquote>
+          </blockquote>
+        </blockquote>
+      </blockquote>
+    </blockquote>
+  </blockquote>
+</blockquote>
+
+<h3 id="string-字符串的不变性">String 字符串的不变性</h3>
+
+<p>String 对象创建后则不能被修改，是<strong>不可变</strong>的，所谓的修改其实是创建了新的对象，所指向的<strong>内存空间不同</strong>。如下所示：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> 1publicstaticvoid main(String[] args) {
+ 2// TODO Auto-generated method stub
+ 3//分别给四个字符串变量赋值，相同的内容 4         String s1="云开的立夏";
+ 5         String s2="云开的立夏";
+ 6         String s3=new String("云开的立夏");
+ 7         String s4=new String("云开的立夏");
+ 8 9//多次出现的字符串，java编译程序只创建一个内存空间，所以返回true10         System.out.println(s1==s2);
+11//s1和s3是不同的对象，所以返回false12         System.out.println(s1==s3);
+13//s3和s4是不同的对象，所以返回false14         System.out.println(s3==s4);
+151617         s1="欢迎来到"+s1+"的博客园";
+18//字符串s1被修改，指向新的内存空间,返回false19        System.out.println(s1);
+2021         System.out.println(s1==s2);
+2223     }
+</code></pre></div></div>
+
+<p>运行结果：</p>
+
+<p><img src="3327e6a.png" alt="" /></p>
+
+<p><strong>结果分析：</strong></p>
+
+<p>结合上面的代码，和运行结果我们来逐一分析，为什么会出现这样的结果？String字符串的不变性又是如何体现的呢？</p>
+
+<p>1、 通过 String s1=”云开的立夏”; 声明了一个字符串对象， s1 存放了到字符串对象的引用，在内存中的存放引用关系如下图所示：</p>
+
+<p><img src="407545f.png" alt="" /></p>
+
+<p>然后通过 s1=”欢迎来到”+s1+”的博客园”; 改变了字符串 s1 ，其实本质是<strong>创建了新的字符串对象</strong>，变量 s1 指向了新创建的字符串对象，如下图所示：</p>
+
+<p><img src="d679a99.png" alt="" /></p>
+
+<p>2、 一旦一个字符串在内存中创建，则这个字符串将不可改变。如果需要一个可以改变的字符串，我们可以使用StringBuffer或者StringBuilder（我明天将会写一篇博文来讲解它们的使用，请关注哦~）。</p>
+
+<p>3、** 每次 new 一个字符串就是产生一个新的对象**，即便两个字符串的内容相同，使用 ”==” 比较时也为 ”false” ,如果只需比较内容是否相同，应使用 ”equals()” 方法（前面条件运算符章节讲过哦~~）。</p>
+
+<h2 id="java-中的-string-类常用方法-ⅰ">Java 中的 String 类常用方法 Ⅰ</h2>
+
+<p>String 类提供了许多用来处理字符串的方法，例如，获取字符串长度、对字符串进行截取、将字符串转换为大写或小写、字符串分割等，下面我们就来领略它的强大之处吧。</p>
+
+<p>String 类的常用方法：</p>
+
+<p><img src="4d72460.jpg" alt="" /></p>
+
+<p>哇，String类的常用方法确实有多哦！死记硬背可是不行的，我们来结合代码来熟悉一下方法的使用：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> 1publicstaticvoid main(String[] args) {
+ 2// TODO Auto-generated method stub 3         String str="学习 java 编程";
+ 4 5//打印字符串长度 6         System.out.println("字符串长度："+str.length());
+ 7 8//查找字符‘编’的位置，如果找不到返回-1 9char c='编';
+10         System.out.println("字符‘编’的位置："+str.indexOf(c));
+11         System.out.println("字符‘b’的位置："+str.indexOf('b'));
+12//查找字符串“java”的位置，如果找不到返回-113         System.out.println("字符串“java”的位置"+str.indexOf("java"));
+14         System.out.println("字符串“云开的立夏”的位置"+str.indexOf("云开的立夏"));
+1516//按空格把字符串拆分成一个数组，并输出数组元素17         String[] arr=str.split(" ");
+18         System.out.print("按空格把字符串拆分成一个数组"+Arrays.toString(arr));
+19        System.out.println();
+20//按,(字符串中不存在的)把字符串拆分成一个数组，并输出数组元素21         String[] arr2=str.split(",");
+22         System.out.print("按按,(字符串中不存在的)把字符串拆分成一个数组"+Arrays.toString(arr2));
+23        System.out.println();
+24//按空格把字符串拆分成一个数组，并规定数组最大长度为2，并输出数组元素25         String[] arr3=str.split(" ",2);
+26         System.out.print("按空格把字符串拆分成一个数组，并规定数组最大长度为2："+Arrays.toString(arr3));
+27        System.out.println();
+2829//获取索引位置[3,7)之间的子串30         System.out.println("获取索引位置[3,7)之间的子串："+str.substring(3, 7));
+31//获取索引位置3开始的子串32         System.out.println("获取索引位置[3,7)之间的子串："+str.substring(3));
+333435     }
+</code></pre></div></div>
+
+<p>运行结果：</p>
+
+<p><img src="a50dd22.png" alt="" /></p>
+
+<p><strong>结果分析：</strong></p>
+
+<ol>
+  <li>
+    <p>字符串 str 中字符的索引从0开始，范围为 0 到 str.length()-1</p>
+  </li>
+  <li>
+    <p>使用 indexOf 进行字符或字符串查找时，如果匹配返回位置索引；如果没有匹配结果，返回 -1</p>
+  </li>
+  <li>
+    <p>使用 substring(beginIndex , endIndex) 进行字符串截取时，包括 beginIndex 位置的字符，不包括 endIndex 位置的字符</p>
+  </li>
+</ol>
+
+<p>4、使用String[] split(String regex, int limit)进行字符串拆分时，如果按字符串没有的字符分隔则不进行分隔，即返回长度为1的数组内容就是原来的字符串。</p>
+
+<h2 id="java-中的-string-类常用方法-ⅱ">Java 中的 String 类常用方法 Ⅱ</h2>
+
+<p>我们继续来看 String 类常用的方法，如下代码所示：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> 1publicstaticvoid main(String[] args) {
+ 2// TODO Auto-generated method stub 3         String str="学习 java 编程";
+ 4 5//将字符转换为大写 6         System.out.println("将字符转换为大写:"+str.toUpperCase());
+ 7//再讲字符串转换为小写 8         System.out.println("再讲字符串转换为小写:"+str.toLowerCase());
+ 910//获取位置为1的字符11         System.out.println("获取位置为1的字符:"+str.charAt(1));
+1213//将字符串转为byte[]数组，并打印输出14byte[] b=str.getBytes();
+15         System.out.print("将字符串转为byte[]数组:"+Arrays.toString(b));
+16        System.out.println();
+1718//定义一个新的字符串，前后加上空格19         String str2=" 学习 java 编程 ";
+20//返回除去前后空格的字符串21         String str3=str2.trim();
+22         System.out.println("返回除去前后空格的字符串:"+str3);
+2324//将str和str3字符串进行比较25         System.out.println("str和str3的内存地址相同吗？:"+(str==str3));
+26         System.out.println("str和str3的内容相同吗？:"+str.equals(str3));
+2728    }
+2930 }
+</code></pre></div></div>
+
+<p>运行结果：</p>
+
+<p><img src="b013656.png" alt="" /></p>
+
+<p><strong>结果分析：</strong></p>
+
+<ol>
+  <li>
+    <p>==: 判断两个字符串在内存中首地址是否相同，即判断是否是同一个字符串对象。</p>
+  </li>
+  <li>
+    <p>equals(): 比较存储在两个字符串对象中的内容是否一致。</p>
+  </li>
+  <li>
+    <p>汉字对应的字节值为负数，原因在于每个字节是 8 位，最大值不能超过 127，而<strong>汉字转换为字节后超过 127，如果超过就会溢出，以负数的形式显示。</strong>（关于编码，我会在后续的博文中讲解，小小期待哦~~）</p>
+  </li>
+</ol>
+
+<p>注意：Object类中equal()方法比较的是对象的引用是否指向同一块内存地址，而String类中equals(): 比较存储在两个字符串对象中的内容是否一致。<strong>Object类中是equal()方法；String类中是equals()，差了一个s。</strong></p>
+
+<p>针对如此繁杂的方法，推荐大家一个学习技巧：<strong>好记性不如烂笔头</strong>！多看的同时一定要多敲哦~~</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/java%E5%9F%BA%E7%A1%80%E9%87%8D%E6%96%B0%E8%AE%A4%E8%AF%86string%E5%AD%97%E7%AC%A6%E4%B8%B2.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86.html">&laquo; 动态代理模式实现原理 » java面试题</a>
+  
+  
+  <a class="next" href="/2017/%E9%AB%98%E8%80%83%E5%A4%A7%E5%AD%A6%E5%B7%A5%E4%BD%9C%E5%93%AA%E6%9C%89%E9%82%A3%E4%B9%88%E5%A4%9A%E6%95%85%E4%BA%8B%E4%B8%80%E4%B8%AA%E5%B9%B3%E5%87%A1%E4%BA%BA%E7%9A%84%E7%94%9F%E6%B4%BB%E7%BB%8F.html">高考 大学 工作 哪有那么多故事 一个平凡人的生活经验分享(“从高考到程序员”征文) &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

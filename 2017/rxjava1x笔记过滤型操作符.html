@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>RxJava 1.x 笔记：过滤型操作符 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="RxJava 1.x 笔记：过滤型操作符" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="过滤型操作符即对 Observable 的数据进行过滤，选择性地发射出去。" />
+<meta property="og:description" content="过滤型操作符即对 Observable 的数据进行过滤，选择性地发射出去。" />
+<link rel="canonical" href="http://www.jfox.info/2017/rxjava1x%E7%AC%94%E8%AE%B0%E8%BF%87%E6%BB%A4%E5%9E%8B%E6%93%8D%E4%BD%9C%E7%AC%A6.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/rxjava1x%E7%AC%94%E8%AE%B0%E8%BF%87%E6%BB%A4%E5%9E%8B%E6%93%8D%E4%BD%9C%E7%AC%A6.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:57:07+00:00" />
+<script type="application/ld+json">
+{"description":"过滤型操作符即对 Observable 的数据进行过滤，选择性地发射出去。","@type":"BlogPosting","url":"http://www.jfox.info/2017/rxjava1x%E7%AC%94%E8%AE%B0%E8%BF%87%E6%BB%A4%E5%9E%8B%E6%93%8D%E4%BD%9C%E7%AC%A6.html","headline":"RxJava 1.x 笔记：过滤型操作符","dateModified":"2017-01-01T15:57:07+00:00","datePublished":"2017-01-01T15:57:07+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/rxjava1x%E7%AC%94%E8%AE%B0%E8%BF%87%E6%BB%A4%E5%9E%8B%E6%93%8D%E4%BD%9C%E7%AC%A6.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">RxJava 1.x 笔记：过滤型操作符</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:57:07+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>过滤型操作符即对 Observable 的数据进行过滤，选择性地发射出去。</p>
+
+<h2 id="debounce">Debounce</h2>
+
+<p><code class="highlighter-rouge">Debounce</code> 的作用是：控制发射速率。</p>
+
+<p>每产生一个数据后，如果在规定的间隔时间内没有别的数据产生，就会发射这个数据，否则忽略该数据。</p>
+
+<p><img src="aeba91c.png" alt="" /></p>
+
+<p>RxJava 的实现有两种：<code class="highlighter-rouge">debounce</code> 和 <code class="highlighter-rouge">throttleWithTimeout</code>。</p>
+
+<h3 id="debounce-1">debounce</h3>
+
+<p><img src="8733961.png" alt="" /></p>
+
+<p><code class="highlighter-rouge">debounce</code> 接收两个参数，第一个指定过滤的时间间隔，第二个参数指定单位。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>publicfinal Observable&lt;T&gt; debounce(long timeout, TimeUnit unit) {
+    return debounce(timeout, unit, Schedulers.computation());
+}
+publicfinal Observable&lt;T&gt; debounce(long timeout, TimeUnit unit, Scheduler scheduler) {
+    return lift(new OperatorDebounceWithTime&lt;T&gt;(timeout, unit, scheduler));
+}
+</code></pre></div></div>
+
+<p>使用例子：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>privatevoidfilteringWithDebounce() {
+    Observable
+            .unsafeCreate(new Observable.OnSubscribe&lt;Integer&gt;() {
+                @Overridepublicvoidcall(Subscriber&lt;? super Integer&gt; subscriber) {
+                    for (int i = 0; i &lt; 10; i++) {
+                        SystemClock.sleep(i % 5 * 1000);
+                        subscriber.onNext(i);
+                    }
+                    subscriber.onCompleted();
+                }
+            })
+            .subscribeOn(Schedulers.computation())
+            .debounce(2, TimeUnit.SECONDS)
+            .subscribe(this.&lt;Integer&gt;getPrintSubscriber());
+
+}
+</code></pre></div></div>
+
+<p>在上面的例子中，我们发射 0 到 9 共 10 个数据，每个延迟 i % 5 秒，也就是延迟 0 到 4 秒，过滤时间为 2 秒，所以最终发射结果：</p>
+
+<p><img src="66e5a3b.png" alt="" /></p>
+
+<h3 id="throttlewithtimeout">throttleWithTimeout</h3>
+
+<p><img src="785b1df.png" alt="" /></p>
+
+<p><code class="highlighter-rouge">throttleWithTimeout</code> 和 <code class="highlighter-rouge">debounce</code> 作用一样，通过源码可以看到，它也是调用的 <code class="highlighter-rouge">debounce</code>:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>publicfinal Observable&lt;T&gt; throttleWithTimeout(long timeout, TimeUnit unit) {
+    return debounce(timeout, unit);
+}
+</code></pre></div></div>
+
+<p>例子就不演示了。</p>
+
+<h2 id="distinct">Distinct</h2>
+
+<p><img src="7f3e329.png" alt="" /></p>
+
+<p><code class="highlighter-rouge">Distinct</code> 即“去重”，很好理解。</p>
+
+<p>RxJava 中的实现有 4 种。</p>
+
+<h3 id="distinct-1">distinct()</h3>
+
+<p><img src="8fc9f85.png" alt="" /></p>
+
+<p>第一种就是最简单的无参数 <code class="highlighter-rouge">distinct()</code>:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>publicfinal Observable&lt;T&gt; distinct() {
+    return lift(OperatorDistinct.&lt;T&gt; instance());
+}
+</code></pre></div></div>
+
+<p>使用也很简单：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>privatevoidfilteringWithDistinct() {
+    Observable.from(Arrays.asList(1,3,1,3,4))
+            .distinct()
+            .subscribe(this.&lt;Integer&gt;getPrintSubscriber());
+}
+</code></pre></div></div>
+
+<p>结果就和我们期望的一样：</p>
+
+<p><img src="ecbc102.png" alt="" /></p>
+
+<h3 id="distinctkeyselector">distinct(keySelector)</h3>
+
+<p><img src="d157d70.png" alt="" /></p>
+
+<p>第二种，<code class="highlighter-rouge">distinct(keySelector)</code> 允许我们传入一个函数作为参数，这个函数返回了决定是否重复的 Key。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>publicfinal &lt;U&gt; Observable&lt;T&gt; distinct(Func1&lt;? super T, ? extends U&gt; keySelector) {
+    return lift(new OperatorDistinct&lt;T, U&gt;(keySelector));
+}
+</code></pre></div></div>
+
+<p>使用例子：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>privatevoidfilteringWithDistinct2() {
+
+    Observable.from(Arrays.asList(1,3,1,3,4))
+            .distinct(new Func1&lt;Integer, Integer&gt;() {
+                @Override
+                public Integer call(Integer item) {
+                    return item % 2;
+                }
+            })
+            .subscribe(this.&lt;Integer&gt;getPrintSubscriber());
+}
+</code></pre></div></div>
+
+<p>在函数中我们以 item % 2 的结果作为判断是否重复的依据，源 Observable 发射的数据中，对二求余的结果只有 1 和 0，因此输出结果为：</p>
+
+<p><img src="91e0800.png" alt="" /></p>
+
+<h3 id="distinctuntilchanged">distinctUntilChanged()</h3>
+
+<p><img src="216c821.png" alt="" /></p>
+
+<p><code class="highlighter-rouge">distinctUntilChanged()</code> 也是去重，不过每个元素只跟前面一个元素比较，如果和前面的一样就去除，否则就发射，不会和其他位置的比较。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>publicfinal Observable&lt;T&gt; distinctUntilChanged() {
+    return lift(OperatorDistinctUntilChanged.&lt;T&gt; instance());
+}
+</code></pre></div></div>
+
+<p>使用例子：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>privatevoidfilteringWithDistinctUntilChanged() {
+    Observable.from(Arrays.asList(1,1,3,1,3,4,4))
+            .distinctUntilChanged()
+            .subscribe(this.&lt;Integer&gt;getPrintSubscriber());
+}
+</code></pre></div></div>
+
+<p>运行结果：</p>
+
+<p><img src="739ba8b.png" alt="" /></p>
+
+<p>可以看到，输出的结果还是有重复，去掉的是和前一个元素重复的元素。</p>
+
+<h3 id="distinctuntilchangedkeyselector">distinctUntilChanged(keySelector)</h3>
+
+<p><img src="b0c8f58.png" alt="" /></p>
+
+<p><code class="highlighter-rouge">distinctUntilChanged(keySelector)</code> 就是 <code class="highlighter-rouge">distinct(keySelector)</code> 和 <code class="highlighter-rouge">distinctUntilChanged()</code> 的结合体，传入的参数决定是否重复，并且只和前一个元素比较。</p>
+
+<p>就不写例子了。</p>
+
+<h2 id="elementat">ElementAt</h2>
+
+<p><img src="6d8a689.png" alt="" /></p>
+
+<p><code class="highlighter-rouge">ElementAt</code> 和名字一样，只发射指定位置的元素（从 0 开始）。</p>
+
+<p>RxJava 对应的实现有 2 种。</p>
+
+<h3 id="elementat-1">elementAt</h3>
+
+<p><img src="ac9657d.png" alt="" /></p>
+
+<p><code class="highlighter-rouge">elementAt</code> 和规范一样，只发射指定位置的元素，</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>publicfinal Observable&lt;T&gt; elementAt(intindex) {
+    return lift(new OperatorElementAt&lt;T&gt;(index));
+}
+private OperatorElementAt(intindex, T defaultValue, boolean hasDefault) {
+    if (index &lt; 0) {
+        thrownew IndexOutOfBoundsException(index + " is out of bounds");
+    }
+    this.index = index;
+    this.defaultValue = defaultValue;
+    this.hasDefault = hasDefault;
+}
+</code></pre></div></div>
+
+<p>从 <code class="highlighter-rouge">OperatorElementAt</code> 的构造函数我们可以看到当指定的位置小于 0 时，会抛出 <code class="highlighter-rouge">java.lang.IndexOutOfBoundsException</code> 异常。 
+当 index &gt; 数据总数时，会发射　<code class="highlighter-rouge">onError</code> 事件：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>privatevoidfilteringWithElementAt() {
+    Observable.range(0, 10)
+            .elementAt(12)
+            .subscribe(this.&lt;Integer&gt;getPrintSubscriber());
+}
+</code></pre></div></div>
+
+<p>运行结果：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>07-1522:00:52.42511596-11596/top.shixinzhang.rxjavademo I/System.out: onError: 12 is out of bounds
+</code></pre></div></div>
+
+<h3 id="elementatordefault">elementAtOrDefault</h3>
+
+<p><img src="49f0620.png" alt="" /></p>
+
+<p><code class="highlighter-rouge">elementAtOrDefault</code> 和 <code class="highlighter-rouge">elementAt</code> 的区别在于，当指定的 index 大于源 Observable 发射的数据长度时，不会发射 onError 事件，而是发射预备的默认值；不过 index &lt; 0 时还是会抛出异常。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>publicfinal Observable&lt;T&gt; elementAtOrDefault(intindex, T defaultValue) {
+    return lift(new OperatorElementAt&lt;T&gt;(index, defaultValue));
+}
+private OperatorElementAt(intindex, T defaultValue, boolean hasDefault) {
+    if (index &lt; 0) {
+        thrownew IndexOutOfBoundsException(index + " is out of bounds");
+    }
+    this.index = index;
+    this.defaultValue = defaultValue;
+    this.hasDefault = hasDefault;
+}
+</code></pre></div></div>
+
+<p>使用例子：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>privatevoidfilteringWithElementAtDefault() {
+    Observable.range(0, 10)
+            .elementAtOrDefault(12, 222)
+            .subscribe(this.&lt;Integer&gt;getPrintSubscriber());
+
+}
+</code></pre></div></div>
+
+<p>运行结果：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>07-1522:06:27.88216870-16870/top.shixinzhang.rxjavademo I/System.out: onNext: 22207-1522:06:27.88216870-16870/top.shixinzhang.rxjavademo I/System.out: onCompleted
+</code></pre></div></div>
+
+<h2 id="filter">Filter</h2>
+
+<p><img src="4cb2e0b.png" alt="" /></p>
+
+<p><code class="highlighter-rouge">Filter</code> 只发射符合要求的元素。</p>
+
+<p>RxJava 中的实现有 2 种。</p>
+
+<h3 id="filter-1">filter</h3>
+
+<p><img src="4497e12.png" alt="" /></p>
+
+<p><code class="highlighter-rouge">filter(predicate)</code> 的参数指定了要发射的元素需要满足的条件，不满足就不会发射。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>publicfinal Observable&lt;T&gt; filter(Func1&lt;? super T, Boolean&gt; predicate) {
+    return unsafeCreate(new OnSubscribeFilter&lt;T&gt;(this, predicate));
+}
+</code></pre></div></div>
+
+<p>使用例子：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>privatevoidfilteringWithFilter() {
+    Observable.range(0, 10)
+            .filter(new Func1&lt;Integer, Boolean&gt;() {
+                @Overridepublic Boolean call(Integer item) {
+                    return item &gt; 5;
+                }
+            })
+            .subscribe(this.&lt;Integer&gt;getPrintSubscriber());
+}
+</code></pre></div></div>
+
+<p>例子中，我们只允许大于 5 的数据发射。运行结果：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>07-1522:09:38.77319765-19765/top.shixinzhang.rxjavademo I/System.out: onNext: 607-1522:09:38.77319765-19765/top.shixinzhang.rxjavademo I/System.out: onNext: 707-1522:09:38.77319765-19765/top.shixinzhang.rxjavademo I/System.out: onNext: 807-1522:09:38.77319765-19765/top.shixinzhang.rxjavademo I/System.out: onNext: 907-1522:09:38.77319765-19765/top.shixinzhang.rxjavademo I/System.out: onCompleted
+</code></pre></div></div>
+
+<h3 id="oftype">ofType</h3>
+
+<p><img src="3f773e0.png" alt="" /></p>
+
+<p><code class="highlighter-rouge">ofType(klass)</code> 的参数指定符合要求的数据类型，最终还是调用的 <code class="highlighter-rouge">filter</code>：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>publicfinal &lt;R&gt; Observable&lt;R&gt; ofType(final Class&lt;R&gt; klass) {
+    return filter(InternalObservableUtils.isInstanceOf(klass)).cast(klass);
+}
+</code></pre></div></div>
+
+<p>使用例子：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>privatevoidfilteringWithOfType() {
+    Observable.range(0, 10)
+            .ofType(String.class)
+            .subscribe(this.&lt;String&gt;getPrintSubscriber());
+}
+</code></pre></div></div>
+
+<p>可以看到 <code class="highlighter-rouge">ofType</code> 返回的 Observable 的数据类型就是参数的类型。运行结果：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>07-1522:14:38.97924199-24199/top.shixinzhang.rxjavademo I/System.out: onCompleted
+</code></pre></div></div>
+
+<h2 id="first">First</h2>
+
+<p><img src="6a7874f.png" alt="" /></p>
+
+<p><code class="highlighter-rouge">First</code> 的作用的就是只发射第一个元素（或者是第一个满足要求的元素）。</p>
+
+<p>在RxJava中，这个操作符被实现为 <code class="highlighter-rouge">first</code>，<code class="highlighter-rouge">firstOrDefault</code> 和 <code class="highlighter-rouge">takeFirst</code>。</p>
+
+<h3 id="first-1">first</h3>
+
+<p><img src="51c989b.png" alt="" /></p>
+
+<p><code class="highlighter-rouge">first()</code> 只发射第一个数据，如果源 Observable是空的话，会抛出 <code class="highlighter-rouge">NoSuchElementException</code> 异常。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>publicfinal Observable&lt;T&gt; first() {
+    return take(1).single();
+}
+</code></pre></div></div>
+
+<p>可以看到它调用的是 <code class="highlighter-rouge">take(1).single()</code>，这两个操作符我们这篇文章后面介绍。</p>
+
+<p>运行结果很简单，这里就暂不演示了。</p>
+
+<h3 id="firstpredicate">first(predicate)</h3>
+
+<p><img src="54a3494.png" alt="" /></p>
+
+<p><code class="highlighter-rouge">first(predicate)</code> 只发射符合要求的第一个元素。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>publicfinal Observable&lt;T&gt; first(Func1&lt;? super T, Boolean&gt; predicate) {
+    return takeFirst(predicate).single();
+}
+</code></pre></div></div>
+
+<p>使用例子：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>privatevoidfilteringWithFirst() {
+    Observable.range(4, 10)
+            .first(new Func1&lt;Integer, Boolean&gt;() {
+                @Overridepublic Boolean call(Integer integer) {
+                    return integer &gt; 5;
+                }
+            })
+            .subscribe(this.&lt;Integer&gt;getPrintSubscriber());
+}
+</code></pre></div></div>
+
+<p>我们只发射第一个大于 5 的数字，也就是 6 喽。运行结果：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>07-1522:23:02.22831262-31262/top.shixinzhang.rxjavademo I/System.out: onNext: 607-1522:23:02.22831262-31262/top.shixinzhang.rxjavademo I/System.out: onCompleted
+</code></pre></div></div>
+
+<h3 id="firstordefault">firstOrDefault</h3>
+
+<p><img src="b118480.png" alt="" /></p>
+
+<p><code class="highlighter-rouge">firstOrDefault</code> 和名字一样，如果没有第一个元素就发射默认的。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>publicfinal Observable&lt;T&gt; firstOrDefault(T defaultValue) {
+    return take(1).singleOrDefault(defaultValue);
+}
+</code></pre></div></div>
+
+<p>使用例子：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>privatevoidfilteringWithFirstOrDefault() {
+    Observable.empty()
+            .firstOrDefault(33)
+            .subscribe(getPrintSubscriber());
+}
+</code></pre></div></div>
+
+<p>运行结果：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>07-1522:26:28.3752910-2910/top.shixinzhang.rxjavademo I/System.out: onNext: 3307-1522:26:28.3752910-2910/top.shixinzhang.rxjavademo I/System.out: onCompleted
+</code></pre></div></div>
+
+<h3 id="firstordefaultpredicate">firstOrDefault(predicate)</h3>
+
+<p><img src="6e72607.png" alt="" /></p>
+
+<p><code class="highlighter-rouge">firstOrDefault(predicate)</code> 返回第一个符合要求的，没有的话就返回默认的，也很好理解。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>publicfinal Observable&lt;T&gt; firstOrDefault(T defaultValue, Func1&lt;? super T, Boolean&gt; predicate) {
+    return takeFirst(predicate).singleOrDefault(defaultValue);
+}
+</code></pre></div></div>
+
+<p>使用例子：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>privatevoidfilteringWithFirstOrDefault() {
+    Observable.range(0 , 4)
+            .firstOrDefault(33, new Func1&lt;Integer, Boolean&gt;() {
+                @Overridepublic Boolean call(Integer integer) {
+                    return integer &gt; 5;
+                }
+            })
+            .subscribe(getPrintSubscriber());
+}
+</code></pre></div></div>
+
+<p>运行结果：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>07-1522:26:28.3752910-2910/top.shixinzhang.rxjavademo I/System.out: onNext: 3307-1522:26:28.3752910-2910/top.shixinzhang.rxjavademo I/System.out: onCompleted
+</code></pre></div></div>
+
+<h3 id="takefirst">takeFirst</h3>
+
+<p><img src="40e09ab.png" alt="" /></p>
+
+<p><code class="highlighter-rouge">takeFirst</code> 与 <code class="highlighter-rouge">first</code> 基本一致，除了这一点：如果原始 Observable 没有发射任何满足条件的数据，<code class="highlighter-rouge">first</code> 会抛出一个 <code class="highlighter-rouge">NoSuchElementException</code>，<code class="highlighter-rouge">takeFist</code> 会返回一个空的 Observable（不调用 onNext() 但是会调用 onCompleted）。</p>
+
+<p>也就是说 <code class="highlighter-rouge">takeFirst</code> 比 <code class="highlighter-rouge">first</code> 温柔一点，不会抛异常。</p>
+
+<h3 id="single">single</h3>
+
+<p><img src="c167d42.png" alt="" /></p>
+
+<p><code class="highlighter-rouge">single</code> 也是只发射一个数据，但是如果源 Observable 发射多个数据，就会发射 <code class="highlighter-rouge">onError</code> 事件：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>07-1522:37:15.77412609-12609/top.shixinzhang.rxjavademo I/System.out: onError: Sequence contains too many elements
+</code></pre></div></div>
+
+<p>如果源 Observable 没有数据，也会发射 <code class="highlighter-rouge">onError</code> 事件：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>07-1522:38:30.70013779-13779/top.shixinzhang.rxjavademo I/System.out: onError: Sequence contains no elements
+</code></pre></div></div>
+
+<p><strong>也就是说，<code class="highlighter-rouge">single</code> 是用来检验并获取只有一个元素的 Observable 发射的数据。</strong></p>
+
+<p>single 也有传递符合要求函数、默认值的变体，这里就暂不赘述了。</p>
+
+<h2 id="last">Last</h2>
+
+<p>有 First 当然就有 Last。</p>
+
+<p><img src="d395c1e.png" alt="" /></p>
+
+<p><code class="highlighter-rouge">Last</code> 只发射最后一项（或者满足某个条件的最后一项）数据。</p>
+
+<p>Last 的变体和 First 差不多，这里就不赘述了。</p>
+
+<h2 id="take">Take</h2>
+
+<p><img src="edc1f5b.png" alt="" /></p>
+
+<p><code class="highlighter-rouge">first</code> 很多都是使用 <code class="highlighter-rouge">take</code> 实现的。</p>
+
+<p><code class="highlighter-rouge">Take</code> 操作符的作用是：<strong>只保留前面的若干项数据</strong>。</p>
+
+<p>RxJava 对应的实现为 <code class="highlighter-rouge">take</code>。</p>
+
+<h3 id="takecount">take(count)</h3>
+
+<p><img src="d22d70e.png" alt="" /></p>
+
+<p><code class="highlighter-rouge">take(count)</code> 的参数指定要保留的数据项。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>publicfinal Observable&lt;T&gt; take(finalint count) {
+    return lift(new OperatorTake&lt;T&gt;(count));
+}
+</code></pre></div></div>
+
+<p>另外 <code class="highlighter-rouge">limit</code> 也只是 <code class="highlighter-rouge">take</code> 的别名：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>publicfinal Observable&lt;T&gt; limit(int count) {
+    return take(count);
+}
+</code></pre></div></div>
+
+<p>使用例子：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>privatevoidfilteringWithTake() {
+    Observable.range(0 , 10)
+            .limit(3)
+            .subscribe(this.&lt;Integer&gt;getPrintSubscriber());
+}
+</code></pre></div></div>
+
+<p>运行结果：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>07-1522:51:49.89525751-25751/top.shixinzhang.rxjavademo I/System.out: onNext: 007-1522:51:49.89525751-25751/top.shixinzhang.rxjavademo I/System.out: onNext: 107-1522:51:49.89525751-25751/top.shixinzhang.rxjavademo I/System.out: onNext: 207-1522:51:49.89525751-25751/top.shixinzhang.rxjavademo I/System.out: onCompleted
+</code></pre></div></div>
+
+<h3 id="taketime-unit">take(time, unit)</h3>
+
+<p><img src="330aa65.png" alt="" /></p>
+
+<p>另一种变体是 <code class="highlighter-rouge">take(long time, TimeUnit unit)</code>，参数为时间，即只发射指定时间之内（小于该时间）发射的数据，超时的数据都不会发射。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>publicfinal Observable&lt;T&gt; take(long time, TimeUnit unit) {
+    return take(time, unit, Schedulers.computation());
+}
+publicfinal Observable&lt;T&gt; take(long time, TimeUnit unit, Scheduler scheduler) {
+    return lift(new OperatorTakeTimed&lt;T&gt;(time, unit, scheduler));
+}
+</code></pre></div></div>
+
+<p>使用例子：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>privatevoidfilteringWithTake() {
+    Observable
+            .unsafeCreate(new Observable.OnSubscribe&lt;Integer&gt;() {
+                @Overridepublicvoidcall(Subscriber&lt;? super Integer&gt; subscriber) {
+                    for (int i = 0; i &lt; 10; i++) {
+                        SystemClock.sleep(1_000);
+                        subscriber.onNext(i);
+                    }
+                    subscriber.onCompleted();
+                }
+            })
+            .subscribeOn(Schedulers.computation())
+            .take(3, TimeUnit.SECONDS)
+            .subscribe(this.&lt;Integer&gt;getPrintSubscriber());
+}
+</code></pre></div></div>
+
+<p>每隔一秒发射一个数据，然后指定只要 3 秒内发射的数据。运行结果：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>07-1522:56:01.30429363-29388/top.shixinzhang.rxjavademo I/System.out: onNext: 007-1522:56:02.30629363-29388/top.shixinzhang.rxjavademo I/System.out: onNext: 107-1522:56:03.30229363-29387/top.shixinzhang.rxjavademo I/System.out: onCompleted
+</code></pre></div></div>
+
+<h2 id="takelast">TakeLast</h2>
+
+<p><img src="9ae1b87.png" alt="" /></p>
+
+<p>有从前开始拿，自然就有从后开始拿，<code class="highlighter-rouge">TakeLast</code> 就是这个作用。</p>
+
+<p>使用 <code class="highlighter-rouge">TakeLast</code> 操作符可以只发射 Observable 发射的后 N 项数据，忽略前面的数据。</p>
+
+<p>RxJava 中的实现有 <code class="highlighter-rouge">takeLast</code>，它的参数可以是个数也可以是时间。</p>
+
+<p>还有一种实现是 <code class="highlighter-rouge">takeLastBuffer</code>：</p>
+
+<p><img src="df89422.png" alt="" /></p>
+
+<p><code class="highlighter-rouge">takeLastBuffer</code> 和 <code class="highlighter-rouge">takeLast</code> 类似，不同是它把所有的数据项收集到一个 <code class="highlighter-rouge">List</code> 再发射，而不是依次发射。</p>
+
+<h2 id="ignoreelements">IgnoreElements</h2>
+
+<p><img src="474b13c.png" alt="" /></p>
+
+<p><code class="highlighter-rouge">IgnoreElements</code> 的作用是不发射任何数据，只发射结束事件（ onError or onCompleted）。</p>
+
+<p>当你不在乎发射的内容，只希望在它完成时或遇到错误终止时收到通知，可以使用这个操作符。</p>
+
+<p><code class="highlighter-rouge">ignoreElements</code> 会确保永远不会调用观察者的onNext()方法</p>
+
+<p>RxJava 的实现是 <code class="highlighter-rouge">ignoreElements</code>：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>publicfinal Observable&lt;T&gt; ignoreElements() {
+    return lift(OperatorIgnoreElements.&lt;T&gt; instance());
+}
+@Overridepublic Subscriber&lt;? super T&gt; call(final Subscriber&lt;? super T&gt; child) {
+    Subscriber&lt;T&gt; parent = new Subscriber&lt;T&gt;() {
+
+        @OverridepublicvoidonCompleted() {
+            child.onCompleted();
+        }
+
+        @OverridepublicvoidonError(Throwable e) {
+            child.onError(e);
+        }
+
+        @OverridepublicvoidonNext(T t) {
+            // ignore element
+        }
+
+    };
+    child.add(parent);
+    return parent;
+}
+</code></pre></div></div>
+
+<p>可以看到，它的 <code class="highlighter-rouge">onNext()</code> 方法没有传递事件。</p>
+
+<h2 id="sample">Sample</h2>
+
+<p><code class="highlighter-rouge">Sample</code> 的作用是：定时发射 Observable 最新发射的数据。</p>
+
+<p><img src="c46f440.png" alt="" /></p>
+
+<p><code class="highlighter-rouge">Sample</code> 操作符会周期性地查看源 Observable，发射自出上次查看以来，最新发射的数据。</p>
+
+<p>RxJava 中有三种实现：<code class="highlighter-rouge">sample</code>, <code class="highlighter-rouge">throttleFirst</code>, <code class="highlighter-rouge">throttleLast</code>。</p>
+
+<h3 id="sample-1">sample</h3>
+
+<p><img src="c2667a8.png" alt="" /></p>
+
+<p><code class="highlighter-rouge">sample()</code> 的参数指定定期查看的时间间隔：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>publicfinal Observable&lt;T&gt; sample(long period, TimeUnit unit) {
+    return sample(period, unit, Schedulers.computation());
+}
+publicfinal Observable&lt;T&gt; sample(long period, TimeUnit unit, Scheduler scheduler) {
+    return lift(new OperatorSampleWithTime&lt;T&gt;(period, unit, scheduler));
+}
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">throttleLast</code> 和 <code class="highlighter-rouge">sample</code> 一样，只不过名称不同：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>publicfinal Observable&lt;T&gt; throttleLast(long intervalDuration, TimeUnit unit) {
+    return sample(intervalDuration, unit);
+}
+</code></pre></div></div>
+
+<p>使用例子：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>privatevoidfilteringWithSample() {
+    Observable
+            .unsafeCreate(new Observable.OnSubscribe&lt;Integer&gt;() {
+                @Overridepublicvoidcall(Subscriber&lt;? super Integer&gt; subscriber) {
+                    for (int i = 0; i &lt; 10; i++) {
+                        SystemClock.sleep( i % 5 * 1000);
+                        subscriber.onNext(i);
+                    }
+                    subscriber.onCompleted();
+                }
+            })
+            .subscribeOn(Schedulers.computation())
+            .sample(3, TimeUnit.SECONDS)
+            .subscribe(this.&lt;Integer&gt;getPrintSubscriber());
+}
+</code></pre></div></div>
+
+<p>例子中，我们每隔 i % 5 秒发射 10 个数据，然后每隔 3 秒去查看一次，发射距离上次查看，最新发射的元素。运行结果：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>07-1523:12:55.91512800-12815/top.shixinzhang.rxjavademo I/System.out: onNext: 007-1523:12:58.91512800-12815/top.shixinzhang.rxjavademo I/System.out: onNext: 207-1523:13:01.91612800-12815/top.shixinzhang.rxjavademo I/System.out: onNext: 307-1523:13:07.91612800-12815/top.shixinzhang.rxjavademo I/System.out: onNext: 607-1523:13:10.91612800-12815/top.shixinzhang.rxjavademo I/System.out: onNext: 707-1523:13:13.91612800-12815/top.shixinzhang.rxjavademo I/System.out: onNext: 807-1523:13:15.49912800-12816/top.shixinzhang.rxjavademo I/System.out: onNext: 907-1523:13:15.49912800-12816/top.shixinzhang.rxjavademo I/System.out: onCompleted
+</code></pre></div></div>
+
+<h3 id="throttlefirst">throttleFirst</h3>
+
+<p><img src="3488e44.png" alt="" /></p>
+
+<p><code class="highlighter-rouge">throttleFirst</code> 也是隔一段时间去查看一次，不同的是它发射的是这段时间里第一个发射的数据，而不是最新的。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>publicfinal Observable&lt;T&gt; throttleFirst(long windowDuration, TimeUnit unit) {
+    return throttleFirst(windowDuration, unit, Schedulers.computation());
+}
+publicfinal Observable&lt;T&gt; throttleFirst(long skipDuration, TimeUnit unit, Scheduler scheduler) {
+    return lift(new OperatorThrottleFirst&lt;T&gt;(skipDuration, unit, scheduler));
+}
+</code></pre></div></div>
+
+<p>例子：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>privatevoidfilteringWithThrottleFirst() {
+    Observable
+            .unsafeCreate(new Observable.OnSubscribe&lt;Integer&gt;() {
+                @Overridepublicvoidcall(Subscriber&lt;? super Integer&gt; subscriber) {
+                    for (int i = 0; i &lt; 10; i++) {
+                        SystemClock.sleep( i % 5 * 1000);
+                        subscriber.onNext(i);
+                    }
+                    subscriber.onCompleted();
+                }
+            })
+            .subscribeOn(Schedulers.computation())
+            .throttleFirst(3, TimeUnit.SECONDS)
+            .subscribe(this.&lt;Integer&gt;getPrintSubscriber());
+}
+</code></pre></div></div>
+
+<p>运行结果：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>07-1523:18:00.79817008-17648/top.shixinzhang.rxjavademo I/System.out: onNext: 007-1523:18:03.81317008-17648/top.shixinzhang.rxjavademo I/System.out: onNext: 207-1523:18:06.81517008-17648/top.shixinzhang.rxjavademo I/System.out: onNext: 307-1523:18:10.81617008-17648/top.shixinzhang.rxjavademo I/System.out: onNext: 407-1523:18:13.81817008-17648/top.shixinzhang.rxjavademo I/System.out: onNext: 707-1523:18:16.82017008-17648/top.shixinzhang.rxjavademo I/System.out: onNext: 807-1523:18:20.82217008-17648/top.shixinzhang.rxjavademo I/System.out: onNext: 907-1523:18:20.82217008-17648/top.shixinzhang.rxjavademo I/System.out: onCompleted
+</code></pre></div></div>
+
+<h2 id="skip">Skip</h2>
+
+<p><code class="highlighter-rouge">Skip</code> 的作用是，跳过指定数量的数据，发射后面的数据。</p>
+
+<p><img src="ca3752f.png" alt="" /></p>
+
+<p>RxJava 中的实现有两种，都叫 <code class="highlighter-rouge">skip</code>，不同的是一个是按个数算，一个是按时间算。</p>
+
+<h3 id="skipcount">skip(count)</h3>
+
+<p><img src="1f4c1bd.png" alt="" /></p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>publicfinal Observable&lt;T&gt; skip(int count) {
+    return lift(new OperatorSkip&lt;T&gt;(count));
+}
+</code></pre></div></div>
+
+<p>使用例子：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>privatevoidfilteringWithSkip() {
+    Observable.range(0 , 10)
+            .skip(3)
+            .subscribe(this.&lt;Integer&gt;getPrintSubscriber());
+}
+</code></pre></div></div>
+
+<p>运行结果：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>07-1523:22:14.47221075-21075/top.shixinzhang.rxjavademo I/System.out: onNext: 307-1523:22:14.47221075-21075/top.shixinzhang.rxjavademo I/System.out: onNext: 407-1523:22:14.47221075-21075/top.shixinzhang.rxjavademo I/System.out: onNext: 507-1523:22:14.47221075-21075/top.shixinzhang.rxjavademo I/System.out: onNext: 607-1523:22:14.47221075-21075/top.shixinzhang.rxjavademo I/System.out: onNext: 707-1523:22:14.47221075-21075/top.shixinzhang.rxjavademo I/System.out: onNext: 807-1523:22:14.47221075-21075/top.shixinzhang.rxjavademo I/System.out: onNext: 907-1523:22:14.47321075-21075/top.shixinzhang.rxjavademo I/System.out: onCompleted
+</code></pre></div></div>
+
+<h3 id="skiptime-unit">skip(time, unit)</h3>
+
+<p><img src="d618b4e.png" alt="" /></p>
+
+<p><code class="highlighter-rouge">skip(time, unit)</code> 的参数指定要跳过前指定时间内发射的数据。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>publicfinal Observable&lt;T&gt; skip(long time, TimeUnit unit) {
+    return skip(time, unit, Schedulers.computation());
+}
+publicfinal Observable&lt;T&gt; skip(long time, TimeUnit unit, Scheduler scheduler) {
+    return unsafeCreate(new OnSubscribeSkipTimed&lt;T&gt;(this, time, unit, scheduler));
+}
+</code></pre></div></div>
+
+<h2 id="skiplast">SkipLast</h2>
+
+<p>既然有跳过从头开始的数据，自然也有跳过从后开始的数据，这就是 <code class="highlighter-rouge">SkipLast</code> 的作用。</p>
+
+<p><img src="e08f1b1.png" alt="" /></p>
+
+<p>RxJava 中的实现也有两种，按时间和按个数，这里就暂不赘述了。</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/rxjava1x%E7%AC%94%E8%AE%B0%E8%BF%87%E6%BB%A4%E5%9E%8B%E6%93%8D%E4%BD%9C%E7%AC%A6.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/java%E7%9A%84forkjoin%E4%BB%BB%E5%8A%A1.html">&laquo; Java的Fork/Join任务</a>
+  
+  
+  <a class="next" href="/2017/java%E4%BD%BF%E7%94%A8memcached%E4%BB%A5%E5%8F%8Aspring%E9%85%8D%E7%BD%AEmemcached.html">java 使用memcached以及spring 配置memcached &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

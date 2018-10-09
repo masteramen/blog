@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>Java 中必用的常用类（很实用） | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="Java 中必用的常用类（很实用）" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="相信各位小伙伴们对基本数据类型都非常熟悉，例如 int、float、double、boolean、char 等。基本数据类型是不具备对象的特性的，比如基本类型不能调用方法、功能简单。。。，为了让基本数据类型也具备对象的特性， Java 为每个基本数据类型都提供了一个包装类，这样我们就可以像操作对象那样来操作基本数据类型。" />
+<meta property="og:description" content="相信各位小伙伴们对基本数据类型都非常熟悉，例如 int、float、double、boolean、char 等。基本数据类型是不具备对象的特性的，比如基本类型不能调用方法、功能简单。。。，为了让基本数据类型也具备对象的特性， Java 为每个基本数据类型都提供了一个包装类，这样我们就可以像操作对象那样来操作基本数据类型。" />
+<link rel="canonical" href="http://www.jfox.info/2017/java%E4%B8%AD%E5%BF%85%E7%94%A8%E7%9A%84%E5%B8%B8%E7%94%A8%E7%B1%BB%E5%BE%88%E5%AE%9E%E7%94%A8.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/java%E4%B8%AD%E5%BF%85%E7%94%A8%E7%9A%84%E5%B8%B8%E7%94%A8%E7%B1%BB%E5%BE%88%E5%AE%9E%E7%94%A8.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:53:28+00:00" />
+<script type="application/ld+json">
+{"description":"相信各位小伙伴们对基本数据类型都非常熟悉，例如 int、float、double、boolean、char 等。基本数据类型是不具备对象的特性的，比如基本类型不能调用方法、功能简单。。。，为了让基本数据类型也具备对象的特性， Java 为每个基本数据类型都提供了一个包装类，这样我们就可以像操作对象那样来操作基本数据类型。","@type":"BlogPosting","url":"http://www.jfox.info/2017/java%E4%B8%AD%E5%BF%85%E7%94%A8%E7%9A%84%E5%B8%B8%E7%94%A8%E7%B1%BB%E5%BE%88%E5%AE%9E%E7%94%A8.html","headline":"Java 中必用的常用类（很实用）","dateModified":"2017-01-01T15:53:28+00:00","datePublished":"2017-01-01T15:53:28+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/java%E4%B8%AD%E5%BF%85%E7%94%A8%E7%9A%84%E5%B8%B8%E7%94%A8%E7%B1%BB%E5%BE%88%E5%AE%9E%E7%94%A8.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Java 中必用的常用类（很实用）</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:53:28+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>相信各位小伙伴们对基本数据类型都非常熟悉，例如 int、float、double、boolean、char 等。基本数据类型是不具备对象的特性的，比如基本类型不能调用方法、功能简单。。。，为了让基本数据类型也具备对象的特性， Java 为每个基本数据类型都提供了一个包装类，这样我们就可以像操作对象那样来操作基本数据类型。</p>
+
+<p>基本类型和包装类之间的对应关系：</p>
+
+<p><img src="257a98f.jpg" alt="" /></p>
+
+<p>注意：有两个包装类的名称比较特殊一个是Integer，另一个是Character，其他都是基本数据类首字母大写。</p>
+
+<p>包装类主要提供了两大类方法：</p>
+
+<ol>
+  <li>
+    <p>将本类型和其他基本类型进行转换的方法</p>
+  </li>
+  <li>
+    <p>将字符串和本类型及包装类互相转换的方法</p>
+  </li>
+</ol>
+
+<blockquote>
+  <blockquote>
+    <blockquote>
+      <blockquote>
+        <blockquote>
+          <blockquote>
+            <blockquote>
+              <blockquote>
+                <blockquote>
+                  <blockquote>
+                    <blockquote>
+                      <blockquote>
+                        <blockquote>
+                          <blockquote>
+                            <blockquote>
+                              <blockquote>
+                                <blockquote>
+                                  <blockquote>
+                                    <blockquote>
+                                      <blockquote>
+                                        <blockquote>
+                                          <blockquote>
+                                            <blockquote>
+                                              <blockquote>
+                                                <blockquote>
+                                                  <blockquote>
+                                                    <blockquote>
+                                                      <blockquote>
+                                                        <blockquote>
+                                                          <blockquote>
+                                                            <blockquote>
+                                                              <blockquote>
+                                                                <blockquote>
+                                                                  <blockquote>
+                                                                    <blockquote>
+                                                                      <blockquote>
+
+                                                                      </blockquote>
+                                                                    </blockquote>
+                                                                  </blockquote>
+                                                                </blockquote>
+                                                              </blockquote>
+                                                            </blockquote>
+                                                          </blockquote>
+                                                        </blockquote>
+                                                      </blockquote>
+                                                    </blockquote>
+                                                  </blockquote>
+                                                </blockquote>
+                                              </blockquote>
+                                            </blockquote>
+                                          </blockquote>
+                                        </blockquote>
+                                      </blockquote>
+                                    </blockquote>
+                                  </blockquote>
+                                </blockquote>
+                              </blockquote>
+                            </blockquote>
+                          </blockquote>
+                        </blockquote>
+                      </blockquote>
+                    </blockquote>
+                  </blockquote>
+                </blockquote>
+              </blockquote>
+            </blockquote>
+          </blockquote>
+        </blockquote>
+      </blockquote>
+    </blockquote>
+  </blockquote>
+</blockquote>
+
+<h3 id="java-中基本类型和包装类之间的转换">Java 中基本类型和包装类之间的转换</h3>
+
+<p>基本类型和包装类之间经常需要互相转换，以 Integer 为例（其他几个包装类的操作雷同哦）：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1 Integer a=new Integer(3);//定义Integer包装类对象，值为3 2 int b=a+5;//将对象和基本类型进行运算
+</code></pre></div></div>
+
+<p>在 JDK1.5 引入自动装箱和拆箱的机制后，包装类和基本类型之间的转换就更加轻松便利了。</p>
+
+<p>那什么是装箱和拆箱呢？我们分别来看下：</p>
+
+<p><strong>装箱：</strong>把基本类型转换成包装类，使其具有对象的性质，又可分为手动装箱和自动装箱。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1 int i=10;//定一个int基本数据类型 2 Integer x=new Integer(i);//手动装箱 3 Integer y=i;//自动装箱
+
+1 Double n=i;//类型不同不能自动装箱 2 Double m=new Double(i);//不同类型可以通过手动装箱
+</code></pre></div></div>
+
+<p><strong>拆箱：</strong>和装箱相反，把包装类对象转换成基本类型的值，又可分为手动拆箱和自动拆箱。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1 Integer j=new Integer(8);//定义Integer包装类对象，值为8 2 int n=j.intValue();//手动拆箱 3 int m=j;//自动拆箱
+
+1 double x=j.doubleValue();//不同类型手动拆箱 2 double y=j;//不同类型可以自动拆箱
+</code></pre></div></div>
+
+<p><strong>注意</strong>：<strong>类型不同不能自动装箱</strong>，但是<strong>不同类型可以自动拆箱</strong>。</p>
+
+<blockquote>
+  <blockquote>
+    <blockquote>
+      <blockquote>
+        <blockquote>
+          <blockquote>
+            <blockquote>
+              <blockquote>
+                <blockquote>
+                  <blockquote>
+                    <blockquote>
+                      <blockquote>
+                        <blockquote>
+                          <blockquote>
+                            <blockquote>
+                              <blockquote>
+                                <blockquote>
+                                  <blockquote>
+                                    <blockquote>
+                                      <blockquote>
+                                        <blockquote>
+                                          <blockquote>
+                                            <blockquote>
+                                              <blockquote>
+                                                <blockquote>
+                                                  <blockquote>
+                                                    <blockquote>
+                                                      <blockquote>
+                                                        <blockquote>
+                                                          <blockquote>
+                                                            <blockquote>
+                                                              <blockquote>
+                                                                <blockquote>
+                                                                  <blockquote>
+                                                                    <blockquote>
+                                                                      <blockquote>
+
+                                                                      </blockquote>
+                                                                    </blockquote>
+                                                                  </blockquote>
+                                                                </blockquote>
+                                                              </blockquote>
+                                                            </blockquote>
+                                                          </blockquote>
+                                                        </blockquote>
+                                                      </blockquote>
+                                                    </blockquote>
+                                                  </blockquote>
+                                                </blockquote>
+                                              </blockquote>
+                                            </blockquote>
+                                          </blockquote>
+                                        </blockquote>
+                                      </blockquote>
+                                    </blockquote>
+                                  </blockquote>
+                                </blockquote>
+                              </blockquote>
+                            </blockquote>
+                          </blockquote>
+                        </blockquote>
+                      </blockquote>
+                    </blockquote>
+                  </blockquote>
+                </blockquote>
+              </blockquote>
+            </blockquote>
+          </blockquote>
+        </blockquote>
+      </blockquote>
+    </blockquote>
+  </blockquote>
+</blockquote>
+
+<h3 id="java-中基本类型和字符串之间的转换">Java 中基本类型和字符串之间的转换</h3>
+
+<p>在程序开发中，我们经常需要在基本数据类型和字符串之间进行转换。</p>
+
+<p>其中，<strong>基本类型转换为字符串</strong>有三种方法：</p>
+
+<ol>
+  <li>
+    <p>使用包装类的 toString() 方法</p>
+  </li>
+  <li>
+    <p>使用String类的 valueOf() 方法</p>
+  </li>
+  <li>
+    <p>用一个空字符串加上基本类型，得到的就是基本类型数据对应的字符串</p>
+  </li>
+</ol>
+
+<p>代码如下：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1 //将基本类型转化为字符串 2 int x=10; 3 String str1=Integer.toString(x);//方法一 4 String str2=String.valueOf(x);//方法二 5 String str3=x+"";//方法三，本质利用系统自动转换类型
+</code></pre></div></div>
+
+<p>再来看，将字<strong>符串转换成基本类型</strong>有两种方法：</p>
+
+<ol>
+  <li>
+    <p>调用包装类的 parseXxx 静态方法</p>
+  </li>
+  <li>
+    <p>调用包装类的 valueOf() 方法转换为基本类型的包装类，会自动拆箱</p>
+  </li>
+</ol>
+
+<p>代码如下：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1 //将字符串转换为基本类型 2 String str="8"; 3 int n=Integer.parseInt(str);//方法一 4 int y=Integer.valueOf(str);//方法二
+</code></pre></div></div>
+
+<p>注意：字符串转换为基本类型里如果字符串包含其他字符，程序运行时将会抛出异常。所以在使用该方法时最好用try-catch语句捕获并处理。</p>
+
+<p>PS：其他基本类型与字符串的相互转化这里不再一一列出，方法都类似。</p>
+
+<h2 id="二date-和-simpledateformat-类">二、Date 和 SimpleDateFormat 类</h2>
+
+<p>在程序开发中，经常需要处理日期和时间的相关数据，此时我们可以使用 java.util 包中的 Date 类。这个类最主要的作用就是<strong>获取当前时间</strong>，我们来看下 Date 类的使用：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1 Date d=new Date();//使用默认的构造方法创建Date对象 2 System.out.println(d); 
+</code></pre></div></div>
+
+<p>使用 Date 类的<strong>默认无参构造方法</strong>创建出的对象就代表<strong>当前时间</strong>，我们可以直接输出 Date 对象显示当前的时间，显示的结果如下：</p>
+
+<p><img src="080e6a7.png" alt="" /></p>
+
+<p>其中， Thu 代表 星期四， Jul 代表 七月，06 代表 06 号， CST 代表 China Standard Time (中国标准时间，也就是北京时间，东八区)。</p>
+
+<p>从上面的输出结果中，我们发现，默认的时间格式不是很友好，与我们日常看到的日期格式不太一样，如果想要按指定的格式进行显示，如 2017-07-06 13:31:28 ，那该怎么做呢？</p>
+
+<p>此时就到了 java.text 包中的 <strong>SimpleDateFormat 类</strong>大显身手的时候了！！可以使用 SimpleDateFormat 来对日期时间进行<strong>格式化</strong>，如可以将日期转换为指定格式的文本，也可将文本转换为日期。</p>
+
+<blockquote>
+  <blockquote>
+    <blockquote>
+      <blockquote>
+        <blockquote>
+          <blockquote>
+            <blockquote>
+              <blockquote>
+                <blockquote>
+                  <blockquote>
+                    <blockquote>
+                      <blockquote>
+                        <blockquote>
+                          <blockquote>
+                            <blockquote>
+                              <blockquote>
+                                <blockquote>
+                                  <blockquote>
+                                    <blockquote>
+                                      <blockquote>
+                                        <blockquote>
+                                          <blockquote>
+                                            <blockquote>
+                                              <blockquote>
+                                                <blockquote>
+                                                  <blockquote>
+                                                    <blockquote>
+                                                      <blockquote>
+                                                        <blockquote>
+                                                          <blockquote>
+                                                            <blockquote>
+                                                              <blockquote>
+                                                                <blockquote>
+                                                                  <blockquote>
+                                                                    <blockquote>
+                                                                      <blockquote>
+
+                                                                      </blockquote>
+                                                                    </blockquote>
+                                                                  </blockquote>
+                                                                </blockquote>
+                                                              </blockquote>
+                                                            </blockquote>
+                                                          </blockquote>
+                                                        </blockquote>
+                                                      </blockquote>
+                                                    </blockquote>
+                                                  </blockquote>
+                                                </blockquote>
+                                              </blockquote>
+                                            </blockquote>
+                                          </blockquote>
+                                        </blockquote>
+                                      </blockquote>
+                                    </blockquote>
+                                  </blockquote>
+                                </blockquote>
+                              </blockquote>
+                            </blockquote>
+                          </blockquote>
+                        </blockquote>
+                      </blockquote>
+                    </blockquote>
+                  </blockquote>
+                </blockquote>
+              </blockquote>
+            </blockquote>
+          </blockquote>
+        </blockquote>
+      </blockquote>
+    </blockquote>
+  </blockquote>
+</blockquote>
+
+<ol>
+  <li>
+    <p>使用 format() 方法将日期转换为指定格式的文本</p>
+
+    <p>1 //使用 format() 方法将日期转换为指定格式的文本 2 Date d=new Date();//使用默认的构造方法创建Date对象 3 SimpleDateFormat sdf=new SimpleDateFormat(“yyyy-MM-dd HH:mm:ss”);//指定日期格式 4 String today=sdf.format(d); 5 System.out.println(today);</p>
+  </li>
+</ol>
+
+<p>运行结果：<img src="9d9b111.png" alt="" /></p>
+
+<p>结果分析：</p>
+
+<p>代码中的 “yyyy-MM-dd HH:mm:ss” 为预定义字符串， yyyy 表示四位年， MM 表示两位月份， dd 表示两位日期， HH 表示小时(使用24小时制)， mm 表示分钟， ss 表示秒，这样就指定了转换的目标格式，最后调用 **format() **方法将时间转换为指定的格式的字符串。</p>
+
+<ol>
+  <li>使用 parse() 方法将文本转换为日期
+<img src="521619c.gif" alt="" />
+  1                 //创建日期格式的字符串  2 String day=”2017年07月06日 13:42:10”;  3 //创建SimpleDateFormat对象，指定字符串的日期格式  4 SimpleDateFormat sd=new SimpleDateFormat(“yyyy年MM月dd日 HH:mm:ss”);  5 //调用parse方法，将字符串转化为日期  6  Date date;  7 try {  8 date = sd.parse(day);  9  System.out.println(date); 10 } catch (ParseException e) { 11 // TODO Auto-generated catch block 12  e.printStackTrace(); 13 }</li>
+</ol>
+
+<p><img src="521619c.gif" alt="" />
+运行结果：</p>
+
+<p><img src="6b56b6f.png" alt="" /></p>
+
+<p>结果分析：</p>
+
+<p>代码中的 “yyyy年MM月dd日 HH:mm:ss” 指定了字符串的日期格式，调用 **parse() **方法将文本转换为日期。因为将字符串转换为Date类型可能会抛出异常，所以要用try-catch语句捕获。</p>
+
+<p>一定要注意哦：</p>
+
+<p>1、 调用 SimpleDateFormat 对象的 parse() 方法时可能会出现转换异常，即 ParseException ，因此<strong>需要进行异常处理。</strong></p>
+
+<p>2、 使用 Date 类时需要导入 java.util 包，使用 SimpleDateFormat 时需要导入 java.text 包。</p>
+
+<h2 id="三calendar-类的应用">三、Calendar 类的应用</h2>
+
+<p>Date 类最主要的作用就是获得当前时间，同时这个类里面也具有设置时间以及一些其他的功能，但是由于本身设计的问题，这些方法却遭到众多批评，不建议使用，更<strong>推荐使用 Calendar 类进行时间和日期的处理。</strong></p>
+
+<p>java.util.Calendar 类是一个<strong>抽象类</strong>，可以通过调用 getInstance() 静态方法获取一个 Calendar 对象，此对象已由当前日期时间初始化，即<strong>默认代表当前时间</strong>，如 Calendar c = Calendar.getInstance();</p>
+
+<p>那么如何使用 Calendar 获取年、月、日、时间等信息呢？我们来看下面的代码：
+<img src="521619c.gif" alt="" />
+     1 public static void main(String[] args) {  2 // TODO Auto-generated method stub  3 Calendar c = Calendar.getInstance();//创建Calendar对象  4 int year = c.get(Calendar.YEAR);//获取年  5 int month = c.get(Calendar.MONTH)+1;//获取月份，0表示一月份  6 int day = c.get(Calendar.DAY_OF_MONTH);//获取日期  7 int hour = c.get(Calendar.HOUR_OF_DAY);//获取小时  8 int minute = c.get(Calendar.MINUTE);//获取分钟  9 int second = c.get(Calendar.SECOND);//获取秒 10 System.out.println(“当前时间：”+year+”-“+month+”-“+day+”-“+hour+”:”+minute+”:”+second); 11 12 }</p>
+
+<p><img src="521619c.gif" alt="" />
+运行结果：</p>
+
+<p><img src="4bd57c9.png" alt="" /></p>
+
+<p>结果分析：</p>
+
+<p>调用 Calendar 类的 getInstance() 方法获取一个实例，然后通过调用 get() 方法获取日期时间信息，参数为需要获得的字段的值， Calendar.Year 等为 Calendar 类中定义的静态常量。</p>
+
+<p>注意：其中有两个特别的参数：DAY_OF_MONTH和HOUR_OF_DAY，千万不要写成DAY和HOUR了；MONTH获取的月份，<strong>0表示一月</strong>。</p>
+
+<blockquote>
+  <blockquote>
+    <blockquote>
+      <blockquote>
+        <blockquote>
+          <blockquote>
+            <blockquote>
+              <blockquote>
+                <blockquote>
+                  <blockquote>
+                    <blockquote>
+                      <blockquote>
+                        <blockquote>
+                          <blockquote>
+                            <blockquote>
+                              <blockquote>
+                                <blockquote>
+                                  <blockquote>
+                                    <blockquote>
+                                      <blockquote>
+                                        <blockquote>
+                                          <blockquote>
+                                            <blockquote>
+                                              <blockquote>
+                                                <blockquote>
+                                                  <blockquote>
+                                                    <blockquote>
+                                                      <blockquote>
+                                                        <blockquote>
+                                                          <blockquote>
+                                                            <blockquote>
+                                                              <blockquote>
+                                                                <blockquote>
+                                                                  <blockquote>
+                                                                    <blockquote>
+                                                                      <blockquote>
+
+                                                                      </blockquote>
+                                                                    </blockquote>
+                                                                  </blockquote>
+                                                                </blockquote>
+                                                              </blockquote>
+                                                            </blockquote>
+                                                          </blockquote>
+                                                        </blockquote>
+                                                      </blockquote>
+                                                    </blockquote>
+                                                  </blockquote>
+                                                </blockquote>
+                                              </blockquote>
+                                            </blockquote>
+                                          </blockquote>
+                                        </blockquote>
+                                      </blockquote>
+                                    </blockquote>
+                                  </blockquote>
+                                </blockquote>
+                              </blockquote>
+                            </blockquote>
+                          </blockquote>
+                        </blockquote>
+                      </blockquote>
+                    </blockquote>
+                  </blockquote>
+                </blockquote>
+              </blockquote>
+            </blockquote>
+          </blockquote>
+        </blockquote>
+      </blockquote>
+    </blockquote>
+  </blockquote>
+</blockquote>
+
+<p>Calendar 类提供了 getTime() 方法，<strong>用来获取 Date 对象</strong>，完成 Calendar 和 Date 的转换，还可通过 getTimeInMillis() 方法，获取此 Calendar 的时间值，以毫秒为单位。如下所示：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1  Date date=c.getTime();//将Calendar对象转换为Date对象 2 Long time=c.getTimeInMillis();//获取当前毫秒数 3 System.out.println("当前时间："+date); 4 System.out.println("当前毫秒数"+time);
+</code></pre></div></div>
+
+<p>运行结果：</p>
+
+<p><img src="343b73f.png" alt="" /></p>
+
+<h3 id="总结">总结：</h3>
+
+<p>1.通过调用 getInstance() 静态方法获取一个 Calendar 对象—对象初始化</p>
+
+<p>　　Calendar c = Calendar.getInstance();</p>
+
+<p>2.通过调用 get() 方法获取日期时间信息</p>
+
+<p>　　int month=c.get(Calendar.MONTH)+1;—-0表示1月份</p>
+
+<p>3.提供 getTime() 方法，用来获取 Date 对象</p>
+
+<p>　　Date date=c.getTime();—-将Calender对象转换为Date对象</p>
+
+<p>4.通过 getTimeInMillis() 方法，获取此 Calendar 的时间值</p>
+
+<p>　　long time=c.getTimeInMillis();—-获取当前毫秒</p>
+
+<h2 id="四使用-math-类操作数据">四、使用 Math 类操作数据</h2>
+
+<p>Math 类位于 java.lang 包中，包含用于<strong>执行基本数学运算</strong>的方法， Math 类的<strong>所有方法都是静态方法</strong>，所以使用该类中的方法时，可以直接使用类名.方法名，如： Math.round();</p>
+
+<p>常用的方法：</p>
+
+<p><img src="7fff3bf.jpg" alt="" /></p>
+
+<p>下面用代码来实现:
+<img src="521619c.gif" alt="" />
+     1 public static void main(String[] args) {  2 double a=12.81;  3 int b=(int)a;//强制类型转换  4 System.out.println(“强制类型转换：”+b);  5 long c=Math.round(a);//调用round方法，进行四舍五入  6 System.out.println(“四舍五入：”+c);  7 double d=Math.floor(a);//调用floor方法，返回小于参数的最大整数  8 System.out.println(“floor方法：”+d);  9 double e=Math.ceil(a);//调用ceil方法，返回大于参数的最小整数 10 System.out.println(“ceil方法：”+e); 11 double x=Math.random();//调用random方法，产生[0,1)之间的随机数 12 System.out.println(“随机数：”+x); 13 int y=(int)(Math.random()*100);//产生[0,100)之间的随机数 14 System.out.println(“[0,100)之间的随机数：”+y); 15 16 }</p>
+
+<p><img src="521619c.gif" alt="" />
+运行结果：</p>
+
+<p><img src="43fa79f.png" alt="" /></p>
+
+<p>注意：要注意Math各个方法返回值类型，可以用强制类型转换来转为自己想要的类型。</p>
+
+<p>PS： Math 类还提供了许多其他方法，各位小伙伴们可以按需去API文档查找想要知道的方法。</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/java%E4%B8%AD%E5%BF%85%E7%94%A8%E7%9A%84%E5%B8%B8%E7%94%A8%E7%B1%BB%E5%BE%88%E5%AE%9E%E7%94%A8.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/%E4%B9%9F%E8%B0%88tdd%E4%BB%A5%E5%8F%8A%E4%B8%89%E5%B1%82%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8Form%E6%B2%A1%E6%9C%89%E5%85%8D%E8%B4%B9%E7%9A%84%E5%8D%88%E9%A4%90.html">&laquo; 也谈TDD，以及三层架构、设计模式、ORM……：没有免费的午餐</a>
+  
+  
+  <a class="next" href="/2017/springboot%E9%85%8D%E7%BD%AEdruid%E4%BD%BF%E7%94%A8druidspringbootstarter.html">springboot 配置druid(使用druid-spring-boot-starter) &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

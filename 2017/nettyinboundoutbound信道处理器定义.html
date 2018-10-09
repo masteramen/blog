@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>Netty Inbound/Outbound信道处理器定义 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="Netty Inbound/Outbound信道处理器定义" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="Netty 通道处理器ChannelHandler和适配器定义ChannelHandlerAdapter：" />
+<meta property="og:description" content="Netty 通道处理器ChannelHandler和适配器定义ChannelHandlerAdapter：" />
+<link rel="canonical" href="http://www.jfox.info/2017/nettyinboundoutbound%E4%BF%A1%E9%81%93%E5%A4%84%E7%90%86%E5%99%A8%E5%AE%9A%E4%B9%89.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/nettyinboundoutbound%E4%BF%A1%E9%81%93%E5%A4%84%E7%90%86%E5%99%A8%E5%AE%9A%E4%B9%89.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:58:28+00:00" />
+<script type="application/ld+json">
+{"description":"Netty 通道处理器ChannelHandler和适配器定义ChannelHandlerAdapter：","@type":"BlogPosting","url":"http://www.jfox.info/2017/nettyinboundoutbound%E4%BF%A1%E9%81%93%E5%A4%84%E7%90%86%E5%99%A8%E5%AE%9A%E4%B9%89.html","headline":"Netty Inbound/Outbound信道处理器定义","dateModified":"2017-01-01T15:58:28+00:00","datePublished":"2017-01-01T15:58:28+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/nettyinboundoutbound%E4%BF%A1%E9%81%93%E5%A4%84%E7%90%86%E5%99%A8%E5%AE%9A%E4%B9%89.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Netty Inbound/Outbound信道处理器定义</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:58:28+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>Netty 通道处理器ChannelHandler和适配器定义ChannelHandlerAdapter：</p>
+
+<p><a href="https://www.jfox.info/go.php?url=http://donald-draper.iteye.com/blog/2386891">http://donald-draper.iteye.com/blog/2386891</a><strong>引言：</strong>
+前面一篇文章我们看了通道处理器及适配器的定义，先来回顾一下：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>通道处理器ChannelHandler，主要有两个事件方法分别为handlerAdded和handlerRemoved，handlerAdded在通道处理器添加到实际上下文后调用，通道处理器准备处理IO事件；handlerRemoved在通道处理器从实际上下文中移除后调用，通道处理器不再处理IO事件。 
+</code></pre></div></div>
+
+<p>一个通道处理器关联一个通道处理器上下文ChannelHandlerContext。通道处理器通过一个上下文对象，与它所属的通道管道线交互。通道上下文对象，通道处理器上行或下行传递的事件，动态修改管道，或通过AttributeKey存储特殊的信息。通道处理器内部定义了一个共享注解Sharable，默认访问类型为Protected；添加共享注解的通道处理器，说明通道处理器中的变量可以共享，可以创建一个通道处理器实例，多次添加到通道管道线ChannlePipeline;对于没有共享注解的通道器，在每次添加到管道线上时，都要重新创建一个通道处理器实例。通道处理器只定义了简单的通道处理器添加到通道处理器上下文或从上下文移除的事件操作，没有具体定义读操作（上行UpStream，输入流Inbound，字节流到消息对象ByteToMessage），写操作（下行DownStream，输出流Outbound，消息到字节流MessageToByte）。这操作分别定义在，输入流处理器ChannelInboundHandler，输出流处理器ChannelOutboundHandler，并提供了处理的相应适配器，输入流处理器适配器ChannelInboundHandlerAdapter，输出流通道适配器ChannelOutboundHandlerAdapter，多路复用适配器ChannelDuplexHandler。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>通道处理器适配器ChannelHandlerAdapter的设计模式为适配器，这个适配器模式中的 handlerAdded和handlerRemoved事件默认处理器，不做任何事情，这个与MINA中的适配器模式相同。处理IO操作异常，则调用ChannelHandlerContext#fireExceptionCaught方法，触发异常事件，并转发给通道管道线的下一个通道处理器。 
+
+看通道处理器适配器的判断通道处理器是否共享注解，首先获取线程的本地变量，从线程本地变量获取线程本地共享注解通道处理器探测结果缓存，如果缓存中存在通道处理器clazz，则返回缓存结果，否则将探测结果添加到缓存中。 
+</code></pre></div></div>
+
+<p>今天来看一下Inbound处理器</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/**
+ * {@link ChannelHandler} which adds callbacks for state changes. This allows the user
+ * to hook in to state changes easily.
+ ChannelInboundHandler在通道处理器状态改变时，回调。允许用户hook处理器的状态改变
+ */
+public interface ChannelInboundHandler extends ChannelHandler {
+
+    /**
+     * The {@link Channel} of the {@link ChannelHandlerContext} was registered with its {@link EventLoop}
+     通道处理器上下文关联的通道注册到事件循环EventLoop时，触发
+     */
+    void channelRegistered(ChannelHandlerContext ctx) throws Exception;
+
+    /**
+     * The {@link Channel} of the {@link ChannelHandlerContext} was unregistered from its {@link EventLoop}
+     通道处理器上下文关联的通道从事件循环EventLoop移除时，触发
+     */
+    void channelUnregistered(ChannelHandlerContext ctx) throws Exception;
+
+    /**
+     * The {@link Channel} of the {@link ChannelHandlerContext} is now active
+      通道处理器上下文关联的通道激活时，触发
+     */
+    void channelActive(ChannelHandlerContext ctx) throws Exception;
+
+    /**
+     * The {@link Channel} of the {@link ChannelHandlerContext} was registered is now inactive and reached its
+     * end of lifetime.
+      通道处理器上下文关联的通道注册到事件循环EventLoop，但处于非激活状态，达到生命周期的末端时，触发
+     */
+    void channelInactive(ChannelHandlerContext ctx) throws Exception;
+
+    /**
+     * Invoked when the current {@link Channel} has read a message from the peer.
+     通道从peer读取消息时，触发
+     */
+    void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception;
+
+    /**
+     * Invoked when the last message read by the current read operation has been consumed by
+     * {@link #channelRead(ChannelHandlerContext, Object)}.  If {@link ChannelOption#AUTO_READ} is off, no further
+     * attempt to read an inbound data from the current {@link Channel} will be made until
+     * {@link ChannelHandlerContext#read()} is called.
+     当上一消息通过#channelRead方法，并被当先读操作消费时，触发。如果通道配置项#AUTO_READ为关闭状态，没有进一步
+     尝试从当前通道读取inbound数据时，直到ChannelHandlerContext#read调用，触发。
+     */
+    void channelReadComplete(ChannelHandlerContext ctx) throws Exception;
+
+    /**
+     * Gets called if an user event was triggered.
+     当用户事件发生时，触发
+     */
+    void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception;
+
+    /**
+     * Gets called once the writable state of a {@link Channel} changed. You can check the state with
+     * {@link Channel#isWritable()}.
+     当通道可写状态改变时，触发
+     */
+    void channelWritabilityChanged(ChannelHandlerContext ctx) throws Exception;
+
+    /**
+     * Gets called if a {@link Throwable} was thrown.
+     异常抛出时，触发
+     */
+    @Override
+    @SuppressWarnings("deprecation")
+    void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception;
+}
+</code></pre></div></div>
+
+<p>从通道Inbound处理器来看，主要是处理从peer发送过来的字节流；</p>
+
+<p>通道处理器上下文关联的通道注册到事件循环EventLoop时，触发channelRegistered方法；</p>
+
+<p>通道处理器上下文关联的通道激活时，触发channelActive方法；</p>
+
+<p>通道从peer读取消息时，触发channelRead方法；</p>
+
+<p>当上一消息通过#channelRead方法，并被当先读操作消费时，触发channelReadComplete方法，</p>
+
+<p>如果通道配置项#AUTO_READ为关闭状态，没有进一步尝试从当前通道读取inbound数据时，</p>
+
+<p>直到ChannelHandlerContext#read调用，触发；</p>
+
+<p>当用户事件发生时，触发userEventTriggered方法；</p>
+
+<p>异常抛出时，触发exceptionCaught方法；</p>
+
+<p>当通道可写状态改变时，触发channelWritabilityChanged方法；</p>
+
+<p>通道处理器上下文关联的通道注册到事件循环EventLoop，但处于非激活状态，</p>
+
+<p>达到生命周期的末端时，触发channelInactive方法；</p>
+
+<p>通道处理器上下文关联的通道从事件循环EventLoop移除时，触发channelUnregistered方法。</p>
+
+<p>再来看通道Inbound处理器适配器ChannelInboundHandlerAdapter</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">io</span><span class="p">.</span><span class="n">netty</span><span class="p">.</span><span class="n">channel</span><span class="p">;</span>
+
+<span class="p">/**</span>
+ <span class="p">*</span> <span class="n">Abstract</span> <span class="n">base</span> <span class="n">class</span> <span class="n">for</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelInboundHandler</span><span class="p">}</span> <span class="n">implementations</span> <span class="n">which</span> <span class="n">provide</span>
+ <span class="p">*</span> <span class="n">implementations</span> <span class="k">of</span> <span class="n">all</span> <span class="k">of</span> <span class="n">their</span> <span class="n">methods</span><span class="p">.</span>
+ <span class="p">*</span>
+ <span class="err">通道</span><span class="n">Inbound</span><span class="err">处理器抽象实现，提供了所有方法的实现。</span>
+ <span class="p">*</span> 
+ <span class="p">*</span> <span class="n">This</span> <span class="n">implementation</span> <span class="n">just</span> <span class="k">forward</span> <span class="n">the</span> <span class="n">operation</span> <span class="k">to</span> <span class="n">the</span> <span class="k">next</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelHandler</span><span class="p">}</span> <span class="k">in</span> <span class="n">the</span>
+ <span class="p">*</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelPipeline</span><span class="p">}.</span> <span class="n">Sub</span><span class="p">-</span><span class="n">classes</span> <span class="n">may</span> <span class="n">override</span> <span class="n">a</span> <span class="n">method</span> <span class="n">implementation</span> <span class="k">to</span> <span class="n">change</span> <span class="n">this</span><span class="p">.</span>
+ <span class="p">*</span> 
+
+ <span class="n">Inbound</span><span class="err">通道</span><span class="n">handler</span><span class="err">适配器的实现，仅仅转发操作给</span><span class="n">Channel</span><span class="err">管道线的下一个通道处理器。子类必须重写方法。</span>
+ <span class="p">*</span> 
+ <span class="p">*</span> <span class="n">Be</span> <span class="n">aware</span> <span class="n">that</span> <span class="n">messages</span> <span class="n">are</span> <span class="k">not</span> <span class="n">released</span> <span class="n">after</span> <span class="n">the</span> <span class="p">{@</span><span class="n">link</span> <span class="p">#</span><span class="n">channelRead</span><span class="p">(</span><span class="n">ChannelHandlerContext</span><span class="p">,</span> <span class="n">Object</span><span class="p">)}</span>
+ <span class="p">*</span> <span class="n">method</span> <span class="n">returns</span> <span class="n">automatically</span><span class="p">.</span> <span class="k">If</span> <span class="n">you</span> <span class="n">are</span> <span class="n">looking</span> <span class="n">for</span> <span class="n">a</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelInboundHandler</span><span class="p">}</span> <span class="n">implementation</span> <span class="n">that</span>
+ <span class="p">*</span> <span class="n">releases</span> <span class="n">the</span> <span class="n">received</span> <span class="n">messages</span> <span class="n">automatically</span><span class="p">,</span> <span class="n">please</span> <span class="n">see</span> <span class="p">{@</span><span class="n">link</span> <span class="n">SimpleChannelInboundHandler</span><span class="p">}.</span>
+ <span class="err">需要注意的是，在</span><span class="p">#</span><span class="n">channelRead</span><span class="err">方法自动返回后，消息并没有释放。如果你寻找</span><span class="n">ChannelInboundHandler</span><span class="err">的实现，可以自动</span>
+ <span class="err">释放接受的到消息可以使用</span><span class="n">SimpleChannelInboundHandler</span><span class="err">。</span>
+ <span class="p">*</span> 
+
+ <span class="p">*/</span>
+<span class="k">public</span> <span class="n">class</span> <span class="n">ChannelInboundHandlerAdapter</span> <span class="n">extends</span> <span class="n">ChannelHandlerAdapter</span> <span class="n">implements</span> <span class="n">ChannelInboundHandler</span> <span class="p">{</span>
+
+    <span class="p">/**</span>
+     <span class="p">*</span> <span class="n">Calls</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelHandlerContext</span><span class="p">#</span><span class="n">fireChannelRegistered</span><span class="p">()}</span> <span class="k">to</span> <span class="k">forward</span>
+     <span class="p">*</span> <span class="k">to</span> <span class="n">the</span> <span class="k">next</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelInboundHandler</span><span class="p">}</span> <span class="k">in</span> <span class="n">the</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelPipeline</span><span class="p">}.</span>
+     <span class="p">*</span>
+     <span class="p">*</span> <span class="n">Sub</span><span class="p">-</span><span class="n">classes</span> <span class="n">may</span> <span class="n">override</span> <span class="n">this</span> <span class="n">method</span> <span class="k">to</span> <span class="n">change</span> <span class="n">behavior</span><span class="p">.</span>
+     <span class="p">*/</span>
+    <span class="p">@</span><span class="n">Override</span>
+    <span class="k">public</span> <span class="n">void</span> <span class="n">channelRegistered</span><span class="p">(</span><span class="n">ChannelHandlerContext</span> <span class="n">ctx</span><span class="p">)</span> <span class="n">throws</span> <span class="n">Exception</span> <span class="p">{</span>
+        <span class="n">ctx</span><span class="p">.</span><span class="n">fireChannelRegistered</span><span class="p">();</span>
+    <span class="p">}</span>
+
+    <span class="p">/**</span>
+     <span class="p">*</span> <span class="n">Calls</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelHandlerContext</span><span class="p">#</span><span class="n">fireChannelUnregistered</span><span class="p">()}</span> <span class="k">to</span> <span class="k">forward</span>
+     <span class="p">*</span> <span class="k">to</span> <span class="n">the</span> <span class="k">next</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelInboundHandler</span><span class="p">}</span> <span class="k">in</span> <span class="n">the</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelPipeline</span><span class="p">}.</span>
+     <span class="p">*</span>
+     <span class="p">*</span> <span class="n">Sub</span><span class="p">-</span><span class="n">classes</span> <span class="n">may</span> <span class="n">override</span> <span class="n">this</span> <span class="n">method</span> <span class="k">to</span> <span class="n">change</span> <span class="n">behavior</span><span class="p">.</span>
+     <span class="p">*/</span>
+    <span class="p">@</span><span class="n">Override</span>
+    <span class="k">public</span> <span class="n">void</span> <span class="n">channelUnregistered</span><span class="p">(</span><span class="n">ChannelHandlerContext</span> <span class="n">ctx</span><span class="p">)</span> <span class="n">throws</span> <span class="n">Exception</span> <span class="p">{</span>
+        <span class="n">ctx</span><span class="p">.</span><span class="n">fireChannelUnregistered</span><span class="p">();</span>
+    <span class="p">}</span>
+
+    <span class="p">/**</span>
+     <span class="p">*</span> <span class="n">Calls</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelHandlerContext</span><span class="p">#</span><span class="n">fireChannelActive</span><span class="p">()}</span> <span class="k">to</span> <span class="k">forward</span>
+     <span class="p">*</span> <span class="k">to</span> <span class="n">the</span> <span class="k">next</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelInboundHandler</span><span class="p">}</span> <span class="k">in</span> <span class="n">the</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelPipeline</span><span class="p">}.</span>
+     <span class="p">*</span>
+     <span class="p">*</span> <span class="n">Sub</span><span class="p">-</span><span class="n">classes</span> <span class="n">may</span> <span class="n">override</span> <span class="n">this</span> <span class="n">method</span> <span class="k">to</span> <span class="n">change</span> <span class="n">behavior</span><span class="p">.</span>
+     <span class="p">*/</span>
+    <span class="p">@</span><span class="n">Override</span>
+    <span class="k">public</span> <span class="n">void</span> <span class="n">channelActive</span><span class="p">(</span><span class="n">ChannelHandlerContext</span> <span class="n">ctx</span><span class="p">)</span> <span class="n">throws</span> <span class="n">Exception</span> <span class="p">{</span>
+        <span class="n">ctx</span><span class="p">.</span><span class="n">fireChannelActive</span><span class="p">();</span>
+    <span class="p">}</span>
+
+    <span class="p">/**</span>
+     <span class="p">*</span> <span class="n">Calls</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelHandlerContext</span><span class="p">#</span><span class="n">fireChannelInactive</span><span class="p">()}</span> <span class="k">to</span> <span class="k">forward</span>
+     <span class="p">*</span> <span class="k">to</span> <span class="n">the</span> <span class="k">next</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelInboundHandler</span><span class="p">}</span> <span class="k">in</span> <span class="n">the</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelPipeline</span><span class="p">}.</span>
+     <span class="p">*</span>
+     <span class="p">*</span> <span class="n">Sub</span><span class="p">-</span><span class="n">classes</span> <span class="n">may</span> <span class="n">override</span> <span class="n">this</span> <span class="n">method</span> <span class="k">to</span> <span class="n">change</span> <span class="n">behavior</span><span class="p">.</span>
+     <span class="p">*/</span>
+    <span class="p">@</span><span class="n">Override</span>
+    <span class="k">public</span> <span class="n">void</span> <span class="n">channelInactive</span><span class="p">(</span><span class="n">ChannelHandlerContext</span> <span class="n">ctx</span><span class="p">)</span> <span class="n">throws</span> <span class="n">Exception</span> <span class="p">{</span>
+        <span class="n">ctx</span><span class="p">.</span><span class="n">fireChannelInactive</span><span class="p">();</span>
+    <span class="p">}</span>
+
+    <span class="p">/**</span>
+     <span class="p">*</span> <span class="n">Calls</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelHandlerContext</span><span class="p">#</span><span class="n">fireChannelRead</span><span class="p">(</span><span class="n">Object</span><span class="p">)}</span> <span class="k">to</span> <span class="k">forward</span>
+     <span class="p">*</span> <span class="k">to</span> <span class="n">the</span> <span class="k">next</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelInboundHandler</span><span class="p">}</span> <span class="k">in</span> <span class="n">the</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelPipeline</span><span class="p">}.</span>
+     <span class="p">*</span>
+     <span class="p">*</span> <span class="n">Sub</span><span class="p">-</span><span class="n">classes</span> <span class="n">may</span> <span class="n">override</span> <span class="n">this</span> <span class="n">method</span> <span class="k">to</span> <span class="n">change</span> <span class="n">behavior</span><span class="p">.</span>
+     <span class="p">*/</span>
+    <span class="p">@</span><span class="n">Override</span>
+    <span class="k">public</span> <span class="n">void</span> <span class="n">channelRead</span><span class="p">(</span><span class="n">ChannelHandlerContext</span> <span class="n">ctx</span><span class="p">,</span> <span class="n">Object</span> <span class="n">msg</span><span class="p">)</span> <span class="n">throws</span> <span class="n">Exception</span> <span class="p">{</span>
+        <span class="n">ctx</span><span class="p">.</span><span class="n">fireChannelRead</span><span class="p">(</span><span class="n">msg</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="p">/**</span>
+     <span class="p">*</span> <span class="n">Calls</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelHandlerContext</span><span class="p">#</span><span class="n">fireChannelReadComplete</span><span class="p">()}</span> <span class="k">to</span> <span class="k">forward</span>
+     <span class="p">*</span> <span class="k">to</span> <span class="n">the</span> <span class="k">next</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelInboundHandler</span><span class="p">}</span> <span class="k">in</span> <span class="n">the</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelPipeline</span><span class="p">}.</span>
+     <span class="p">*</span>
+     <span class="p">*</span> <span class="n">Sub</span><span class="p">-</span><span class="n">classes</span> <span class="n">may</span> <span class="n">override</span> <span class="n">this</span> <span class="n">method</span> <span class="k">to</span> <span class="n">change</span> <span class="n">behavior</span><span class="p">.</span>
+     <span class="p">*/</span>
+    <span class="p">@</span><span class="n">Override</span>
+    <span class="k">public</span> <span class="n">void</span> <span class="n">channelReadComplete</span><span class="p">(</span><span class="n">ChannelHandlerContext</span> <span class="n">ctx</span><span class="p">)</span> <span class="n">throws</span> <span class="n">Exception</span> <span class="p">{</span>
+        <span class="n">ctx</span><span class="p">.</span><span class="n">fireChannelReadComplete</span><span class="p">();</span>
+    <span class="p">}</span>
+
+    <span class="p">/**</span>
+     <span class="p">*</span> <span class="n">Calls</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelHandlerContext</span><span class="p">#</span><span class="n">fireUserEventTriggered</span><span class="p">(</span><span class="n">Object</span><span class="p">)}</span> <span class="k">to</span> <span class="k">forward</span>
+     <span class="p">*</span> <span class="k">to</span> <span class="n">the</span> <span class="k">next</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelInboundHandler</span><span class="p">}</span> <span class="k">in</span> <span class="n">the</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelPipeline</span><span class="p">}.</span>
+     <span class="p">*</span>
+     <span class="p">*</span> <span class="n">Sub</span><span class="p">-</span><span class="n">classes</span> <span class="n">may</span> <span class="n">override</span> <span class="n">this</span> <span class="n">method</span> <span class="k">to</span> <span class="n">change</span> <span class="n">behavior</span><span class="p">.</span>
+     <span class="p">*/</span>
+    <span class="p">@</span><span class="n">Override</span>
+    <span class="k">public</span> <span class="n">void</span> <span class="n">userEventTriggered</span><span class="p">(</span><span class="n">ChannelHandlerContext</span> <span class="n">ctx</span><span class="p">,</span> <span class="n">Object</span> <span class="n">evt</span><span class="p">)</span> <span class="n">throws</span> <span class="n">Exception</span> <span class="p">{</span>
+        <span class="n">ctx</span><span class="p">.</span><span class="n">fireUserEventTriggered</span><span class="p">(</span><span class="n">evt</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="p">/**</span>
+     <span class="p">*</span> <span class="n">Calls</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelHandlerContext</span><span class="p">#</span><span class="n">fireChannelWritabilityChanged</span><span class="p">()}</span> <span class="k">to</span> <span class="k">forward</span>
+     <span class="p">*</span> <span class="k">to</span> <span class="n">the</span> <span class="k">next</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelInboundHandler</span><span class="p">}</span> <span class="k">in</span> <span class="n">the</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelPipeline</span><span class="p">}.</span>
+     <span class="p">*</span>
+     <span class="p">*</span> <span class="n">Sub</span><span class="p">-</span><span class="n">classes</span> <span class="n">may</span> <span class="n">override</span> <span class="n">this</span> <span class="n">method</span> <span class="k">to</span> <span class="n">change</span> <span class="n">behavior</span><span class="p">.</span>
+     <span class="p">*/</span>
+    <span class="p">@</span><span class="n">Override</span>
+    <span class="k">public</span> <span class="n">void</span> <span class="n">channelWritabilityChanged</span><span class="p">(</span><span class="n">ChannelHandlerContext</span> <span class="n">ctx</span><span class="p">)</span> <span class="n">throws</span> <span class="n">Exception</span> <span class="p">{</span>
+        <span class="n">ctx</span><span class="p">.</span><span class="n">fireChannelWritabilityChanged</span><span class="p">();</span>
+    <span class="p">}</span>
+
+    <span class="p">/**</span>
+     <span class="p">*</span> <span class="n">Calls</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelHandlerContext</span><span class="p">#</span><span class="n">fireExceptionCaught</span><span class="p">(</span><span class="n">Throwable</span><span class="p">)}</span> <span class="k">to</span> <span class="k">forward</span>
+     <span class="p">*</span> <span class="k">to</span> <span class="n">the</span> <span class="k">next</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelHandler</span><span class="p">}</span> <span class="k">in</span> <span class="n">the</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelPipeline</span><span class="p">}.</span>
+     <span class="p">*</span>
+     <span class="p">*</span> <span class="n">Sub</span><span class="p">-</span><span class="n">classes</span> <span class="n">may</span> <span class="n">override</span> <span class="n">this</span> <span class="n">method</span> <span class="k">to</span> <span class="n">change</span> <span class="n">behavior</span><span class="p">.</span>
+     <span class="p">*/</span>
+    <span class="p">@</span><span class="n">Override</span>
+    <span class="k">public</span> <span class="n">void</span> <span class="n">exceptionCaught</span><span class="p">(</span><span class="n">ChannelHandlerContext</span> <span class="n">ctx</span><span class="p">,</span> <span class="n">Throwable</span> <span class="n">cause</span><span class="p">)</span>
+            <span class="n">throws</span> <span class="n">Exception</span> <span class="p">{</span>
+        <span class="n">ctx</span><span class="p">.</span><span class="n">fireExceptionCaught</span><span class="p">(</span><span class="n">cause</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>从上面来看Inbound通道handler适配器ChannelInboundHandlerAdapter，提供的Inbound通道处理器的所有方法的实现，但实现仅仅是，转发操作给Channel管道线的下一个通道处理器，子类必须重写方法。需要注意的是，在#channelRead方法自动返回后，消息并没有释放。如果你寻找ChannelInboundHandler的实现，可以自动释放接受的到消息可以使用SimpleChannelInboundHandler。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public abstract class SimpleChannelInboundHandler&lt;I&gt; extends ChannelInboundHandlerAdapter 
+</code></pre></div></div>
+
+<p>在前面的Netty实例文章中，消息解码器一般要继承ByteToMessageDecoder，我们来看一下ByteToMessageDecoder继承树</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public abstract class ByteToMessageDecoder extends ChannelInboundHandlerAdapter
+</code></pre></div></div>
+
+<p>实际上消息解码继承与ChannelInboundHandlerAdapter，可以简单理解为一个Inbound通道处理器。</p>
+
+<p>消息编码器一般为继承MessageToByteEncoder，我们从MessageToByteEncoder来看Outbound通道处理器；</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public abstract class MessageToByteEncoder&lt;I&gt; extends ChannelOutboundHandlerAdapter
+</code></pre></div></div>
+
+<p>实际上消息编码器为Outbound通道处理器，下面我们来看一下Outbound处理器的定义。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">io</span><span class="p">.</span><span class="n">netty</span><span class="p">.</span><span class="n">channel</span><span class="p">;</span>
+
+<span class="n">import</span> <span class="n">java</span><span class="p">.</span><span class="n">net</span><span class="p">.</span><span class="n">SocketAddress</span><span class="p">;</span>
+
+<span class="p">/**</span>
+ <span class="p">*</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelHandler</span><span class="p">}</span> <span class="n">which</span> <span class="n">will</span> <span class="n">get</span> <span class="n">notified</span> <span class="n">for</span> <span class="n">IO</span><span class="p">-</span><span class="n">outbound</span><span class="p">-</span><span class="n">operations</span><span class="p">.</span>
+<span class="n">Outbound</span><span class="err">通道处理器处理</span><span class="n">outbound</span> <span class="n">IO</span><span class="err">操作。</span>
+ <span class="p">*/</span>
+<span class="k">public</span> <span class="n">interface</span> <span class="n">ChannelOutboundHandler</span> <span class="n">extends</span> <span class="n">ChannelHandler</span> <span class="p">{</span>
+    <span class="p">/**</span>
+     <span class="p">*</span> <span class="n">Called</span> <span class="n">once</span> <span class="n">a</span> <span class="n">bind</span> <span class="n">operation</span> <span class="n">is</span> <span class="n">made</span><span class="p">.</span>
+     <span class="p">*</span><span class="err">当绑定操作发生时，调用</span>
+     <span class="p">*</span> <span class="p">@</span><span class="n">param</span> <span class="n">ctx</span>           <span class="n">the</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelHandlerContext</span><span class="p">}</span> <span class="n">for</span> <span class="n">which</span> <span class="n">the</span> <span class="n">bind</span> <span class="n">operation</span> <span class="n">is</span> <span class="n">made</span>
+     <span class="err">通道处理器上下文</span>
+     <span class="p">*</span> <span class="p">@</span><span class="n">param</span> <span class="n">localAddress</span>  <span class="n">the</span> <span class="p">{@</span><span class="n">link</span> <span class="n">SocketAddress</span><span class="p">}</span> <span class="k">to</span> <span class="n">which</span> <span class="n">it</span> <span class="n">should</span> <span class="n">bound</span>
+     <span class="err">绑定的本地</span><span class="n">socket</span><span class="err">地址</span>
+     <span class="p">*</span> <span class="p">@</span><span class="n">param</span> <span class="n">promise</span>       <span class="n">the</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelPromise</span><span class="p">}</span> <span class="k">to</span> <span class="n">notify</span> <span class="n">once</span> <span class="n">the</span> <span class="n">operation</span> <span class="n">completes</span>
+     <span class="err">通知一个操作是否完成</span>
+     <span class="p">*</span> <span class="p">@</span><span class="n">throws</span> <span class="n">Exception</span>    <span class="n">thrown</span> <span class="k">if</span> <span class="n">an</span> <span class="n">error</span> <span class="n">occurs</span>
+     <span class="p">*/</span>
+    <span class="n">void</span> <span class="n">bind</span><span class="p">(</span><span class="n">ChannelHandlerContext</span> <span class="n">ctx</span><span class="p">,</span> <span class="n">SocketAddress</span> <span class="n">localAddress</span><span class="p">,</span> <span class="n">ChannelPromise</span> <span class="n">promise</span><span class="p">)</span> <span class="n">throws</span> <span class="n">Exception</span><span class="p">;</span>
+
+    <span class="p">/**</span>
+     <span class="p">*</span> <span class="n">Called</span> <span class="n">once</span> <span class="n">a</span> <span class="nf">connect</span> <span class="n">operation</span> <span class="n">is</span> <span class="n">made</span><span class="p">.</span>
+     <span class="p">*</span><span class="err">当连接操作完成时，调用</span>
+     <span class="p">*</span> <span class="p">@</span><span class="n">param</span> <span class="n">ctx</span>               <span class="n">the</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelHandlerContext</span><span class="p">}</span> <span class="n">for</span> <span class="n">which</span> <span class="n">the</span> <span class="nf">connect</span> <span class="n">operation</span> <span class="n">is</span> <span class="n">made</span>
+     <span class="err">通道处理器上下文</span>
+     <span class="p">*</span> <span class="p">@</span><span class="n">param</span> <span class="n">remoteAddress</span>     <span class="n">the</span> <span class="p">{@</span><span class="n">link</span> <span class="n">SocketAddress</span><span class="p">}</span> <span class="k">to</span> <span class="n">which</span> <span class="n">it</span> <span class="n">should</span> <span class="nf">connect</span>
+     <span class="err">远端</span><span class="n">socket</span><span class="err">地址</span>
+     <span class="p">*</span> <span class="p">@</span><span class="n">param</span> <span class="n">localAddress</span>      <span class="n">the</span> <span class="p">{@</span><span class="n">link</span> <span class="n">SocketAddress</span><span class="p">}</span> <span class="n">which</span> <span class="n">is</span> <span class="n">used</span> <span class="k">as</span> <span class="n">source</span> <span class="n">on</span> <span class="nf">connect</span>
+     <span class="err">本地</span><span class="n">Socket</span><span class="err">地址</span>
+     <span class="p">*</span> <span class="p">@</span><span class="n">param</span> <span class="n">promise</span>           <span class="n">the</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelPromise</span><span class="p">}</span> <span class="k">to</span> <span class="n">notify</span> <span class="n">once</span> <span class="n">the</span> <span class="n">operation</span> <span class="n">completes</span>
+    <span class="err">通知一个操作是否完成</span>
+     <span class="p">*</span> <span class="p">@</span><span class="n">throws</span> <span class="n">Exception</span>        <span class="n">thrown</span> <span class="k">if</span> <span class="n">an</span> <span class="n">error</span> <span class="n">occurs</span>
+     <span class="p">*/</span>
+    <span class="n">void</span> <span class="nf">connect</span><span class="p">(</span>
+            <span class="n">ChannelHandlerContext</span> <span class="n">ctx</span><span class="p">,</span> <span class="n">SocketAddress</span> <span class="n">remoteAddress</span><span class="p">,</span>
+            <span class="n">SocketAddress</span> <span class="n">localAddress</span><span class="p">,</span> <span class="n">ChannelPromise</span> <span class="n">promise</span><span class="p">)</span> <span class="n">throws</span> <span class="n">Exception</span><span class="p">;</span>
+
+    <span class="p">/**</span>
+     <span class="p">*</span> <span class="n">Called</span> <span class="n">once</span> <span class="n">a</span> <span class="nf">disconnect</span> <span class="n">operation</span> <span class="n">is</span> <span class="n">made</span><span class="p">.</span>
+     <span class="p">*</span><span class="err">当断开连接时，调用</span>
+     <span class="p">*</span> <span class="p">@</span><span class="n">param</span> <span class="n">ctx</span>               <span class="n">the</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelHandlerContext</span><span class="p">}</span> <span class="n">for</span> <span class="n">which</span> <span class="n">the</span> <span class="nf">disconnect</span> <span class="n">operation</span> <span class="n">is</span> <span class="n">made</span>
+     <span class="p">*</span> <span class="p">@</span><span class="n">param</span> <span class="n">promise</span>           <span class="n">the</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelPromise</span><span class="p">}</span> <span class="k">to</span> <span class="n">notify</span> <span class="n">once</span> <span class="n">the</span> <span class="n">operation</span> <span class="n">completes</span>
+     <span class="p">*</span> <span class="p">@</span><span class="n">throws</span> <span class="n">Exception</span>        <span class="n">thrown</span> <span class="k">if</span> <span class="n">an</span> <span class="n">error</span> <span class="n">occurs</span>
+     <span class="p">*/</span>
+    <span class="n">void</span> <span class="nf">disconnect</span><span class="p">(</span><span class="n">ChannelHandlerContext</span> <span class="n">ctx</span><span class="p">,</span> <span class="n">ChannelPromise</span> <span class="n">promise</span><span class="p">)</span> <span class="n">throws</span> <span class="n">Exception</span><span class="p">;</span>
+
+    <span class="p">/**</span>
+     <span class="p">*</span> <span class="n">Called</span> <span class="n">once</span> <span class="n">a</span> <span class="n">close</span> <span class="n">operation</span> <span class="n">is</span> <span class="n">made</span><span class="p">.</span>
+     <span class="p">*</span><span class="err">当关闭操作发生时，调用</span>
+     <span class="p">*</span> <span class="p">@</span><span class="n">param</span> <span class="n">ctx</span>               <span class="n">the</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelHandlerContext</span><span class="p">}</span> <span class="n">for</span> <span class="n">which</span> <span class="n">the</span> <span class="n">close</span> <span class="n">operation</span> <span class="n">is</span> <span class="n">made</span>
+     <span class="p">*</span> <span class="p">@</span><span class="n">param</span> <span class="n">promise</span>           <span class="n">the</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelPromise</span><span class="p">}</span> <span class="k">to</span> <span class="n">notify</span> <span class="n">once</span> <span class="n">the</span> <span class="n">operation</span> <span class="n">completes</span>
+     <span class="p">*</span> <span class="p">@</span><span class="n">throws</span> <span class="n">Exception</span>        <span class="n">thrown</span> <span class="k">if</span> <span class="n">an</span> <span class="n">error</span> <span class="n">occurs</span>
+     <span class="p">*/</span>
+    <span class="n">void</span> <span class="n">close</span><span class="p">(</span><span class="n">ChannelHandlerContext</span> <span class="n">ctx</span><span class="p">,</span> <span class="n">ChannelPromise</span> <span class="n">promise</span><span class="p">)</span> <span class="n">throws</span> <span class="n">Exception</span><span class="p">;</span>
+
+    <span class="p">/**</span>
+     <span class="p">*</span> <span class="n">Called</span> <span class="n">once</span> <span class="n">a</span> <span class="n">deregister</span> <span class="n">operation</span> <span class="n">is</span> <span class="n">made</span> <span class="k">from</span> <span class="n">the</span> <span class="n">current</span> <span class="n">registered</span> <span class="p">{@</span><span class="n">link</span> <span class="n">EventLoop</span><span class="p">}.</span>
+     <span class="err">当通道处理器，从当前注册的事件循环</span><span class="n">EventLoop</span><span class="err">，反注册时，调用</span>
+     <span class="p">*</span>
+     <span class="p">*</span> <span class="p">@</span><span class="n">param</span> <span class="n">ctx</span>               <span class="n">the</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelHandlerContext</span><span class="p">}</span> <span class="n">for</span> <span class="n">which</span> <span class="n">the</span> <span class="n">close</span> <span class="n">operation</span> <span class="n">is</span> <span class="n">made</span>
+     <span class="p">*</span> <span class="p">@</span><span class="n">param</span> <span class="n">promise</span>           <span class="n">the</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelPromise</span><span class="p">}</span> <span class="k">to</span> <span class="n">notify</span> <span class="n">once</span> <span class="n">the</span> <span class="n">operation</span> <span class="n">completes</span>
+     <span class="p">*</span> <span class="p">@</span><span class="n">throws</span> <span class="n">Exception</span>        <span class="n">thrown</span> <span class="k">if</span> <span class="n">an</span> <span class="n">error</span> <span class="n">occurs</span>
+     <span class="p">*/</span>
+    <span class="n">void</span> <span class="n">deregister</span><span class="p">(</span><span class="n">ChannelHandlerContext</span> <span class="n">ctx</span><span class="p">,</span> <span class="n">ChannelPromise</span> <span class="n">promise</span><span class="p">)</span> <span class="n">throws</span> <span class="n">Exception</span><span class="p">;</span>
+
+    <span class="p">/**</span>
+     <span class="p">*</span> <span class="n">Intercepts</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelHandlerContext</span><span class="p">#</span><span class="nb">read</span><span class="p">()}.</span>
+     <span class="err">拦截通道处理器上下文读操作</span>
+     <span class="p">*/</span>
+    <span class="n">void</span> <span class="nb">read</span><span class="p">(</span><span class="n">ChannelHandlerContext</span> <span class="n">ctx</span><span class="p">)</span> <span class="n">throws</span> <span class="n">Exception</span><span class="p">;</span>
+
+    <span class="p">/**</span>
+    <span class="p">*</span> <span class="n">Called</span> <span class="n">once</span> <span class="n">a</span> <span class="nb">write</span> <span class="n">operation</span> <span class="n">is</span> <span class="n">made</span><span class="p">.</span> <span class="n">The</span> <span class="nb">write</span> <span class="n">operation</span> <span class="n">will</span> <span class="nb">write</span> <span class="n">the</span> <span class="n">messages</span> <span class="n">through</span> <span class="n">the</span>
+     <span class="p">*</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelPipeline</span><span class="p">}.</span> <span class="n">Those</span> <span class="n">are</span> <span class="k">then</span> <span class="n">ready</span> <span class="k">to</span> <span class="n">be</span> <span class="n">flushed</span> <span class="k">to</span> <span class="n">the</span> <span class="n">actual</span> <span class="p">{@</span><span class="n">link</span> <span class="n">Channel</span><span class="p">}</span> <span class="n">once</span>
+     <span class="p">*</span> <span class="p">{@</span><span class="n">link</span> <span class="n">Channel</span><span class="p">#</span><span class="n">flush</span><span class="p">()}</span> <span class="n">is</span> <span class="n">called</span>
+     <span class="p">*</span><span class="err">当写操发生时，调用。写操作通过</span><span class="n">Channel</span><span class="err">管道线写消息。当通道调用</span><span class="p">#</span><span class="n">flush</span><span class="err">方法时，消息将会被刷新，发送出去。</span>
+     <span class="p">*</span> <span class="p">@</span><span class="n">param</span> <span class="n">ctx</span>               <span class="n">the</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelHandlerContext</span><span class="p">}</span> <span class="n">for</span> <span class="n">which</span> <span class="n">the</span> <span class="nb">write</span> <span class="n">operation</span> <span class="n">is</span> <span class="n">made</span>
+     <span class="p">*</span> <span class="p">@</span><span class="n">param</span> <span class="n">msg</span>               <span class="n">the</span> <span class="n">message</span> <span class="k">to</span> <span class="nb">write</span> <span class="err">写消息</span>
+     <span class="p">*</span> <span class="p">@</span><span class="n">param</span> <span class="n">promise</span>           <span class="n">the</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelPromise</span><span class="p">}</span> <span class="k">to</span> <span class="n">notify</span> <span class="n">once</span> <span class="n">the</span> <span class="n">operation</span> <span class="n">completes</span>
+     <span class="p">*</span> <span class="p">@</span><span class="n">throws</span> <span class="n">Exception</span>        <span class="n">thrown</span> <span class="k">if</span> <span class="n">an</span> <span class="n">error</span> <span class="n">occurs</span>
+     <span class="p">*/</span>
+    <span class="n">void</span> <span class="nb">write</span><span class="p">(</span><span class="n">ChannelHandlerContext</span> <span class="n">ctx</span><span class="p">,</span> <span class="n">Object</span> <span class="n">msg</span><span class="p">,</span> <span class="n">ChannelPromise</span> <span class="n">promise</span><span class="p">)</span> <span class="n">throws</span> <span class="n">Exception</span><span class="p">;</span>
+
+    <span class="p">/**</span>
+     <span class="p">*</span> <span class="n">Called</span> <span class="n">once</span> <span class="n">a</span> <span class="n">flush</span> <span class="n">operation</span> <span class="n">is</span> <span class="n">made</span><span class="p">.</span> <span class="n">The</span> <span class="n">flush</span> <span class="n">operation</span> <span class="n">will</span> <span class="n">try</span> <span class="k">to</span> <span class="n">flush</span> <span class="n">out</span> <span class="n">all</span> <span class="n">previous</span> <span class="n">written</span> <span class="n">messages</span>
+     <span class="p">*</span> <span class="n">that</span> <span class="n">are</span> <span class="n">pending</span><span class="p">.</span>
+     <span class="p">*</span><span class="err">当一个刷新操作发生，调用。刷新操作将会刷新所有先前已经写，待发送的消息。</span>
+     <span class="p">*</span> <span class="p">@</span><span class="n">param</span> <span class="n">ctx</span>               <span class="n">the</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelHandlerContext</span><span class="p">}</span> <span class="n">for</span> <span class="n">which</span> <span class="n">the</span> <span class="n">flush</span> <span class="n">operation</span> <span class="n">is</span> <span class="n">made</span>
+     <span class="p">*</span> <span class="p">@</span><span class="n">throws</span> <span class="n">Exception</span>        <span class="n">thrown</span> <span class="k">if</span> <span class="n">an</span> <span class="n">error</span> <span class="n">occurs</span>
+     <span class="p">*/</span>
+    <span class="n">void</span> <span class="n">flush</span><span class="p">(</span><span class="n">ChannelHandlerContext</span> <span class="n">ctx</span><span class="p">)</span> <span class="n">throws</span> <span class="n">Exception</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>从上面来看，Outbound通道处理器ChannelOutboundHandler主要处理outbound IO操作。</p>
+
+<p>当绑定操作发生时，调用bind方法；</p>
+
+<p>当连接操作发生时，调用connect方法；</p>
+
+<p>read方法拦截通道处理器上下文读操作；</p>
+
+<p>当写操发生时，调用write方法，写操作通过Channel管道线写消息，</p>
+
+<p>当通道调用#flush方法时，消息将会被刷新，发送出去；</p>
+
+<p>当一个刷新操作发生时，调用flush方法，刷新操作将会刷新所有先前已经写，待发送的消息。</p>
+
+<p>再来看Outbound通道Handler适配器：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">io</span><span class="p">.</span><span class="n">netty</span><span class="p">.</span><span class="n">channel</span><span class="p">;</span>
+
+<span class="n">import</span> <span class="n">java</span><span class="p">.</span><span class="n">net</span><span class="p">.</span><span class="n">SocketAddress</span><span class="p">;</span>
+<span class="p">/**</span>
+ <span class="p">*</span> <span class="n">Skeleton</span> <span class="n">implementation</span> <span class="k">of</span> <span class="n">a</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelOutboundHandler</span><span class="p">}.</span> <span class="n">This</span> <span class="n">implementation</span> <span class="n">just</span> <span class="n">forwards</span> <span class="n">each</span> <span class="n">method</span> <span class="n">call</span> <span class="n">via</span>
+ <span class="p">*</span> <span class="n">the</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelHandlerContext</span><span class="p">}.</span>
+ <span class="n">ChannelOutboundHandlerAdapter</span><span class="err">为</span><span class="n">Outbound</span><span class="err">通道处理器的基本实现，这个实现仅仅通过通道处理器上下文转发方法的调用</span>
+ <span class="p">*/</span>
+<span class="k">public</span> <span class="n">class</span> <span class="n">ChannelOutboundHandlerAdapter</span> <span class="n">extends</span> <span class="n">ChannelHandlerAdapter</span> <span class="n">implements</span> <span class="n">ChannelOutboundHandler</span> <span class="p">{</span>
+
+    <span class="p">/**</span>
+     <span class="p">*</span> <span class="n">Calls</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelHandlerContext</span><span class="p">#</span><span class="n">bind</span><span class="p">(</span><span class="n">SocketAddress</span><span class="p">,</span> <span class="n">ChannelPromise</span><span class="p">)}</span> <span class="k">to</span> <span class="k">forward</span>
+     <span class="p">*</span> <span class="k">to</span> <span class="n">the</span> <span class="k">next</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelOutboundHandler</span><span class="p">}</span> <span class="k">in</span> <span class="n">the</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelPipeline</span><span class="p">}.</span>
+     <span class="p">*</span><span class="n">bind</span><span class="err">方法仅仅转发操作给</span><span class="n">Channel</span><span class="err">管道线下一个</span><span class="n">Outbound</span><span class="err">处理，子类必须重写此方法。</span>
+     <span class="p">*</span> <span class="n">Sub</span><span class="p">-</span><span class="n">classes</span> <span class="n">may</span> <span class="n">override</span> <span class="n">this</span> <span class="n">method</span> <span class="k">to</span> <span class="n">change</span> <span class="n">behavior</span><span class="p">.</span>
+     <span class="p">*/</span>
+    <span class="p">@</span><span class="n">Override</span>
+    <span class="k">public</span> <span class="n">void</span> <span class="n">bind</span><span class="p">(</span><span class="n">ChannelHandlerContext</span> <span class="n">ctx</span><span class="p">,</span> <span class="n">SocketAddress</span> <span class="n">localAddress</span><span class="p">,</span>
+            <span class="n">ChannelPromise</span> <span class="n">promise</span><span class="p">)</span> <span class="n">throws</span> <span class="n">Exception</span> <span class="p">{</span>
+        <span class="n">ctx</span><span class="p">.</span><span class="n">bind</span><span class="p">(</span><span class="n">localAddress</span><span class="p">,</span> <span class="n">promise</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="p">//</span><span class="err">其他的方法，处理行为与</span><span class="n">Bind</span><span class="err">相同</span>
+    <span class="p">/**</span>
+     <span class="p">*</span> <span class="n">Calls</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelHandlerContext</span><span class="p">#</span><span class="nf">connect</span><span class="p">(</span><span class="n">SocketAddress</span><span class="p">,</span> <span class="n">SocketAddress</span><span class="p">,</span> <span class="n">ChannelPromise</span><span class="p">)}</span> <span class="k">to</span> <span class="k">forward</span>
+     <span class="p">*</span> <span class="k">to</span> <span class="n">the</span> <span class="k">next</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelOutboundHandler</span><span class="p">}</span> <span class="k">in</span> <span class="n">the</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelPipeline</span><span class="p">}.</span>
+     <span class="p">*</span>
+     <span class="p">*</span> <span class="n">Sub</span><span class="p">-</span><span class="n">classes</span> <span class="n">may</span> <span class="n">override</span> <span class="n">this</span> <span class="n">method</span> <span class="k">to</span> <span class="n">change</span> <span class="n">behavior</span><span class="p">.</span>
+     <span class="p">*/</span>
+    <span class="p">@</span><span class="n">Override</span>
+    <span class="k">public</span> <span class="n">void</span> <span class="nf">connect</span><span class="p">(</span><span class="n">ChannelHandlerContext</span> <span class="n">ctx</span><span class="p">,</span> <span class="n">SocketAddress</span> <span class="n">remoteAddress</span><span class="p">,</span>
+            <span class="n">SocketAddress</span> <span class="n">localAddress</span><span class="p">,</span> <span class="n">ChannelPromise</span> <span class="n">promise</span><span class="p">)</span> <span class="n">throws</span> <span class="n">Exception</span> <span class="p">{</span>
+        <span class="n">ctx</span><span class="p">.</span><span class="nf">connect</span><span class="p">(</span><span class="n">remoteAddress</span><span class="p">,</span> <span class="n">localAddress</span><span class="p">,</span> <span class="n">promise</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="p">/**</span>
+     <span class="p">*</span> <span class="n">Calls</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelHandlerContext</span><span class="p">#</span><span class="nf">disconnect</span><span class="p">(</span><span class="n">ChannelPromise</span><span class="p">)}</span> <span class="k">to</span> <span class="k">forward</span>
+     <span class="p">*</span> <span class="k">to</span> <span class="n">the</span> <span class="k">next</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelOutboundHandler</span><span class="p">}</span> <span class="k">in</span> <span class="n">the</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelPipeline</span><span class="p">}.</span>
+     <span class="p">*</span>
+     <span class="p">*</span> <span class="n">Sub</span><span class="p">-</span><span class="n">classes</span> <span class="n">may</span> <span class="n">override</span> <span class="n">this</span> <span class="n">method</span> <span class="k">to</span> <span class="n">change</span> <span class="n">behavior</span><span class="p">.</span>
+     <span class="p">*/</span>
+    <span class="p">@</span><span class="n">Override</span>
+    <span class="k">public</span> <span class="n">void</span> <span class="nf">disconnect</span><span class="p">(</span><span class="n">ChannelHandlerContext</span> <span class="n">ctx</span><span class="p">,</span> <span class="n">ChannelPromise</span> <span class="n">promise</span><span class="p">)</span>
+            <span class="n">throws</span> <span class="n">Exception</span> <span class="p">{</span>
+        <span class="n">ctx</span><span class="p">.</span><span class="nf">disconnect</span><span class="p">(</span><span class="n">promise</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="p">/**</span>
+     <span class="p">*</span> <span class="n">Calls</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelHandlerContext</span><span class="p">#</span><span class="n">close</span><span class="p">(</span><span class="n">ChannelPromise</span><span class="p">)}</span> <span class="k">to</span> <span class="k">forward</span>
+     <span class="p">*</span> <span class="k">to</span> <span class="n">the</span> <span class="k">next</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelOutboundHandler</span><span class="p">}</span> <span class="k">in</span> <span class="n">the</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelPipeline</span><span class="p">}.</span>
+     <span class="p">*</span>
+     <span class="p">*</span> <span class="n">Sub</span><span class="p">-</span><span class="n">classes</span> <span class="n">may</span> <span class="n">override</span> <span class="n">this</span> <span class="n">method</span> <span class="k">to</span> <span class="n">change</span> <span class="n">behavior</span><span class="p">.</span>
+     <span class="p">*/</span>
+    <span class="p">@</span><span class="n">Override</span>
+    <span class="k">public</span> <span class="n">void</span> <span class="n">close</span><span class="p">(</span><span class="n">ChannelHandlerContext</span> <span class="n">ctx</span><span class="p">,</span> <span class="n">ChannelPromise</span> <span class="n">promise</span><span class="p">)</span>
+            <span class="n">throws</span> <span class="n">Exception</span> <span class="p">{</span>
+        <span class="n">ctx</span><span class="p">.</span><span class="n">close</span><span class="p">(</span><span class="n">promise</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="p">/**</span>
+     <span class="p">*</span> <span class="n">Calls</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelHandlerContext</span><span class="p">#</span><span class="n">deregister</span><span class="p">(</span><span class="n">ChannelPromise</span><span class="p">)}</span> <span class="k">to</span> <span class="k">forward</span>
+     <span class="p">*</span> <span class="k">to</span> <span class="n">the</span> <span class="k">next</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelOutboundHandler</span><span class="p">}</span> <span class="k">in</span> <span class="n">the</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelPipeline</span><span class="p">}.</span>
+     <span class="p">*</span>
+     <span class="p">*</span> <span class="n">Sub</span><span class="p">-</span><span class="n">classes</span> <span class="n">may</span> <span class="n">override</span> <span class="n">this</span> <span class="n">method</span> <span class="k">to</span> <span class="n">change</span> <span class="n">behavior</span><span class="p">.</span>
+     <span class="p">*/</span>
+    <span class="p">@</span><span class="n">Override</span>
+    <span class="k">public</span> <span class="n">void</span> <span class="n">deregister</span><span class="p">(</span><span class="n">ChannelHandlerContext</span> <span class="n">ctx</span><span class="p">,</span> <span class="n">ChannelPromise</span> <span class="n">promise</span><span class="p">)</span> <span class="n">throws</span> <span class="n">Exception</span> <span class="p">{</span>
+        <span class="n">ctx</span><span class="p">.</span><span class="n">deregister</span><span class="p">(</span><span class="n">promise</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="p">/**</span>
+     <span class="p">*</span> <span class="n">Calls</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelHandlerContext</span><span class="p">#</span><span class="nb">read</span><span class="p">()}</span> <span class="k">to</span> <span class="k">forward</span>
+     <span class="p">*</span> <span class="k">to</span> <span class="n">the</span> <span class="k">next</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelOutboundHandler</span><span class="p">}</span> <span class="k">in</span> <span class="n">the</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelPipeline</span><span class="p">}.</span>
+     <span class="p">*</span>
+     <span class="p">*</span> <span class="n">Sub</span><span class="p">-</span><span class="n">classes</span> <span class="n">may</span> <span class="n">override</span> <span class="n">this</span> <span class="n">method</span> <span class="k">to</span> <span class="n">change</span> <span class="n">behavior</span><span class="p">.</span>
+     <span class="p">*/</span>
+    <span class="p">@</span><span class="n">Override</span>
+    <span class="k">public</span> <span class="n">void</span> <span class="nb">read</span><span class="p">(</span><span class="n">ChannelHandlerContext</span> <span class="n">ctx</span><span class="p">)</span> <span class="n">throws</span> <span class="n">Exception</span> <span class="p">{</span>
+        <span class="n">ctx</span><span class="p">.</span><span class="nb">read</span><span class="p">();</span>
+    <span class="p">}</span>
+
+    <span class="p">/**</span>
+     <span class="p">*</span> <span class="n">Calls</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelHandlerContext</span><span class="p">#</span><span class="nb">write</span><span class="p">(</span><span class="n">Object</span><span class="p">,</span> <span class="n">ChannelPromise</span><span class="p">)}</span> <span class="k">to</span> <span class="k">forward</span>
+     <span class="p">*</span> <span class="k">to</span> <span class="n">the</span> <span class="k">next</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelOutboundHandler</span><span class="p">}</span> <span class="k">in</span> <span class="n">the</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelPipeline</span><span class="p">}.</span>
+     <span class="p">*</span>
+     <span class="p">*</span> <span class="n">Sub</span><span class="p">-</span><span class="n">classes</span> <span class="n">may</span> <span class="n">override</span> <span class="n">this</span> <span class="n">method</span> <span class="k">to</span> <span class="n">change</span> <span class="n">behavior</span><span class="p">.</span>
+     <span class="p">*/</span>
+    <span class="p">@</span><span class="n">Override</span>
+    <span class="k">public</span> <span class="n">void</span> <span class="nb">write</span><span class="p">(</span><span class="n">ChannelHandlerContext</span> <span class="n">ctx</span><span class="p">,</span> <span class="n">Object</span> <span class="n">msg</span><span class="p">,</span> <span class="n">ChannelPromise</span> <span class="n">promise</span><span class="p">)</span> <span class="n">throws</span> <span class="n">Exception</span> <span class="p">{</span>
+        <span class="n">ctx</span><span class="p">.</span><span class="nb">write</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">promise</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="p">/**</span>
+     <span class="p">*</span> <span class="n">Calls</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelHandlerContext</span><span class="p">#</span><span class="n">flush</span><span class="p">()}</span> <span class="k">to</span> <span class="k">forward</span>
+     <span class="p">*</span> <span class="k">to</span> <span class="n">the</span> <span class="k">next</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelOutboundHandler</span><span class="p">}</span> <span class="k">in</span> <span class="n">the</span> <span class="p">{@</span><span class="n">link</span> <span class="n">ChannelPipeline</span><span class="p">}.</span>
+     <span class="p">*</span>
+     <span class="p">*</span> <span class="n">Sub</span><span class="p">-</span><span class="n">classes</span> <span class="n">may</span> <span class="n">override</span> <span class="n">this</span> <span class="n">method</span> <span class="k">to</span> <span class="n">change</span> <span class="n">behavior</span><span class="p">.</span>
+     <span class="p">*/</span>
+    <span class="p">@</span><span class="n">Override</span>
+    <span class="k">public</span> <span class="n">void</span> <span class="n">flush</span><span class="p">(</span><span class="n">ChannelHandlerContext</span> <span class="n">ctx</span><span class="p">)</span> <span class="n">throws</span> <span class="n">Exception</span> <span class="p">{</span>
+        <span class="n">ctx</span><span class="p">.</span><span class="n">flush</span><span class="p">();</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Outbound通道Handler适配器ChannelOutboundHandlerAdapter为Outbound通道处理器的基本实现，这个实现仅仅通过通道处理器上下文转发方法的调用。</p>
+
+<p>子类必须重写Outbound通道Handler适配器的相关方法。</p>
+
+<p>**
+总结：**
+通道Inbound处理器，主要是处理从peer发送过来的字节流；通道处理器上下文关联的通道注册到事件循环EventLoop时，触发channelRegistered方法；通道处理器上下文关联的通道激活时，触发channelActive方法；通道从peer读取消息时，触发channelRead方法；当上一消息通过#channelRead方法，并被当先读操作消费时，触发channelReadComplete方法，如果通道配置项 
+#AUTO_READ为关闭状态，没有进一步尝试从当前通道读取inbound数据时，直到ChannelHandlerContext#read调用，触发；当用户事件发生时，触发userEventTriggered方法；异常抛出时，触发exceptionCaught方法；当通道可写状态改变时，触发channelWritabilityChanged方法；通道处理器上下文关联的通道注册到事件循环EventLoop，但处于非激活状态，达到生命周期的末端时，触发channelInactive方法；通道处理器上下文关联的通道从事件循环EventLoop移除时，触发channelUnregistered方法。 
+Inbound通道handler适配器ChannelInboundHandlerAdapter，提供的Inbound通道处理器的所有方法的实现，但实现仅仅是，转发操作给Channel管道线的下一个通道处理器，子类必须重写方法。需要注意的是，在#channelRead方法自动返回后，消息并没有释放。如果你寻找ChannelInboundHandler的实现，可以自动释放接受的到消息可以使用SimpleChannelInboundHandler。 
+Outbound通道处理器ChannelOutboundHandler主要处理outbound IO操作。当绑定操作发生时，调用bind方法；当连接操作发生时，调用connect方法；read方法拦截通道处理器上下文读操作；当写操发生时，调用write方法，写操作通过Channel管道线写消息，当通道调用#flush方法时，消息将会被刷新，发送出去；当一个刷新操作发生时，调用flush方法，刷新操作将会刷新所有先前已经写，待发送的消息。 
+Outbound通道Handler适配器ChannelOutboundHandlerAdapter为Outbound通道处理器的基本实现，这个实现仅仅通过通道处理器上下文转发方法的调用。 
+子类必须重写Outbound通道Handler适配器的相关方法。 
+在Mina中，通道读写全部在一个通道Handler，Mina提供的通道Handler适配器，我们在使用通道处理器时继承它，实现我们需要关注的读写事件。而Netty使用InBound和OutBound将通道的读写分离，同时提供了InBound和OutBound通道Handler的适配器。</p>
+
+<p>附：</p>
+
+<p>我们这里简单看一ChannelPromise继承树，有机会我们在后面在详讲</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/**
+ * Special {@link ChannelFuture} which is writable.
+ */
+public interface ChannelPromise extends ChannelFuture, Promise&lt;Void&gt; {
+
+public interface ChannelFuture extends Future&lt;Void&gt; {
+
+/**
+ * Special {@link Future} which is writable.
+ */
+public interface Promise&lt;V&gt; extends Future&lt;V&gt; {
+</code></pre></div></div>
+
+<p>事件循环组EventExecutorGroup：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/**
+ * Special {@link EventExecutorGroup} which allows registering {@link Channel}s that get
+ * processed for later selection during the event loop.
+ EventExecutorGroup允许注册通道到EventLoop，以便在事件循环选择过程中处理通道事件
+ *
+ */
+public interface EventLoopGroup extends EventExecutorGroup {
+
+/**
+ * The {@link EventExecutorGroup} is responsible for providing the {@link EventExecutor}'s to use
+ * via its {@link #next()} method. Besides this, it is also responsible for handling their
+ * life-cycle and allows shutting them down in a global fashion.
+ EventExecutorGroup负责事件的执行
+ *
+ */
+public interface EventExecutorGroup extends ScheduledExecutorService, Iterable&lt;EventExecutor&gt; {
+</code></pre></div></div>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/nettyinboundoutbound%E4%BF%A1%E9%81%93%E5%A4%84%E7%90%86%E5%99%A8%E5%AE%9A%E4%B9%89.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/springdata%E5%A2%9E%E5%88%A0%E6%94%B9%E6%9F%A5%E4%BA%8B%E5%8A%A1%E7%9A%84%E4%BD%BF%E7%94%A8%E4%B8%83.html">&laquo; Spring Data 增删改查事务的使用（七）</a>
+  
+  
+  <a class="next" href="/2017/java%E4%BD%A0%E5%BA%94%E8%AF%A5%E6%87%82%E7%82%B9%E5%A4%9A%E7%BA%BF%E7%A8%8B1streamexecutorcompletablefuture.html">Java你应该懂点多线程1-Stream、Executor、CompletableFuture &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

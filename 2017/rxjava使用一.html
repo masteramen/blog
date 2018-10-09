@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>RxJava使用(一) | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="RxJava使用(一)" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="RxJava刚出来的时候练习过一些，只是没有用到项目中，如今RxJava 2.x都已经出来很久了，这么好的一个框架不能了解它实在是不能安抚我这颗躁动的心。" />
+<meta property="og:description" content="RxJava刚出来的时候练习过一些，只是没有用到项目中，如今RxJava 2.x都已经出来很久了，这么好的一个框架不能了解它实在是不能安抚我这颗躁动的心。" />
+<link rel="canonical" href="http://www.jfox.info/2017/rxjava%E4%BD%BF%E7%94%A8%E4%B8%80.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/rxjava%E4%BD%BF%E7%94%A8%E4%B8%80.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:56:30+00:00" />
+<script type="application/ld+json">
+{"description":"RxJava刚出来的时候练习过一些，只是没有用到项目中，如今RxJava 2.x都已经出来很久了，这么好的一个框架不能了解它实在是不能安抚我这颗躁动的心。","@type":"BlogPosting","url":"http://www.jfox.info/2017/rxjava%E4%BD%BF%E7%94%A8%E4%B8%80.html","headline":"RxJava使用(一)","dateModified":"2017-01-01T15:56:30+00:00","datePublished":"2017-01-01T15:56:30+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/rxjava%E4%BD%BF%E7%94%A8%E4%B8%80.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">RxJava使用(一)</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:56:30+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>RxJava刚出来的时候练习过一些，只是没有用到项目中，如今RxJava 2.x都已经出来很久了，这么好的一个框架不能了解它实在是不能安抚我这颗躁动的心。</p>
+
+<p>Ok 下面先看一下基本用法：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>//创建被观察者
+                Observable&lt;String&gt; observable = Observable.create(new ObservableOnSubscribe&lt;String&gt;() {
+                    @Override
+                    public void subscribe(ObservableEmitter&lt;String&gt; e) throws Exception {
+                        e.onNext("hello");
+                        e.onNext("Lily");
+                        e.onComplete();
+                    }
+                });
+                //创建观察者
+                Observer&lt;String&gt; observer = new Observer&lt;String&gt;() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+                    @Override
+                    public void onNext(String value) {
+                        Log.i(TAG,value);
+                    }
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+                    @Override
+                    public void onComplete() {
+                        Log.i(TAG,"onComplete");
+                    }
+                };
+                //创建联系
+                observable.subscribe(observer);
+</code></pre></div></div>
+
+<p>输出结果：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>07-11 13:39:59.370 8816-8816/com.chs.myrxjavaandretrofit I/com.chs.myrxjavaandretrofit: hello
+07-11 13:39:59.370 8816-8816/com.chs.myrxjavaandretrofit I/com.chs.myrxjavaandretrofit: Lily
+07-11 13:39:59.370 8816-8816/com.chs.myrxjavaandretrofit I/com.chs.myrxjavaandretrofit: onComplete
+</code></pre></div></div>
+
+<p>很简单三步曲 创建被观察者、创建观察者、创建联系（让观察者观察被观察者）</p>
+
+<p>举个小例子：</p>
+
+<p>一句话：甲往传送带上放东西，乙观察着传送带。 其中传送带为被观察者（Observable），乙为观察者（Observer），乙去观察这个动作为创建联系（observable.subscribe(observer)）。</p>
+
+<p>上面的例子中乙（观察者）可以观察传送带（被观察者）上的东西。那甲是干什么的呢？</p>
+
+<p>（1）传送带作为被观察者在创建的时候其内部有一个ObservableEmitter，这个可以翻译成发射器，负责发送事件，所以我们可以把他当成甲，因为传送带上的东西都是甲放入进去的。甲有几个方法：《1》放东西 void onNext(T value); 《2》放错了东西 void onError(Throwable error); 《3》告诉乙放完东西了 void onComplete(); 这个时候乙就不看了，甲在放东西跟乙也没关系了。</p>
+
+<p>（2）乙作为观察者其内部有一个Disposable ，这个可以翻译成可任意处理的，它有个方法dispose()，当调用了之后乙就相当于不观察传送带了，这个时候甲在往传送带上放东西跟乙就没关系了，因为乙现在去干别的事情了不看着传送带了。</p>
+
+<p>onComplete() 和 dispose() 之后乙都不会再收到东西。第一个是甲告诉乙我放完了不放了所以乙不收了，第二个是乙自己不愿意收了。</p>
+
+<p>上面的例子中observer 创建的时候带了好几个方法，onSubscribe，onNext，onError，onComplete好多啊，其实很多时候我们只需要onNext就可以啦 所以有简单点的只监听onNext。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Observable&lt;String&gt; observable1 = Observable.just("哈哈我真简单");
+                Consumer&lt;String&gt; consumer = new Consumer&lt;String&gt;() {
+                    @Override
+                    public void accept(String s) throws Exception {
+                        Log.i(TAG,s);
+                    }
+                };
+                observable1.subscribe(consumer);
+</code></pre></div></div>
+
+<p>输出结果：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>07-11 14:43:07.191 23107-23107/com.chs.myrxjavaandretrofit I/com.chs.myrxjavaandretrofit: 哈哈我真简单
+</code></pre></div></div>
+
+<ul>
+  <li>传送带可以对甲放入的东西进行处理操作，这时候就可以用到RxJava提供的操作符了。</li>
+</ul>
+
+<p>&lt;1&gt;map操作符。可以定义一个方法来改变传送带上的数据，比如下面的方法，在每个String后面加一个”—me”</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Observable.create(new ObservableOnSubscribe&lt;String&gt;() {
+                    @Override
+                    public void subscribe(ObservableEmitter&lt;String&gt; e) throws Exception {
+                        e.onNext("hello");
+                        e.onNext("LiLy");
+                    }
+                }).map(new Function&lt;String, String&gt;() {
+                    @Override
+                    public String apply(String s) throws Exception {
+                        return s+"---me";
+                    }
+                }).subscribe(new Consumer&lt;String&gt;() {
+                    @Override
+                    public void accept(String s) throws Exception {
+                        Log.i(TAG,s);
+                    }
+                });
+</code></pre></div></div>
+
+<p>输出结果：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>07-11 15:13:54.804 18955-18955/com.chs.myrxjavaandretrofit I/com.chs.myrxjavaandretrofit: hello---me
+07-11 15:13:54.804 18955-18955/com.chs.myrxjavaandretrofit I/com.chs.myrxjavaandretrofit: LiLy---me
+</code></pre></div></div>
+
+<h4 id="比喻甲将一个苹果放到传送带上--传送带将苹果削皮乙得到了削皮后的苹果">比喻：甲将一个苹果放到传送带上 ， 传送带将苹果削皮，乙得到了削皮后的苹果。</h4>
+
+<p>&lt;2&gt;FlatMap 网上的解释是 把一个发射器Observable 通过某种方法转换为多个Observables，然后再把这些分散的Observables装进一个单一的发射器Observable。很难懂！</p>
+
+<p>我的理解是：对一个事件进行不同的加工之后在发出来。map只能进行一种加工 这个可以进行多种加工。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Observable.create(new ObservableOnSubscribe&lt;String&gt;() {
+                    @Override
+                    public void subscribe(ObservableEmitter&lt;String&gt; e) throws Exception {
+                        e.onNext("hello");
+                        e.onNext("LiLy");
+                    }
+                }).flatMap(new Function&lt;String, ObservableSource&lt;String&gt;&gt;() {
+                    @Override
+                    public ObservableSource&lt;String&gt; apply(String s) throws Exception {
+                       List&lt;String&gt; list = new ArrayList&lt;String&gt;();
+                        list.add(s+"----1");
+                        list.add(s+"----2");
+                       return Observable.fromIterable(list).delay(10, TimeUnit.MILLISECONDS);
+                    }
+                }).subscribe(new Consumer&lt;String&gt;() {
+                    @Override
+                    public void accept(String s) throws Exception {
+                        Log.i(TAG,s);
+                    }
+                });
+</code></pre></div></div>
+
+<p>输出结果：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>07-11 16:27:05.536 22804-22965/com.chs.myrxjavaandretrofit I/com.chs.myrxjavaandretrofit: hello----1
+07-11 16:27:05.537 22804-22965/com.chs.myrxjavaandretrofit I/com.chs.myrxjavaandretrofit: hello----2
+07-11 16:27:05.538 22804-22965/com.chs.myrxjavaandretrofit I/com.chs.myrxjavaandretrofit: LiLy----1
+07-11 16:27:05.538 22804-22965/com.chs.myrxjavaandretrofit I/com.chs.myrxjavaandretrofit: LiLy----2
+</code></pre></div></div>
+
+<p>这里flatMap并不保证事件的顺序, ，如果需要保证，需要用到ConcatMap。</p>
+
+<p>比喻：甲将一个苹果放在了传送带上，传送带把苹果切成了两份，一份雕刻成一个小人，一份直接弄成了苹果酱。乙得到了一个苹果小人和一份苹果酱。</p>
+
+<p>&lt;3&gt;concatMap 跟FlatMap 的用法是一样的</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Observable.create(new ObservableOnSubscribe&lt;String&gt;() {
+                    @Override
+                    public void subscribe(ObservableEmitter&lt;String&gt; e) throws Exception {
+                        e.onNext("hello");
+                        e.onNext("LiLy");
+                    }
+                }).concatMap(new Function&lt;String, ObservableSource&lt;String&gt;&gt;() {
+                    @Override
+                    public ObservableSource&lt;String&gt; apply(String s) throws Exception {
+                        List&lt;String&gt; list = new ArrayList&lt;String&gt;();
+                        list.add(s + "----1");
+                        list.add(s + "----2");
+                        list.add(s + "----3");
+                        return Observable.fromIterable(list).delay(10, TimeUnit.MILLISECONDS);
+                    }
+                }).subscribe(new Consumer&lt;String&gt;() {
+                    @Override
+                    public void accept(String s) throws Exception {
+                        Log.i(TAG, s);
+                    }
+                });
+</code></pre></div></div>
+
+<p>输出结果：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>07-11 16:37:18.143 31879-32113/com.chs.myrxjavaandretrofit I/com.chs.myrxjavaandretrofit: hello----1
+07-11 16:37:18.143 31879-32113/com.chs.myrxjavaandretrofit I/com.chs.myrxjavaandretrofit: hello----2
+07-11 16:37:18.143 31879-32113/com.chs.myrxjavaandretrofit I/com.chs.myrxjavaandretrofit: hello----3
+07-11 16:37:18.161 31879-32114/com.chs.myrxjavaandretrofit I/com.chs.myrxjavaandretrofit: LiLy----1
+07-11 16:37:18.162 31879-32114/com.chs.myrxjavaandretrofit I/com.chs.myrxjavaandretrofit: LiLy----2
+07-11 16:37:18.162 31879-32114/com.chs.myrxjavaandretrofit I/com.chs.myrxjavaandretrofit: LiLy----3
+</code></pre></div></div>
+
+<p>&lt;4&gt;Concat 把两个Observable连接成一个Observable</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Observable.concat(Observable.just("hello"), Observable.just("LiLy"))
+                .subscribe(new Consumer&lt;String&gt;() {
+                @Override
+                public void accept(@NonNull String s) throws Exception {
+                    Log.i(TAG, "concat : "+ s );
+                }
+                });
+</code></pre></div></div>
+
+<p>输出结果：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>07-11 16:48:05.404 9721-9721/com.chs.myrxjavaandretrofit E/com.chs.myrxjavaandretrofit: concat : hello
+07-11 16:48:05.404 9721-9721/com.chs.myrxjavaandretrofit E/com.chs.myrxjavaandretrofit: concat : LiLy
+</code></pre></div></div>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/rxjava%E4%BD%BF%E7%94%A8%E4%B8%80.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/javacookie%E5%B7%A5%E5%85%B7%E7%B1%BBjavacookieutils%E5%B7%A5%E5%85%B7%E7%B1%BBjava%E5%A6%82%E4%BD%95%E5%A2%9E%E5%8A%A0cookie.html">&laquo; Java Cookie工具类，Java CookieUtils 工具类，Java如何增加Cookie</a>
+  
+  
+  <a class="next" href="/2017/%E7%94%A8jspservlet%E5%AE%9E%E7%8E%B0bbs%E8%AE%BA%E5%9D%9B.html">用jsp-servlet实现bbs论坛 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

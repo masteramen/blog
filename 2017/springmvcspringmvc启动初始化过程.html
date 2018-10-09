@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>SpringMVC：SpringMVC启动初始化过程 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="SpringMVC：SpringMVC启动初始化过程" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="公司项目使用 struts2 作为控制层框架，为了实现前后端分离，计划将 struts2 切换为 SpringMVC ，因此，这段时间都在学习新的框架，《Spring实战》是一本好书，里面对 Spring 的原理实现以及应用都说得很透彻，强烈推荐，但是如果想深挖 Spring 的实现，还是要从他的源码入手，这次，就先从 SpringMVC 初始化开始。" />
+<meta property="og:description" content="公司项目使用 struts2 作为控制层框架，为了实现前后端分离，计划将 struts2 切换为 SpringMVC ，因此，这段时间都在学习新的框架，《Spring实战》是一本好书，里面对 Spring 的原理实现以及应用都说得很透彻，强烈推荐，但是如果想深挖 Spring 的实现，还是要从他的源码入手，这次，就先从 SpringMVC 初始化开始。" />
+<link rel="canonical" href="http://www.jfox.info/2017/springmvcspringmvc%E5%90%AF%E5%8A%A8%E5%88%9D%E5%A7%8B%E5%8C%96%E8%BF%87%E7%A8%8B.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/springmvcspringmvc%E5%90%AF%E5%8A%A8%E5%88%9D%E5%A7%8B%E5%8C%96%E8%BF%87%E7%A8%8B.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:57:37+00:00" />
+<script type="application/ld+json">
+{"description":"公司项目使用 struts2 作为控制层框架，为了实现前后端分离，计划将 struts2 切换为 SpringMVC ，因此，这段时间都在学习新的框架，《Spring实战》是一本好书，里面对 Spring 的原理实现以及应用都说得很透彻，强烈推荐，但是如果想深挖 Spring 的实现，还是要从他的源码入手，这次，就先从 SpringMVC 初始化开始。","@type":"BlogPosting","url":"http://www.jfox.info/2017/springmvcspringmvc%E5%90%AF%E5%8A%A8%E5%88%9D%E5%A7%8B%E5%8C%96%E8%BF%87%E7%A8%8B.html","headline":"SpringMVC：SpringMVC启动初始化过程","dateModified":"2017-01-01T15:57:37+00:00","datePublished":"2017-01-01T15:57:37+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/springmvcspringmvc%E5%90%AF%E5%8A%A8%E5%88%9D%E5%A7%8B%E5%8C%96%E8%BF%87%E7%A8%8B.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">SpringMVC：SpringMVC启动初始化过程</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:57:37+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>公司项目使用 struts2 作为控制层框架，为了实现前后端分离，计划将 struts2 切换为 SpringMVC ，因此，这段时间都在学习新的框架，《Spring实战》是一本好书，里面对 Spring 的原理实现以及应用都说得很透彻，强烈推荐，但是如果想深挖 Spring 的实现，还是要从他的源码入手，这次，就先从 SpringMVC 初始化开始。</p>
+
+<ul>
+  <li>
+    <p>Web 容器初始化过程</p>
+  </li>
+  <li>
+    <p>SpringMVC的Web.xml配置</p>
+  </li>
+  <li>
+    <p>DispatchServlet初始化</p>
+  </li>
+</ul>
+
+<h3 id="web容器初始化过程">Web容器初始化过程</h3>
+
+<p>web容器初始化的过程，其官方文档给出了这样的描述：</p>
+
+<ol>
+  <li>Instantiate an instance of each event listener identified by a **<listener>** element in the deployment descriptor.</listener></li>
+</ol>
+
+<p>For instantiated listener instances that implement ServletContextListener, call the contextInitialized() method.</p>
+
+<ol>
+  <li>
+    <p>Instantiate an instance of each filter identified by a **<filter>** element in the deployment descriptor and call each filter instance’s init() method.</filter></p>
+  </li>
+  <li>
+    <p>Instantiate an instance of each servlet identified by a **<servlet>** element that includes a <load-on-startup> element in the order defined by the load-on-startup element values, and call each servlet instance’s init() method.</load-on-startup></servlet></p>
+  </li>
+</ol>
+
+<p>其初始化的过程实际如下：</p>
+
+<p><img src="14ce110.png" alt="" /></p>
+
+<h3 id="springmvc-的-webxml配置">SpringMVC 的 web.xml配置</h3>
+
+<p>web.xml 配置代码：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>  
+<span class="nt">&lt;web-app</span> <span class="na">version=</span><span class="s">"2.5"</span> <span class="na">xmlns=</span><span class="s">"http://java.sun.com/xml/ns/javaee"</span>  
+         <span class="na">xmlns:xsi=</span><span class="s">"http://www.w3.org/2001/XMLSchema-instance"</span>  
+         <span class="na">xsi:schemaLocation=</span><span class="s">"http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"</span><span class="nt">&gt;</span>  
+   
+    <span class="nt">&lt;context-param&gt;</span>  
+        <span class="nt">&lt;param-name&gt;</span>contextConfigLocation<span class="nt">&lt;/param-name&gt;</span>  
+        <span class="nt">&lt;param-value&gt;</span>classpath:applicationContext.xml<span class="nt">&lt;/param-value&gt;</span>  
+    <span class="nt">&lt;/context-param&gt;</span>  
+  
+    <span class="nt">&lt;listener&gt;</span>  
+        <span class="nt">&lt;listener-class&gt;</span>org.springframework.web.context.ContextLoaderListener<span class="nt">&lt;/listener-class&gt;</span>  
+    <span class="nt">&lt;/listener&gt;</span>  
+  
+  
+    <span class="nt">&lt;servlet&gt;</span>  
+        <span class="nt">&lt;servlet-name&gt;</span>mvc-dispatcher<span class="nt">&lt;/servlet-name&gt;</span>  
+        <span class="nt">&lt;servlet-class&gt;</span>  
+            org.springframework.web.servlet.DispatcherServlet  
+        <span class="nt">&lt;/servlet-class&gt;</span>  
+        <span class="nt">&lt;load-on-startup&gt;</span>1<span class="nt">&lt;/load-on-startup&gt;</span>  
+    <span class="nt">&lt;/servlet&gt;</span>  
+                                                                                                                                           
+    <span class="nt">&lt;servlet-mapping&gt;</span>  
+        <span class="nt">&lt;servlet-name&gt;</span>mvc-dispatcher<span class="nt">&lt;/servlet-name&gt;</span>  
+        <span class="nt">&lt;url-pattern&gt;</span>/<span class="nt">&lt;/url-pattern&gt;</span>  
+    <span class="nt">&lt;/servlet-mapping&gt;</span>  
+  
+<span class="nt">&lt;/web-app&gt;</span>
+</code></pre></div></div>
+
+<ul>
+  <li>
+    <h4 id="标签中定义了spring容器加载器"><listener>标签中定义了spring容器加载器</listener></h4>
+  </li>
+  <li>
+    <h4 id="标签中定义了spring前端控制器"><servlet>标签中定义了spring前端控制器</servlet></h4>
+  </li>
+</ul>
+
+<p>在 Servlet API中有一个ServletContextListener接口，它能够监听ServletContext对象的生命周期，实际上就是监听Web应用的生命周期。当Servlet容器启动或终止Web应用时，会触发ServletContextEvent事件，该事件由ServletContextListener来处理。在ServletContextListener接口中定义了处理ServletContextEvent 事件的两个方法contextInitialized()和contextDestroyed()。</p>
+
+<p>ContextLoaderListener监听器的作用就是启动Web容器时，自动装配ApplicationContext的配置信息。因为它实现了ServletContextListener这个接口，在web.xml配置了这个监听器，启动容器时，就会默认执行它实现的方法。由于在ContextLoaderListener中关联了ContextLoader这个类，所以整个加载配置过程由ContextLoader来完成。</p>
+
+<h3 id="dispatchservlet初始化">DispatchServlet初始化</h3>
+
+<p>在SpringMVC架构中，DispatchServlet负责请求分发，起到控制器的作用。下面详细来解释说明：</p>
+
+<p><img src="72db696.png" alt="" /></p>
+
+<ul>
+  <li>
+    <p>DispatchServlet名如其义，它的本质上是一个Servlet，子类不断的对HttpServlet父类进行方法扩展</p>
+  </li>
+  <li>
+    <p>HttpServlet有两大核心方法：init()和service()方法。HttpServletBean重写了init()方法，在这部分，我们可以看到其实现思路：公共的部分统一来实现，变化的部分统一来抽象，交给其子类来实现，故用了abstract class来修饰类名。此外，HttpServletBean提供了一个HttpServlet的抽象实现，使的Servlet不再关心init-param部分的赋值，让servlet更关注于自身Bean初始化的实现</p>
+  </li>
+  <li>
+    <p>FrameworkServlet提供了集成web javabean和spring application context的集成方案。在源码中可以看到通过执行initWebApplicationContext()方法和initFrameworkServlet()方法实现</p>
+  </li>
+  <li>
+    <p>DispatchServlet是HTTP请求的中央调度处理器，它将web请求转发给controller层处理，它提供了敏捷的映射和异常处理机制， DispatchServlet转发请求的核心代码在doService()方法中实现</p>
+  </li>
+</ul>
+
+<p>DispatchServlet类和ContextLoaderListener类的关系图：</p>
+
+<p><img src="edc5754.png" alt="" /></p>
+
+<h4 id="用contextloaderlistener初始化上下文接着使用dispatchservlet来初始化webmvc的上下文">用ContextLoaderListener初始化上下文，接着使用DispatchServlet来初始化WebMVC的上下文</h4>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/springmvcspringmvc%E5%90%AF%E5%8A%A8%E5%88%9D%E5%A7%8B%E5%8C%96%E8%BF%87%E7%A8%8B.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/%E5%8D%81%E9%81%97%E8%A1%A5%E7%BC%BAjavaarraylist%E7%9A%84%E4%B8%8D%E5%BD%93%E4%BD%BF%E7%94%A8%E5%AF%BC%E8%87%B4%E7%9A%84concurrentmodificationexception%E9%97%AE%E9%A2%98.html">&laquo; 【十遗补缺】java ArrayList的不当使用导致的ConcurrentModificationException问题</a>
+  
+  
+  <a class="next" href="/2017/testingspringbootwithtestng%E7%B3%BB%E5%88%97%E6%96%87%E7%AB%A0.html">Testing Spring Boot with TestNG系列文章 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

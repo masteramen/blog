@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>利用Listener实现网站累积访问人数、最大同时在线人数、当前登录用户数的记录 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="利用Listener实现网站累积访问人数、最大同时在线人数、当前登录用户数的记录" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="1package com.lt.listener; 2 3import java.util.Date; 4import java.util.HashMap; 5import java.util.Map; 6 7import javax.servlet.http.HttpSession; 8/** 9 * 网站全局变量类 10 * @author LIUTIE 11 * 12/13publicabstractclass ApplicationConstants { 1415/16 * 用户登录session名称 17*/18publicstaticfinal String LOGIN_SESSION_NAME = “userInfo”; 1920/21 * 索引所有的session 22 * 用于单一登录 23/24publicstatic Map&lt;String,HttpSession&gt; SESSION_MAP = new HashMap&lt;&gt;(); 2526/27 * 当前在线用户数 28/29publicstaticint CURRENT_LOGIN_COUNT = 0; 3031/**32 * 历史访客总数 33/34publicstaticint TOTAL_HISTORY_COUNT = 0; 3536/37 * 最高同时在线人数 38/39publicstaticint MAX_ONLINE_COUNT = 0; 4041/42 * 服务器启动时间 43*/44publicstatic Date SERVER_START_DATE = new Date(); 4546/47 * 最高在线人数时间 48/49publicstatic Date MAX_ONLINE_COUNT_DATE = new Date(); 50515253 }" />
+<meta property="og:description" content="1package com.lt.listener; 2 3import java.util.Date; 4import java.util.HashMap; 5import java.util.Map; 6 7import javax.servlet.http.HttpSession; 8/** 9 * 网站全局变量类 10 * @author LIUTIE 11 * 12/13publicabstractclass ApplicationConstants { 1415/16 * 用户登录session名称 17*/18publicstaticfinal String LOGIN_SESSION_NAME = “userInfo”; 1920/21 * 索引所有的session 22 * 用于单一登录 23/24publicstatic Map&lt;String,HttpSession&gt; SESSION_MAP = new HashMap&lt;&gt;(); 2526/27 * 当前在线用户数 28/29publicstaticint CURRENT_LOGIN_COUNT = 0; 3031/**32 * 历史访客总数 33/34publicstaticint TOTAL_HISTORY_COUNT = 0; 3536/37 * 最高同时在线人数 38/39publicstaticint MAX_ONLINE_COUNT = 0; 4041/42 * 服务器启动时间 43*/44publicstatic Date SERVER_START_DATE = new Date(); 4546/47 * 最高在线人数时间 48/49publicstatic Date MAX_ONLINE_COUNT_DATE = new Date(); 50515253 }" />
+<link rel="canonical" href="http://www.jfox.info/2017/%E5%88%A9%E7%94%A8listener%E5%AE%9E%E7%8E%B0%E7%BD%91%E7%AB%99%E7%B4%AF%E7%A7%AF%E8%AE%BF%E9%97%AE%E4%BA%BA%E6%95%B0-%E6%9C%80%E5%A4%A7%E5%90%8C%E6%97%B6%E5%9C%A8%E7%BA%BF%E4%BA%BA%E6%95%B0-%E5%BD%93.html" />
+<meta property="og:url" content="http://www.jfox.info/2017/%E5%88%A9%E7%94%A8listener%E5%AE%9E%E7%8E%B0%E7%BD%91%E7%AB%99%E7%B4%AF%E7%A7%AF%E8%AE%BF%E9%97%AE%E4%BA%BA%E6%95%B0-%E6%9C%80%E5%A4%A7%E5%90%8C%E6%97%B6%E5%9C%A8%E7%BA%BF%E4%BA%BA%E6%95%B0-%E5%BD%93.html" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-01-01T15:50:39+00:00" />
+<script type="application/ld+json">
+{"description":"1package com.lt.listener; 2 3import java.util.Date; 4import java.util.HashMap; 5import java.util.Map; 6 7import javax.servlet.http.HttpSession; 8/** 9 * 网站全局变量类 10 * @author LIUTIE 11 * 12/13publicabstractclass ApplicationConstants { 1415/16 * 用户登录session名称 17*/18publicstaticfinal String LOGIN_SESSION_NAME = “userInfo”; 1920/21 * 索引所有的session 22 * 用于单一登录 23/24publicstatic Map&lt;String,HttpSession&gt; SESSION_MAP = new HashMap&lt;&gt;(); 2526/27 * 当前在线用户数 28/29publicstaticint CURRENT_LOGIN_COUNT = 0; 3031/**32 * 历史访客总数 33/34publicstaticint TOTAL_HISTORY_COUNT = 0; 3536/37 * 最高同时在线人数 38/39publicstaticint MAX_ONLINE_COUNT = 0; 4041/42 * 服务器启动时间 43*/44publicstatic Date SERVER_START_DATE = new Date(); 4546/47 * 最高在线人数时间 48/49publicstatic Date MAX_ONLINE_COUNT_DATE = new Date(); 50515253 }","@type":"BlogPosting","url":"http://www.jfox.info/2017/%E5%88%A9%E7%94%A8listener%E5%AE%9E%E7%8E%B0%E7%BD%91%E7%AB%99%E7%B4%AF%E7%A7%AF%E8%AE%BF%E9%97%AE%E4%BA%BA%E6%95%B0-%E6%9C%80%E5%A4%A7%E5%90%8C%E6%97%B6%E5%9C%A8%E7%BA%BF%E4%BA%BA%E6%95%B0-%E5%BD%93.html","headline":"利用Listener实现网站累积访问人数、最大同时在线人数、当前登录用户数的记录","dateModified":"2017-01-01T15:50:39+00:00","datePublished":"2017-01-01T15:50:39+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/%E5%88%A9%E7%94%A8listener%E5%AE%9E%E7%8E%B0%E7%BD%91%E7%AB%99%E7%B4%AF%E7%A7%AF%E8%AE%BF%E9%97%AE%E4%BA%BA%E6%95%B0-%E6%9C%80%E5%A4%A7%E5%90%8C%E6%97%B6%E5%9C%A8%E7%BA%BF%E4%BA%BA%E6%95%B0-%E5%BD%93.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">利用Listener实现网站累积访问人数、最大同时在线人数、当前登录用户数的记录</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-01-01T15:50:39+00:00" itemprop="datePublished">Jan 1, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>1package com.lt.listener;
+     2 3import java.util.Date;
+     4import java.util.HashMap;
+     5import java.util.Map;
+     6 7import javax.servlet.http.HttpSession;
+     8/** 9 * 网站全局变量类
+    10 * @author LIUTIE
+    11 *
+    12<em>/13publicabstractclass ApplicationConstants {
+    1415/<strong>16     * 用户登录session名称
+    17*/18publicstaticfinal String LOGIN_SESSION_NAME = “userInfo”;
+    1920/</strong>21     * 索引所有的session<br />
+    22     * 用于单一登录
+    23</em>/24publicstatic Map&lt;String,HttpSession&gt; SESSION_MAP = new HashMap&lt;&gt;();
+    2526/<strong>27     * 当前在线用户数
+    28<em>/29publicstaticint CURRENT_LOGIN_COUNT = 0;
+    3031/**32     * 历史访客总数
+    33</em>/34publicstaticint TOTAL_HISTORY_COUNT = 0;
+    3536/</strong>37     * 最高同时在线人数
+    38<em>/39publicstaticint MAX_ONLINE_COUNT = 0;
+    4041/<strong>42     * 服务器启动时间
+    43*/44publicstatic Date SERVER_START_DATE = new Date();
+    4546/</strong>47     * 最高在线人数时间
+    48</em>/49publicstatic Date MAX_ONLINE_COUNT_DATE = new Date();
+    50515253 }</p>
+
+<p>View Code
+2.实现servletContext监听，用于记录服务器信息
+<img src="f52e568.gif" alt="" /><img src="/wp-content/uploads/2017/06/ExpandedBlockStart.gif" alt="" />
+     1package com.lt.listener;
+     2 3import java.util.Date;
+     4 5import javax.servlet.ServletContextEvent;
+     6import javax.servlet.ServletContextListener;
+     7 8/**
+     9 * servletContext监听
+    10 * 记录服务器信息 启动关闭时间等
+    11 * @author LIUTIE
+    12 *
+    13 */
+    14public class MyContextListener implements ServletContextListener {
+    1516    /**
+    17     * 服务器启动时被调用
+    18     */
+    19    @Override
+    20    public void contextDestroyed(ServletContextEvent arg0) {
+    21        //记录启动时间
+    22        ApplicationConstants.SERVER_START_DATE = new Date();
+    23    }
+    2425    /**
+    26     * 服务器关闭时被调用
+    27     */
+    28    @Override
+    29    public void contextInitialized(ServletContextEvent arg0) {
+    30        //保存数据到硬盘
+    31        // TODO Auto-generated method stub
+    32    }
+    3334 }</p>
+
+<p>View Code
+3.实现 HttpSessionListener, HttpSessionAttributeListener监听，用于记录登录信息、访问总人数、在线人数，实现单一登录等
+<img src="f52e568.gif" alt="" /><img src="/wp-content/uploads/2017/06/ExpandedBlockStart.gif" alt="" />
+      1package com.lt.listener;
+      2  3import java.util.Date;
+      4  5import javax.servlet.http.HttpSession;
+      6import javax.servlet.http.HttpSessionAttributeListener;
+      7import javax.servlet.http.HttpSessionBindingEvent;
+      8import javax.servlet.http.HttpSessionEvent;
+      9import javax.servlet.http.HttpSessionListener;
+     10 11/** 12 * session监听
+     13 * 记录登录信息 访问总人数 在线人数等
+     14 * 实现单一登录
+     15 * @author LIUTIE
+     16 *
+     17<em>/ 18publicclass MySessionListener implements HttpSessionListener, HttpSessionAttributeListener {
+     19 20/** 21     * session创建时被调用
+     22</em>/ 23    @Override
+     24publicvoid sessionCreated(HttpSessionEvent sessionEvent) {
+     25// 获取创建的session 26         HttpSession session = sessionEvent.getSession();
+     27// 添加到map 28        ApplicationConstants.SESSION_MAP.put(session.getId(), session);
+     29// 访问总人数++ 30         ApplicationConstants.TOTAL_HISTORY_COUNT++;
+     31// 如果map总数大于最高同时在线人数则更新最高在线人数及时间 32if (ApplicationConstants.MAX_ONLINE_COUNT &lt; ApplicationConstants.SESSION_MAP.size()) {
+     33             ApplicationConstants.MAX_ONLINE_COUNT = ApplicationConstants.SESSION_MAP.size();
+     34             ApplicationConstants.MAX_ONLINE_COUNT_DATE = new Date();
+     35        }
+     36 37    }
+     38 39/** 40     * session销毁时被调用
+     41<em>/ 42    @Override
+     43publicvoid sessionDestroyed(HttpSessionEvent sessionEvent) {
+     44// 获取即将被销毁的session 45         HttpSession session = sessionEvent.getSession();
+     46// 在map中根据key移除 47        ApplicationConstants.SESSION_MAP.remove(session.getId());
+     48    }
+     49 50/** 51     * 添加session属性时被调用
+     52</em>/ 53    @Override
+     54publicvoid attributeAdded(HttpSessionBindingEvent event) {
+     55// 判断是否添加的用户登录信息session 56if (event.getName().equals(ApplicationConstants.LOGIN_SESSION_NAME)) {
+     57// 当前登录用户数++ 58             ApplicationConstants.CURRENT_LOGIN_COUNT++;
+     59// 是否在其他机器登录处理 60            isLoginInOtherPlace(event);
+     61        }
+     62    }
+     63 64/** 65     * 移除session属性时被调用
+     66<em>/ 67    @Override
+     68publicvoid attributeRemoved(HttpSessionBindingEvent event) {
+     69// 判断是否移除的用户登录信息session 70if (event.getName().equals(ApplicationConstants.LOGIN_SESSION_NAME)) {
+     71// 当前登录用户数– 72             ApplicationConstants.CURRENT_LOGIN_COUNT–;
+     73// 是否在其他机器登录处理 74            isLoginInOtherPlace(event);
+     75        }
+     76    }
+     77 78/** 79     * 修改session属性时被调用
+     80</em>/ 81    @Override
+     82publicvoid attributeReplaced(HttpSessionBindingEvent event) {
+     83 84// 判断是否修改的用户登录信息session 85if (event.getName().equals(ApplicationConstants.LOGIN_SESSION_NAME)) {
+     86// 是否在其他机器登录处理 87            isLoginInOtherPlace(event);
+     88        }
+     89    }
+     90 91/** 92     * 是否在其他机器登录处理
+     93     * 
+     94     * @param event
+     95*/ 96privatevoid isLoginInOtherPlace(HttpSessionBindingEvent event) {
+     97// 获取添加的session 98         HttpSession session = event.getSession();
+     99// 遍历查找此用户是否登录100for (HttpSession s : ApplicationConstants.SESSION_MAP.values()) {
+    101// 如果已经在其他机器登录则使其失效102if (event.getValue().equals(s.getAttribute(ApplicationConstants.LOGIN_SESSION_NAME))
+    103                     &amp;&amp; session.getId() != s.getId()) {
+    104// 使session失效105                session.invalidate();
+    106break;
+    107            }
+    108        }
+    109    }
+    110 }</p>
+
+<p>View Code
+4.实现 request监听，用于记录客户信息 ip、url等
+<img src="f52e568.gif" alt="" /><img src="/wp-content/uploads/2017/06/ExpandedBlockStart.gif" alt="" />
+     1package com.lt.listener;
+     2 3import javax.servlet.ServletRequestEvent;
+     4import javax.servlet.ServletRequestListener;
+     5import javax.servlet.http.HttpServletRequest;
+     6 7/** 8 * request监听 用于记录客户信息 ip、url等
+     9 * 
+    10 * @author LIUTIE
+    11 *
+    12<em>/13publicclass MyRequestListener implements ServletRequestListener {
+    1415/<strong>16     * request销毁时调用
+    17*/18    @Override
+    19publicvoid requestDestroyed(ServletRequestEvent event) {
+    20// TODO Auto-generated method stub2122    }
+    2324/</strong>25     * request创建时调用
+    26</em>/27    @Override
+    28publicvoid requestInitialized(ServletRequestEvent event) {
+    29         HttpServletRequest request = (HttpServletRequest) event;
+    30// 客户端ip31         String ip = request.getRemoteAddr();
+    32// 访问的URL地址33         String url = request.getRequestURI();
+    34// 只做简单后台打印35         System.out.println(“The client ip is “ + ip);
+    36         System.out.println(“The address url is “ + url);
+    37    }
+    3839 }</p>
+
+<p>View Code
+5.在web.xml中配置队一行的listener
+<img src="f52e568.gif" alt="" /><img src="/wp-content/uploads/2017/06/ExpandedBlockStart.gif" alt="" />
+    <listener><listener-class>
+                com.lt.listener.MyContextListener
+            </listener-class></listener><listener><listener-class>
+                com.lt.listener.MySessionListener
+            </listener-class></listener><listener><listener-class>
+                com.lt.listener.MyRequestListener
+            </listener-class></listener></p>
+
+<p>View Code
+Listener种类：</p>
+
+<p>　　1.监听对象的创建与销毁的Listener：</p>
+
+<p>　　HttpSessionListener： sessionCreated(HttpSessionEvent sessionEvent)、sessionDestroyed(HttpSessionEvent sessionEvent)</p>
+
+<p>　　ServletRequestListener： requestInitialized(ServletRequestEvent event)、requestDestroyed(ServletRequestEvent event)</p>
+
+<p>　　ServletContextListener： contextInitialized(ServletContextEvent event)、contextDestroyed(ServletContextEvent event)</p>
+
+<p>　　2.监听对象的属性变化的Listener：</p>
+
+<p>　　HttpSessionAttributeListener：(添加、更新、移除session时触发)</p>
+
+<p>　　attributeAdded(HttpSessionBindingEvent event)、attributeReplaced(HttpSessionBindingEvent event)、attributeRemoved(HttpSessionBindingEvent event)</p>
+
+<p>　　ServletContextAttributeListener：(添加、更新、移除context时触发)</p>
+
+<p>　 attributeAdded(ServletContextAttributeEvent event)、attributeReplaced(ServletContextAttributeEvent event)、attributeRemoved(ServletContextAttributeEvent event)</p>
+
+<p>　　ServletRequestAttributeListener：(添加、更新、移除request时触发)</p>
+
+<p>　　attributeAdded(ServletRequestAttributeEvent event)、attributeReplaced(ServletRequestAttributeEvent event)、attributeRemoved(ServletRequestAttributeEvent event)</p>
+
+<p>　　3.监听Session内的对象</p>
+
+<p>　　HttpSessionBindingListener：(对象放入session、对象从session移除时触发)</p>
+
+<p>　　valueBound(HttpSessionBindingEvent event)、valueUnbound(HttpSessionBindingEvent event)</p>
+
+<p>　　HttpSessionActivationListener：(session中的对象被钝化、对象被重新加载时触发ps：将session中的内容保存到硬盘的过程叫做钝化，钝化需实现Serializable序列化接口)</p>
+
+<p>　　sessionWillPassivate(HttpSessionEvent event)、sessionDidActivate(HttpSessionEvent event)</p>
+
+  </div>
+  <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2017/%E5%88%A9%E7%94%A8listener%E5%AE%9E%E7%8E%B0%E7%BD%91%E7%AB%99%E7%B4%AF%E7%A7%AF%E8%AE%BF%E9%97%AE%E4%BA%BA%E6%95%B0-%E6%9C%80%E5%A4%A7%E5%90%8C%E6%97%B6%E5%9C%A8%E7%BA%BF%E4%BA%BA%E6%95%B0-%E5%BD%93.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2017/sonarqube%E6%90%AD%E5%BB%BA.html">&laquo; sonarqube搭建</a>
+  
+  
+  <a class="next" href="/2017/%E6%9C%80%E5%85%A8java%E5%AD%A6%E4%B9%A0%E8%B7%AF%E7%BA%BF%E5%9B%BE-java%E5%AD%A6%E4%B9%A0%E6%8C%87%E5%8D%97.html">最全Java学习路线图——Java学习指南 &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>
