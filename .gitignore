@@ -15,7 +15,7 @@ wp-comments-post.php
 wp-includes
 wp-settings.php
 blog/
-.htaccess
+.htaccess.bak
 MY_USER_CACHE_DIR
 .well-known
 wp-config.php
