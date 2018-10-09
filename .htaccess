@@ -1,0 +1,29 @@
+# BEGIN LSCACHE
+# END LSCACHE
+
+
+# BEGIN WordPress
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteBase /
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^([^/]+)\.htm$ 2017/$1.php [R=301,NC,L]
+</IfModule>
+
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteBase /
+#RewriteRule ^index\.php$ - [L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . /index.php [L]
+</IfModule>
+
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteBase /
+RewriteCond %{http_host} ^jfox.info [NC]
+RewriteRule ^(.*)$ http://www.jfox.info/$1 [L,R=301]
+</IfModule>
+".htaccess" 20L, 413C                                                                                             20,1         全部
