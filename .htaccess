@@ -8,7 +8,7 @@ RewriteEngine On
 RewriteBase /
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^/([^/]+)\.html$ /2017/$1.html [R=301,NC,L]
+RewriteRule ^([^/]+)\.html$ /2017/$1.html [R=301,NC,L]
 </IfModule>
 
 <IfModule mod_rewrite.c>
