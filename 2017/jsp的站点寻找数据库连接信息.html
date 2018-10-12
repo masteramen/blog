@@ -4,18 +4,18 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
 <title>jsp的站点寻找数据库连接信息 | Java面试</title>
-<meta name="generator" content="Jekyll v3.8.3" />
+<meta name="generator" content="Jekyll v3.8.4" />
 <meta property="og:title" content="jsp的站点寻找数据库连接信息" />
 <meta property="og:locale" content="zh_CN" />
-<meta name="description" content="前段时间遇到了，找了好久没找到。简单记录一下，后期在用：" />
-<meta property="og:description" content="前段时间遇到了，找了好久没找到。简单记录一下，后期在用：" />
+<meta name="description" content="前段时间遇到了，找了好久没找到。简单记录一下，后期在用： 数据库连接一般都配置普遍是： C:apache-tomcat-7.0.34webappswordpressWEB-INF下的***.xml 大多数的Spring框架都是配置在applicationContext里面的： Tomcat的数据源（其他的服务器大同小异）： 目录： C:apache-tomcat-7.0.34confcontext.xml 如果用到Hibernate框架那么： WebRootWEB-INFhibernate.cfg.xml Resin数据源： 路径： D:installDevresin-pro-4.0.28confresin.conf 其他的配置方式诸如读取如JEECMS读取的就是.properties配置文件，这种方式非常的常见： 一般情况下Java的数据库配置都在WEBROOT下的WEB-INF目录下的多数情况在**.xml、.properties、.conf 或者直接用命令查找 grep -r -s --include &#39;*.properties&#39; --include &#39;*.xml&#39; --include &#39;*.class&#39; --include &#39;*.jar&#39; --include &#39;*.jsp&#39; --include &#39;*.java&#39; &#39;jdbc:&#39; / 如果上面的没有找到，则换成 grep -r -s &#39;jdbc:&#39; /" />
+<meta property="og:description" content="前段时间遇到了，找了好久没找到。简单记录一下，后期在用： 数据库连接一般都配置普遍是： C:apache-tomcat-7.0.34webappswordpressWEB-INF下的***.xml 大多数的Spring框架都是配置在applicationContext里面的： Tomcat的数据源（其他的服务器大同小异）： 目录： C:apache-tomcat-7.0.34confcontext.xml 如果用到Hibernate框架那么： WebRootWEB-INFhibernate.cfg.xml Resin数据源： 路径： D:installDevresin-pro-4.0.28confresin.conf 其他的配置方式诸如读取如JEECMS读取的就是.properties配置文件，这种方式非常的常见： 一般情况下Java的数据库配置都在WEBROOT下的WEB-INF目录下的多数情况在**.xml、.properties、.conf 或者直接用命令查找 grep -r -s --include &#39;*.properties&#39; --include &#39;*.xml&#39; --include &#39;*.class&#39; --include &#39;*.jar&#39; --include &#39;*.jsp&#39; --include &#39;*.java&#39; &#39;jdbc:&#39; / 如果上面的没有找到，则换成 grep -r -s &#39;jdbc:&#39; /" />
 <link rel="canonical" href="http://www.jfox.info/2017/jsp%E7%9A%84%E7%AB%99%E7%82%B9%E5%AF%BB%E6%89%BE%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9E%E6%8E%A5%E4%BF%A1%E6%81%AF.html" />
 <meta property="og:url" content="http://www.jfox.info/2017/jsp%E7%9A%84%E7%AB%99%E7%82%B9%E5%AF%BB%E6%89%BE%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9E%E6%8E%A5%E4%BF%A1%E6%81%AF.html" />
 <meta property="og:site_name" content="Java面试" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2017-01-01T15:56:45+00:00" />
 <script type="application/ld+json">
-{"description":"前段时间遇到了，找了好久没找到。简单记录一下，后期在用：","@type":"BlogPosting","url":"http://www.jfox.info/2017/jsp%E7%9A%84%E7%AB%99%E7%82%B9%E5%AF%BB%E6%89%BE%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9E%E6%8E%A5%E4%BF%A1%E6%81%AF.html","headline":"jsp的站点寻找数据库连接信息","dateModified":"2017-01-01T15:56:45+00:00","datePublished":"2017-01-01T15:56:45+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/jsp%E7%9A%84%E7%AB%99%E7%82%B9%E5%AF%BB%E6%89%BE%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9E%E6%8E%A5%E4%BF%A1%E6%81%AF.html"},"@context":"http://schema.org"}</script>
+{"description":"前段时间遇到了，找了好久没找到。简单记录一下，后期在用： 数据库连接一般都配置普遍是： C:apache-tomcat-7.0.34webappswordpressWEB-INF下的***.xml 大多数的Spring框架都是配置在applicationContext里面的： Tomcat的数据源（其他的服务器大同小异）： 目录： C:apache-tomcat-7.0.34confcontext.xml 如果用到Hibernate框架那么： WebRootWEB-INFhibernate.cfg.xml Resin数据源： 路径： D:installDevresin-pro-4.0.28confresin.conf 其他的配置方式诸如读取如JEECMS读取的就是.properties配置文件，这种方式非常的常见： 一般情况下Java的数据库配置都在WEBROOT下的WEB-INF目录下的多数情况在**.xml、.properties、.conf 或者直接用命令查找 grep -r -s --include &#39;*.properties&#39; --include &#39;*.xml&#39; --include &#39;*.class&#39; --include &#39;*.jar&#39; --include &#39;*.jsp&#39; --include &#39;*.java&#39; &#39;jdbc:&#39; / 如果上面的没有找到，则换成 grep -r -s &#39;jdbc:&#39; /","@type":"BlogPosting","url":"http://www.jfox.info/2017/jsp%E7%9A%84%E7%AB%99%E7%82%B9%E5%AF%BB%E6%89%BE%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9E%E6%8E%A5%E4%BF%A1%E6%81%AF.html","headline":"jsp的站点寻找数据库连接信息","dateModified":"2017-01-01T15:56:45+00:00","datePublished":"2017-01-01T15:56:45+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/jsp%E7%9A%84%E7%AB%99%E7%82%B9%E5%AF%BB%E6%89%BE%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9E%E6%8E%A5%E4%BF%A1%E6%81%AF.html"},"@context":"http://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
   <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
@@ -84,8 +84,7 @@
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>grep -r -s 'jdbc:' /
 </code></pre></div></div>
 
-  </div>
-  <div style="width:300px;height:250px;float:left;">
+  </div><div style="width:300px;height:250px;float:left;">
     <!-- 300_250_1 -->
     <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
         data-ad-slot="4142158067"></ins>

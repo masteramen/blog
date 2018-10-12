@@ -4,7 +4,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
 <title>java spring 事务面试题 | Java面试</title>
-<meta name="generator" content="Jekyll v3.8.3" />
+<meta name="generator" content="Jekyll v3.8.4" />
 <meta property="og:title" content="java spring 事务面试题" />
 <meta property="og:locale" content="zh_CN" />
 <meta name="description" content="By Lee - Last updated: 星期一, 六月 17, 2013" />
@@ -63,8 +63,7 @@
 如果抛出runtime exception 并在你的业务方法中没有catch到的话，事务会回滚。
 一般不需要在业务方法中catch异常，如果非要catch，在做完你想做的工作后（比如关闭文件等）一定要抛出runtime exception，否则spring会将你的操作commit,这样就会产生脏数据.所以你的catch代码是画蛇添足。</p>
 
-  </div>
-  <div style="width:300px;height:250px;float:left;">
+  </div><div style="width:300px;height:250px;float:left;">
     <!-- 300_250_1 -->
     <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
         data-ad-slot="4142158067"></ins>

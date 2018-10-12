@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="zh_CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>Oracle Audit AUD$ 增长过大异常处理 | Java面试</title>
+<meta name="generator" content="Jekyll v3.8.4" />
+<meta property="og:title" content="Oracle Audit AUD$ 增长过大异常处理" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="某天突然发现一个 Oracle 数据库中 system 表空间大小有点异常，经过统计，原来是启用了 Oracle 的 Audit 功能，并将审计的信息存放在系统表空间。" />
+<meta property="og:description" content="某天突然发现一个 Oracle 数据库中 system 表空间大小有点异常，经过统计，原来是启用了 Oracle 的 Audit 功能，并将审计的信息存放在系统表空间。" />
+<link rel="canonical" href="http://www.jfox.info/2018/8c91b1e/" />
+<meta property="og:url" content="http://www.jfox.info/2018/8c91b1e/" />
+<meta property="og:site_name" content="Java面试" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2018-10-09T19:06:42+00:00" />
+<script type="application/ld+json">
+{"description":"某天突然发现一个 Oracle 数据库中 system 表空间大小有点异常，经过统计，原来是启用了 Oracle 的 Audit 功能，并将审计的信息存放在系统表空间。","@type":"BlogPosting","url":"http://www.jfox.info/2018/8c91b1e/","headline":"Oracle Audit AUD$ 增长过大异常处理","dateModified":"2018-10-09T19:06:42+00:00","datePublished":"2018-10-09T19:06:42+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2018/8c91b1e/"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+    </nav></div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Oracle Audit AUD$ 增长过大异常处理</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2018-10-09T19:06:42+00:00" itemprop="datePublished">Oct 9, 2018
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<p>某天突然发现一个 Oracle 数据库中 system 表空间大小有点异常，经过统计，原来是启用了 Oracle 的 Audit 功能，并将审计的信息存放在系统表空间。</p>
+
+<p>数据文件大小</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[[email protected] DEV]$ ll -h
+total 11G
+-rw-r-----. 1 oracle oinstall  9.8M Mar 28 09:56 control01.ctl
+-rw-r-----. 1 oracle oinstall  101M Mar 28 09:03 example01.dbf
+-rw-r-----. 1 oracle oinstall  2.0G Mar 28 09:56 oa_data01.dbf
+-rw-r-----. 1 oracle oinstall  2.0G Mar 28 09:55 oa_index01.dbf
+-rw-r-----. 1 oracle oinstall  2.0G Mar 28 09:21 oa_temp01.dbf
+-rw-r-----. 1 oracle oinstall   51M Mar 28 08:19 redo01.log
+-rw-r-----. 1 oracle oinstall   51M Mar 28 08:58 redo02.log
+-rw-r-----. 1 oracle oinstall   51M Mar 28 09:56 redo03.log
+-rw-r-----. 1 oracle oinstall   51M Mar 28 08:19 redo11.log
+-rw-r-----. 1 oracle oinstall   51M Mar 28 08:58 redo12.log
+-rw-r-----. 1 oracle oinstall   51M Mar 28 09:56 redo13.log
+-rw-r-----. 1 oracle oinstall 1001M Mar 28 09:55 sysaux01.dbf
+-rw-r-----. 1 oracle oinstall  5.2G Mar 28 09:56 system01.dbf
+-rw-r-----. 1 oracle oinstall   30M Mar 28 05:56 temp01.dbf
+-rw-r-----. 1 oracle oinstall  106M Mar 28 09:55 undotbs01.dbf
+-rw-r-----. 1 oracle oinstall  5.1M Mar 28 09:03 users01.dbf
+</code></pre></div></div>
+
+<p>从以上输出可用看出，system01.dbf 大小为 5.2G，相比其他数据文件，有点不正常。</p>
+
+<p>表空间使用统计</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>SELECT DS.OWNER,
+       DS.SEGMENT_NAME,
+       DS.SEGMENT_TYPE,
+       (SUM(BYTES) / 1024 / 1024) "SEGMENT_SIZE(MB)",
+       MIN(UPPER('&amp;tablespace')) "TABLESPACE"
+  FROM DBA_SEGMENTS DS
+ WHERE DS.TABLESPACE_NAME = UPPER('&amp;tablespace')
+ GROUP BY DS.OWNER, DS.SEGMENT_NAME, DS.SEGMENT_TYPE
+ ORDER BY SUM(BYTES) DESC;
+
+   	OWNER	SEGMENT_NAME	SEGMENT_TYPE	SEGMENT_SIZE(MB) TABLESPACE
+1	SYS		AUD$			TABLE			4549			 SYSTEM
+2	SYS		IDL_UB1$		TABLE			240				 SYSTEM
+3	SYS		SOURCE$			TABLE			64				 SYSTEM
+4	SYS		IDL_UB2$		TABLE			30				 SYSTEM
+5	SYS		C_TOID_VERSION#	CLUSTER			23				 SYSTEM
+6	SYS		C_OBJ#_INTCOL#	CLUSTER			19				 SYSTEM
+7	SYS		C_OBJ#			CLUSTER			12				 SYSTEM
+8	SYS		I_SOURCE1		INDEX			12				 SYSTEM
+9	SYS		ARGUMENT$		TABLE			11				 SYSTEM
+10	SYS		JAVA$MC$		TABLE			11				 SYSTEM
+</code></pre></div></div>
+
+<p>其中 SYS.AUD$表占用 4549MB，大约是整个 SYSTEM 表空间的 90%。AUD$是 Oracle 数据库的审计跟踪表，专门用于存储审计跟踪信息。</p>
+
+<h2 id="异常处理">异常处理</h2>
+
+<p>审计设置</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>SQL&gt; show parameter audit
+
+NAME				    TYPE	   VALUE
+---------------------- ----------- ------------------------------
+audit_file_dest 	   string	   /db/oracle/admin/DEV/adump
+audit_sys_operations   boolean	   FALSE
+audit_syslog_level	   string
+audit_trail			   string	   DB
+</code></pre></div></div>
+
+<p>数据库审计是否启用通过参数<code class="highlighter-rouge">AUDIT_TRAIL</code>来设置，该参数为静态参数，要使更改生效，必须重启数据库。</p>
+
+<p>在本数据库中，启用了审计，且审计的数据存储在 DB，即表<code class="highlighter-rouge">SYS.AUD$</code>中。</p>
+
+<p>清除所有审计数据</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>SQL&gt; conn /as sysdba
+Connected.
+SQL&gt; truncate table aud$;
+
+Table truncated.
+
+SQL&gt; alter table aud$ shrink;
+alter table aud$ shrink
+                      *
+ERROR at line 1:
+ORA-10630: Illegal syntax specified with SHRINK clause
+</code></pre></div></div>
+
+<p>The <code class="highlighter-rouge">SYSTEM</code> tablespace is created with manual segment allocation and as such it is not possible to run the <code class="highlighter-rouge">SHRINK</code> command for the objects that are located within. However, if the <code class="highlighter-rouge">AUD$</code> table is moved to another tablespace (locally managed with automatic segment space management) then it can be shrunk.</p>
+
+<p>It is recommended to use shrink on the <code class="highlighter-rouge">AUD$</code> only during a downtime window, since part of the shrink operation will use incompatible locks.</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>SQL&gt; begin
+  2  dbms_audit_mgmt.set_audit_trail_location(
+  3  audit_trail_type =&gt; dbms_audit_mgmt.audit_trail_db_std,
+  4  audit_trail_location_value =&gt; 'USERS'
+  5  );
+  6  end;
+  7  /
+
+PL/SQL procedure successfully completed.
+
+SQL&gt; alter table aud$ enable row movement;
+
+Table altered.
+
+SQL&gt; alter table sys.aud$ shrink space cascade;
+
+Table altered.
+
+
+SQL&gt; begin
+  2  dbms_audit_mgmt.set_audit_trail_location(
+  3  audit_trail_type =&gt; dbms_audit_mgmt.audit_trail_db_std,
+  4  audit_trail_location_value =&gt; 'SYSTEM'
+  5  );
+  6  end;
+  7  /
+
+PL/SQL procedure successfully completed.
+</code></pre></div></div>
+
+<p>查看<code class="highlighter-rouge">AUD$</code>大小</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> SELECT DS.OWNER,
+        DS.SEGMENT_NAME,
+        DS.SEGMENT_TYPE,
+        (SUM(BYTES) / 1024 / 1024) "SEGMENT_SIZE(MB)"
+   FROM DBA_SEGMENTS DS
+  WHERE DS.SEGMENT_NAME = UPPER('&amp;segment')
+  GROUP BY DS.OWNER, DS.SEGMENT_NAME, DS.SEGMENT_TYPE;
+
+   	OWNER	SEGMENT_NAME	SEGMENT_TYPE	SEGMENT_SIZE(MB)
+1	SYS		AUD$			TABLE					  0.125
+</code></pre></div></div>
+
+<p>除了使用<code class="highlighter-rouge">TRUNCATE</code>，Oracle 也提供了<code class="highlighter-rouge">DBMS_AUDIT_MGMT</code>程序包，可用结合<code class="highlighter-rouge">DBMS_SCHEDULE</code>定期清理过期的审计信息。具体用法参见<a href="http://www.oracle-base.com/articles/11g/auditing-enhancements-11gr2.php">Auditing Enhancements in Oracle Database 11gR2</a>。</p>
+
+<h2 id="关于审计">关于审计</h2>
+
+<h3 id="concepts-and-overview">Concepts and Overview</h3>
+
+<p>Database auditing is the process of recording, monitoring and reporting of the actions performed on a database. It allows the security auditors to observe whether the database users are using the database according to the established policies and that there are no policy violations. Database Auditing facilitates the analysis of the database activity patterns/trends and it can help in the process of gathering the historical data about a particular database user or activity.</p>
+
+<p>One can use standard auditing to audit SQL statements, privileges, schemas, objects, and network and multitier activity. Alternatively, one can use Fine Grained Auditing (available only in Enterprise Edition) to monitor specific database activities based on factors such as actions on a database table or times when those activities occur. FGA is very flexible since the audit_condition can reference a PL/SQL function that will control whether the audit record is produced or not.</p>
+
+<p>Reasons for using auditing include:</p>
+
+<ul>
+  <li>Enabling future accountability for current actions</li>
+  <li>Deterring users (or others, such as intruders) from inappropriate actions based on their accountability</li>
+  <li>Investigating, monitoring, and recording suspicious activity</li>
+  <li>Addressing auditing requirements for compliance</li>
+</ul>
+
+<h3 id="auditing-installation">Auditing Installation</h3>
+
+<p>The database standard auditing is a feature available by default in all the database editions.</p>
+
+<h3 id="configuration-and-administration">Configuration and Administration</h3>
+
+<p>To use auditing one must first enable it and then define exactly what must be audited. The audited actions are recorded either in the SYS.AUD$ table or in operating system files.</p>
+
+<h3 id="enabling-auditing">Enabling Auditing</h3>
+
+<p>The auditing is enabled by setting the <code class="highlighter-rouge">AUDIT_TRAIL</code> parameter to a value different than NONE followed by a restart of the database. The following table presents all the possible legal values for the <code class="highlighter-rouge">AUDIT_TRAIL</code> parameter:</p>
+
+<ul>
+  <li><code class="highlighter-rouge">NONE</code>：Auditing is disabled</li>
+  <li><code class="highlighter-rouge">DB</code>：The auditing is enabled and the audit data is written to the <code class="highlighter-rouge">SYS.AUD$</code> table</li>
+  <li><code class="highlighter-rouge">DB_EXTENDED</code>：Behaves as DB but also populates the <code class="highlighter-rouge">SQL_TEXT</code> and <code class="highlighter-rouge">SQL_BIND</code> columns</li>
+  <li><code class="highlighter-rouge">OS</code>：The auditing is enabled. On Unix the audit data is written to text files which are located in the directory specified via <code class="highlighter-rouge">AUDIT_FILE_DEST</code>. On Windows the audit data will be sent to the Event Viewer.</li>
+  <li><code class="highlighter-rouge">XML</code>：The auditing is enabled and the audit data is written to XML files which are located in the directory/folder specified via <code class="highlighter-rouge">AUDIT_FILE_DEST</code>. This is the case for Windows as well.</li>
+  <li><code class="highlighter-rouge">XML_EXTENDED</code>：Behaves as XML but also populates the <code class="highlighter-rouge">SQL_TEXT</code> and <code class="highlighter-rouge">SQL_BIND</code> tags</li>
+</ul>
+
+<p>As seen in the above table the location where the audit data is sent to is controlled by the <code class="highlighter-rouge">AUDIT_TRAIL</code> parameter. When this parameter is set to <code class="highlighter-rouge">OS</code>, <code class="highlighter-rouge">XML</code> or <code class="highlighter-rouge">XML_EXTENDED</code> the exact location of the audit data is controlled by <code class="highlighter-rouge">AUDIT_FILE_DEST</code> and <code class="highlighter-rouge">AUDIT_SYSLOG_LEVEL</code>. Other factors that influence the exact location for the audit data are :</p>
+
+<ul>
+  <li>the status of the database (started or shutdown)</li>
+  <li>whether the user running the audited event is a privileged user or not</li>
+</ul>
+
+<p>The following table shows what will happen when using different combinations for these parameters/factors:</p>
+
+<p><img src="b5e705a.jpg" alt="auditing_location_corr.jpg" /></p>
+
+
+  </div><div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
+        data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div><a class="u-url" href="/2018/8c91b1e/index.html" hidden></a>
+</article>
+<div class="PageNavigation">
+  
+  <a class="prev" href="/2018/50f3d18/index.html">&laquo; node环境下如何使用jquery？</a>
+  
+  
+  <a class="next" href="/2018/458aead/index.html">如何捕获express框架app.listen的异常？ &raquo;</a>
+  
+</div>
+<div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460"
+        data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script type="text/javascript">
+    function offset(target) {
+        var top = 0,
+            left = 0
+
+        while (target.offsetParent) {
+            top += target.offsetTop
+            left += target.offsetLeft
+            target = target.offsetParent
+        }
+
+        return {
+            top: top,
+            left: left,
+        }
+    }
+    window.onload = function () {
+        var e = document.getElementsByClassName('sfix')[0];
+        e.offset = offset(e);
+
+        window.onscroll = function (event) {
+            var e = document.getElementsByClassName('sfix')[0];
+            if (window.pageYOffset && e.offset && window.pageYOffset > e.offset.top) {
+                e.style.position = 'fixed';
+                e.style.left = e.offset.left + 'px';
+                e.style.right = 'auto';
+
+
+            } else {
+                e.style.position = 'absolute';
+                e.style.left = 'auto';
+                e.style.right = '-240px';
+
+            }
+        }
+    }
+
+</script></div>
+
+<style>
+  .wrapper {
+    position: relative;
+  }
+
+  .sfix {
+    position: absolute;
+    top: 0;
+    right: -240px;
+    width: 240px;
+    height: 600px;
+  }
+
+  .PageNavigation {
+    font-size: 14px;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    clear: both;
+  }
+
+  .PageNavigation a {
+    display: block;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .PageNavigation .next {
+    text-align: right;
+    float: right;
+  }
+</style>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Java面试</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Java面试</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

@@ -4,7 +4,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
 <title>在静态方法上使用同步时会发生什么事? | Java面试</title>
-<meta name="generator" content="Jekyll v3.8.3" />
+<meta name="generator" content="Jekyll v3.8.4" />
 <meta property="og:title" content="在静态方法上使用同步时会发生什么事?" />
 <meta property="og:locale" content="zh_CN" />
 <meta name="description" content="By Lee - Last updated: 星期一, 五月 27, 2013" />
@@ -49,8 +49,7 @@
 
 <p>同步静态方法时会获取该类的“Class”对象，所以当一个线程进入同步的静态方法中时，线程监视器获取类本身的对象锁，其它线程不能进入这个类的任何静态同步方法。它不像实例方法，因为多个线程可以同时访问不同实例同步实例方法。</p>
 
-  </div>
-  <div style="width:300px;height:250px;float:left;">
+  </div><div style="width:300px;height:250px;float:left;">
     <!-- 300_250_1 -->
     <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
         data-ad-slot="4142158067"></ins>

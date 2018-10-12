@@ -4,18 +4,18 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
 <title>想像中理想编程语言的几个特征 | Java面试</title>
-<meta name="generator" content="Jekyll v3.8.3" />
+<meta name="generator" content="Jekyll v3.8.4" />
 <meta property="og:title" content="想像中理想编程语言的几个特征" />
 <meta property="og:locale" content="zh_CN" />
-<meta name="description" content="代码写多了, 总希望能从繁琐的代码中挣脱出来, 编程语言的设计应为快速解决问题为目的. 不断重复的表达式应有相应的语法糖加以简化." />
-<meta property="og:description" content="代码写多了, 总希望能从繁琐的代码中挣脱出来, 编程语言的设计应为快速解决问题为目的. 不断重复的表达式应有相应的语法糖加以简化." />
+<meta name="description" content="代码写多了, 总希望能从繁琐的代码中挣脱出来, 编程语言的设计应为快速解决问题为目的. 不断重复的表达式应有相应的语法糖加以简化. 函数式语言设计之初不被人重视, 进入到多核化之后我也渐渐从面向对象转入到了函数式的阵营. 学习设计模式时 Java Swing 堪称各种模式的典范, 但是设计的后用起来顺手又能如何, 不过 Java Swing 的性能更是硬伤, 所以有了 SWT 那种更接近于本地化的组件库. 编程语言有两种哲学: 条条大路通罗马 与 一条大路罗马. 前者可以让语言更灵活, 但却容易走上一条不归路, 譬如 Scala; 后者让你专注于解决实际的问题, 像 Python 的语法非常简单. 填满了博客中文章概要显示中的内容, 可以说一说我希望中的语言的几个特征, 主要关注语法: 能不写分号就不要分号(JavaScript都得加上分号, 省得 Minify, Uglify 时出错, Scala 就尽量不写分号了) 方法调用式尽量省略括号, 这样可以写出更 DSL 的代码 能进行元编程的语言. 像 Groovy/Ruby 很容易为已有类附加方法, Scala 得依靠隐式转型, JavaScript 就太流氓了 能快速查阅帮助. 如 Scala/Java 要么依赖 IDE 提示或看在线的 Javadoc 或源代码. Python/Clojure 可以用 dir, doc 等命令快速列出帮助, 这和 Linux 的 man 一样, 我喜欢这样的. 用 vim 也要能快乐的编程 Here Document, Java 经历几世终未支持多行字符串的声明，其他语言中基本是家常便饭。曾经绞尽脑汁在 Java 里强塞 Here Doc, 最终放弃，倒不如 Java 中放几个 Groovy 文件轻松" />
+<meta property="og:description" content="代码写多了, 总希望能从繁琐的代码中挣脱出来, 编程语言的设计应为快速解决问题为目的. 不断重复的表达式应有相应的语法糖加以简化. 函数式语言设计之初不被人重视, 进入到多核化之后我也渐渐从面向对象转入到了函数式的阵营. 学习设计模式时 Java Swing 堪称各种模式的典范, 但是设计的后用起来顺手又能如何, 不过 Java Swing 的性能更是硬伤, 所以有了 SWT 那种更接近于本地化的组件库. 编程语言有两种哲学: 条条大路通罗马 与 一条大路罗马. 前者可以让语言更灵活, 但却容易走上一条不归路, 譬如 Scala; 后者让你专注于解决实际的问题, 像 Python 的语法非常简单. 填满了博客中文章概要显示中的内容, 可以说一说我希望中的语言的几个特征, 主要关注语法: 能不写分号就不要分号(JavaScript都得加上分号, 省得 Minify, Uglify 时出错, Scala 就尽量不写分号了) 方法调用式尽量省略括号, 这样可以写出更 DSL 的代码 能进行元编程的语言. 像 Groovy/Ruby 很容易为已有类附加方法, Scala 得依靠隐式转型, JavaScript 就太流氓了 能快速查阅帮助. 如 Scala/Java 要么依赖 IDE 提示或看在线的 Javadoc 或源代码. Python/Clojure 可以用 dir, doc 等命令快速列出帮助, 这和 Linux 的 man 一样, 我喜欢这样的. 用 vim 也要能快乐的编程 Here Document, Java 经历几世终未支持多行字符串的声明，其他语言中基本是家常便饭。曾经绞尽脑汁在 Java 里强塞 Here Doc, 最终放弃，倒不如 Java 中放几个 Groovy 文件轻松" />
 <link rel="canonical" href="http://www.jfox.info/2017/xiang-xiang-zhong-li-xiang-bian-cheng-yu-yan-de-ji-ge-te-zheng.html" />
 <meta property="og:url" content="http://www.jfox.info/2017/xiang-xiang-zhong-li-xiang-bian-cheng-yu-yan-de-ji-ge-te-zheng.html" />
 <meta property="og:site_name" content="Java面试" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2017-01-01T15:49:03+00:00" />
 <script type="application/ld+json">
-{"description":"代码写多了, 总希望能从繁琐的代码中挣脱出来, 编程语言的设计应为快速解决问题为目的. 不断重复的表达式应有相应的语法糖加以简化.","@type":"BlogPosting","url":"http://www.jfox.info/2017/xiang-xiang-zhong-li-xiang-bian-cheng-yu-yan-de-ji-ge-te-zheng.html","headline":"想像中理想编程语言的几个特征","dateModified":"2017-01-01T15:49:03+00:00","datePublished":"2017-01-01T15:49:03+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/xiang-xiang-zhong-li-xiang-bian-cheng-yu-yan-de-ji-ge-te-zheng.html"},"@context":"http://schema.org"}</script>
+{"description":"代码写多了, 总希望能从繁琐的代码中挣脱出来, 编程语言的设计应为快速解决问题为目的. 不断重复的表达式应有相应的语法糖加以简化. 函数式语言设计之初不被人重视, 进入到多核化之后我也渐渐从面向对象转入到了函数式的阵营. 学习设计模式时 Java Swing 堪称各种模式的典范, 但是设计的后用起来顺手又能如何, 不过 Java Swing 的性能更是硬伤, 所以有了 SWT 那种更接近于本地化的组件库. 编程语言有两种哲学: 条条大路通罗马 与 一条大路罗马. 前者可以让语言更灵活, 但却容易走上一条不归路, 譬如 Scala; 后者让你专注于解决实际的问题, 像 Python 的语法非常简单. 填满了博客中文章概要显示中的内容, 可以说一说我希望中的语言的几个特征, 主要关注语法: 能不写分号就不要分号(JavaScript都得加上分号, 省得 Minify, Uglify 时出错, Scala 就尽量不写分号了) 方法调用式尽量省略括号, 这样可以写出更 DSL 的代码 能进行元编程的语言. 像 Groovy/Ruby 很容易为已有类附加方法, Scala 得依靠隐式转型, JavaScript 就太流氓了 能快速查阅帮助. 如 Scala/Java 要么依赖 IDE 提示或看在线的 Javadoc 或源代码. Python/Clojure 可以用 dir, doc 等命令快速列出帮助, 这和 Linux 的 man 一样, 我喜欢这样的. 用 vim 也要能快乐的编程 Here Document, Java 经历几世终未支持多行字符串的声明，其他语言中基本是家常便饭。曾经绞尽脑汁在 Java 里强塞 Here Doc, 最终放弃，倒不如 Java 中放几个 Groovy 文件轻松","@type":"BlogPosting","url":"http://www.jfox.info/2017/xiang-xiang-zhong-li-xiang-bian-cheng-yu-yan-de-ji-ge-te-zheng.html","headline":"想像中理想编程语言的几个特征","dateModified":"2017-01-01T15:49:03+00:00","datePublished":"2017-01-01T15:49:03+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/xiang-xiang-zhong-li-xiang-bian-cheng-yu-yan-de-ji-ge-te-zheng.html"},"@context":"http://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
   <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
@@ -61,8 +61,7 @@
   <li>Here Document, Java 经历几世终未支持多行字符串的声明，其他语言中基本是家常便饭。曾经绞尽脑汁在 Java 里强塞 Here Doc, 最终放弃，倒不如 Java 中放几个 Groovy 文件轻松</li>
 </ol>
 
-  </div>
-  <div style="width:300px;height:250px;float:left;">
+  </div><div style="width:300px;height:250px;float:left;">
     <!-- 300_250_1 -->
     <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
         data-ad-slot="4142158067"></ins>

@@ -4,18 +4,18 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
 <title>漏洞预警 斗象科技发现高危Struts2 showcase远程代码执行漏洞（S） » java面试题 | Java面试</title>
-<meta name="generator" content="Jekyll v3.8.3" />
+<meta name="generator" content="Jekyll v3.8.4" />
 <meta property="og:title" content="漏洞预警 斗象科技发现高危Struts2 showcase远程代码执行漏洞（S） » java面试题" />
 <meta property="og:locale" content="zh_CN" />
-<meta name="description" content="近期，来自斗象科技（Tophant）的安全研究员icez发现Struts2 showcase应用中存在远程代码执行高危漏洞。Struts2官方已经确认该漏洞（漏洞编号S2-048，CVE编号：CVE-2017-9791），漏洞危害程度为高危(High)。" />
-<meta property="og:description" content="近期，来自斗象科技（Tophant）的安全研究员icez发现Struts2 showcase应用中存在远程代码执行高危漏洞。Struts2官方已经确认该漏洞（漏洞编号S2-048，CVE编号：CVE-2017-9791），漏洞危害程度为高危(High)。" />
+<meta name="description" content="近期，来自斗象科技（Tophant）的安全研究员icez发现Struts2 showcase应用中存在远程代码执行高危漏洞。Struts2官方已经确认该漏洞（漏洞编号S2-048，CVE编号：CVE-2017-9791），漏洞危害程度为高危(High)。 在线检测 斗象科技旗下产品网藤风险感知（www.riskivy.com）已率先支持该漏洞检测，您可以立即点击试用 漏洞编号 CVE-2017-9791 S2-048 漏洞影响 Struts 2.3.x系列中的Showcase应用 值得一提的是，showcase指的是一个应用，通常在路径 struts-2.3.xappsstruts2-showcase.war 中存在，如果服务器上并未安装该应用则不受到漏洞影响。 漏洞概述 Apache Struts是美国阿帕奇（Apache）软件基金会负责维护的一个开源项目，是一套用于创建企业级Java Web应用的开源MVC框架。在Struts 2.3.x 系列的 Showcase 应用中演示Struts2集成Struts 1 的插件中存在一处任意代码执行漏洞。当你的应用使用了Struts2 Struts1的插件时，可能导致不受信任的输入传入到ActionMessage类中导致命令执行。 解决方案 向ActionMessage传递原始消息时使用类似下面的资源键值，不要直接传递原始数值 messages.add(&quot;msg&quot;, new ActionMessage(&quot;struts1.gangsterAdded&quot;, gform.getName())); 值不应如此： messages.add(&quot;msg&quot;, new ActionMessage(&quot;Gangster &quot; + gform.getName() + &quot; was added&quot;));" />
+<meta property="og:description" content="近期，来自斗象科技（Tophant）的安全研究员icez发现Struts2 showcase应用中存在远程代码执行高危漏洞。Struts2官方已经确认该漏洞（漏洞编号S2-048，CVE编号：CVE-2017-9791），漏洞危害程度为高危(High)。 在线检测 斗象科技旗下产品网藤风险感知（www.riskivy.com）已率先支持该漏洞检测，您可以立即点击试用 漏洞编号 CVE-2017-9791 S2-048 漏洞影响 Struts 2.3.x系列中的Showcase应用 值得一提的是，showcase指的是一个应用，通常在路径 struts-2.3.xappsstruts2-showcase.war 中存在，如果服务器上并未安装该应用则不受到漏洞影响。 漏洞概述 Apache Struts是美国阿帕奇（Apache）软件基金会负责维护的一个开源项目，是一套用于创建企业级Java Web应用的开源MVC框架。在Struts 2.3.x 系列的 Showcase 应用中演示Struts2集成Struts 1 的插件中存在一处任意代码执行漏洞。当你的应用使用了Struts2 Struts1的插件时，可能导致不受信任的输入传入到ActionMessage类中导致命令执行。 解决方案 向ActionMessage传递原始消息时使用类似下面的资源键值，不要直接传递原始数值 messages.add(&quot;msg&quot;, new ActionMessage(&quot;struts1.gangsterAdded&quot;, gform.getName())); 值不应如此： messages.add(&quot;msg&quot;, new ActionMessage(&quot;Gangster &quot; + gform.getName() + &quot; was added&quot;));" />
 <link rel="canonical" href="http://www.jfox.info/2017/%E6%BC%8F%E6%B4%9E%E9%A2%84%E8%AD%A6%E6%96%97%E8%B1%A1%E7%A7%91%E6%8A%80%E5%8F%91%E7%8E%B0%E9%AB%98%E5%8D%B1struts2showcase%E8%BF%9C%E7%A8%8B%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9Es.html" />
 <meta property="og:url" content="http://www.jfox.info/2017/%E6%BC%8F%E6%B4%9E%E9%A2%84%E8%AD%A6%E6%96%97%E8%B1%A1%E7%A7%91%E6%8A%80%E5%8F%91%E7%8E%B0%E9%AB%98%E5%8D%B1struts2showcase%E8%BF%9C%E7%A8%8B%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9Es.html" />
 <meta property="og:site_name" content="Java面试" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2017-01-01T15:53:39+00:00" />
 <script type="application/ld+json">
-{"description":"近期，来自斗象科技（Tophant）的安全研究员icez发现Struts2 showcase应用中存在远程代码执行高危漏洞。Struts2官方已经确认该漏洞（漏洞编号S2-048，CVE编号：CVE-2017-9791），漏洞危害程度为高危(High)。","@type":"BlogPosting","url":"http://www.jfox.info/2017/%E6%BC%8F%E6%B4%9E%E9%A2%84%E8%AD%A6%E6%96%97%E8%B1%A1%E7%A7%91%E6%8A%80%E5%8F%91%E7%8E%B0%E9%AB%98%E5%8D%B1struts2showcase%E8%BF%9C%E7%A8%8B%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9Es.html","headline":"漏洞预警 斗象科技发现高危Struts2 showcase远程代码执行漏洞（S） » java面试题","dateModified":"2017-01-01T15:53:39+00:00","datePublished":"2017-01-01T15:53:39+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/%E6%BC%8F%E6%B4%9E%E9%A2%84%E8%AD%A6%E6%96%97%E8%B1%A1%E7%A7%91%E6%8A%80%E5%8F%91%E7%8E%B0%E9%AB%98%E5%8D%B1struts2showcase%E8%BF%9C%E7%A8%8B%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9Es.html"},"@context":"http://schema.org"}</script>
+{"description":"近期，来自斗象科技（Tophant）的安全研究员icez发现Struts2 showcase应用中存在远程代码执行高危漏洞。Struts2官方已经确认该漏洞（漏洞编号S2-048，CVE编号：CVE-2017-9791），漏洞危害程度为高危(High)。 在线检测 斗象科技旗下产品网藤风险感知（www.riskivy.com）已率先支持该漏洞检测，您可以立即点击试用 漏洞编号 CVE-2017-9791 S2-048 漏洞影响 Struts 2.3.x系列中的Showcase应用 值得一提的是，showcase指的是一个应用，通常在路径 struts-2.3.xappsstruts2-showcase.war 中存在，如果服务器上并未安装该应用则不受到漏洞影响。 漏洞概述 Apache Struts是美国阿帕奇（Apache）软件基金会负责维护的一个开源项目，是一套用于创建企业级Java Web应用的开源MVC框架。在Struts 2.3.x 系列的 Showcase 应用中演示Struts2集成Struts 1 的插件中存在一处任意代码执行漏洞。当你的应用使用了Struts2 Struts1的插件时，可能导致不受信任的输入传入到ActionMessage类中导致命令执行。 解决方案 向ActionMessage传递原始消息时使用类似下面的资源键值，不要直接传递原始数值 messages.add(&quot;msg&quot;, new ActionMessage(&quot;struts1.gangsterAdded&quot;, gform.getName())); 值不应如此： messages.add(&quot;msg&quot;, new ActionMessage(&quot;Gangster &quot; + gform.getName() + &quot; was added&quot;));","@type":"BlogPosting","url":"http://www.jfox.info/2017/%E6%BC%8F%E6%B4%9E%E9%A2%84%E8%AD%A6%E6%96%97%E8%B1%A1%E7%A7%91%E6%8A%80%E5%8F%91%E7%8E%B0%E9%AB%98%E5%8D%B1struts2showcase%E8%BF%9C%E7%A8%8B%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9Es.html","headline":"漏洞预警 斗象科技发现高危Struts2 showcase远程代码执行漏洞（S） » java面试题","dateModified":"2017-01-01T15:53:39+00:00","datePublished":"2017-01-01T15:53:39+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/%E6%BC%8F%E6%B4%9E%E9%A2%84%E8%AD%A6%E6%96%97%E8%B1%A1%E7%A7%91%E6%8A%80%E5%8F%91%E7%8E%B0%E9%AB%98%E5%8D%B1struts2showcase%E8%BF%9C%E7%A8%8B%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9Es.html"},"@context":"http://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
   <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
@@ -81,8 +81,7 @@
 
 <p><img src="bb35d16.gif" alt="" /></p>
 
-  </div>
-  <div style="width:300px;height:250px;float:left;">
+  </div><div style="width:300px;height:250px;float:left;">
     <!-- 300_250_1 -->
     <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
         data-ad-slot="4142158067"></ins>

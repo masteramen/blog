@@ -4,7 +4,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
 <title>Java系统调优:内存管理与垃圾回收 | Java面试</title>
-<meta name="generator" content="Jekyll v3.8.3" />
+<meta name="generator" content="Jekyll v3.8.4" />
 <meta property="og:title" content="Java系统调优:内存管理与垃圾回收" />
 <meta property="og:locale" content="zh_CN" />
 <meta name="description" content="1、Java虚拟机运行时的数据区" />
@@ -321,8 +321,7 @@ TPS(Transaction Per Second)：每秒钟系统能够处理的交易或事务的�
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> 堆内的对象数据是各个线程所共享的，所以当在堆内创建新的对象时，就需要进行锁操作。锁操作是比较耗时，因此JVM为每个线在堆上分配了一块“自留地” ——TLAB(全称是Thread Local Allocation Buffer)，位于堆内存的新生代，也就是Eden区。每个线程在创建新的对象时，会首先尝试在自己的TLAB里进行分配，如果成功就返回，失败了再到 共享的Eden区里去申请空间。在线程自己的TLAB区域创建对象失败一般有两个原因：一是对象太大，二是自己的TLAB区剩余空间不够。通常默认的 TLAB区域大小是Eden区域的1%，当然也可以手工进行调整，对应的JVM参数是-XX:TLABWasteTargetPercent。
 </code></pre></div></div>
 
-  </div>
-  <div style="width:300px;height:250px;float:left;">
+  </div><div style="width:300px;height:250px;float:left;">
     <!-- 300_250_1 -->
     <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
         data-ad-slot="4142158067"></ins>

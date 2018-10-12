@@ -4,7 +4,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
 <title>Sleep ()、suspend ()和 wait ()之间有什么区别 | Java面试</title>
-<meta name="generator" content="Jekyll v3.8.3" />
+<meta name="generator" content="Jekyll v3.8.4" />
 <meta property="og:title" content="Sleep ()、suspend ()和 wait ()之间有什么区别" />
 <meta property="og:locale" content="zh_CN" />
 <meta name="description" content="By Lee - Last updated: 星期一, 五月 27, 2013" />
@@ -54,8 +54,7 @@
 
 <p>wait ()使当前线程出于“不可运行”状态，和 sleep ()不同的是wait 是 object 的方法而不是 thread。调用 object.wait ()时，线程先要获取这个对象的对象锁，当前线程必须在锁对象保持同步，把当前线程添加到等待队列中，随后另一线程可以同步同一个对象锁来调用 object.notify ()，这样将唤醒原来等待中的线程，然后释放该锁。基本上wait ()/notify ()与 sleep ()/interrupt ()类似，只是前者需要获取对象锁。</p>
 
-  </div>
-  <div style="width:300px;height:250px;float:left;">
+  </div><div style="width:300px;height:250px;float:left;">
     <!-- 300_250_1 -->
     <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
         data-ad-slot="4142158067"></ins>

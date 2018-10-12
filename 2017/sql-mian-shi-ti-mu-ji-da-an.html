@@ -4,7 +4,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
 <title>SQL 面试题目及答案 | Java面试</title>
-<meta name="generator" content="Jekyll v3.8.3" />
+<meta name="generator" content="Jekyll v3.8.4" />
 <meta property="og:title" content="SQL 面试题目及答案" />
 <meta property="og:locale" content="zh_CN" />
 <meta name="description" content="学生成绩表(stuscore)： 姓名：name 课程：subject 分数：score 学号：stuid 张三 数学 89 1 张三 语文 80 1 张三 英语 70 1 李四 数学 90 2 李四 语文 70 2 李四 英语 80 2" />
@@ -125,8 +125,7 @@ select (select count(*) from stuscore t1 where subject =\’数学\’ and t1.sc
 <p>答案： select distinct t1.stuid,t2.avgscore  from stuscore t1,(select stuid,avg(score) as avgscore from stuscore   group by stuid  ) t2,(select stuid from stuscore where score&lt;60 group by stuid) t3 where t1.stuid=t2.stuid and t1.stuid!=t3.stuid;
 select  name,avg(score) as avgscore   from stuscore s  where (select sum(case when i.score&gt;=60 then 1 else 0 end) from stuscore i where  i.name= s.name)=3   group by name</p>
 
-  </div>
-  <div style="width:300px;height:250px;float:left;">
+  </div><div style="width:300px;height:250px;float:left;">
     <!-- 300_250_1 -->
     <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
         data-ad-slot="4142158067"></ins>

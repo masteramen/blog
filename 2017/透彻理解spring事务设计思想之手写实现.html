@@ -4,18 +4,18 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
 <title>透彻理解Spring事务设计思想之手写实现 | Java面试</title>
-<meta name="generator" content="Jekyll v3.8.3" />
+<meta name="generator" content="Jekyll v3.8.4" />
 <meta property="og:title" content="透彻理解Spring事务设计思想之手写实现" />
 <meta property="og:locale" content="zh_CN" />
-<meta name="description" content="透彻理解Spring事务设计思想之手写实现" />
-<meta property="og:description" content="透彻理解Spring事务设计思想之手写实现" />
+<meta name="description" content="透彻理解Spring事务设计思想之手写实现 作者张丰哲2017.08.01 22:15字数 765 前言 事务，是描述一组操作的抽象，比如对数据库的一组操作，要么全部成功，要么全部失败。事务具有4个特性：Atomicity（原子性），Consistency（一致性），Isolation（隔离性），Durability（持久性）。在实际开发中，我们对事务应用最多就是在数据库操作这一环，特别是Spring对数据库事务进行了封装管理。Spring对事务的支持，确实很强大，但是从本质上来讲：事务是否生效取决数据库底层是否支持（比如MySQL的MyISAM引擎就不支持事务，Spring能奈何！），同时一个事务的多个操作需要在同一个Connection上。事务也往往是在业务逻辑层来控制。本篇博客将通过手写一个Demo来分析Spring事务底层到底是如何帮助我们轻松完成事务管理的！ 透彻理解Spring事务设计思想之手写实现 先来看一眼工程结构： 工程结构 ConnectionHolder ConnectionHolder 在Spring中，有时候我们是不是要配置多个数据源DataSource？很显然，Spring需要通过DataSource来得到操作数据库的管道Connection，这有点类似于JNDI查找。 这里通过ConnectionHolder类来完成这个过程，需要思考的是在多线程下，这显然是存在问题的。为避免多线程问题，难道我们采用线程安全的Map，比如ConcurrentHashMap，其实我们真正的目的是什么？是保证一个线程下，一个事务的多个操作拿到的是一个Connection，显然使用ConcurrentHashMap根本无法保证！ Spring很聪明，她提供了一种思路，来解决，看下面的代码！ SingleThreadConnectionHolder SingleThreadConnectionHolder 本来线程不安全的，通过ThreadLocal这么封装一下，立刻就变成了线程的局部变量，不仅仅安全了，还保证了一个线程下面的操作拿到的Connection是同一个对象！这种思想，确实非常巧妙，这也是无锁编程思想的一种方式！ TransactionManager TransactionManager TransactionManager，这个我们经常在Spring里面进行配置吧，事务大管家！ UserAccountDao、UserOrderDao" />
+<meta property="og:description" content="透彻理解Spring事务设计思想之手写实现 作者张丰哲2017.08.01 22:15字数 765 前言 事务，是描述一组操作的抽象，比如对数据库的一组操作，要么全部成功，要么全部失败。事务具有4个特性：Atomicity（原子性），Consistency（一致性），Isolation（隔离性），Durability（持久性）。在实际开发中，我们对事务应用最多就是在数据库操作这一环，特别是Spring对数据库事务进行了封装管理。Spring对事务的支持，确实很强大，但是从本质上来讲：事务是否生效取决数据库底层是否支持（比如MySQL的MyISAM引擎就不支持事务，Spring能奈何！），同时一个事务的多个操作需要在同一个Connection上。事务也往往是在业务逻辑层来控制。本篇博客将通过手写一个Demo来分析Spring事务底层到底是如何帮助我们轻松完成事务管理的！ 透彻理解Spring事务设计思想之手写实现 先来看一眼工程结构： 工程结构 ConnectionHolder ConnectionHolder 在Spring中，有时候我们是不是要配置多个数据源DataSource？很显然，Spring需要通过DataSource来得到操作数据库的管道Connection，这有点类似于JNDI查找。 这里通过ConnectionHolder类来完成这个过程，需要思考的是在多线程下，这显然是存在问题的。为避免多线程问题，难道我们采用线程安全的Map，比如ConcurrentHashMap，其实我们真正的目的是什么？是保证一个线程下，一个事务的多个操作拿到的是一个Connection，显然使用ConcurrentHashMap根本无法保证！ Spring很聪明，她提供了一种思路，来解决，看下面的代码！ SingleThreadConnectionHolder SingleThreadConnectionHolder 本来线程不安全的，通过ThreadLocal这么封装一下，立刻就变成了线程的局部变量，不仅仅安全了，还保证了一个线程下面的操作拿到的Connection是同一个对象！这种思想，确实非常巧妙，这也是无锁编程思想的一种方式！ TransactionManager TransactionManager TransactionManager，这个我们经常在Spring里面进行配置吧，事务大管家！ UserAccountDao、UserOrderDao" />
 <link rel="canonical" href="http://www.jfox.info/2017/%E9%80%8F%E5%BD%BB%E7%90%86%E8%A7%A3spring%E4%BA%8B%E5%8A%A1%E8%AE%BE%E8%AE%A1%E6%80%9D%E6%83%B3%E4%B9%8B%E6%89%8B%E5%86%99%E5%AE%9E%E7%8E%B0.html" />
 <meta property="og:url" content="http://www.jfox.info/2017/%E9%80%8F%E5%BD%BB%E7%90%86%E8%A7%A3spring%E4%BA%8B%E5%8A%A1%E8%AE%BE%E8%AE%A1%E6%80%9D%E6%83%B3%E4%B9%8B%E6%89%8B%E5%86%99%E5%AE%9E%E7%8E%B0.html" />
 <meta property="og:site_name" content="Java面试" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2017-01-01T15:59:08+00:00" />
 <script type="application/ld+json">
-{"description":"透彻理解Spring事务设计思想之手写实现","@type":"BlogPosting","url":"http://www.jfox.info/2017/%E9%80%8F%E5%BD%BB%E7%90%86%E8%A7%A3spring%E4%BA%8B%E5%8A%A1%E8%AE%BE%E8%AE%A1%E6%80%9D%E6%83%B3%E4%B9%8B%E6%89%8B%E5%86%99%E5%AE%9E%E7%8E%B0.html","headline":"透彻理解Spring事务设计思想之手写实现","dateModified":"2017-01-01T15:59:08+00:00","datePublished":"2017-01-01T15:59:08+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/%E9%80%8F%E5%BD%BB%E7%90%86%E8%A7%A3spring%E4%BA%8B%E5%8A%A1%E8%AE%BE%E8%AE%A1%E6%80%9D%E6%83%B3%E4%B9%8B%E6%89%8B%E5%86%99%E5%AE%9E%E7%8E%B0.html"},"@context":"http://schema.org"}</script>
+{"description":"透彻理解Spring事务设计思想之手写实现 作者张丰哲2017.08.01 22:15字数 765 前言 事务，是描述一组操作的抽象，比如对数据库的一组操作，要么全部成功，要么全部失败。事务具有4个特性：Atomicity（原子性），Consistency（一致性），Isolation（隔离性），Durability（持久性）。在实际开发中，我们对事务应用最多就是在数据库操作这一环，特别是Spring对数据库事务进行了封装管理。Spring对事务的支持，确实很强大，但是从本质上来讲：事务是否生效取决数据库底层是否支持（比如MySQL的MyISAM引擎就不支持事务，Spring能奈何！），同时一个事务的多个操作需要在同一个Connection上。事务也往往是在业务逻辑层来控制。本篇博客将通过手写一个Demo来分析Spring事务底层到底是如何帮助我们轻松完成事务管理的！ 透彻理解Spring事务设计思想之手写实现 先来看一眼工程结构： 工程结构 ConnectionHolder ConnectionHolder 在Spring中，有时候我们是不是要配置多个数据源DataSource？很显然，Spring需要通过DataSource来得到操作数据库的管道Connection，这有点类似于JNDI查找。 这里通过ConnectionHolder类来完成这个过程，需要思考的是在多线程下，这显然是存在问题的。为避免多线程问题，难道我们采用线程安全的Map，比如ConcurrentHashMap，其实我们真正的目的是什么？是保证一个线程下，一个事务的多个操作拿到的是一个Connection，显然使用ConcurrentHashMap根本无法保证！ Spring很聪明，她提供了一种思路，来解决，看下面的代码！ SingleThreadConnectionHolder SingleThreadConnectionHolder 本来线程不安全的，通过ThreadLocal这么封装一下，立刻就变成了线程的局部变量，不仅仅安全了，还保证了一个线程下面的操作拿到的Connection是同一个对象！这种思想，确实非常巧妙，这也是无锁编程思想的一种方式！ TransactionManager TransactionManager TransactionManager，这个我们经常在Spring里面进行配置吧，事务大管家！ UserAccountDao、UserOrderDao","@type":"BlogPosting","url":"http://www.jfox.info/2017/%E9%80%8F%E5%BD%BB%E7%90%86%E8%A7%A3spring%E4%BA%8B%E5%8A%A1%E8%AE%BE%E8%AE%A1%E6%80%9D%E6%83%B3%E4%B9%8B%E6%89%8B%E5%86%99%E5%AE%9E%E7%8E%B0.html","headline":"透彻理解Spring事务设计思想之手写实现","dateModified":"2017-01-01T15:59:08+00:00","datePublished":"2017-01-01T15:59:08+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/%E9%80%8F%E5%BD%BB%E7%90%86%E8%A7%A3spring%E4%BA%8B%E5%8A%A1%E8%AE%BE%E8%AE%A1%E6%80%9D%E6%83%B3%E4%B9%8B%E6%89%8B%E5%86%99%E5%AE%9E%E7%8E%B0.html"},"@context":"http://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
   <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
@@ -79,8 +79,7 @@ TransactionManager，这个我们经常在Spring里面进行配置吧，事务�
 
 <p>UserAccountDao、UserOrderDao</p>
 
-  </div>
-  <div style="width:300px;height:250px;float:left;">
+  </div><div style="width:300px;height:250px;float:left;">
     <!-- 300_250_1 -->
     <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
         data-ad-slot="4142158067"></ins>

@@ -4,18 +4,18 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
 <title>elasticsearch 源码分析（一） | Java面试</title>
-<meta name="generator" content="Jekyll v3.8.3" />
+<meta name="generator" content="Jekyll v3.8.4" />
 <meta property="og:title" content="elasticsearch 源码分析（一）" />
 <meta property="og:locale" content="zh_CN" />
-<meta name="description" content="工作中经常使用es，所以想研究一下es的源码，常用的es版本为2.1.0，所以此系列以2.1.0为准" />
-<meta property="og:description" content="工作中经常使用es，所以想研究一下es的源码，常用的es版本为2.1.0，所以此系列以2.1.0为准" />
+<meta name="description" content="工作中经常使用es，所以想研究一下es的源码，常用的es版本为2.1.0，所以此系列以2.1.0为准 1、下载源码 如果有报错，可以用根据报错下载相应的jar到本地的maven库里即可。 等出现build success信息的时候代表成功了。 可以到core/target目录下看到elasticsearch-2.1.0-SNAPSHOT.jar。 编译完成后转换成eclipse工程： 进入本地elasticsearch-2.1.0/core目录下，执行mvn eclipse:eclipse 同样会有很多报错，我遇到最多是找不到jar的解决方法是在/elasticserach-2.1.0下面对应的目录target里面去找。找到后拷贝到本地的maven repo对应的目录里面。 编译成功会看到.classpath 和.project文件。 把core 当做普通java 工程import就可以了 3、运行elasticsearch 打开刚刚导入成功的工程： Run As—-Run Configution—Args 设置ProgramArgument 为 start 设置VMArgument为 -Des.path.home=..elasticsearch-2.1.0core #对应的目录，如果不可以，用绝对路径 然后就可以运行。 可能会有[WARN ][bootstrap ] unable to install syscall filter: syscall filtering not supported for OS的警告，不过可以忽略。 最后在本地的localhost:9200可以看到运行成功" />
+<meta property="og:description" content="工作中经常使用es，所以想研究一下es的源码，常用的es版本为2.1.0，所以此系列以2.1.0为准 1、下载源码 如果有报错，可以用根据报错下载相应的jar到本地的maven库里即可。 等出现build success信息的时候代表成功了。 可以到core/target目录下看到elasticsearch-2.1.0-SNAPSHOT.jar。 编译完成后转换成eclipse工程： 进入本地elasticsearch-2.1.0/core目录下，执行mvn eclipse:eclipse 同样会有很多报错，我遇到最多是找不到jar的解决方法是在/elasticserach-2.1.0下面对应的目录target里面去找。找到后拷贝到本地的maven repo对应的目录里面。 编译成功会看到.classpath 和.project文件。 把core 当做普通java 工程import就可以了 3、运行elasticsearch 打开刚刚导入成功的工程： Run As—-Run Configution—Args 设置ProgramArgument 为 start 设置VMArgument为 -Des.path.home=..elasticsearch-2.1.0core #对应的目录，如果不可以，用绝对路径 然后就可以运行。 可能会有[WARN ][bootstrap ] unable to install syscall filter: syscall filtering not supported for OS的警告，不过可以忽略。 最后在本地的localhost:9200可以看到运行成功" />
 <link rel="canonical" href="http://www.jfox.info/2017/elasticsearch-yuan-ma-fen-xi-yi.html" />
 <meta property="og:url" content="http://www.jfox.info/2017/elasticsearch-yuan-ma-fen-xi-yi.html" />
 <meta property="og:site_name" content="Java面试" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2017-01-01T15:49:04+00:00" />
 <script type="application/ld+json">
-{"description":"工作中经常使用es，所以想研究一下es的源码，常用的es版本为2.1.0，所以此系列以2.1.0为准","@type":"BlogPosting","url":"http://www.jfox.info/2017/elasticsearch-yuan-ma-fen-xi-yi.html","headline":"elasticsearch 源码分析（一）","dateModified":"2017-01-01T15:49:04+00:00","datePublished":"2017-01-01T15:49:04+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/elasticsearch-yuan-ma-fen-xi-yi.html"},"@context":"http://schema.org"}</script>
+{"description":"工作中经常使用es，所以想研究一下es的源码，常用的es版本为2.1.0，所以此系列以2.1.0为准 1、下载源码 如果有报错，可以用根据报错下载相应的jar到本地的maven库里即可。 等出现build success信息的时候代表成功了。 可以到core/target目录下看到elasticsearch-2.1.0-SNAPSHOT.jar。 编译完成后转换成eclipse工程： 进入本地elasticsearch-2.1.0/core目录下，执行mvn eclipse:eclipse 同样会有很多报错，我遇到最多是找不到jar的解决方法是在/elasticserach-2.1.0下面对应的目录target里面去找。找到后拷贝到本地的maven repo对应的目录里面。 编译成功会看到.classpath 和.project文件。 把core 当做普通java 工程import就可以了 3、运行elasticsearch 打开刚刚导入成功的工程： Run As—-Run Configution—Args 设置ProgramArgument 为 start 设置VMArgument为 -Des.path.home=..elasticsearch-2.1.0core #对应的目录，如果不可以，用绝对路径 然后就可以运行。 可能会有[WARN ][bootstrap ] unable to install syscall filter: syscall filtering not supported for OS的警告，不过可以忽略。 最后在本地的localhost:9200可以看到运行成功","@type":"BlogPosting","url":"http://www.jfox.info/2017/elasticsearch-yuan-ma-fen-xi-yi.html","headline":"elasticsearch 源码分析（一）","dateModified":"2017-01-01T15:49:04+00:00","datePublished":"2017-01-01T15:49:04+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/elasticsearch-yuan-ma-fen-xi-yi.html"},"@context":"http://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
   <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
@@ -76,8 +76,7 @@
 
 <p>最后在本地的localhost:9200可以看到运行成功</p>
 
-  </div>
-  <div style="width:300px;height:250px;float:left;">
+  </div><div style="width:300px;height:250px;float:left;">
     <!-- 300_250_1 -->
     <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
         data-ad-slot="4142158067"></ins>

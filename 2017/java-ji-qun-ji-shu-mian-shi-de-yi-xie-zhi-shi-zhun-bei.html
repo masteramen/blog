@@ -4,7 +4,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
 <title>java集群技术面试的一些知识准备 | Java面试</title>
-<meta name="generator" content="Jekyll v3.8.3" />
+<meta name="generator" content="Jekyll v3.8.4" />
 <meta property="og:title" content="java集群技术面试的一些知识准备" />
 <meta property="og:locale" content="zh_CN" />
 <meta name="description" content="By Lee - Last updated: 星期一, 五月 27, 2013" />
@@ -137,8 +137,7 @@ HTTPSession失败转移
 Tomcat、JBoss、WebLogic、Websphere之流的Java EE服务器都提供了另一种实现：内存复制。
 在上图中描述了使用内存复制技术来实现会话状态备份的场景。本方法的性能很好。之余数据库持久化技术，在原服务器和一台或多台备份服务器之间进行直接内存复制对网络通信的影响很小。但是，不同厂商的服务器对内存复制技术的应用方式不同(在下面有具体描述)，有的厂商采用的技术就不再需要“恢复”的过程了，即会话数据备份时已驻留在备份服务器的内存中，当备份服务器接管时，所有的数据已经存在。</p>
 
-  </div>
-  <div style="width:300px;height:250px;float:left;">
+  </div><div style="width:300px;height:250px;float:left;">
     <!-- 300_250_1 -->
     <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
         data-ad-slot="4142158067"></ins>

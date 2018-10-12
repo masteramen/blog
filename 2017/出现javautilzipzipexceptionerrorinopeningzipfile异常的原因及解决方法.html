@@ -4,18 +4,18 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
 <title>出现 java.util.zip.ZipException: error in opening zip file 异常的原因及解决方法 | Java面试</title>
-<meta name="generator" content="Jekyll v3.8.3" />
+<meta name="generator" content="Jekyll v3.8.4" />
 <meta property="og:title" content="出现 java.util.zip.ZipException: error in opening zip file 异常的原因及解决方法" />
 <meta property="og:locale" content="zh_CN" />
-<meta name="description" content="在从 SVN 检出项目并配置完成后，启动 Tomcat 服务器，报出如下错误：" />
-<meta property="og:description" content="在从 SVN 检出项目并配置完成后，启动 Tomcat 服务器，报出如下错误：" />
+<meta name="description" content="在从 SVN 检出项目并配置完成后，启动 Tomcat 服务器，报出如下错误： 2 异常原因 通过观察上图中被标记出来的异常信息，咱们可以知道 java.util.zip.ZipException: error in opening zip file 此异常，为： ** 打开 zip 文件异常 ** 。 实际上，咱们观察错误信息的上面一行，即警告部分的时候，就可以发现引起这个异常发现的原因很可能就是位于 Tomcat 安装文件目录中 lib 文件夹下的 ._tomcat-util.jar! 文件读取失败或者读取错误。 3 解决方法 在上述项目中使用的 Tomcat 为博主从 Mac 电脑中直接复制到 Windows 电脑中的，不知道是否是 Mac 电脑在项目运行的时候会自动生成一些只有其自己能够识别的文件，从而导致在移植过后，读取失败。但实际上，在博主删除相应的 .XXX 隐藏文件之后，这个异常确实解决啦！ 温馨提示：此异常的解决案例并没有很强的说服力，仅做参考，如果大家有更好的解决方法，欢迎留言，在此分享给大家，非常感谢！" />
+<meta property="og:description" content="在从 SVN 检出项目并配置完成后，启动 Tomcat 服务器，报出如下错误： 2 异常原因 通过观察上图中被标记出来的异常信息，咱们可以知道 java.util.zip.ZipException: error in opening zip file 此异常，为： ** 打开 zip 文件异常 ** 。 实际上，咱们观察错误信息的上面一行，即警告部分的时候，就可以发现引起这个异常发现的原因很可能就是位于 Tomcat 安装文件目录中 lib 文件夹下的 ._tomcat-util.jar! 文件读取失败或者读取错误。 3 解决方法 在上述项目中使用的 Tomcat 为博主从 Mac 电脑中直接复制到 Windows 电脑中的，不知道是否是 Mac 电脑在项目运行的时候会自动生成一些只有其自己能够识别的文件，从而导致在移植过后，读取失败。但实际上，在博主删除相应的 .XXX 隐藏文件之后，这个异常确实解决啦！ 温馨提示：此异常的解决案例并没有很强的说服力，仅做参考，如果大家有更好的解决方法，欢迎留言，在此分享给大家，非常感谢！" />
 <link rel="canonical" href="http://www.jfox.info/2017/%E5%87%BA%E7%8E%B0javautilzipzipexceptionerrorinopeningzipfile%E5%BC%82%E5%B8%B8%E7%9A%84%E5%8E%9F%E5%9B%A0%E5%8F%8A%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95.html" />
 <meta property="og:url" content="http://www.jfox.info/2017/%E5%87%BA%E7%8E%B0javautilzipzipexceptionerrorinopeningzipfile%E5%BC%82%E5%B8%B8%E7%9A%84%E5%8E%9F%E5%9B%A0%E5%8F%8A%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95.html" />
 <meta property="og:site_name" content="Java面试" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2017-01-01T15:57:09+00:00" />
 <script type="application/ld+json">
-{"description":"在从 SVN 检出项目并配置完成后，启动 Tomcat 服务器，报出如下错误：","@type":"BlogPosting","url":"http://www.jfox.info/2017/%E5%87%BA%E7%8E%B0javautilzipzipexceptionerrorinopeningzipfile%E5%BC%82%E5%B8%B8%E7%9A%84%E5%8E%9F%E5%9B%A0%E5%8F%8A%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95.html","headline":"出现 java.util.zip.ZipException: error in opening zip file 异常的原因及解决方法","dateModified":"2017-01-01T15:57:09+00:00","datePublished":"2017-01-01T15:57:09+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/%E5%87%BA%E7%8E%B0javautilzipzipexceptionerrorinopeningzipfile%E5%BC%82%E5%B8%B8%E7%9A%84%E5%8E%9F%E5%9B%A0%E5%8F%8A%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95.html"},"@context":"http://schema.org"}</script>
+{"description":"在从 SVN 检出项目并配置完成后，启动 Tomcat 服务器，报出如下错误： 2 异常原因 通过观察上图中被标记出来的异常信息，咱们可以知道 java.util.zip.ZipException: error in opening zip file 此异常，为： ** 打开 zip 文件异常 ** 。 实际上，咱们观察错误信息的上面一行，即警告部分的时候，就可以发现引起这个异常发现的原因很可能就是位于 Tomcat 安装文件目录中 lib 文件夹下的 ._tomcat-util.jar! 文件读取失败或者读取错误。 3 解决方法 在上述项目中使用的 Tomcat 为博主从 Mac 电脑中直接复制到 Windows 电脑中的，不知道是否是 Mac 电脑在项目运行的时候会自动生成一些只有其自己能够识别的文件，从而导致在移植过后，读取失败。但实际上，在博主删除相应的 .XXX 隐藏文件之后，这个异常确实解决啦！ 温馨提示：此异常的解决案例并没有很强的说服力，仅做参考，如果大家有更好的解决方法，欢迎留言，在此分享给大家，非常感谢！","@type":"BlogPosting","url":"http://www.jfox.info/2017/%E5%87%BA%E7%8E%B0javautilzipzipexceptionerrorinopeningzipfile%E5%BC%82%E5%B8%B8%E7%9A%84%E5%8E%9F%E5%9B%A0%E5%8F%8A%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95.html","headline":"出现 java.util.zip.ZipException: error in opening zip file 异常的原因及解决方法","dateModified":"2017-01-01T15:57:09+00:00","datePublished":"2017-01-01T15:57:09+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/%E5%87%BA%E7%8E%B0javautilzipzipexceptionerrorinopeningzipfile%E5%BC%82%E5%B8%B8%E7%9A%84%E5%8E%9F%E5%9B%A0%E5%8F%8A%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95.html"},"@context":"http://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
   <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
@@ -63,8 +63,7 @@
 
 <p>温馨提示：此异常的解决案例并没有很强的说服力，仅做参考，如果大家有更好的解决方法，欢迎留言，在此分享给大家，非常感谢！</p>
 
-  </div>
-  <div style="width:300px;height:250px;float:left;">
+  </div><div style="width:300px;height:250px;float:left;">
     <!-- 300_250_1 -->
     <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
         data-ad-slot="4142158067"></ins>

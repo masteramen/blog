@@ -4,18 +4,18 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
 <title>第一篇随笔，果真还是要注意细节。 | Java面试</title>
-<meta name="generator" content="Jekyll v3.8.3" />
+<meta name="generator" content="Jekyll v3.8.4" />
 <meta property="og:title" content="第一篇随笔，果真还是要注意细节。" />
 <meta property="og:locale" content="zh_CN" />
-<meta name="description" content="学习Java以来第一篇随笔，写一写初学Socket编程中容易碰到的一个问题。照着教材上的例子敲了下面这段单线程网络通信的代码：" />
-<meta property="og:description" content="学习Java以来第一篇随笔，写一写初学Socket编程中容易碰到的一个问题。照着教材上的例子敲了下面这段单线程网络通信的代码：" />
+<meta name="description" content="学习Java以来第一篇随笔，写一写初学Socket编程中容易碰到的一个问题。照着教材上的例子敲了下面这段单线程网络通信的代码： 　　这段代码应该是初学Socket编程都要敲的一段，逻辑还是比较简单的。但是一开始我的TCPServer类和TCPClient类运行后，在控制台无法打印出两者通过流交互的信息，在这里卡了很久，在网上查找了一下原因，基本确定了应该是输入流或者输出流阻塞了。但是试了很久还是没有解决问题。后来偶然发现了BufferedReader类的实例方法readLine()是在读到换行符才返回的，这才发现了阻塞原因，原来是我的客户端和服务器写入输出流的信息根本就没有换行。这样readLine（）始终没有真正的返回，所以两端没有在输出流中写入内容，控制台自然打印不出内容。 　　这个问题其实挺低级的，不过也保不齐初学者不会犯。这里注意简单记录一下，提醒自己一定要 注意细节。" />
+<meta property="og:description" content="学习Java以来第一篇随笔，写一写初学Socket编程中容易碰到的一个问题。照着教材上的例子敲了下面这段单线程网络通信的代码： 　　这段代码应该是初学Socket编程都要敲的一段，逻辑还是比较简单的。但是一开始我的TCPServer类和TCPClient类运行后，在控制台无法打印出两者通过流交互的信息，在这里卡了很久，在网上查找了一下原因，基本确定了应该是输入流或者输出流阻塞了。但是试了很久还是没有解决问题。后来偶然发现了BufferedReader类的实例方法readLine()是在读到换行符才返回的，这才发现了阻塞原因，原来是我的客户端和服务器写入输出流的信息根本就没有换行。这样readLine（）始终没有真正的返回，所以两端没有在输出流中写入内容，控制台自然打印不出内容。 　　这个问题其实挺低级的，不过也保不齐初学者不会犯。这里注意简单记录一下，提醒自己一定要 注意细节。" />
 <link rel="canonical" href="http://www.jfox.info/2017/%E7%AC%AC%E4%B8%80%E7%AF%87%E9%9A%8F%E7%AC%94%E6%9E%9C%E7%9C%9F%E8%BF%98%E6%98%AF%E8%A6%81%E6%B3%A8%E6%84%8F%E7%BB%86%E8%8A%82.html" />
 <meta property="og:url" content="http://www.jfox.info/2017/%E7%AC%AC%E4%B8%80%E7%AF%87%E9%9A%8F%E7%AC%94%E6%9E%9C%E7%9C%9F%E8%BF%98%E6%98%AF%E8%A6%81%E6%B3%A8%E6%84%8F%E7%BB%86%E8%8A%82.html" />
 <meta property="og:site_name" content="Java面试" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2017-01-01T15:53:38+00:00" />
 <script type="application/ld+json">
-{"description":"学习Java以来第一篇随笔，写一写初学Socket编程中容易碰到的一个问题。照着教材上的例子敲了下面这段单线程网络通信的代码：","@type":"BlogPosting","url":"http://www.jfox.info/2017/%E7%AC%AC%E4%B8%80%E7%AF%87%E9%9A%8F%E7%AC%94%E6%9E%9C%E7%9C%9F%E8%BF%98%E6%98%AF%E8%A6%81%E6%B3%A8%E6%84%8F%E7%BB%86%E8%8A%82.html","headline":"第一篇随笔，果真还是要注意细节。","dateModified":"2017-01-01T15:53:38+00:00","datePublished":"2017-01-01T15:53:38+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/%E7%AC%AC%E4%B8%80%E7%AF%87%E9%9A%8F%E7%AC%94%E6%9E%9C%E7%9C%9F%E8%BF%98%E6%98%AF%E8%A6%81%E6%B3%A8%E6%84%8F%E7%BB%86%E8%8A%82.html"},"@context":"http://schema.org"}</script>
+{"description":"学习Java以来第一篇随笔，写一写初学Socket编程中容易碰到的一个问题。照着教材上的例子敲了下面这段单线程网络通信的代码： 　　这段代码应该是初学Socket编程都要敲的一段，逻辑还是比较简单的。但是一开始我的TCPServer类和TCPClient类运行后，在控制台无法打印出两者通过流交互的信息，在这里卡了很久，在网上查找了一下原因，基本确定了应该是输入流或者输出流阻塞了。但是试了很久还是没有解决问题。后来偶然发现了BufferedReader类的实例方法readLine()是在读到换行符才返回的，这才发现了阻塞原因，原来是我的客户端和服务器写入输出流的信息根本就没有换行。这样readLine（）始终没有真正的返回，所以两端没有在输出流中写入内容，控制台自然打印不出内容。 　　这个问题其实挺低级的，不过也保不齐初学者不会犯。这里注意简单记录一下，提醒自己一定要 注意细节。","@type":"BlogPosting","url":"http://www.jfox.info/2017/%E7%AC%AC%E4%B8%80%E7%AF%87%E9%9A%8F%E7%AC%94%E6%9E%9C%E7%9C%9F%E8%BF%98%E6%98%AF%E8%A6%81%E6%B3%A8%E6%84%8F%E7%BB%86%E8%8A%82.html","headline":"第一篇随笔，果真还是要注意细节。","dateModified":"2017-01-01T15:53:38+00:00","datePublished":"2017-01-01T15:53:38+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/%E7%AC%AC%E4%B8%80%E7%AF%87%E9%9A%8F%E7%AC%94%E6%9E%9C%E7%9C%9F%E8%BF%98%E6%98%AF%E8%A6%81%E6%B3%A8%E6%84%8F%E7%BB%86%E8%8A%82.html"},"@context":"http://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
   <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
@@ -53,8 +53,7 @@
 
 <p>　　这个问题其实挺低级的，不过也保不齐初学者不会犯。这里注意简单记录一下，提醒自己一定要 注意细节。</p>
 
-  </div>
-  <div style="width:300px;height:250px;float:left;">
+  </div><div style="width:300px;height:250px;float:left;">
     <!-- 300_250_1 -->
     <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
         data-ad-slot="4142158067"></ins>

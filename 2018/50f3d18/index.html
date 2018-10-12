@@ -4,18 +4,18 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
 <title>node环境下如何使用jquery？ | Java面试</title>
-<meta name="generator" content="Jekyll v3.8.3" />
+<meta name="generator" content="Jekyll v3.8.4" />
 <meta property="og:title" content="node环境下如何使用jquery？" />
 <meta property="og:locale" content="zh_CN" />
-<meta name="description" content="版权声明：本文为博主原创文章，未经博主允许不得转载。 https://blog.csdn.net/cvper/article/details/79576071" />
-<meta property="og:description" content="版权声明：本文为博主原创文章，未经博主允许不得转载。 https://blog.csdn.net/cvper/article/details/79576071" />
+<meta name="description" content="版权声明：本文为博主原创文章，未经博主允许不得转载。 https://blog.csdn.net/cvper/article/details/79576071 （测试环境：node 7.6.0 npm 5.6.0 jquery 3.3.1 jsdom 11.6.2） 第一步，下载 jquery 包 命令：npm install jquery 第二步 , 下载 jsdom 包 命令：npm install jsdom 第三步，我们新建一个 index.js 代码如下： const jsdom = require(&quot;jsdom&quot;); const { JSDOM } = jsdom; const { window } = newJSDOM(`&lt;!DOCTYPE html&gt;`); const $ = require(&quot;jQuery&quot;)(window); console.log($); //测试 jquery 是否可以正常工作 第四步：执行命令 node index.js 查看输出信息： 证明 jquery 可以正常使用了；" />
+<meta property="og:description" content="版权声明：本文为博主原创文章，未经博主允许不得转载。 https://blog.csdn.net/cvper/article/details/79576071 （测试环境：node 7.6.0 npm 5.6.0 jquery 3.3.1 jsdom 11.6.2） 第一步，下载 jquery 包 命令：npm install jquery 第二步 , 下载 jsdom 包 命令：npm install jsdom 第三步，我们新建一个 index.js 代码如下： const jsdom = require(&quot;jsdom&quot;); const { JSDOM } = jsdom; const { window } = newJSDOM(`&lt;!DOCTYPE html&gt;`); const $ = require(&quot;jQuery&quot;)(window); console.log($); //测试 jquery 是否可以正常工作 第四步：执行命令 node index.js 查看输出信息： 证明 jquery 可以正常使用了；" />
 <link rel="canonical" href="http://www.jfox.info/2018/50f3d18/" />
 <meta property="og:url" content="http://www.jfox.info/2018/50f3d18/" />
 <meta property="og:site_name" content="Java面试" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2018-09-06T19:07:21+00:00" />
 <script type="application/ld+json">
-{"description":"版权声明：本文为博主原创文章，未经博主允许不得转载。 https://blog.csdn.net/cvper/article/details/79576071","@type":"BlogPosting","url":"http://www.jfox.info/2018/50f3d18/","headline":"node环境下如何使用jquery？","dateModified":"2018-09-06T19:07:21+00:00","datePublished":"2018-09-06T19:07:21+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2018/50f3d18/"},"@context":"http://schema.org"}</script>
+{"description":"版权声明：本文为博主原创文章，未经博主允许不得转载。 https://blog.csdn.net/cvper/article/details/79576071 （测试环境：node 7.6.0 npm 5.6.0 jquery 3.3.1 jsdom 11.6.2） 第一步，下载 jquery 包 命令：npm install jquery 第二步 , 下载 jsdom 包 命令：npm install jsdom 第三步，我们新建一个 index.js 代码如下： const jsdom = require(&quot;jsdom&quot;); const { JSDOM } = jsdom; const { window } = newJSDOM(`&lt;!DOCTYPE html&gt;`); const $ = require(&quot;jQuery&quot;)(window); console.log($); //测试 jquery 是否可以正常工作 第四步：执行命令 node index.js 查看输出信息： 证明 jquery 可以正常使用了；","@type":"BlogPosting","url":"http://www.jfox.info/2018/50f3d18/","headline":"node环境下如何使用jquery？","dateModified":"2018-09-06T19:07:21+00:00","datePublished":"2018-09-06T19:07:21+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2018/50f3d18/"},"@context":"http://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
   <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
@@ -49,42 +49,37 @@
 
 <p>第一步，下载 jquery 包</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>          命令：npm install jquery
-</code></pre></div></div>
+<p>命令：npm install jquery</p>
 
 <p>第二步 , 下载 jsdom 包</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>          命令：npm install jsdom
-</code></pre></div></div>
+<p>命令：npm install jsdom</p>
 
 <p>第三步，我们新建一个 index.js</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>         代码如下：
-</code></pre></div></div>
+<p>代码如下：</p>
 
-<p>** const**jsdom=require(“jsdom”);</p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">jsdom</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s2">"jsdom"</span><span class="p">);</span>
 
-<p>** const** { JSDOM } =jsdom;</p>
+<span class="kd">const</span> <span class="p">{</span> <span class="nx">JSDOM</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">jsdom</span><span class="p">;</span>
 
-<p>** const** { window } =newJSDOM(<code class="highlighter-rouge"><span class="cp">&lt;!DOCTYPE html&gt;</span></code>);</p>
+<span class="kd">const</span> <span class="p">{</span> <span class="nb">window</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">newJSDOM</span><span class="p">(</span><span class="s2">`&lt;!DOCTYPE html&gt;`</span><span class="p">);</span>
 
-<p>** const**$=require(‘jQuery’)(window);</p>
+<span class="kd">const</span> <span class="nx">$</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s2">"jQuery"</span><span class="p">)(</span><span class="nb">window</span><span class="p">);</span>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    console.log($); //测试jquery是否可以正常工作
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">$</span><span class="p">);</span> <span class="c1">//测试 jquery 是否可以正常工作</span>
 </code></pre></div></div>
 
 <p>第四步：执行命令 node index.js</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>         查看输出信息：
+<p>查看输出信息：</p>
 
-          ![](2a53e6d)
+<p><img src="2a53e6d" alt="" /></p>
 
-          证明jquery可以正常使用了；
-</code></pre></div></div>
+<p>证明 jquery 可以正常使用了；</p>
 
 
-  </div>
-  <div style="width:300px;height:250px;float:left;">
+  </div><div style="width:300px;height:250px;float:left;">
     <!-- 300_250_1 -->
     <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
         data-ad-slot="4142158067"></ins>
@@ -106,6 +101,8 @@
   
   <a class="prev" href="/2018/2443f3f/index.html">&laquo; 回眸Spring – 事物运行原理机制</a>
   
+  
+  <a class="next" href="/2018/8c91b1e/index.html">Oracle Audit AUD$ 增长过大异常处理 &raquo;</a>
   
 </div>
 <div class="sfix"><!-- 240x600 -->

@@ -4,18 +4,18 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
 <title>使用Web前端技术实现的梦幻VR虚拟现实效果 | Java面试</title>
-<meta name="generator" content="Jekyll v3.8.3" />
+<meta name="generator" content="Jekyll v3.8.4" />
 <meta property="og:title" content="使用Web前端技术实现的梦幻VR虚拟现实效果" />
 <meta property="og:locale" content="zh_CN" />
-<meta name="description" content="VR/AR是近两年的热点， 而基于浏览器的Web VR技术在这两年的发展中，也慢慢的展现了自己强大的技术号召力， 很多新的基于web的VR类库，例如， A-frame， forge.js等等都出现在技术社区中， 各种webVR类库也越来越成熟起来， 在今天这篇代码把玩的文章中，我们精挑细选了五个最惊为天人的Web 3D及其VR效果，希望大家能够觉得给力， 小编废话不说， 请看以下VR效果~" />
-<meta property="og:description" content="VR/AR是近两年的热点， 而基于浏览器的Web VR技术在这两年的发展中，也慢慢的展现了自己强大的技术号召力， 很多新的基于web的VR类库，例如， A-frame， forge.js等等都出现在技术社区中， 各种webVR类库也越来越成熟起来， 在今天这篇代码把玩的文章中，我们精挑细选了五个最惊为天人的Web 3D及其VR效果，希望大家能够觉得给力， 小编废话不说， 请看以下VR效果~" />
+<meta name="description" content="VR/AR是近两年的热点， 而基于浏览器的Web VR技术在这两年的发展中，也慢慢的展现了自己强大的技术号召力， 很多新的基于web的VR类库，例如， A-frame， forge.js等等都出现在技术社区中， 各种webVR类库也越来越成熟起来， 在今天这篇代码把玩的文章中，我们精挑细选了五个最惊为天人的Web 3D及其VR效果，希望大家能够觉得给力， 小编废话不说， 请看以下VR效果~ ForgeJS是一个javascript框架，帮助你生成超棒的webVR体验，在这段代码中，使用forgeJS来实现了一个旅行者的3D实景效果图，大家可以自由体验拍摄者的观景角度 使用three.js，jQuery等类库实现的基于web的3D欢乐游乐场效果，你可以近距离观察，或者远观， 提供了一些丰富的菜单选项，帮助你提高使用体验 更多请点击这里：http://igeekbar.com/igeekbar/post/247.htm" />
+<meta property="og:description" content="VR/AR是近两年的热点， 而基于浏览器的Web VR技术在这两年的发展中，也慢慢的展现了自己强大的技术号召力， 很多新的基于web的VR类库，例如， A-frame， forge.js等等都出现在技术社区中， 各种webVR类库也越来越成熟起来， 在今天这篇代码把玩的文章中，我们精挑细选了五个最惊为天人的Web 3D及其VR效果，希望大家能够觉得给力， 小编废话不说， 请看以下VR效果~ ForgeJS是一个javascript框架，帮助你生成超棒的webVR体验，在这段代码中，使用forgeJS来实现了一个旅行者的3D实景效果图，大家可以自由体验拍摄者的观景角度 使用three.js，jQuery等类库实现的基于web的3D欢乐游乐场效果，你可以近距离观察，或者远观， 提供了一些丰富的菜单选项，帮助你提高使用体验 更多请点击这里：http://igeekbar.com/igeekbar/post/247.htm" />
 <link rel="canonical" href="http://www.jfox.info/2017/%E4%BD%BF%E7%94%A8web%E5%89%8D%E7%AB%AF%E6%8A%80%E6%9C%AF%E5%AE%9E%E7%8E%B0%E7%9A%84%E6%A2%A6%E5%B9%BBvr%E8%99%9A%E6%8B%9F%E7%8E%B0%E5%AE%9E%E6%95%88%E6%9E%9C.html" />
 <meta property="og:url" content="http://www.jfox.info/2017/%E4%BD%BF%E7%94%A8web%E5%89%8D%E7%AB%AF%E6%8A%80%E6%9C%AF%E5%AE%9E%E7%8E%B0%E7%9A%84%E6%A2%A6%E5%B9%BBvr%E8%99%9A%E6%8B%9F%E7%8E%B0%E5%AE%9E%E6%95%88%E6%9E%9C.html" />
 <meta property="og:site_name" content="Java面试" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2017-01-01T15:57:21+00:00" />
 <script type="application/ld+json">
-{"description":"VR/AR是近两年的热点， 而基于浏览器的Web VR技术在这两年的发展中，也慢慢的展现了自己强大的技术号召力， 很多新的基于web的VR类库，例如， A-frame， forge.js等等都出现在技术社区中， 各种webVR类库也越来越成熟起来， 在今天这篇代码把玩的文章中，我们精挑细选了五个最惊为天人的Web 3D及其VR效果，希望大家能够觉得给力， 小编废话不说， 请看以下VR效果~","@type":"BlogPosting","url":"http://www.jfox.info/2017/%E4%BD%BF%E7%94%A8web%E5%89%8D%E7%AB%AF%E6%8A%80%E6%9C%AF%E5%AE%9E%E7%8E%B0%E7%9A%84%E6%A2%A6%E5%B9%BBvr%E8%99%9A%E6%8B%9F%E7%8E%B0%E5%AE%9E%E6%95%88%E6%9E%9C.html","headline":"使用Web前端技术实现的梦幻VR虚拟现实效果","dateModified":"2017-01-01T15:57:21+00:00","datePublished":"2017-01-01T15:57:21+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/%E4%BD%BF%E7%94%A8web%E5%89%8D%E7%AB%AF%E6%8A%80%E6%9C%AF%E5%AE%9E%E7%8E%B0%E7%9A%84%E6%A2%A6%E5%B9%BBvr%E8%99%9A%E6%8B%9F%E7%8E%B0%E5%AE%9E%E6%95%88%E6%9E%9C.html"},"@context":"http://schema.org"}</script>
+{"description":"VR/AR是近两年的热点， 而基于浏览器的Web VR技术在这两年的发展中，也慢慢的展现了自己强大的技术号召力， 很多新的基于web的VR类库，例如， A-frame， forge.js等等都出现在技术社区中， 各种webVR类库也越来越成熟起来， 在今天这篇代码把玩的文章中，我们精挑细选了五个最惊为天人的Web 3D及其VR效果，希望大家能够觉得给力， 小编废话不说， 请看以下VR效果~ ForgeJS是一个javascript框架，帮助你生成超棒的webVR体验，在这段代码中，使用forgeJS来实现了一个旅行者的3D实景效果图，大家可以自由体验拍摄者的观景角度 使用three.js，jQuery等类库实现的基于web的3D欢乐游乐场效果，你可以近距离观察，或者远观， 提供了一些丰富的菜单选项，帮助你提高使用体验 更多请点击这里：http://igeekbar.com/igeekbar/post/247.htm","@type":"BlogPosting","url":"http://www.jfox.info/2017/%E4%BD%BF%E7%94%A8web%E5%89%8D%E7%AB%AF%E6%8A%80%E6%9C%AF%E5%AE%9E%E7%8E%B0%E7%9A%84%E6%A2%A6%E5%B9%BBvr%E8%99%9A%E6%8B%9F%E7%8E%B0%E5%AE%9E%E6%95%88%E6%9E%9C.html","headline":"使用Web前端技术实现的梦幻VR虚拟现实效果","dateModified":"2017-01-01T15:57:21+00:00","datePublished":"2017-01-01T15:57:21+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/%E4%BD%BF%E7%94%A8web%E5%89%8D%E7%AB%AF%E6%8A%80%E6%9C%AF%E5%AE%9E%E7%8E%B0%E7%9A%84%E6%A2%A6%E5%B9%BBvr%E8%99%9A%E6%8B%9F%E7%8E%B0%E5%AE%9E%E6%95%88%E6%9E%9C.html"},"@context":"http://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
   <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
@@ -55,8 +55,7 @@
 
 <p>更多请点击这里：http://igeekbar.com/igeekbar/post/247.htm</p>
 
-  </div>
-  <div style="width:300px;height:250px;float:left;">
+  </div><div style="width:300px;height:250px;float:left;">
     <!-- 300_250_1 -->
     <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196"
         data-ad-slot="4142158067"></ins>
