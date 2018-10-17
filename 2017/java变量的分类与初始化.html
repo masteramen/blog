@@ -4,18 +4,18 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
 <title>java变量的分类与初始化 | Java面试</title>
-<meta name="generator" content="Jekyll v3.8.4" />
+<meta name="generator" content="Jekyll v3.8.3" />
 <meta property="og:title" content="java变量的分类与初始化" />
 <meta property="og:locale" content="zh_CN" />
-<meta name="description" content="2017/6/25 首先学习java最权威的就是官方的文档了，今天从头读了文档，把一些小细节理清楚。 变量 Java语言里的变量分以下4类： Instance Variables: (Non-Static Fields) 就是类里非静态的field Class Variables: (Static Fields) 类里静态的field Local Variables: 局部变量 Parameters: 参数 两个术语要注意，分别是field和variable。field是指上面的1和2，是class拥有的。而不是field的变量就叫variable，对应上面的3和4，或者说局部的都是variable。 命名 Java的文档中明确写了推荐的命名方式，这就是为什么java的代码里命名基本都差不多。格式就是用连续的有意义的单词，从第二个单词开始，首字母大写。比如： speed, currentGear 基本数据类型 Primitive Data Type Java有8个基本数据类型 整数型 4个： byte, short, int, long 浮点 2个： float, double 字符 1个： char 布尔 1个： boolean 他们的默认初始值如下：" />
-<meta property="og:description" content="2017/6/25 首先学习java最权威的就是官方的文档了，今天从头读了文档，把一些小细节理清楚。 变量 Java语言里的变量分以下4类： Instance Variables: (Non-Static Fields) 就是类里非静态的field Class Variables: (Static Fields) 类里静态的field Local Variables: 局部变量 Parameters: 参数 两个术语要注意，分别是field和variable。field是指上面的1和2，是class拥有的。而不是field的变量就叫variable，对应上面的3和4，或者说局部的都是variable。 命名 Java的文档中明确写了推荐的命名方式，这就是为什么java的代码里命名基本都差不多。格式就是用连续的有意义的单词，从第二个单词开始，首字母大写。比如： speed, currentGear 基本数据类型 Primitive Data Type Java有8个基本数据类型 整数型 4个： byte, short, int, long 浮点 2个： float, double 字符 1个： char 布尔 1个： boolean 他们的默认初始值如下：" />
+<meta name="description" content="2017/6/25" />
+<meta property="og:description" content="2017/6/25" />
 <link rel="canonical" href="http://www.jfox.info/2017/java%E5%8F%98%E9%87%8F%E7%9A%84%E5%88%86%E7%B1%BB%E4%B8%8E%E5%88%9D%E5%A7%8B%E5%8C%96.html" />
 <meta property="og:url" content="http://www.jfox.info/2017/java%E5%8F%98%E9%87%8F%E7%9A%84%E5%88%86%E7%B1%BB%E4%B8%8E%E5%88%9D%E5%A7%8B%E5%8C%96.html" />
 <meta property="og:site_name" content="Java面试" />
 <meta property="og:type" content="article" />
-<meta property="article:published_time" content="2017-01-01T15:50:48+00:00" />
+<meta property="article:published_time" content="2017-01-01T23:50:48+08:00" />
 <script type="application/ld+json">
-{"description":"2017/6/25 首先学习java最权威的就是官方的文档了，今天从头读了文档，把一些小细节理清楚。 变量 Java语言里的变量分以下4类： Instance Variables: (Non-Static Fields) 就是类里非静态的field Class Variables: (Static Fields) 类里静态的field Local Variables: 局部变量 Parameters: 参数 两个术语要注意，分别是field和variable。field是指上面的1和2，是class拥有的。而不是field的变量就叫variable，对应上面的3和4，或者说局部的都是variable。 命名 Java的文档中明确写了推荐的命名方式，这就是为什么java的代码里命名基本都差不多。格式就是用连续的有意义的单词，从第二个单词开始，首字母大写。比如： speed, currentGear 基本数据类型 Primitive Data Type Java有8个基本数据类型 整数型 4个： byte, short, int, long 浮点 2个： float, double 字符 1个： char 布尔 1个： boolean 他们的默认初始值如下：","@type":"BlogPosting","url":"http://www.jfox.info/2017/java%E5%8F%98%E9%87%8F%E7%9A%84%E5%88%86%E7%B1%BB%E4%B8%8E%E5%88%9D%E5%A7%8B%E5%8C%96.html","headline":"java变量的分类与初始化","dateModified":"2017-01-01T15:50:48+00:00","datePublished":"2017-01-01T15:50:48+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/java%E5%8F%98%E9%87%8F%E7%9A%84%E5%88%86%E7%B1%BB%E4%B8%8E%E5%88%9D%E5%A7%8B%E5%8C%96.html"},"@context":"http://schema.org"}</script>
+{"@type":"BlogPosting","headline":"java变量的分类与初始化","dateModified":"2017-01-01T23:50:48+08:00","datePublished":"2017-01-01T23:50:48+08:00","url":"http://www.jfox.info/2017/java%E5%8F%98%E9%87%8F%E7%9A%84%E5%88%86%E7%B1%BB%E4%B8%8E%E5%88%9D%E5%A7%8B%E5%8C%96.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/java%E5%8F%98%E9%87%8F%E7%9A%84%E5%88%86%E7%B1%BB%E4%B8%8E%E5%88%9D%E5%A7%8B%E5%8C%96.html"},"description":"2017/6/25","@context":"http://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
   <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
@@ -37,7 +37,7 @@
   <header class="post-header">
     <h1 class="post-title p-name" itemprop="name headline">java变量的分类与初始化</h1>
     <p class="post-meta">
-      <time class="dt-published" datetime="2017-01-01T15:50:48+00:00" itemprop="datePublished">Jan 1, 2017
+      <time class="dt-published" datetime="2017-01-01T23:50:48+08:00" itemprop="datePublished">Jan 1, 2017
       </time></p>
   </header>
 

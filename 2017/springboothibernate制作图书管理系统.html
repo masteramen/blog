@@ -4,18 +4,18 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
 <title>SpringBoot+Hibernate制作图书管理系统 | Java面试</title>
-<meta name="generator" content="Jekyll v3.8.4" />
+<meta name="generator" content="Jekyll v3.8.3" />
 <meta property="og:title" content="SpringBoot+Hibernate制作图书管理系统" />
 <meta property="og:locale" content="zh_CN" />
-<meta name="description" content="前言：让大家久等了又是两个月木有更新文章了，这几天刚忙完大部分考试所以最近才有时间来写文章。最近刚好忙完课程设计，我做了一个图书管理系统其中用到了挺多技术我觉得值得拿出来和大家分享一下，先来看看我制作好的效果图： 1.登录页面 2.图书查询&amp;借阅页面 3.用户管理页面 4.角色管理页面 5.图书管理页面 6.资源管理页面 主要用到了以下这几种技术，建议大家在看代码时去补充一下我提到的这些技术方便理解哦~ 1.前端技术： （1）基本技术：JavaScript,jQuery,Bootstrap （2）模板&amp;插件：Hadmin系统模版，数据表格使用bootstrap table插件，弹窗使用layer插件，表单验证使用jQuery validate插件，FreeMarker。 2.后端技术：SpringBoot,SpringData, Jpa,Shiro,Hibernate 3.数据库：MySql 欢迎转载，转载时请标明出。 查看更多文章请访问我的个人博客 www.bubblyyi.com" />
-<meta property="og:description" content="前言：让大家久等了又是两个月木有更新文章了，这几天刚忙完大部分考试所以最近才有时间来写文章。最近刚好忙完课程设计，我做了一个图书管理系统其中用到了挺多技术我觉得值得拿出来和大家分享一下，先来看看我制作好的效果图： 1.登录页面 2.图书查询&amp;借阅页面 3.用户管理页面 4.角色管理页面 5.图书管理页面 6.资源管理页面 主要用到了以下这几种技术，建议大家在看代码时去补充一下我提到的这些技术方便理解哦~ 1.前端技术： （1）基本技术：JavaScript,jQuery,Bootstrap （2）模板&amp;插件：Hadmin系统模版，数据表格使用bootstrap table插件，弹窗使用layer插件，表单验证使用jQuery validate插件，FreeMarker。 2.后端技术：SpringBoot,SpringData, Jpa,Shiro,Hibernate 3.数据库：MySql 欢迎转载，转载时请标明出。 查看更多文章请访问我的个人博客 www.bubblyyi.com" />
+<meta name="description" content="前言：让大家久等了又是两个月木有更新文章了，这几天刚忙完大部分考试所以最近才有时间来写文章。最近刚好忙完课程设计，我做了一个图书管理系统其中用到了挺多技术我觉得值得拿出来和大家分享一下，先来看看我制作好的效果图：" />
+<meta property="og:description" content="前言：让大家久等了又是两个月木有更新文章了，这几天刚忙完大部分考试所以最近才有时间来写文章。最近刚好忙完课程设计，我做了一个图书管理系统其中用到了挺多技术我觉得值得拿出来和大家分享一下，先来看看我制作好的效果图：" />
 <link rel="canonical" href="http://www.jfox.info/2017/springboothibernate%E5%88%B6%E4%BD%9C%E5%9B%BE%E4%B9%A6%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F.html" />
 <meta property="og:url" content="http://www.jfox.info/2017/springboothibernate%E5%88%B6%E4%BD%9C%E5%9B%BE%E4%B9%A6%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F.html" />
 <meta property="og:site_name" content="Java面试" />
 <meta property="og:type" content="article" />
-<meta property="article:published_time" content="2017-01-01T15:55:06+00:00" />
+<meta property="article:published_time" content="2017-01-01T23:55:06+08:00" />
 <script type="application/ld+json">
-{"description":"前言：让大家久等了又是两个月木有更新文章了，这几天刚忙完大部分考试所以最近才有时间来写文章。最近刚好忙完课程设计，我做了一个图书管理系统其中用到了挺多技术我觉得值得拿出来和大家分享一下，先来看看我制作好的效果图： 1.登录页面 2.图书查询&amp;借阅页面 3.用户管理页面 4.角色管理页面 5.图书管理页面 6.资源管理页面 主要用到了以下这几种技术，建议大家在看代码时去补充一下我提到的这些技术方便理解哦~ 1.前端技术： （1）基本技术：JavaScript,jQuery,Bootstrap （2）模板&amp;插件：Hadmin系统模版，数据表格使用bootstrap table插件，弹窗使用layer插件，表单验证使用jQuery validate插件，FreeMarker。 2.后端技术：SpringBoot,SpringData, Jpa,Shiro,Hibernate 3.数据库：MySql 欢迎转载，转载时请标明出。 查看更多文章请访问我的个人博客 www.bubblyyi.com","@type":"BlogPosting","url":"http://www.jfox.info/2017/springboothibernate%E5%88%B6%E4%BD%9C%E5%9B%BE%E4%B9%A6%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F.html","headline":"SpringBoot+Hibernate制作图书管理系统","dateModified":"2017-01-01T15:55:06+00:00","datePublished":"2017-01-01T15:55:06+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/springboothibernate%E5%88%B6%E4%BD%9C%E5%9B%BE%E4%B9%A6%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F.html"},"@context":"http://schema.org"}</script>
+{"@type":"BlogPosting","headline":"SpringBoot+Hibernate制作图书管理系统","dateModified":"2017-01-01T23:55:06+08:00","datePublished":"2017-01-01T23:55:06+08:00","url":"http://www.jfox.info/2017/springboothibernate%E5%88%B6%E4%BD%9C%E5%9B%BE%E4%B9%A6%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/springboothibernate%E5%88%B6%E4%BD%9C%E5%9B%BE%E4%B9%A6%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F.html"},"description":"前言：让大家久等了又是两个月木有更新文章了，这几天刚忙完大部分考试所以最近才有时间来写文章。最近刚好忙完课程设计，我做了一个图书管理系统其中用到了挺多技术我觉得值得拿出来和大家分享一下，先来看看我制作好的效果图：","@context":"http://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
   <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
@@ -37,7 +37,7 @@
   <header class="post-header">
     <h1 class="post-title p-name" itemprop="name headline">SpringBoot+Hibernate制作图书管理系统</h1>
     <p class="post-meta">
-      <time class="dt-published" datetime="2017-01-01T15:55:06+00:00" itemprop="datePublished">Jan 1, 2017
+      <time class="dt-published" datetime="2017-01-01T23:55:06+08:00" itemprop="datePublished">Jan 1, 2017
       </time></p>
   </header>
 

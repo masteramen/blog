@@ -4,18 +4,18 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
 <title>JAVA测试工具Jmeter在Windows下的搭建安装总结 | Java面试</title>
-<meta name="generator" content="Jekyll v3.8.4" />
+<meta name="generator" content="Jekyll v3.8.3" />
 <meta property="og:title" content="JAVA测试工具Jmeter在Windows下的搭建安装总结" />
 <meta property="og:locale" content="zh_CN" />
-<meta name="description" content="By Lee - Last updated: 星期日, 五月 11, 2014 一、Jmeter安装总结 1、配置Java环境变量时需要注意设置的路径需要和JDK安装的路径一样 2、配置Java环境变量时需要注意JDK的版本号 3、配置环境变量时多个变量以分号隔开，但是确保是英文输入法的分号 二、搭建测试环境总结 1、检测负载机是否可以被调用，检测负载机的ip是否能被ping通 2、当负载机的ip不能ping通时，有可能是防火墙拦截了，可以检测防火墙是否是启用状态，如果是暂时设置禁用防火墙 3、测试的数据调用文件应该放在负载机上，并且在控制中心设置正确的数据访问路径 Jmeter测试工具安装步骤： 1、安装Jmeter 下载Jmeter工具包 并把工具包放到C盘下 http://jmeter.apache.org/download_jmeter.cgi 2、安装JDK 下载Java的JDK并安装，一般会安装在C:\Program Files\Java目录下 http://java.sun.com/javase/downloads/index.jsp 3、Java环境变量配置 桌面上 右键选中计算机—&gt;属性—&gt;高级系统设置—&gt;环境变量设置 在“系统变量”—&gt;“新建”, 在变量名中输入：CLASSPATH，变量值中输入：C:\Program Files\Java\jdk1.6.0_10\lib\dt.JAR; C:\Program Files\Java\jdk1.6.0_10\lib\TOOLS.JAR; C:\Program Files\Java\jdk1.6.0_10\BIN;再按“新建”，在变量名中输入：JAVA_HOME，变量中输入：C:\Program Files\Java\jdk1.6.0_10；修改PATH变量，添加%JAVA_HOME%/bin；然后确定即可 4、Jmeter环境变量配置 桌面上 右键选中计算机—&gt;属性—&gt;高级系统设置—&gt;环境变量设置 在“系统变量”—&gt;“新建”, 在变量名中输入：JMETER_HOME，变量值中输入：C:\jakarta-jmeter-2.3.4 ，再修改CLASSPATH变量，变量值中添加%JMETER_HOME%\lib\ext\ApacheJMeter_core.jar;% JMETER_HOME%\lib\jorphan.jar;%JMETER_HOME%\lib\logkit-1.2.jar; 然后确定即可 原文地址:http://blog.csdn.net/lzybala/article/details/25511045." />
-<meta property="og:description" content="By Lee - Last updated: 星期日, 五月 11, 2014 一、Jmeter安装总结 1、配置Java环境变量时需要注意设置的路径需要和JDK安装的路径一样 2、配置Java环境变量时需要注意JDK的版本号 3、配置环境变量时多个变量以分号隔开，但是确保是英文输入法的分号 二、搭建测试环境总结 1、检测负载机是否可以被调用，检测负载机的ip是否能被ping通 2、当负载机的ip不能ping通时，有可能是防火墙拦截了，可以检测防火墙是否是启用状态，如果是暂时设置禁用防火墙 3、测试的数据调用文件应该放在负载机上，并且在控制中心设置正确的数据访问路径 Jmeter测试工具安装步骤： 1、安装Jmeter 下载Jmeter工具包 并把工具包放到C盘下 http://jmeter.apache.org/download_jmeter.cgi 2、安装JDK 下载Java的JDK并安装，一般会安装在C:\Program Files\Java目录下 http://java.sun.com/javase/downloads/index.jsp 3、Java环境变量配置 桌面上 右键选中计算机—&gt;属性—&gt;高级系统设置—&gt;环境变量设置 在“系统变量”—&gt;“新建”, 在变量名中输入：CLASSPATH，变量值中输入：C:\Program Files\Java\jdk1.6.0_10\lib\dt.JAR; C:\Program Files\Java\jdk1.6.0_10\lib\TOOLS.JAR; C:\Program Files\Java\jdk1.6.0_10\BIN;再按“新建”，在变量名中输入：JAVA_HOME，变量中输入：C:\Program Files\Java\jdk1.6.0_10；修改PATH变量，添加%JAVA_HOME%/bin；然后确定即可 4、Jmeter环境变量配置 桌面上 右键选中计算机—&gt;属性—&gt;高级系统设置—&gt;环境变量设置 在“系统变量”—&gt;“新建”, 在变量名中输入：JMETER_HOME，变量值中输入：C:\jakarta-jmeter-2.3.4 ，再修改CLASSPATH变量，变量值中添加%JMETER_HOME%\lib\ext\ApacheJMeter_core.jar;% JMETER_HOME%\lib\jorphan.jar;%JMETER_HOME%\lib\logkit-1.2.jar; 然后确定即可 原文地址:http://blog.csdn.net/lzybala/article/details/25511045." />
+<meta name="description" content="By Lee - Last updated: 星期日, 五月 11, 2014" />
+<meta property="og:description" content="By Lee - Last updated: 星期日, 五月 11, 2014" />
 <link rel="canonical" href="http://www.jfox.info/2017/java-jmeter-testing-tools-installation-summary.html" />
 <meta property="og:url" content="http://www.jfox.info/2017/java-jmeter-testing-tools-installation-summary.html" />
 <meta property="og:site_name" content="Java面试" />
 <meta property="og:type" content="article" />
-<meta property="article:published_time" content="2017-01-01T15:45:32+00:00" />
+<meta property="article:published_time" content="2017-01-01T23:45:32+08:00" />
 <script type="application/ld+json">
-{"description":"By Lee - Last updated: 星期日, 五月 11, 2014 一、Jmeter安装总结 1、配置Java环境变量时需要注意设置的路径需要和JDK安装的路径一样 2、配置Java环境变量时需要注意JDK的版本号 3、配置环境变量时多个变量以分号隔开，但是确保是英文输入法的分号 二、搭建测试环境总结 1、检测负载机是否可以被调用，检测负载机的ip是否能被ping通 2、当负载机的ip不能ping通时，有可能是防火墙拦截了，可以检测防火墙是否是启用状态，如果是暂时设置禁用防火墙 3、测试的数据调用文件应该放在负载机上，并且在控制中心设置正确的数据访问路径 Jmeter测试工具安装步骤： 1、安装Jmeter 下载Jmeter工具包 并把工具包放到C盘下 http://jmeter.apache.org/download_jmeter.cgi 2、安装JDK 下载Java的JDK并安装，一般会安装在C:\\Program Files\\Java目录下 http://java.sun.com/javase/downloads/index.jsp 3、Java环境变量配置 桌面上 右键选中计算机—&gt;属性—&gt;高级系统设置—&gt;环境变量设置 在“系统变量”—&gt;“新建”, 在变量名中输入：CLASSPATH，变量值中输入：C:\\Program Files\\Java\\jdk1.6.0_10\\lib\\dt.JAR; C:\\Program Files\\Java\\jdk1.6.0_10\\lib\\TOOLS.JAR; C:\\Program Files\\Java\\jdk1.6.0_10\\BIN;再按“新建”，在变量名中输入：JAVA_HOME，变量中输入：C:\\Program Files\\Java\\jdk1.6.0_10；修改PATH变量，添加%JAVA_HOME%/bin；然后确定即可 4、Jmeter环境变量配置 桌面上 右键选中计算机—&gt;属性—&gt;高级系统设置—&gt;环境变量设置 在“系统变量”—&gt;“新建”, 在变量名中输入：JMETER_HOME，变量值中输入：C:\\jakarta-jmeter-2.3.4 ，再修改CLASSPATH变量，变量值中添加%JMETER_HOME%\\lib\\ext\\ApacheJMeter_core.jar;% JMETER_HOME%\\lib\\jorphan.jar;%JMETER_HOME%\\lib\\logkit-1.2.jar; 然后确定即可 原文地址:http://blog.csdn.net/lzybala/article/details/25511045.","@type":"BlogPosting","url":"http://www.jfox.info/2017/java-jmeter-testing-tools-installation-summary.html","headline":"JAVA测试工具Jmeter在Windows下的搭建安装总结","dateModified":"2017-01-01T15:45:32+00:00","datePublished":"2017-01-01T15:45:32+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/java-jmeter-testing-tools-installation-summary.html"},"@context":"http://schema.org"}</script>
+{"@type":"BlogPosting","headline":"JAVA测试工具Jmeter在Windows下的搭建安装总结","dateModified":"2017-01-01T23:45:32+08:00","datePublished":"2017-01-01T23:45:32+08:00","url":"http://www.jfox.info/2017/java-jmeter-testing-tools-installation-summary.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/java-jmeter-testing-tools-installation-summary.html"},"description":"By Lee - Last updated: 星期日, 五月 11, 2014","@context":"http://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
   <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
@@ -37,7 +37,7 @@
   <header class="post-header">
     <h1 class="post-title p-name" itemprop="name headline">JAVA测试工具Jmeter在Windows下的搭建安装总结</h1>
     <p class="post-meta">
-      <time class="dt-published" datetime="2017-01-01T15:45:32+00:00" itemprop="datePublished">Jan 1, 2017
+      <time class="dt-published" datetime="2017-01-01T23:45:32+08:00" itemprop="datePublished">Jan 1, 2017
       </time></p>
   </header>
 

@@ -4,18 +4,18 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
 <title>java中stack 和 heap的区别，java中的垃圾回收机制 | Java面试</title>
-<meta name="generator" content="Jekyll v3.8.4" />
+<meta name="generator" content="Jekyll v3.8.3" />
 <meta property="og:title" content="java中stack 和 heap的区别，java中的垃圾回收机制" />
 <meta property="og:locale" content="zh_CN" />
-<meta name="description" content="By Lee - Last updated: 星期二, 三月 11, 2014 #. 在java中有两类内存。分别称为stack（堆栈）和heap（堆）。 stack是程序内存空间，因此所有的基本类型和对象的引用是存在stack中。 heap是java虚拟机储存对象的，它是一个巨大的内存，当你创造一个对象，java虚拟机把对象放入heap中，把创造的对象的地址放入stack中。 因此，基本类型、对象的引用储存在stack中；对象储存在heap中。 #. java中的垃圾回收机制 当你new一个新的对象，java分配必需的内存。当你用完一个对象时，java的垃圾回收器为你把内存收回。 垃圾回收以线程的形式在后台运行，寻找那些无有用引用（reference）的对象，发现之后便销毁对象，并收回内存。 垃圾回收是在java虚拟机间实现的，它们通常有相同的步骤，首先垃圾回收器获得正在运行的线程和所有已经加载的类的快照， 然后所有线程中涉及到的对象被标记为最近使用的，当可能涉及的对象都被标记的时候，剩下没标记的就被舍弃。 为了帮助虚拟机，我们主动移除一些不在需要的对象是一个不错的做法，可以通过将引用设置为null来实现。 eg： Text t = new Test(); t.someAction(); //all done t = null;" />
-<meta property="og:description" content="By Lee - Last updated: 星期二, 三月 11, 2014 #. 在java中有两类内存。分别称为stack（堆栈）和heap（堆）。 stack是程序内存空间，因此所有的基本类型和对象的引用是存在stack中。 heap是java虚拟机储存对象的，它是一个巨大的内存，当你创造一个对象，java虚拟机把对象放入heap中，把创造的对象的地址放入stack中。 因此，基本类型、对象的引用储存在stack中；对象储存在heap中。 #. java中的垃圾回收机制 当你new一个新的对象，java分配必需的内存。当你用完一个对象时，java的垃圾回收器为你把内存收回。 垃圾回收以线程的形式在后台运行，寻找那些无有用引用（reference）的对象，发现之后便销毁对象，并收回内存。 垃圾回收是在java虚拟机间实现的，它们通常有相同的步骤，首先垃圾回收器获得正在运行的线程和所有已经加载的类的快照， 然后所有线程中涉及到的对象被标记为最近使用的，当可能涉及的对象都被标记的时候，剩下没标记的就被舍弃。 为了帮助虚拟机，我们主动移除一些不在需要的对象是一个不错的做法，可以通过将引用设置为null来实现。 eg： Text t = new Test(); t.someAction(); //all done t = null;" />
+<meta name="description" content="By Lee - Last updated: 星期二, 三月 11, 2014" />
+<meta property="og:description" content="By Lee - Last updated: 星期二, 三月 11, 2014" />
 <link rel="canonical" href="http://www.jfox.info/2017/the-difference-between-the-stack-and-the-heap-of-java-java-garbage-collection-mechanism.html" />
 <meta property="og:url" content="http://www.jfox.info/2017/the-difference-between-the-stack-and-the-heap-of-java-java-garbage-collection-mechanism.html" />
 <meta property="og:site_name" content="Java面试" />
 <meta property="og:type" content="article" />
-<meta property="article:published_time" content="2017-01-01T15:45:08+00:00" />
+<meta property="article:published_time" content="2017-01-01T23:45:08+08:00" />
 <script type="application/ld+json">
-{"description":"By Lee - Last updated: 星期二, 三月 11, 2014 #. 在java中有两类内存。分别称为stack（堆栈）和heap（堆）。 stack是程序内存空间，因此所有的基本类型和对象的引用是存在stack中。 heap是java虚拟机储存对象的，它是一个巨大的内存，当你创造一个对象，java虚拟机把对象放入heap中，把创造的对象的地址放入stack中。 因此，基本类型、对象的引用储存在stack中；对象储存在heap中。 #. java中的垃圾回收机制 当你new一个新的对象，java分配必需的内存。当你用完一个对象时，java的垃圾回收器为你把内存收回。 垃圾回收以线程的形式在后台运行，寻找那些无有用引用（reference）的对象，发现之后便销毁对象，并收回内存。 垃圾回收是在java虚拟机间实现的，它们通常有相同的步骤，首先垃圾回收器获得正在运行的线程和所有已经加载的类的快照， 然后所有线程中涉及到的对象被标记为最近使用的，当可能涉及的对象都被标记的时候，剩下没标记的就被舍弃。 为了帮助虚拟机，我们主动移除一些不在需要的对象是一个不错的做法，可以通过将引用设置为null来实现。 eg： Text t = new Test(); t.someAction(); //all done t = null;","@type":"BlogPosting","url":"http://www.jfox.info/2017/the-difference-between-the-stack-and-the-heap-of-java-java-garbage-collection-mechanism.html","headline":"java中stack 和 heap的区别，java中的垃圾回收机制","dateModified":"2017-01-01T15:45:08+00:00","datePublished":"2017-01-01T15:45:08+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/the-difference-between-the-stack-and-the-heap-of-java-java-garbage-collection-mechanism.html"},"@context":"http://schema.org"}</script>
+{"@type":"BlogPosting","headline":"java中stack 和 heap的区别，java中的垃圾回收机制","dateModified":"2017-01-01T23:45:08+08:00","datePublished":"2017-01-01T23:45:08+08:00","url":"http://www.jfox.info/2017/the-difference-between-the-stack-and-the-heap-of-java-java-garbage-collection-mechanism.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/the-difference-between-the-stack-and-the-heap-of-java-java-garbage-collection-mechanism.html"},"description":"By Lee - Last updated: 星期二, 三月 11, 2014","@context":"http://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
   <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
@@ -37,7 +37,7 @@
   <header class="post-header">
     <h1 class="post-title p-name" itemprop="name headline">java中stack 和 heap的区别，java中的垃圾回收机制</h1>
     <p class="post-meta">
-      <time class="dt-published" datetime="2017-01-01T15:45:08+00:00" itemprop="datePublished">Jan 1, 2017
+      <time class="dt-published" datetime="2017-01-01T23:45:08+08:00" itemprop="datePublished">Jan 1, 2017
       </time></p>
   </header>
 

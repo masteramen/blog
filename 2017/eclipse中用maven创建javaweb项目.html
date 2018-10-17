@@ -4,18 +4,18 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
 <title>eclipse中用Maven创建JavaWeb项目 | Java面试</title>
-<meta name="generator" content="Jekyll v3.8.4" />
+<meta name="generator" content="Jekyll v3.8.3" />
 <meta property="og:title" content="eclipse中用Maven创建JavaWeb项目" />
 <meta property="og:locale" content="zh_CN" />
-<meta name="description" content="最近学到在eclipse中用Maven创建java web项目，总结一下创建步骤。 下载Maven压缩包和配置相关信息。 下载地址：http://maven.apache.org/download.cgi 选择如下图所示的解压包即可 下载完成后将压缩包解压。 找到conf文件夹下的setting.xml文件，在文件中配置相关的信息。 localRepository为本地仓库的地址，默认的是C:Users.m2repository可以根据自己的实际情况添加以下语句，进行修改。 &lt;localRepository&gt;路径地址&lt;/localRepository&gt; 如果是在自己电脑上测试用，下载架包的速度可能会特别慢，可以设置mirror来修改远程仓库，在mirrors中添加如下代码 &lt;mirror&gt; &lt;id&gt;alimaven&lt;/id&gt; &lt;name&gt;aliyun maven&lt;/name&gt; &lt;url&gt;http://maven.aliyun.com/nexus/content/groups/public/&lt;/url&gt; &lt;mirrorOf&gt;central&lt;/mirrorOf&gt; &lt;/mirror&gt; 如下图所示 配置eclipse 确保eclipse中有Maven插件，如果没有，可以在Help–&gt;Eclipse Marketplace中下载相关的插件。 确保有相关的插件后，在Windows–&gt;Prefereces中选择Maven下的User Settings,选择settings.xml的文件地址。如下图所示。 创建java web项目 新建项目选择Maven项目 如下图所示 选择web项目 如图所示 填写GroupID和ArtifactID GroupID是项目组织唯一的标识符，实际对应JAVA的包的结构，是main目录里java的目录结构。 ArtifactID就是项目的唯一的标识符，实际对应项目的名称，就是项目根目录的名称。 最后点击Finish即可。" />
-<meta property="og:description" content="最近学到在eclipse中用Maven创建java web项目，总结一下创建步骤。 下载Maven压缩包和配置相关信息。 下载地址：http://maven.apache.org/download.cgi 选择如下图所示的解压包即可 下载完成后将压缩包解压。 找到conf文件夹下的setting.xml文件，在文件中配置相关的信息。 localRepository为本地仓库的地址，默认的是C:Users.m2repository可以根据自己的实际情况添加以下语句，进行修改。 &lt;localRepository&gt;路径地址&lt;/localRepository&gt; 如果是在自己电脑上测试用，下载架包的速度可能会特别慢，可以设置mirror来修改远程仓库，在mirrors中添加如下代码 &lt;mirror&gt; &lt;id&gt;alimaven&lt;/id&gt; &lt;name&gt;aliyun maven&lt;/name&gt; &lt;url&gt;http://maven.aliyun.com/nexus/content/groups/public/&lt;/url&gt; &lt;mirrorOf&gt;central&lt;/mirrorOf&gt; &lt;/mirror&gt; 如下图所示 配置eclipse 确保eclipse中有Maven插件，如果没有，可以在Help–&gt;Eclipse Marketplace中下载相关的插件。 确保有相关的插件后，在Windows–&gt;Prefereces中选择Maven下的User Settings,选择settings.xml的文件地址。如下图所示。 创建java web项目 新建项目选择Maven项目 如下图所示 选择web项目 如图所示 填写GroupID和ArtifactID GroupID是项目组织唯一的标识符，实际对应JAVA的包的结构，是main目录里java的目录结构。 ArtifactID就是项目的唯一的标识符，实际对应项目的名称，就是项目根目录的名称。 最后点击Finish即可。" />
+<meta name="description" content="最近学到在eclipse中用Maven创建java web项目，总结一下创建步骤。" />
+<meta property="og:description" content="最近学到在eclipse中用Maven创建java web项目，总结一下创建步骤。" />
 <link rel="canonical" href="http://www.jfox.info/2017/eclipse%E4%B8%AD%E7%94%A8maven%E5%88%9B%E5%BB%BAjavaweb%E9%A1%B9%E7%9B%AE.html" />
 <meta property="og:url" content="http://www.jfox.info/2017/eclipse%E4%B8%AD%E7%94%A8maven%E5%88%9B%E5%BB%BAjavaweb%E9%A1%B9%E7%9B%AE.html" />
 <meta property="og:site_name" content="Java面试" />
 <meta property="og:type" content="article" />
-<meta property="article:published_time" content="2017-01-01T15:55:43+00:00" />
+<meta property="article:published_time" content="2017-01-01T23:55:43+08:00" />
 <script type="application/ld+json">
-{"description":"最近学到在eclipse中用Maven创建java web项目，总结一下创建步骤。 下载Maven压缩包和配置相关信息。 下载地址：http://maven.apache.org/download.cgi 选择如下图所示的解压包即可 下载完成后将压缩包解压。 找到conf文件夹下的setting.xml文件，在文件中配置相关的信息。 localRepository为本地仓库的地址，默认的是C:Users.m2repository可以根据自己的实际情况添加以下语句，进行修改。 &lt;localRepository&gt;路径地址&lt;/localRepository&gt; 如果是在自己电脑上测试用，下载架包的速度可能会特别慢，可以设置mirror来修改远程仓库，在mirrors中添加如下代码 &lt;mirror&gt; &lt;id&gt;alimaven&lt;/id&gt; &lt;name&gt;aliyun maven&lt;/name&gt; &lt;url&gt;http://maven.aliyun.com/nexus/content/groups/public/&lt;/url&gt; &lt;mirrorOf&gt;central&lt;/mirrorOf&gt; &lt;/mirror&gt; 如下图所示 配置eclipse 确保eclipse中有Maven插件，如果没有，可以在Help–&gt;Eclipse Marketplace中下载相关的插件。 确保有相关的插件后，在Windows–&gt;Prefereces中选择Maven下的User Settings,选择settings.xml的文件地址。如下图所示。 创建java web项目 新建项目选择Maven项目 如下图所示 选择web项目 如图所示 填写GroupID和ArtifactID GroupID是项目组织唯一的标识符，实际对应JAVA的包的结构，是main目录里java的目录结构。 ArtifactID就是项目的唯一的标识符，实际对应项目的名称，就是项目根目录的名称。 最后点击Finish即可。","@type":"BlogPosting","url":"http://www.jfox.info/2017/eclipse%E4%B8%AD%E7%94%A8maven%E5%88%9B%E5%BB%BAjavaweb%E9%A1%B9%E7%9B%AE.html","headline":"eclipse中用Maven创建JavaWeb项目","dateModified":"2017-01-01T15:55:43+00:00","datePublished":"2017-01-01T15:55:43+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/eclipse%E4%B8%AD%E7%94%A8maven%E5%88%9B%E5%BB%BAjavaweb%E9%A1%B9%E7%9B%AE.html"},"@context":"http://schema.org"}</script>
+{"@type":"BlogPosting","headline":"eclipse中用Maven创建JavaWeb项目","dateModified":"2017-01-01T23:55:43+08:00","datePublished":"2017-01-01T23:55:43+08:00","url":"http://www.jfox.info/2017/eclipse%E4%B8%AD%E7%94%A8maven%E5%88%9B%E5%BB%BAjavaweb%E9%A1%B9%E7%9B%AE.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/eclipse%E4%B8%AD%E7%94%A8maven%E5%88%9B%E5%BB%BAjavaweb%E9%A1%B9%E7%9B%AE.html"},"description":"最近学到在eclipse中用Maven创建java web项目，总结一下创建步骤。","@context":"http://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
   <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
@@ -37,7 +37,7 @@
   <header class="post-header">
     <h1 class="post-title p-name" itemprop="name headline">eclipse中用Maven创建JavaWeb项目</h1>
     <p class="post-meta">
-      <time class="dt-published" datetime="2017-01-01T15:55:43+00:00" itemprop="datePublished">Jan 1, 2017
+      <time class="dt-published" datetime="2017-01-01T23:55:43+08:00" itemprop="datePublished">Jan 1, 2017
       </time></p>
   </header>
 

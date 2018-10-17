@@ -4,18 +4,18 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
 <title>Incorrect column count: expected 1, actual 5，JdbcTemplate queryForList 出错 | Java面试</title>
-<meta name="generator" content="Jekyll v3.8.4" />
+<meta name="generator" content="Jekyll v3.8.3" />
 <meta property="og:title" content="Incorrect column count: expected 1, actual 5，JdbcTemplate queryForList 出错" />
 <meta property="og:locale" content="zh_CN" />
-<meta name="description" content="spring JdbcTemplate queryForList 出错 Incorrect column count: expected 1, actual 5 ©Copyright 蕃薯耀 2017年7月10日 http://fanshuyao.iteye.com/ 一、问题描述： 查询时使用JdbcTemplate 中的queryForList发生错误，如下： 查询方法如下： jdbcTemplate.queryForList(selectSql.toString(), entityClass) 查询sql如下： select * from test where 1=1 order by create_time desc limit 0,10 错误如下： Incorrect column count: expected 1, actual 5 二、解决方案： 1、上面错误的原因是，查询返回的结果列期望为1，但实际返回的是5列，因为test表中有5个字段，故返回5列。而这个方法参数的解释是这样的： Parameters: sql SQL query to execute elementType the required type of element in the result list (for example, Integer.class) 就是第2个参数在网上说只能是简单类型String或Integer。 2、使用query查询 jdbcTemplate.query(selectSql.toString(), rowMapper) 但多了一个参数rowMapper，这个参数需要定义为： @SuppressWarnings(&quot;unused&quot;) private BeanPropertyRowMapper&lt;T&gt; rowMapper = new BeanPropertyRowMapper&lt;T&gt;(entityClass){ @Override protected void initBeanWrapper(BeanWrapper bw) { super.initBeanWrapper(bw); } }; 具体的作用就是进入查询结果转换成实体。 到这步也就解决问题了。 ©Copyright 蕃薯耀 2017年7月10日 http://fanshuyao.iteye.com/" />
-<meta property="og:description" content="spring JdbcTemplate queryForList 出错 Incorrect column count: expected 1, actual 5 ©Copyright 蕃薯耀 2017年7月10日 http://fanshuyao.iteye.com/ 一、问题描述： 查询时使用JdbcTemplate 中的queryForList发生错误，如下： 查询方法如下： jdbcTemplate.queryForList(selectSql.toString(), entityClass) 查询sql如下： select * from test where 1=1 order by create_time desc limit 0,10 错误如下： Incorrect column count: expected 1, actual 5 二、解决方案： 1、上面错误的原因是，查询返回的结果列期望为1，但实际返回的是5列，因为test表中有5个字段，故返回5列。而这个方法参数的解释是这样的： Parameters: sql SQL query to execute elementType the required type of element in the result list (for example, Integer.class) 就是第2个参数在网上说只能是简单类型String或Integer。 2、使用query查询 jdbcTemplate.query(selectSql.toString(), rowMapper) 但多了一个参数rowMapper，这个参数需要定义为： @SuppressWarnings(&quot;unused&quot;) private BeanPropertyRowMapper&lt;T&gt; rowMapper = new BeanPropertyRowMapper&lt;T&gt;(entityClass){ @Override protected void initBeanWrapper(BeanWrapper bw) { super.initBeanWrapper(bw); } }; 具体的作用就是进入查询结果转换成实体。 到这步也就解决问题了。 ©Copyright 蕃薯耀 2017年7月10日 http://fanshuyao.iteye.com/" />
+<meta name="description" content="spring JdbcTemplate queryForList 出错" />
+<meta property="og:description" content="spring JdbcTemplate queryForList 出错" />
 <link rel="canonical" href="http://www.jfox.info/2017/incorrectcolumncountexpected1actual5jdbctemplatequeryforlist%E5%87%BA%E9%94%99.html" />
 <meta property="og:url" content="http://www.jfox.info/2017/incorrectcolumncountexpected1actual5jdbctemplatequeryforlist%E5%87%BA%E9%94%99.html" />
 <meta property="og:site_name" content="Java面试" />
 <meta property="og:type" content="article" />
-<meta property="article:published_time" content="2017-01-01T15:54:57+00:00" />
+<meta property="article:published_time" content="2017-01-01T23:54:57+08:00" />
 <script type="application/ld+json">
-{"description":"spring JdbcTemplate queryForList 出错 Incorrect column count: expected 1, actual 5 ©Copyright 蕃薯耀 2017年7月10日 http://fanshuyao.iteye.com/ 一、问题描述： 查询时使用JdbcTemplate 中的queryForList发生错误，如下： 查询方法如下： jdbcTemplate.queryForList(selectSql.toString(), entityClass) 查询sql如下： select * from test where 1=1 order by create_time desc limit 0,10 错误如下： Incorrect column count: expected 1, actual 5 二、解决方案： 1、上面错误的原因是，查询返回的结果列期望为1，但实际返回的是5列，因为test表中有5个字段，故返回5列。而这个方法参数的解释是这样的： Parameters: sql SQL query to execute elementType the required type of element in the result list (for example, Integer.class) 就是第2个参数在网上说只能是简单类型String或Integer。 2、使用query查询 jdbcTemplate.query(selectSql.toString(), rowMapper) 但多了一个参数rowMapper，这个参数需要定义为： @SuppressWarnings(&quot;unused&quot;) private BeanPropertyRowMapper&lt;T&gt; rowMapper = new BeanPropertyRowMapper&lt;T&gt;(entityClass){ @Override protected void initBeanWrapper(BeanWrapper bw) { super.initBeanWrapper(bw); } }; 具体的作用就是进入查询结果转换成实体。 到这步也就解决问题了。 ©Copyright 蕃薯耀 2017年7月10日 http://fanshuyao.iteye.com/","@type":"BlogPosting","url":"http://www.jfox.info/2017/incorrectcolumncountexpected1actual5jdbctemplatequeryforlist%E5%87%BA%E9%94%99.html","headline":"Incorrect column count: expected 1, actual 5，JdbcTemplate queryForList 出错","dateModified":"2017-01-01T15:54:57+00:00","datePublished":"2017-01-01T15:54:57+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/incorrectcolumncountexpected1actual5jdbctemplatequeryforlist%E5%87%BA%E9%94%99.html"},"@context":"http://schema.org"}</script>
+{"@type":"BlogPosting","headline":"Incorrect column count: expected 1, actual 5，JdbcTemplate queryForList 出错","dateModified":"2017-01-01T23:54:57+08:00","datePublished":"2017-01-01T23:54:57+08:00","url":"http://www.jfox.info/2017/incorrectcolumncountexpected1actual5jdbctemplatequeryforlist%E5%87%BA%E9%94%99.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/incorrectcolumncountexpected1actual5jdbctemplatequeryforlist%E5%87%BA%E9%94%99.html"},"description":"spring JdbcTemplate queryForList 出错","@context":"http://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
   <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
@@ -37,7 +37,7 @@
   <header class="post-header">
     <h1 class="post-title p-name" itemprop="name headline">Incorrect column count: expected 1, actual 5，JdbcTemplate queryForList 出错</h1>
     <p class="post-meta">
-      <time class="dt-published" datetime="2017-01-01T15:54:57+00:00" itemprop="datePublished">Jan 1, 2017
+      <time class="dt-published" datetime="2017-01-01T23:54:57+08:00" itemprop="datePublished">Jan 1, 2017
       </time></p>
   </header>
 

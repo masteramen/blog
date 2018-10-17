@@ -4,18 +4,18 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
 <title>js控制10秒后页面自动跳转 | Java面试</title>
-<meta name="generator" content="Jekyll v3.8.4" />
+<meta name="generator" content="Jekyll v3.8.3" />
 <meta property="og:title" content="js控制10秒后页面自动跳转" />
 <meta property="og:locale" content="zh_CN" />
-<meta name="description" content="By Lee - Last updated: 星期日, 八月 10, 2014 js控制5秒后页面自动跳转,代码如下： &lt;meta http-equiv=”Content-Type” content=”text/html; charset=utf-8″&gt; &lt;meta http-equiv=”refresh” content=”11;url=http://www.jfox.info/”&gt; js控制10秒后页面自动跳转 &lt;script type=”text/javascript”&gt; function countDown(secs,surl){ //alert(surl); var jumpTo = document.getElementById(‘jumpTo’); jumpTo.innerHTML=secs; if(–secs&gt;0){ setTimeout(“countDown(“+secs+”,&#39;”+surl+”‘)”,1000); } else{ location.href=surl; } } &lt;/script&gt; &lt;span id=”jumpTo”&gt;10&lt;/span&gt;秒后自动跳转到[http://www.jfox.info/](https://www.jfox.info/go.php?url=http://www.baidu.com/) &lt;script type=”text/javascript”&gt;countDown(10,’[http://www.jfox.info/](https://www.jfox.info/go.php?url=http://www.baidu.com/)‘);&lt;/script&gt;" />
-<meta property="og:description" content="By Lee - Last updated: 星期日, 八月 10, 2014 js控制5秒后页面自动跳转,代码如下： &lt;meta http-equiv=”Content-Type” content=”text/html; charset=utf-8″&gt; &lt;meta http-equiv=”refresh” content=”11;url=http://www.jfox.info/”&gt; js控制10秒后页面自动跳转 &lt;script type=”text/javascript”&gt; function countDown(secs,surl){ //alert(surl); var jumpTo = document.getElementById(‘jumpTo’); jumpTo.innerHTML=secs; if(–secs&gt;0){ setTimeout(“countDown(“+secs+”,&#39;”+surl+”‘)”,1000); } else{ location.href=surl; } } &lt;/script&gt; &lt;span id=”jumpTo”&gt;10&lt;/span&gt;秒后自动跳转到[http://www.jfox.info/](https://www.jfox.info/go.php?url=http://www.baidu.com/) &lt;script type=”text/javascript”&gt;countDown(10,’[http://www.jfox.info/](https://www.jfox.info/go.php?url=http://www.baidu.com/)‘);&lt;/script&gt;" />
+<meta name="description" content="By Lee - Last updated: 星期日, 八月 10, 2014" />
+<meta property="og:description" content="By Lee - Last updated: 星期日, 八月 10, 2014" />
 <link rel="canonical" href="http://www.jfox.info/2017/js-kong-zhi-10-miao-hou-ye-mian-zi-dong-tiao-zhuan.html" />
 <meta property="og:url" content="http://www.jfox.info/2017/js-kong-zhi-10-miao-hou-ye-mian-zi-dong-tiao-zhuan.html" />
 <meta property="og:site_name" content="Java面试" />
 <meta property="og:type" content="article" />
-<meta property="article:published_time" content="2017-01-01T15:46:09+00:00" />
+<meta property="article:published_time" content="2017-01-01T23:46:09+08:00" />
 <script type="application/ld+json">
-{"description":"By Lee - Last updated: 星期日, 八月 10, 2014 js控制5秒后页面自动跳转,代码如下： &lt;meta http-equiv=”Content-Type” content=”text/html; charset=utf-8″&gt; &lt;meta http-equiv=”refresh” content=”11;url=http://www.jfox.info/”&gt; js控制10秒后页面自动跳转 &lt;script type=”text/javascript”&gt; function countDown(secs,surl){ //alert(surl); var jumpTo = document.getElementById(‘jumpTo’); jumpTo.innerHTML=secs; if(–secs&gt;0){ setTimeout(“countDown(“+secs+”,&#39;”+surl+”‘)”,1000); } else{ location.href=surl; } } &lt;/script&gt; &lt;span id=”jumpTo”&gt;10&lt;/span&gt;秒后自动跳转到[http://www.jfox.info/](https://www.jfox.info/go.php?url=http://www.baidu.com/) &lt;script type=”text/javascript”&gt;countDown(10,’[http://www.jfox.info/](https://www.jfox.info/go.php?url=http://www.baidu.com/)‘);&lt;/script&gt;","@type":"BlogPosting","url":"http://www.jfox.info/2017/js-kong-zhi-10-miao-hou-ye-mian-zi-dong-tiao-zhuan.html","headline":"js控制10秒后页面自动跳转","dateModified":"2017-01-01T15:46:09+00:00","datePublished":"2017-01-01T15:46:09+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/js-kong-zhi-10-miao-hou-ye-mian-zi-dong-tiao-zhuan.html"},"@context":"http://schema.org"}</script>
+{"@type":"BlogPosting","headline":"js控制10秒后页面自动跳转","dateModified":"2017-01-01T23:46:09+08:00","datePublished":"2017-01-01T23:46:09+08:00","url":"http://www.jfox.info/2017/js-kong-zhi-10-miao-hou-ye-mian-zi-dong-tiao-zhuan.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/js-kong-zhi-10-miao-hou-ye-mian-zi-dong-tiao-zhuan.html"},"description":"By Lee - Last updated: 星期日, 八月 10, 2014","@context":"http://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
   <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
@@ -37,7 +37,7 @@
   <header class="post-header">
     <h1 class="post-title p-name" itemprop="name headline">js控制10秒后页面自动跳转</h1>
     <p class="post-meta">
-      <time class="dt-published" datetime="2017-01-01T15:46:09+00:00" itemprop="datePublished">Jan 1, 2017
+      <time class="dt-published" datetime="2017-01-01T23:46:09+08:00" itemprop="datePublished">Jan 1, 2017
       </time></p>
   </header>
 

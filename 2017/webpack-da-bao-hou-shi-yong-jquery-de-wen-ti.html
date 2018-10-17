@@ -4,18 +4,18 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
 <title>webpack打包后使用jQuery的问题 | Java面试</title>
-<meta name="generator" content="Jekyll v3.8.4" />
+<meta name="generator" content="Jekyll v3.8.3" />
 <meta property="og:title" content="webpack打包后使用jQuery的问题" />
 <meta property="og:locale" content="zh_CN" />
-<meta name="description" content="By Lee - Last updated: 星期二, 四月 4, 2017 使用webpack打包了页面上使用的一些js文件 配置文件： var webpack = require(&quot;webpack&quot;); var path= require(&quot;path&quot;); module.exports = { entry: [ &quot;./admin/public/entry/entry.js&quot; ], output: { path: path.join(__dirname,&quot;/admin/public/js/out&quot;), filename:&quot;bundle.js&quot; }, module: { loaders: [{ test: /.css$/, loader:&quot;style!css&quot; }] }, plugins: [ new webpack.ProvidePlugin({ $:&quot;jquery&quot;, jQuery:&quot;jquery&quot;, &quot;window.jQuery&quot;:&quot;jquery&quot; }) ], } 入口文件： require(&#39;bootstrap&#39;); require(&#39;bootstrap-switch&#39;); require(&#39;bootstrap-timepicker&#39;); require(&#39;../js/jquery.cookies.js&#39;); require(&#39;gritter&#39;); require(&#39;../js/datatable.js&#39;); require(&#39;../js/custom.js&#39;); require(&#39;../js/common.js&#39;); require(&#39;../js/tag.js&#39;); require(&#39;jquery-ui&#39;); require(&#39;cropper&#39;); require(&#39;ztree&#39;); 打包完之后再网页上使用jQuery会报 Uncaught ReferenceError: $ is not defined 表示理解不能，为何在打包的js插件中使用jq没问题，在网页中却要报错" />
-<meta property="og:description" content="By Lee - Last updated: 星期二, 四月 4, 2017 使用webpack打包了页面上使用的一些js文件 配置文件： var webpack = require(&quot;webpack&quot;); var path= require(&quot;path&quot;); module.exports = { entry: [ &quot;./admin/public/entry/entry.js&quot; ], output: { path: path.join(__dirname,&quot;/admin/public/js/out&quot;), filename:&quot;bundle.js&quot; }, module: { loaders: [{ test: /.css$/, loader:&quot;style!css&quot; }] }, plugins: [ new webpack.ProvidePlugin({ $:&quot;jquery&quot;, jQuery:&quot;jquery&quot;, &quot;window.jQuery&quot;:&quot;jquery&quot; }) ], } 入口文件： require(&#39;bootstrap&#39;); require(&#39;bootstrap-switch&#39;); require(&#39;bootstrap-timepicker&#39;); require(&#39;../js/jquery.cookies.js&#39;); require(&#39;gritter&#39;); require(&#39;../js/datatable.js&#39;); require(&#39;../js/custom.js&#39;); require(&#39;../js/common.js&#39;); require(&#39;../js/tag.js&#39;); require(&#39;jquery-ui&#39;); require(&#39;cropper&#39;); require(&#39;ztree&#39;); 打包完之后再网页上使用jQuery会报 Uncaught ReferenceError: $ is not defined 表示理解不能，为何在打包的js插件中使用jq没问题，在网页中却要报错" />
+<meta name="description" content="By Lee - Last updated: 星期二, 四月 4, 2017" />
+<meta property="og:description" content="By Lee - Last updated: 星期二, 四月 4, 2017" />
 <link rel="canonical" href="http://www.jfox.info/2017/webpack-da-bao-hou-shi-yong-jquery-de-wen-ti.html" />
 <meta property="og:url" content="http://www.jfox.info/2017/webpack-da-bao-hou-shi-yong-jquery-de-wen-ti.html" />
 <meta property="og:site_name" content="Java面试" />
 <meta property="og:type" content="article" />
-<meta property="article:published_time" content="2017-01-01T15:48:37+00:00" />
+<meta property="article:published_time" content="2017-01-01T23:48:37+08:00" />
 <script type="application/ld+json">
-{"description":"By Lee - Last updated: 星期二, 四月 4, 2017 使用webpack打包了页面上使用的一些js文件 配置文件： var webpack = require(&quot;webpack&quot;); var path= require(&quot;path&quot;); module.exports = { entry: [ &quot;./admin/public/entry/entry.js&quot; ], output: { path: path.join(__dirname,&quot;/admin/public/js/out&quot;), filename:&quot;bundle.js&quot; }, module: { loaders: [{ test: /.css$/, loader:&quot;style!css&quot; }] }, plugins: [ new webpack.ProvidePlugin({ $:&quot;jquery&quot;, jQuery:&quot;jquery&quot;, &quot;window.jQuery&quot;:&quot;jquery&quot; }) ], } 入口文件： require(&#39;bootstrap&#39;); require(&#39;bootstrap-switch&#39;); require(&#39;bootstrap-timepicker&#39;); require(&#39;../js/jquery.cookies.js&#39;); require(&#39;gritter&#39;); require(&#39;../js/datatable.js&#39;); require(&#39;../js/custom.js&#39;); require(&#39;../js/common.js&#39;); require(&#39;../js/tag.js&#39;); require(&#39;jquery-ui&#39;); require(&#39;cropper&#39;); require(&#39;ztree&#39;); 打包完之后再网页上使用jQuery会报 Uncaught ReferenceError: $ is not defined 表示理解不能，为何在打包的js插件中使用jq没问题，在网页中却要报错","@type":"BlogPosting","url":"http://www.jfox.info/2017/webpack-da-bao-hou-shi-yong-jquery-de-wen-ti.html","headline":"webpack打包后使用jQuery的问题","dateModified":"2017-01-01T15:48:37+00:00","datePublished":"2017-01-01T15:48:37+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/webpack-da-bao-hou-shi-yong-jquery-de-wen-ti.html"},"@context":"http://schema.org"}</script>
+{"@type":"BlogPosting","headline":"webpack打包后使用jQuery的问题","dateModified":"2017-01-01T23:48:37+08:00","datePublished":"2017-01-01T23:48:37+08:00","url":"http://www.jfox.info/2017/webpack-da-bao-hou-shi-yong-jquery-de-wen-ti.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/webpack-da-bao-hou-shi-yong-jquery-de-wen-ti.html"},"description":"By Lee - Last updated: 星期二, 四月 4, 2017","@context":"http://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
   <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
@@ -37,7 +37,7 @@
   <header class="post-header">
     <h1 class="post-title p-name" itemprop="name headline">webpack打包后使用jQuery的问题</h1>
     <p class="post-meta">
-      <time class="dt-published" datetime="2017-01-01T15:48:37+00:00" itemprop="datePublished">Jan 1, 2017
+      <time class="dt-published" datetime="2017-01-01T23:48:37+08:00" itemprop="datePublished">Jan 1, 2017
       </time></p>
   </header>
 

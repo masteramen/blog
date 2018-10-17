@@ -4,18 +4,18 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
 <title>程序级的AOP到底好不好？ | Java面试</title>
-<meta name="generator" content="Jekyll v3.8.4" />
+<meta name="generator" content="Jekyll v3.8.3" />
 <meta property="og:title" content="程序级的AOP到底好不好？" />
 <meta property="og:locale" content="zh_CN" />
-<meta name="description" content="很多年前模拟过Spring的AOP机制，简单的实现其实不难，但真正要保证切入代码符合预期的设计，不会引起负面影响，特别是要保证原来逻辑的稳定性，即AOP的强壮性。个人感觉还是很难，如果横切的代码过多，就更难管理了。在后面的实际应用中，虽然知道这种AOP架构，但一般除了预设的横切代码，都没有采用这种架构，更多的是将这种架构设计的需求后移到数据库或者日志层面。在单一应用模式下，AOP至少还可以用，而在分布式应用中，个人感觉AOP在程序级应用不应被滥用，而是应该后移到数据库或者日志文件，以实现原逻辑的稳定和性能，使得切入需求的逻辑代码彻底与原逻辑代码分离。本质就是将这种AOP的程序架构思想提升到更高的层面进行架构和处理。 从设计的角度来说，当然是预先知道切入的功能更好，但为了应对需求的变化，又必须具有AOP能力的冗余。通过这几年的设计实践来看，我主张不要再程序级上实现过多的AOP横切，应该在业务架构层面来设计这种AOP机制。这种层级上的AOP更加灵活，更具有扩展性和维护性。 做商务，弄需求，做架构，写代码….苦B的人生不需要解释，就用思考润滑。 很久没发文章，支持度还是有些问题。只能以此纪念蓝胖子在CSDN的岁月！" />
-<meta property="og:description" content="很多年前模拟过Spring的AOP机制，简单的实现其实不难，但真正要保证切入代码符合预期的设计，不会引起负面影响，特别是要保证原来逻辑的稳定性，即AOP的强壮性。个人感觉还是很难，如果横切的代码过多，就更难管理了。在后面的实际应用中，虽然知道这种AOP架构，但一般除了预设的横切代码，都没有采用这种架构，更多的是将这种架构设计的需求后移到数据库或者日志层面。在单一应用模式下，AOP至少还可以用，而在分布式应用中，个人感觉AOP在程序级应用不应被滥用，而是应该后移到数据库或者日志文件，以实现原逻辑的稳定和性能，使得切入需求的逻辑代码彻底与原逻辑代码分离。本质就是将这种AOP的程序架构思想提升到更高的层面进行架构和处理。 从设计的角度来说，当然是预先知道切入的功能更好，但为了应对需求的变化，又必须具有AOP能力的冗余。通过这几年的设计实践来看，我主张不要再程序级上实现过多的AOP横切，应该在业务架构层面来设计这种AOP机制。这种层级上的AOP更加灵活，更具有扩展性和维护性。 做商务，弄需求，做架构，写代码….苦B的人生不需要解释，就用思考润滑。 很久没发文章，支持度还是有些问题。只能以此纪念蓝胖子在CSDN的岁月！" />
+<meta name="description" content="很多年前模拟过Spring的AOP机制，简单的实现其实不难，但真正要保证切入代码符合预期的设计，不会引起负面影响，特别是要保证原来逻辑的稳定性，即AOP的强壮性。个人感觉还是很难，如果横切的代码过多，就更难管理了。在后面的实际应用中，虽然知道这种AOP架构，但一般除了预设的横切代码，都没有采用这种架构，更多的是将这种架构设计的需求后移到数据库或者日志层面。在单一应用模式下，AOP至少还可以用，而在分布式应用中，个人感觉AOP在程序级应用不应被滥用，而是应该后移到数据库或者日志文件，以实现原逻辑的稳定和性能，使得切入需求的逻辑代码彻底与原逻辑代码分离。本质就是将这种AOP的程序架构思想提升到更高的层面进行架构和处理。" />
+<meta property="og:description" content="很多年前模拟过Spring的AOP机制，简单的实现其实不难，但真正要保证切入代码符合预期的设计，不会引起负面影响，特别是要保证原来逻辑的稳定性，即AOP的强壮性。个人感觉还是很难，如果横切的代码过多，就更难管理了。在后面的实际应用中，虽然知道这种AOP架构，但一般除了预设的横切代码，都没有采用这种架构，更多的是将这种架构设计的需求后移到数据库或者日志层面。在单一应用模式下，AOP至少还可以用，而在分布式应用中，个人感觉AOP在程序级应用不应被滥用，而是应该后移到数据库或者日志文件，以实现原逻辑的稳定和性能，使得切入需求的逻辑代码彻底与原逻辑代码分离。本质就是将这种AOP的程序架构思想提升到更高的层面进行架构和处理。" />
 <link rel="canonical" href="http://www.jfox.info/2017/%E7%A8%8B%E5%BA%8F%E7%BA%A7%E7%9A%84aop%E5%88%B0%E5%BA%95%E5%A5%BD%E4%B8%8D%E5%A5%BD.html" />
 <meta property="og:url" content="http://www.jfox.info/2017/%E7%A8%8B%E5%BA%8F%E7%BA%A7%E7%9A%84aop%E5%88%B0%E5%BA%95%E5%A5%BD%E4%B8%8D%E5%A5%BD.html" />
 <meta property="og:site_name" content="Java面试" />
 <meta property="og:type" content="article" />
-<meta property="article:published_time" content="2017-01-01T15:59:09+00:00" />
+<meta property="article:published_time" content="2017-01-01T23:59:09+08:00" />
 <script type="application/ld+json">
-{"description":"很多年前模拟过Spring的AOP机制，简单的实现其实不难，但真正要保证切入代码符合预期的设计，不会引起负面影响，特别是要保证原来逻辑的稳定性，即AOP的强壮性。个人感觉还是很难，如果横切的代码过多，就更难管理了。在后面的实际应用中，虽然知道这种AOP架构，但一般除了预设的横切代码，都没有采用这种架构，更多的是将这种架构设计的需求后移到数据库或者日志层面。在单一应用模式下，AOP至少还可以用，而在分布式应用中，个人感觉AOP在程序级应用不应被滥用，而是应该后移到数据库或者日志文件，以实现原逻辑的稳定和性能，使得切入需求的逻辑代码彻底与原逻辑代码分离。本质就是将这种AOP的程序架构思想提升到更高的层面进行架构和处理。 从设计的角度来说，当然是预先知道切入的功能更好，但为了应对需求的变化，又必须具有AOP能力的冗余。通过这几年的设计实践来看，我主张不要再程序级上实现过多的AOP横切，应该在业务架构层面来设计这种AOP机制。这种层级上的AOP更加灵活，更具有扩展性和维护性。 做商务，弄需求，做架构，写代码….苦B的人生不需要解释，就用思考润滑。 很久没发文章，支持度还是有些问题。只能以此纪念蓝胖子在CSDN的岁月！","@type":"BlogPosting","url":"http://www.jfox.info/2017/%E7%A8%8B%E5%BA%8F%E7%BA%A7%E7%9A%84aop%E5%88%B0%E5%BA%95%E5%A5%BD%E4%B8%8D%E5%A5%BD.html","headline":"程序级的AOP到底好不好？","dateModified":"2017-01-01T15:59:09+00:00","datePublished":"2017-01-01T15:59:09+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/%E7%A8%8B%E5%BA%8F%E7%BA%A7%E7%9A%84aop%E5%88%B0%E5%BA%95%E5%A5%BD%E4%B8%8D%E5%A5%BD.html"},"@context":"http://schema.org"}</script>
+{"@type":"BlogPosting","headline":"程序级的AOP到底好不好？","dateModified":"2017-01-01T23:59:09+08:00","datePublished":"2017-01-01T23:59:09+08:00","url":"http://www.jfox.info/2017/%E7%A8%8B%E5%BA%8F%E7%BA%A7%E7%9A%84aop%E5%88%B0%E5%BA%95%E5%A5%BD%E4%B8%8D%E5%A5%BD.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/%E7%A8%8B%E5%BA%8F%E7%BA%A7%E7%9A%84aop%E5%88%B0%E5%BA%95%E5%A5%BD%E4%B8%8D%E5%A5%BD.html"},"description":"很多年前模拟过Spring的AOP机制，简单的实现其实不难，但真正要保证切入代码符合预期的设计，不会引起负面影响，特别是要保证原来逻辑的稳定性，即AOP的强壮性。个人感觉还是很难，如果横切的代码过多，就更难管理了。在后面的实际应用中，虽然知道这种AOP架构，但一般除了预设的横切代码，都没有采用这种架构，更多的是将这种架构设计的需求后移到数据库或者日志层面。在单一应用模式下，AOP至少还可以用，而在分布式应用中，个人感觉AOP在程序级应用不应被滥用，而是应该后移到数据库或者日志文件，以实现原逻辑的稳定和性能，使得切入需求的逻辑代码彻底与原逻辑代码分离。本质就是将这种AOP的程序架构思想提升到更高的层面进行架构和处理。","@context":"http://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
   <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
@@ -37,7 +37,7 @@
   <header class="post-header">
     <h1 class="post-title p-name" itemprop="name headline">程序级的AOP到底好不好？</h1>
     <p class="post-meta">
-      <time class="dt-published" datetime="2017-01-01T15:59:09+00:00" itemprop="datePublished">Jan 1, 2017
+      <time class="dt-published" datetime="2017-01-01T23:59:09+08:00" itemprop="datePublished">Jan 1, 2017
       </time></p>
   </header>
 

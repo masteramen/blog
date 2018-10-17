@@ -4,18 +4,18 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
 <title>base64加密URL地址参数传递(python与php版本) | Java面试</title>
-<meta name="generator" content="Jekyll v3.8.4" />
+<meta name="generator" content="Jekyll v3.8.3" />
 <meta property="og:title" content="base64加密URL地址参数传递(python与php版本)" />
 <meta property="og:locale" content="zh_CN" />
-<meta name="description" content="有关base64加密url地址栏参数值的方法，分为python与php二种版本加密url地址，需要的朋友参考下。 base64加密URL地址参数 把base64加密后在url传输，会把“+“，”/”分别替换为”-”，”_”，以及会把末尾的等号“=”去掉。 另外base64加密后的长度必然是4的倍数，所以可以根据这个还原“=”号 解密过程自然就是加密的逆向了。 注意：python必须补齐=号才正常，不然会抛错no padding. 1、python版本： 复制代码 代码示例: #!/usr/bin/env python # def base64_url_decode(inp): 通过url传输时去掉了=号，所以需要补上=号 import base64 return base64.urlsafe_b64decode(str(inp + ‘=’ * (4 – len(inp) % 4))) def base64_url_encode(inp): import base64 return base64.urlsafe_b64encode(str(inp)).rstrip(‘=’) 2、php版本： 复制代码 代码示例: #/usr/bin/php # function base64url_encode($data) { return rtrim(strtr(base64encode($data), ‘+/’, ‘-’), ‘=’); } function base64url_decode($data) { return base64decode(str_pad(strtr($data, ‘-’, ‘+/’), strlen($data) % 4, ‘=’, STR_PAD_RIGHT)); }" />
-<meta property="og:description" content="有关base64加密url地址栏参数值的方法，分为python与php二种版本加密url地址，需要的朋友参考下。 base64加密URL地址参数 把base64加密后在url传输，会把“+“，”/”分别替换为”-”，”_”，以及会把末尾的等号“=”去掉。 另外base64加密后的长度必然是4的倍数，所以可以根据这个还原“=”号 解密过程自然就是加密的逆向了。 注意：python必须补齐=号才正常，不然会抛错no padding. 1、python版本： 复制代码 代码示例: #!/usr/bin/env python # def base64_url_decode(inp): 通过url传输时去掉了=号，所以需要补上=号 import base64 return base64.urlsafe_b64decode(str(inp + ‘=’ * (4 – len(inp) % 4))) def base64_url_encode(inp): import base64 return base64.urlsafe_b64encode(str(inp)).rstrip(‘=’) 2、php版本： 复制代码 代码示例: #/usr/bin/php # function base64url_encode($data) { return rtrim(strtr(base64encode($data), ‘+/’, ‘-’), ‘=’); } function base64url_decode($data) { return base64decode(str_pad(strtr($data, ‘-’, ‘+/’), strlen($data) % 4, ‘=’, STR_PAD_RIGHT)); }" />
+<meta name="description" content="有关base64加密url地址栏参数值的方法，分为python与php二种版本加密url地址，需要的朋友参考下。" />
+<meta property="og:description" content="有关base64加密url地址栏参数值的方法，分为python与php二种版本加密url地址，需要的朋友参考下。" />
 <link rel="canonical" href="http://www.jfox.info/2017/base64-jia-mi-url-di-zhi-can-shu-chuan-di-python-yu-php-ban-ben.html" />
 <meta property="og:url" content="http://www.jfox.info/2017/base64-jia-mi-url-di-zhi-can-shu-chuan-di-python-yu-php-ban-ben.html" />
 <meta property="og:site_name" content="Java面试" />
 <meta property="og:type" content="article" />
-<meta property="article:published_time" content="2017-01-01T15:48:04+00:00" />
+<meta property="article:published_time" content="2017-01-01T23:48:04+08:00" />
 <script type="application/ld+json">
-{"description":"有关base64加密url地址栏参数值的方法，分为python与php二种版本加密url地址，需要的朋友参考下。 base64加密URL地址参数 把base64加密后在url传输，会把“+“，”/”分别替换为”-”，”_”，以及会把末尾的等号“=”去掉。 另外base64加密后的长度必然是4的倍数，所以可以根据这个还原“=”号 解密过程自然就是加密的逆向了。 注意：python必须补齐=号才正常，不然会抛错no padding. 1、python版本： 复制代码 代码示例: #!/usr/bin/env python # def base64_url_decode(inp): 通过url传输时去掉了=号，所以需要补上=号 import base64 return base64.urlsafe_b64decode(str(inp + ‘=’ * (4 – len(inp) % 4))) def base64_url_encode(inp): import base64 return base64.urlsafe_b64encode(str(inp)).rstrip(‘=’) 2、php版本： 复制代码 代码示例: #/usr/bin/php # function base64url_encode($data) { return rtrim(strtr(base64encode($data), ‘+/’, ‘-’), ‘=’); } function base64url_decode($data) { return base64decode(str_pad(strtr($data, ‘-’, ‘+/’), strlen($data) % 4, ‘=’, STR_PAD_RIGHT)); }","@type":"BlogPosting","url":"http://www.jfox.info/2017/base64-jia-mi-url-di-zhi-can-shu-chuan-di-python-yu-php-ban-ben.html","headline":"base64加密URL地址参数传递(python与php版本)","dateModified":"2017-01-01T15:48:04+00:00","datePublished":"2017-01-01T15:48:04+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/base64-jia-mi-url-di-zhi-can-shu-chuan-di-python-yu-php-ban-ben.html"},"@context":"http://schema.org"}</script>
+{"@type":"BlogPosting","headline":"base64加密URL地址参数传递(python与php版本)","dateModified":"2017-01-01T23:48:04+08:00","datePublished":"2017-01-01T23:48:04+08:00","url":"http://www.jfox.info/2017/base64-jia-mi-url-di-zhi-can-shu-chuan-di-python-yu-php-ban-ben.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/base64-jia-mi-url-di-zhi-can-shu-chuan-di-python-yu-php-ban-ben.html"},"description":"有关base64加密url地址栏参数值的方法，分为python与php二种版本加密url地址，需要的朋友参考下。","@context":"http://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
   <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
@@ -37,7 +37,7 @@
   <header class="post-header">
     <h1 class="post-title p-name" itemprop="name headline">base64加密URL地址参数传递(python与php版本)</h1>
     <p class="post-meta">
-      <time class="dt-published" datetime="2017-01-01T15:48:04+00:00" itemprop="datePublished">Jan 1, 2017
+      <time class="dt-published" datetime="2017-01-01T23:48:04+08:00" itemprop="datePublished">Jan 1, 2017
       </time></p>
   </header>
 

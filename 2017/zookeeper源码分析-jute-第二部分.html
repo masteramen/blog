@@ -4,18 +4,18 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
 <title>ZooKeeper源码分析-Jute-第二部分 | Java面试</title>
-<meta name="generator" content="Jekyll v3.8.4" />
+<meta name="generator" content="Jekyll v3.8.3" />
 <meta property="og:title" content="ZooKeeper源码分析-Jute-第二部分" />
 <meta property="og:locale" content="zh_CN" />
-<meta name="description" content="数据类型和流 本部分描述支持Hadoop的基础数据类型以及复合类型。我们的目的是支持一系列的类型，可以用于在不同的编程语言中简化和有效表达一定范围的记录类型. 基础类型 大部分情况下，Hadoop的大部分基础类型直接映射到高级编程语言的基础类型。特殊的例子是ustring（Unicode字符串）以及buffer类型，我们相信它能被广泛使用，并且通常在库代码中实现，而不是做为语言内置程序使用。当目标语言没有内置实现且没有广泛应用的标准实现时，Hadoop能通过库代码来支持他们。基础数据类型的完整列表有如下： byte、boolean、int、long、float、double、ustring、buffer 组合类型 Haddop支持小部分组合类型，用于描述简单的聚合类型和容器。一个组合类型被序列化的方式通常是序列化它的组成元素。组合类型包含以下几个类型： 1）Record：类似C结构体的聚合类型。它由一系列的类型字段组合被认为是一个单一的数据类型。一个Record通过序列化它的组成字段而被序列化。除了序列化以外，Record还有一个 comparison对比函数，该函数被定义成对成员逐一比较的函数。 2）vector：一系列的同样数据类型的集合，可以是基础类型也可以是组合类型。 3）map：一个关联容器，将键类型的实例映射到值类型的实例上。 流 Hadoop通过自动生成代码序列化和反序列化Record类型，把它转换成抽象流。针对每个目标语言Haddop定义了非常简单的输入输出流接口，应用程序开发人员可以通过封装具体的流实现方法来开发这些接口的具体实例。" />
-<meta property="og:description" content="数据类型和流 本部分描述支持Hadoop的基础数据类型以及复合类型。我们的目的是支持一系列的类型，可以用于在不同的编程语言中简化和有效表达一定范围的记录类型. 基础类型 大部分情况下，Hadoop的大部分基础类型直接映射到高级编程语言的基础类型。特殊的例子是ustring（Unicode字符串）以及buffer类型，我们相信它能被广泛使用，并且通常在库代码中实现，而不是做为语言内置程序使用。当目标语言没有内置实现且没有广泛应用的标准实现时，Hadoop能通过库代码来支持他们。基础数据类型的完整列表有如下： byte、boolean、int、long、float、double、ustring、buffer 组合类型 Haddop支持小部分组合类型，用于描述简单的聚合类型和容器。一个组合类型被序列化的方式通常是序列化它的组成元素。组合类型包含以下几个类型： 1）Record：类似C结构体的聚合类型。它由一系列的类型字段组合被认为是一个单一的数据类型。一个Record通过序列化它的组成字段而被序列化。除了序列化以外，Record还有一个 comparison对比函数，该函数被定义成对成员逐一比较的函数。 2）vector：一系列的同样数据类型的集合，可以是基础类型也可以是组合类型。 3）map：一个关联容器，将键类型的实例映射到值类型的实例上。 流 Hadoop通过自动生成代码序列化和反序列化Record类型，把它转换成抽象流。针对每个目标语言Haddop定义了非常简单的输入输出流接口，应用程序开发人员可以通过封装具体的流实现方法来开发这些接口的具体实例。" />
+<meta name="description" content="数据类型和流" />
+<meta property="og:description" content="数据类型和流" />
 <link rel="canonical" href="http://www.jfox.info/2017/zookeeper%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-jute-%E7%AC%AC%E4%BA%8C%E9%83%A8%E5%88%86.html" />
 <meta property="og:url" content="http://www.jfox.info/2017/zookeeper%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-jute-%E7%AC%AC%E4%BA%8C%E9%83%A8%E5%88%86.html" />
 <meta property="og:site_name" content="Java面试" />
 <meta property="og:type" content="article" />
-<meta property="article:published_time" content="2017-01-01T15:50:16+00:00" />
+<meta property="article:published_time" content="2017-01-01T23:50:16+08:00" />
 <script type="application/ld+json">
-{"description":"数据类型和流 本部分描述支持Hadoop的基础数据类型以及复合类型。我们的目的是支持一系列的类型，可以用于在不同的编程语言中简化和有效表达一定范围的记录类型. 基础类型 大部分情况下，Hadoop的大部分基础类型直接映射到高级编程语言的基础类型。特殊的例子是ustring（Unicode字符串）以及buffer类型，我们相信它能被广泛使用，并且通常在库代码中实现，而不是做为语言内置程序使用。当目标语言没有内置实现且没有广泛应用的标准实现时，Hadoop能通过库代码来支持他们。基础数据类型的完整列表有如下： byte、boolean、int、long、float、double、ustring、buffer 组合类型 Haddop支持小部分组合类型，用于描述简单的聚合类型和容器。一个组合类型被序列化的方式通常是序列化它的组成元素。组合类型包含以下几个类型： 1）Record：类似C结构体的聚合类型。它由一系列的类型字段组合被认为是一个单一的数据类型。一个Record通过序列化它的组成字段而被序列化。除了序列化以外，Record还有一个 comparison对比函数，该函数被定义成对成员逐一比较的函数。 2）vector：一系列的同样数据类型的集合，可以是基础类型也可以是组合类型。 3）map：一个关联容器，将键类型的实例映射到值类型的实例上。 流 Hadoop通过自动生成代码序列化和反序列化Record类型，把它转换成抽象流。针对每个目标语言Haddop定义了非常简单的输入输出流接口，应用程序开发人员可以通过封装具体的流实现方法来开发这些接口的具体实例。","@type":"BlogPosting","url":"http://www.jfox.info/2017/zookeeper%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-jute-%E7%AC%AC%E4%BA%8C%E9%83%A8%E5%88%86.html","headline":"ZooKeeper源码分析-Jute-第二部分","dateModified":"2017-01-01T15:50:16+00:00","datePublished":"2017-01-01T15:50:16+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/zookeeper%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-jute-%E7%AC%AC%E4%BA%8C%E9%83%A8%E5%88%86.html"},"@context":"http://schema.org"}</script>
+{"@type":"BlogPosting","headline":"ZooKeeper源码分析-Jute-第二部分","dateModified":"2017-01-01T23:50:16+08:00","datePublished":"2017-01-01T23:50:16+08:00","url":"http://www.jfox.info/2017/zookeeper%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-jute-%E7%AC%AC%E4%BA%8C%E9%83%A8%E5%88%86.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/zookeeper%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-jute-%E7%AC%AC%E4%BA%8C%E9%83%A8%E5%88%86.html"},"description":"数据类型和流","@context":"http://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
   <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
@@ -37,7 +37,7 @@
   <header class="post-header">
     <h1 class="post-title p-name" itemprop="name headline">ZooKeeper源码分析-Jute-第二部分</h1>
     <p class="post-meta">
-      <time class="dt-published" datetime="2017-01-01T15:50:16+00:00" itemprop="datePublished">Jan 1, 2017
+      <time class="dt-published" datetime="2017-01-01T23:50:16+08:00" itemprop="datePublished">Jan 1, 2017
       </time></p>
   </header>
 

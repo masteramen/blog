@@ -4,18 +4,18 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
 <title>C++ 中命名空间的 5 个常见用法 | Java面试</title>
-<meta name="generator" content="Jekyll v3.8.4" />
+<meta name="generator" content="Jekyll v3.8.3" />
 <meta property="og:title" content="C++ 中命名空间的 5 个常见用法" />
 <meta property="og:locale" content="zh_CN" />
-<meta name="description" content="命名空间采取 “Namespace-by-feature ”的方法使代码模块化。”Namespace-by-feature” 通过命名空间来反映功能集。它将具有相互关联的项归类在同一个命名空间。这会形成具有高内聚低耦合（译者注：高内聚是指一个软件模块是由相关性很强的代码组成，只负责一项任务。耦合是一个软件结构内不同模块之间互连程度的度量）、模块性很强的命名空间。 Boost是按功能分组的最佳示例， 它包含数以千计的命名空间， 每一个都用于对特定功能进行分组。 3-匿名命名空间 匿名的命名空间可避免产生全局静态变量。您创建的 “匿名” 命名空间只能在创建它的文件中访问。 4-解决枚举类型成员重名问题 如果在同一个作用域内定义了具有相同名称的枚举，C++中的“传统”枚举会在其作用域内导出枚举值，可能会导致名称冲突， 在一个大型项目中，不能保证两个不同的枚举都不会以同名命名。这个问题在C++ 11中已经得以解决，它使用枚举类，隐式地对枚举名称中的枚举值进行定义。 许多年前, 使用在命名空间内声明枚举的技巧解决这个问题, 而不是像这样声明枚举" />
-<meta property="og:description" content="命名空间采取 “Namespace-by-feature ”的方法使代码模块化。”Namespace-by-feature” 通过命名空间来反映功能集。它将具有相互关联的项归类在同一个命名空间。这会形成具有高内聚低耦合（译者注：高内聚是指一个软件模块是由相关性很强的代码组成，只负责一项任务。耦合是一个软件结构内不同模块之间互连程度的度量）、模块性很强的命名空间。 Boost是按功能分组的最佳示例， 它包含数以千计的命名空间， 每一个都用于对特定功能进行分组。 3-匿名命名空间 匿名的命名空间可避免产生全局静态变量。您创建的 “匿名” 命名空间只能在创建它的文件中访问。 4-解决枚举类型成员重名问题 如果在同一个作用域内定义了具有相同名称的枚举，C++中的“传统”枚举会在其作用域内导出枚举值，可能会导致名称冲突， 在一个大型项目中，不能保证两个不同的枚举都不会以同名命名。这个问题在C++ 11中已经得以解决，它使用枚举类，隐式地对枚举名称中的枚举值进行定义。 许多年前, 使用在命名空间内声明枚举的技巧解决这个问题, 而不是像这样声明枚举" />
+<meta name="description" content="命名空间采取 “Namespace-by-feature ”的方法使代码模块化。”Namespace-by-feature” 通过命名空间来反映功能集。它将具有相互关联的项归类在同一个命名空间。这会形成具有高内聚低耦合（译者注：高内聚是指一个软件模块是由相关性很强的代码组成，只负责一项任务。耦合是一个软件结构内不同模块之间互连程度的度量）、模块性很强的命名空间。" />
+<meta property="og:description" content="命名空间采取 “Namespace-by-feature ”的方法使代码模块化。”Namespace-by-feature” 通过命名空间来反映功能集。它将具有相互关联的项归类在同一个命名空间。这会形成具有高内聚低耦合（译者注：高内聚是指一个软件模块是由相关性很强的代码组成，只负责一项任务。耦合是一个软件结构内不同模块之间互连程度的度量）、模块性很强的命名空间。" />
 <link rel="canonical" href="http://www.jfox.info/2017/c_zhong_ming_ming_kong_jian_de_5_ge_chang_jian_yong_fa.html" />
 <meta property="og:url" content="http://www.jfox.info/2017/c_zhong_ming_ming_kong_jian_de_5_ge_chang_jian_yong_fa.html" />
 <meta property="og:site_name" content="Java面试" />
 <meta property="og:type" content="article" />
-<meta property="article:published_time" content="2017-01-01T15:49:17+00:00" />
+<meta property="article:published_time" content="2017-01-01T23:49:17+08:00" />
 <script type="application/ld+json">
-{"description":"命名空间采取 “Namespace-by-feature ”的方法使代码模块化。”Namespace-by-feature” 通过命名空间来反映功能集。它将具有相互关联的项归类在同一个命名空间。这会形成具有高内聚低耦合（译者注：高内聚是指一个软件模块是由相关性很强的代码组成，只负责一项任务。耦合是一个软件结构内不同模块之间互连程度的度量）、模块性很强的命名空间。 Boost是按功能分组的最佳示例， 它包含数以千计的命名空间， 每一个都用于对特定功能进行分组。 3-匿名命名空间 匿名的命名空间可避免产生全局静态变量。您创建的 “匿名” 命名空间只能在创建它的文件中访问。 4-解决枚举类型成员重名问题 如果在同一个作用域内定义了具有相同名称的枚举，C++中的“传统”枚举会在其作用域内导出枚举值，可能会导致名称冲突， 在一个大型项目中，不能保证两个不同的枚举都不会以同名命名。这个问题在C++ 11中已经得以解决，它使用枚举类，隐式地对枚举名称中的枚举值进行定义。 许多年前, 使用在命名空间内声明枚举的技巧解决这个问题, 而不是像这样声明枚举","@type":"BlogPosting","url":"http://www.jfox.info/2017/c_zhong_ming_ming_kong_jian_de_5_ge_chang_jian_yong_fa.html","headline":"C++ 中命名空间的 5 个常见用法","dateModified":"2017-01-01T15:49:17+00:00","datePublished":"2017-01-01T15:49:17+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/c_zhong_ming_ming_kong_jian_de_5_ge_chang_jian_yong_fa.html"},"@context":"http://schema.org"}</script>
+{"@type":"BlogPosting","headline":"C++ 中命名空间的 5 个常见用法","dateModified":"2017-01-01T23:49:17+08:00","datePublished":"2017-01-01T23:49:17+08:00","url":"http://www.jfox.info/2017/c_zhong_ming_ming_kong_jian_de_5_ge_chang_jian_yong_fa.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/c_zhong_ming_ming_kong_jian_de_5_ge_chang_jian_yong_fa.html"},"description":"命名空间采取 “Namespace-by-feature ”的方法使代码模块化。”Namespace-by-feature” 通过命名空间来反映功能集。它将具有相互关联的项归类在同一个命名空间。这会形成具有高内聚低耦合（译者注：高内聚是指一个软件模块是由相关性很强的代码组成，只负责一项任务。耦合是一个软件结构内不同模块之间互连程度的度量）、模块性很强的命名空间。","@context":"http://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
   <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
@@ -37,7 +37,7 @@
   <header class="post-header">
     <h1 class="post-title p-name" itemprop="name headline">C++ 中命名空间的 5 个常见用法</h1>
     <p class="post-meta">
-      <time class="dt-published" datetime="2017-01-01T15:49:17+00:00" itemprop="datePublished">Jan 1, 2017
+      <time class="dt-published" datetime="2017-01-01T23:49:17+08:00" itemprop="datePublished">Jan 1, 2017
       </time></p>
   </header>
 

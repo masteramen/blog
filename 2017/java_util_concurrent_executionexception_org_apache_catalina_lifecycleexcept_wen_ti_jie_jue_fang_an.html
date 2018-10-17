@@ -4,18 +4,18 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
 <title>java.util.concurrent.ExecutionException: org.apache.catalina.LifecycleExcept问题解决方案 | Java面试</title>
-<meta name="generator" content="Jekyll v3.8.4" />
+<meta name="generator" content="Jekyll v3.8.3" />
 <meta property="og:title" content="java.util.concurrent.ExecutionException: org.apache.catalina.LifecycleExcept问题解决方案" />
 <meta property="og:locale" content="zh_CN" />
-<meta name="description" content="在部署Dynamic Web Project时，如果正确配置web.xml或者标注时，仍然出现以上异常的话，可以尝试以下内容讲解的方法： 　　首先，双击eclipse中的servers，位置如下图“1”所指。 检查位置”2″的General Infomation是否正确，以及位置“3”处的Servlet Path路径信息是否配置正确（一般情况下，正确设置Eclipse的Tomcat配置，这两项没有问题，正确的配置方法参见http://jingyan.baidu.com/article/870c6fc33e62bcb03fe4be90.html） 接下来看位置“4”处的路径是否是Tomcat路径下的webapps的匹配路径，如果不是，按照如下步骤操作： 　　首先，找到Tomcat安装路径，在此路径下找到webapps的文件夹，可以全部选中，全部delete； 接下，进入Eclipse，看到位置“4”显示为可编辑状态，接下来，点击“Browse”，选择正确的Tomcat下的webapps的路径，确定即可； 然后，点击位置“5”，进行web Model添加，如下所示： 最后，在当前位置，点击“Add Web Module”，进行添加目录中的目标工程； 点击“start”，运行Tomcat。" />
-<meta property="og:description" content="在部署Dynamic Web Project时，如果正确配置web.xml或者标注时，仍然出现以上异常的话，可以尝试以下内容讲解的方法： 　　首先，双击eclipse中的servers，位置如下图“1”所指。 检查位置”2″的General Infomation是否正确，以及位置“3”处的Servlet Path路径信息是否配置正确（一般情况下，正确设置Eclipse的Tomcat配置，这两项没有问题，正确的配置方法参见http://jingyan.baidu.com/article/870c6fc33e62bcb03fe4be90.html） 接下来看位置“4”处的路径是否是Tomcat路径下的webapps的匹配路径，如果不是，按照如下步骤操作： 　　首先，找到Tomcat安装路径，在此路径下找到webapps的文件夹，可以全部选中，全部delete； 接下，进入Eclipse，看到位置“4”显示为可编辑状态，接下来，点击“Browse”，选择正确的Tomcat下的webapps的路径，确定即可； 然后，点击位置“5”，进行web Model添加，如下所示： 最后，在当前位置，点击“Add Web Module”，进行添加目录中的目标工程； 点击“start”，运行Tomcat。" />
+<meta name="description" content="在部署Dynamic Web Project时，如果正确配置web.xml或者标注时，仍然出现以上异常的话，可以尝试以下内容讲解的方法：" />
+<meta property="og:description" content="在部署Dynamic Web Project时，如果正确配置web.xml或者标注时，仍然出现以上异常的话，可以尝试以下内容讲解的方法：" />
 <link rel="canonical" href="http://www.jfox.info/2017/java_util_concurrent_executionexception_org_apache_catalina_lifecycleexcept_wen_ti_jie_jue_fang_an.html" />
 <meta property="og:url" content="http://www.jfox.info/2017/java_util_concurrent_executionexception_org_apache_catalina_lifecycleexcept_wen_ti_jie_jue_fang_an.html" />
 <meta property="og:site_name" content="Java面试" />
 <meta property="og:type" content="article" />
-<meta property="article:published_time" content="2017-01-01T15:49:22+00:00" />
+<meta property="article:published_time" content="2017-01-01T23:49:22+08:00" />
 <script type="application/ld+json">
-{"description":"在部署Dynamic Web Project时，如果正确配置web.xml或者标注时，仍然出现以上异常的话，可以尝试以下内容讲解的方法： 　　首先，双击eclipse中的servers，位置如下图“1”所指。 检查位置”2″的General Infomation是否正确，以及位置“3”处的Servlet Path路径信息是否配置正确（一般情况下，正确设置Eclipse的Tomcat配置，这两项没有问题，正确的配置方法参见http://jingyan.baidu.com/article/870c6fc33e62bcb03fe4be90.html） 接下来看位置“4”处的路径是否是Tomcat路径下的webapps的匹配路径，如果不是，按照如下步骤操作： 　　首先，找到Tomcat安装路径，在此路径下找到webapps的文件夹，可以全部选中，全部delete； 接下，进入Eclipse，看到位置“4”显示为可编辑状态，接下来，点击“Browse”，选择正确的Tomcat下的webapps的路径，确定即可； 然后，点击位置“5”，进行web Model添加，如下所示： 最后，在当前位置，点击“Add Web Module”，进行添加目录中的目标工程； 点击“start”，运行Tomcat。","@type":"BlogPosting","url":"http://www.jfox.info/2017/java_util_concurrent_executionexception_org_apache_catalina_lifecycleexcept_wen_ti_jie_jue_fang_an.html","headline":"java.util.concurrent.ExecutionException: org.apache.catalina.LifecycleExcept问题解决方案","dateModified":"2017-01-01T15:49:22+00:00","datePublished":"2017-01-01T15:49:22+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/java_util_concurrent_executionexception_org_apache_catalina_lifecycleexcept_wen_ti_jie_jue_fang_an.html"},"@context":"http://schema.org"}</script>
+{"@type":"BlogPosting","headline":"java.util.concurrent.ExecutionException: org.apache.catalina.LifecycleExcept问题解决方案","dateModified":"2017-01-01T23:49:22+08:00","datePublished":"2017-01-01T23:49:22+08:00","url":"http://www.jfox.info/2017/java_util_concurrent_executionexception_org_apache_catalina_lifecycleexcept_wen_ti_jie_jue_fang_an.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/java_util_concurrent_executionexception_org_apache_catalina_lifecycleexcept_wen_ti_jie_jue_fang_an.html"},"description":"在部署Dynamic Web Project时，如果正确配置web.xml或者标注时，仍然出现以上异常的话，可以尝试以下内容讲解的方法：","@context":"http://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
   <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
@@ -37,7 +37,7 @@
   <header class="post-header">
     <h1 class="post-title p-name" itemprop="name headline">java.util.concurrent.ExecutionException: org.apache.catalina.LifecycleExcept问题解决方案</h1>
     <p class="post-meta">
-      <time class="dt-published" datetime="2017-01-01T15:49:22+00:00" itemprop="datePublished">Jan 1, 2017
+      <time class="dt-published" datetime="2017-01-01T23:49:22+08:00" itemprop="datePublished">Jan 1, 2017
       </time></p>
   </header>
 

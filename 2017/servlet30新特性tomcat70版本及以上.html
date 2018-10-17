@@ -4,18 +4,18 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
 <title>Servlet3.0新特性(Tomcat7.0版本及以上) | Java面试</title>
-<meta name="generator" content="Jekyll v3.8.4" />
+<meta name="generator" content="Jekyll v3.8.3" />
 <meta property="og:title" content="Servlet3.0新特性(Tomcat7.0版本及以上)" />
 <meta property="og:locale" content="zh_CN" />
-<meta name="description" content="在Eclipse中创建Servlet后，Eclipse不会自动在web.xml中生成该Servlet对应的mapping信息，而是在Servlet代码中加入注解@WebServlet。 @WebServlet 用于将一个类声明为 Servlet，该注解将会在部署时被容器处理，容器将根据具体的属性配置将相应的类部署为 Servlet。 //对应旧版本中servlet标签中的内容 @WebServlet(displayName = &quot;This is ForwordServlet&quot;, // 描述 name = &quot;ForwordServlet&quot;, // servlet名称 urlPatterns = { &quot;/forwordServlet&quot; }, // url loadOnStartup = 1, // 启动项 initParams = { @WebInitParam(name = &quot;username&quot;, value = &quot;张三&quot;) }// 初始化参数) publicclass ForwordServlet extends HttpServlet { privatestaticfinallong serialVersionUID = 1L; /** * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse * response) */protectedvoid doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException { // TODO Auto-generated method stub response.getWriter().append(&quot;Served at: &quot;).append(request.getContextPath()); } }" />
-<meta property="og:description" content="在Eclipse中创建Servlet后，Eclipse不会自动在web.xml中生成该Servlet对应的mapping信息，而是在Servlet代码中加入注解@WebServlet。 @WebServlet 用于将一个类声明为 Servlet，该注解将会在部署时被容器处理，容器将根据具体的属性配置将相应的类部署为 Servlet。 //对应旧版本中servlet标签中的内容 @WebServlet(displayName = &quot;This is ForwordServlet&quot;, // 描述 name = &quot;ForwordServlet&quot;, // servlet名称 urlPatterns = { &quot;/forwordServlet&quot; }, // url loadOnStartup = 1, // 启动项 initParams = { @WebInitParam(name = &quot;username&quot;, value = &quot;张三&quot;) }// 初始化参数) publicclass ForwordServlet extends HttpServlet { privatestaticfinallong serialVersionUID = 1L; /** * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse * response) */protectedvoid doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException { // TODO Auto-generated method stub response.getWriter().append(&quot;Served at: &quot;).append(request.getContextPath()); } }" />
+<meta name="description" content="在Eclipse中创建Servlet后，Eclipse不会自动在web.xml中生成该Servlet对应的mapping信息，而是在Servlet代码中加入注解@WebServlet。" />
+<meta property="og:description" content="在Eclipse中创建Servlet后，Eclipse不会自动在web.xml中生成该Servlet对应的mapping信息，而是在Servlet代码中加入注解@WebServlet。" />
 <link rel="canonical" href="http://www.jfox.info/2017/servlet30%E6%96%B0%E7%89%B9%E6%80%A7tomcat70%E7%89%88%E6%9C%AC%E5%8F%8A%E4%BB%A5%E4%B8%8A.html" />
 <meta property="og:url" content="http://www.jfox.info/2017/servlet30%E6%96%B0%E7%89%B9%E6%80%A7tomcat70%E7%89%88%E6%9C%AC%E5%8F%8A%E4%BB%A5%E4%B8%8A.html" />
 <meta property="og:site_name" content="Java面试" />
 <meta property="og:type" content="article" />
-<meta property="article:published_time" content="2017-01-01T15:54:18+00:00" />
+<meta property="article:published_time" content="2017-01-01T23:54:18+08:00" />
 <script type="application/ld+json">
-{"description":"在Eclipse中创建Servlet后，Eclipse不会自动在web.xml中生成该Servlet对应的mapping信息，而是在Servlet代码中加入注解@WebServlet。 @WebServlet 用于将一个类声明为 Servlet，该注解将会在部署时被容器处理，容器将根据具体的属性配置将相应的类部署为 Servlet。 //对应旧版本中servlet标签中的内容 @WebServlet(displayName = &quot;This is ForwordServlet&quot;, // 描述 name = &quot;ForwordServlet&quot;, // servlet名称 urlPatterns = { &quot;/forwordServlet&quot; }, // url loadOnStartup = 1, // 启动项 initParams = { @WebInitParam(name = &quot;username&quot;, value = &quot;张三&quot;) }// 初始化参数) publicclass ForwordServlet extends HttpServlet { privatestaticfinallong serialVersionUID = 1L; /** * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse * response) */protectedvoid doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException { // TODO Auto-generated method stub response.getWriter().append(&quot;Served at: &quot;).append(request.getContextPath()); } }","@type":"BlogPosting","url":"http://www.jfox.info/2017/servlet30%E6%96%B0%E7%89%B9%E6%80%A7tomcat70%E7%89%88%E6%9C%AC%E5%8F%8A%E4%BB%A5%E4%B8%8A.html","headline":"Servlet3.0新特性(Tomcat7.0版本及以上)","dateModified":"2017-01-01T15:54:18+00:00","datePublished":"2017-01-01T15:54:18+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/servlet30%E6%96%B0%E7%89%B9%E6%80%A7tomcat70%E7%89%88%E6%9C%AC%E5%8F%8A%E4%BB%A5%E4%B8%8A.html"},"@context":"http://schema.org"}</script>
+{"@type":"BlogPosting","headline":"Servlet3.0新特性(Tomcat7.0版本及以上)","dateModified":"2017-01-01T23:54:18+08:00","datePublished":"2017-01-01T23:54:18+08:00","url":"http://www.jfox.info/2017/servlet30%E6%96%B0%E7%89%B9%E6%80%A7tomcat70%E7%89%88%E6%9C%AC%E5%8F%8A%E4%BB%A5%E4%B8%8A.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/servlet30%E6%96%B0%E7%89%B9%E6%80%A7tomcat70%E7%89%88%E6%9C%AC%E5%8F%8A%E4%BB%A5%E4%B8%8A.html"},"description":"在Eclipse中创建Servlet后，Eclipse不会自动在web.xml中生成该Servlet对应的mapping信息，而是在Servlet代码中加入注解@WebServlet。","@context":"http://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
   <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
@@ -37,7 +37,7 @@
   <header class="post-header">
     <h1 class="post-title p-name" itemprop="name headline">Servlet3.0新特性(Tomcat7.0版本及以上)</h1>
     <p class="post-meta">
-      <time class="dt-published" datetime="2017-01-01T15:54:18+00:00" itemprop="datePublished">Jan 1, 2017
+      <time class="dt-published" datetime="2017-01-01T23:54:18+08:00" itemprop="datePublished">Jan 1, 2017
       </time></p>
   </header>
 

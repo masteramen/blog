@@ -4,18 +4,18 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
 <title>ORA-01658错误：Oracle修改表空间大小 | Java面试</title>
-<meta name="generator" content="Jekyll v3.8.4" />
+<meta name="generator" content="Jekyll v3.8.3" />
 <meta property="og:title" content="ORA-01658错误：Oracle修改表空间大小" />
 <meta property="og:locale" content="zh_CN" />
-<meta name="description" content="By Lee - Last updated: 星期二, 十二月 30, 2014 在向orale数据库导入数据的时候报 ORA-01658: 无法为表空间 XXX中的段创建 INITIAL 区错误。 Oracle我在创建表空间的时候初始化大小为200M,当数据库中数据量达到这个值,再向数据库中导入数据就会报错。 解决方法是扩展表空间。 可以选择将表容量扩大,比如扩展到2G,或者当表空间不够时每次自动增加一定的容量,如每次自增200M。 查看各表空间分配情况 select tablespace_name,bytes/1024/1024 from dba_data_files order by bytes; 查看各表空间空闲情况 select tablespace_name, sum(bytes)/1024/1024 from dba_free_space group by tablespace_name; 更改表空间大小(2G) alter database datafile &#39;D:\ORACLE\PRODUCT\10.2.0\ORADATA\ORCL\xxx.DBF&#39; resize 2048m; 设置表空间不足时自动增长 1、查看表空间是否开启自动增长 SELECT FILE_NAME,TABLESPACE_NAME,AUTOEXTENSIBLE FROM dba_data_files; 2、设置表空间自动增长 ALTER DATABASE DATAFILE &#39;xxx\xxx.dbf&#39; AUTOEXTEND ON;//打开自动增长 ALTER DATABASE DATAFILE &#39;xxx\xxx.dbf&#39; AUTOEXTEND ON NEXT 200M ;//每次自动增长200m //每次自动增长200m，表空间最大不超过1G ALTER DATABASE DATAFILE &#39;xxx\xxx.dbf&#39; AUTOEXTEND ON NEXT 200M MAXSIZE 1024M;" />
-<meta property="og:description" content="By Lee - Last updated: 星期二, 十二月 30, 2014 在向orale数据库导入数据的时候报 ORA-01658: 无法为表空间 XXX中的段创建 INITIAL 区错误。 Oracle我在创建表空间的时候初始化大小为200M,当数据库中数据量达到这个值,再向数据库中导入数据就会报错。 解决方法是扩展表空间。 可以选择将表容量扩大,比如扩展到2G,或者当表空间不够时每次自动增加一定的容量,如每次自增200M。 查看各表空间分配情况 select tablespace_name,bytes/1024/1024 from dba_data_files order by bytes; 查看各表空间空闲情况 select tablespace_name, sum(bytes)/1024/1024 from dba_free_space group by tablespace_name; 更改表空间大小(2G) alter database datafile &#39;D:\ORACLE\PRODUCT\10.2.0\ORADATA\ORCL\xxx.DBF&#39; resize 2048m; 设置表空间不足时自动增长 1、查看表空间是否开启自动增长 SELECT FILE_NAME,TABLESPACE_NAME,AUTOEXTENSIBLE FROM dba_data_files; 2、设置表空间自动增长 ALTER DATABASE DATAFILE &#39;xxx\xxx.dbf&#39; AUTOEXTEND ON;//打开自动增长 ALTER DATABASE DATAFILE &#39;xxx\xxx.dbf&#39; AUTOEXTEND ON NEXT 200M ;//每次自动增长200m //每次自动增长200m，表空间最大不超过1G ALTER DATABASE DATAFILE &#39;xxx\xxx.dbf&#39; AUTOEXTEND ON NEXT 200M MAXSIZE 1024M;" />
+<meta name="description" content="By Lee - Last updated: 星期二, 十二月 30, 2014" />
+<meta property="og:description" content="By Lee - Last updated: 星期二, 十二月 30, 2014" />
 <link rel="canonical" href="http://www.jfox.info/2017/ora-01658-cuo-wu-oracle-xiu-gai-biao-kong-jian-da-xiao.html" />
 <meta property="og:url" content="http://www.jfox.info/2017/ora-01658-cuo-wu-oracle-xiu-gai-biao-kong-jian-da-xiao.html" />
 <meta property="og:site_name" content="Java面试" />
 <meta property="og:type" content="article" />
-<meta property="article:published_time" content="2017-01-01T15:46:42+00:00" />
+<meta property="article:published_time" content="2017-01-01T23:46:42+08:00" />
 <script type="application/ld+json">
-{"description":"By Lee - Last updated: 星期二, 十二月 30, 2014 在向orale数据库导入数据的时候报 ORA-01658: 无法为表空间 XXX中的段创建 INITIAL 区错误。 Oracle我在创建表空间的时候初始化大小为200M,当数据库中数据量达到这个值,再向数据库中导入数据就会报错。 解决方法是扩展表空间。 可以选择将表容量扩大,比如扩展到2G,或者当表空间不够时每次自动增加一定的容量,如每次自增200M。 查看各表空间分配情况 select tablespace_name,bytes/1024/1024 from dba_data_files order by bytes; 查看各表空间空闲情况 select tablespace_name, sum(bytes)/1024/1024 from dba_free_space group by tablespace_name; 更改表空间大小(2G) alter database datafile &#39;D:\\ORACLE\\PRODUCT\\10.2.0\\ORADATA\\ORCL\\xxx.DBF&#39; resize 2048m; 设置表空间不足时自动增长 1、查看表空间是否开启自动增长 SELECT FILE_NAME,TABLESPACE_NAME,AUTOEXTENSIBLE FROM dba_data_files; 2、设置表空间自动增长 ALTER DATABASE DATAFILE &#39;xxx\\xxx.dbf&#39; AUTOEXTEND ON;//打开自动增长 ALTER DATABASE DATAFILE &#39;xxx\\xxx.dbf&#39; AUTOEXTEND ON NEXT 200M ;//每次自动增长200m //每次自动增长200m，表空间最大不超过1G ALTER DATABASE DATAFILE &#39;xxx\\xxx.dbf&#39; AUTOEXTEND ON NEXT 200M MAXSIZE 1024M;","@type":"BlogPosting","url":"http://www.jfox.info/2017/ora-01658-cuo-wu-oracle-xiu-gai-biao-kong-jian-da-xiao.html","headline":"ORA-01658错误：Oracle修改表空间大小","dateModified":"2017-01-01T15:46:42+00:00","datePublished":"2017-01-01T15:46:42+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/ora-01658-cuo-wu-oracle-xiu-gai-biao-kong-jian-da-xiao.html"},"@context":"http://schema.org"}</script>
+{"@type":"BlogPosting","headline":"ORA-01658错误：Oracle修改表空间大小","dateModified":"2017-01-01T23:46:42+08:00","datePublished":"2017-01-01T23:46:42+08:00","url":"http://www.jfox.info/2017/ora-01658-cuo-wu-oracle-xiu-gai-biao-kong-jian-da-xiao.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/ora-01658-cuo-wu-oracle-xiu-gai-biao-kong-jian-da-xiao.html"},"description":"By Lee - Last updated: 星期二, 十二月 30, 2014","@context":"http://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
   <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
@@ -37,7 +37,7 @@
   <header class="post-header">
     <h1 class="post-title p-name" itemprop="name headline">ORA-01658错误：Oracle修改表空间大小</h1>
     <p class="post-meta">
-      <time class="dt-published" datetime="2017-01-01T15:46:42+00:00" itemprop="datePublished">Jan 1, 2017
+      <time class="dt-published" datetime="2017-01-01T23:46:42+08:00" itemprop="datePublished">Jan 1, 2017
       </time></p>
   </header>
 

@@ -4,18 +4,18 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
 <title>漏洞预警 斗象科技能力中心发现高危Struts2远程代码执行漏洞 » java面试题 | Java面试</title>
-<meta name="generator" content="Jekyll v3.8.4" />
+<meta name="generator" content="Jekyll v3.8.3" />
 <meta property="og:title" content="漏洞预警 斗象科技能力中心发现高危Struts2远程代码执行漏洞 » java面试题" />
 <meta property="og:locale" content="zh_CN" />
-<meta name="description" content="近期，来自斗象科技（Tophant）的安全研究员 icez（星光） 发现著名J2EE框架——Struts2存在远程代码执行的严重漏洞。Struts2官方已经确认该漏洞（漏洞编号S2-048，CVE编号：CVE-2017-9791），漏洞危害程度为高危(High)。 在线检测 斗象科技旗下产品网藤风险感知（ www.riskivy.com ）已率先支持该漏洞检测，您可以立即 点击 试用 漏洞编号 CVE-2017-9791 S2-048 漏洞概述 Apache Struts是美国阿帕奇（Apache）软件基金会负责维护的一个开源项目，是一套用于创建企业级Java Web应用的开源MVC框架。在Struts 2.3.x 系列的Showcase 应用中演示Struts2集成Struts 1 的插件中存在一处任意代码执行漏洞。当你的应用使用了Struts2 Struts1的插件时，可能导致不受信任的输入传入到ActionMessage类中导致命令执行。 解决方案 向ActionMessage传递原始消息时使用类似下面的资源键值，不要直接传递原始数值 messages.add(&quot;msg&quot;, new ActionMessage(&quot;struts1.gangsterAdded&quot;, gform.getName())); 值不应如此： messages.add(&quot;msg&quot;, new ActionMessage(&quot;Gangster &quot; + gform.getName() + &quot; was added&quot;));" />
-<meta property="og:description" content="近期，来自斗象科技（Tophant）的安全研究员 icez（星光） 发现著名J2EE框架——Struts2存在远程代码执行的严重漏洞。Struts2官方已经确认该漏洞（漏洞编号S2-048，CVE编号：CVE-2017-9791），漏洞危害程度为高危(High)。 在线检测 斗象科技旗下产品网藤风险感知（ www.riskivy.com ）已率先支持该漏洞检测，您可以立即 点击 试用 漏洞编号 CVE-2017-9791 S2-048 漏洞概述 Apache Struts是美国阿帕奇（Apache）软件基金会负责维护的一个开源项目，是一套用于创建企业级Java Web应用的开源MVC框架。在Struts 2.3.x 系列的Showcase 应用中演示Struts2集成Struts 1 的插件中存在一处任意代码执行漏洞。当你的应用使用了Struts2 Struts1的插件时，可能导致不受信任的输入传入到ActionMessage类中导致命令执行。 解决方案 向ActionMessage传递原始消息时使用类似下面的资源键值，不要直接传递原始数值 messages.add(&quot;msg&quot;, new ActionMessage(&quot;struts1.gangsterAdded&quot;, gform.getName())); 值不应如此： messages.add(&quot;msg&quot;, new ActionMessage(&quot;Gangster &quot; + gform.getName() + &quot; was added&quot;));" />
+<meta name="description" content="近期，来自斗象科技（Tophant）的安全研究员 icez（星光） 发现著名J2EE框架——Struts2存在远程代码执行的严重漏洞。Struts2官方已经确认该漏洞（漏洞编号S2-048，CVE编号：CVE-2017-9791），漏洞危害程度为高危(High)。" />
+<meta property="og:description" content="近期，来自斗象科技（Tophant）的安全研究员 icez（星光） 发现著名J2EE框架——Struts2存在远程代码执行的严重漏洞。Struts2官方已经确认该漏洞（漏洞编号S2-048，CVE编号：CVE-2017-9791），漏洞危害程度为高危(High)。" />
 <link rel="canonical" href="http://www.jfox.info/2017/%E6%BC%8F%E6%B4%9E%E9%A2%84%E8%AD%A6%E6%96%97%E8%B1%A1%E7%A7%91%E6%8A%80%E8%83%BD%E5%8A%9B%E4%B8%AD%E5%BF%83%E5%8F%91%E7%8E%B0%E9%AB%98%E5%8D%B1struts2%E8%BF%9C%E7%A8%8B%E4%BB%A3%E7%A0%81%E6%89%A7.html" />
 <meta property="og:url" content="http://www.jfox.info/2017/%E6%BC%8F%E6%B4%9E%E9%A2%84%E8%AD%A6%E6%96%97%E8%B1%A1%E7%A7%91%E6%8A%80%E8%83%BD%E5%8A%9B%E4%B8%AD%E5%BF%83%E5%8F%91%E7%8E%B0%E9%AB%98%E5%8D%B1struts2%E8%BF%9C%E7%A8%8B%E4%BB%A3%E7%A0%81%E6%89%A7.html" />
 <meta property="og:site_name" content="Java面试" />
 <meta property="og:type" content="article" />
-<meta property="article:published_time" content="2017-01-01T15:54:17+00:00" />
+<meta property="article:published_time" content="2017-01-01T23:54:17+08:00" />
 <script type="application/ld+json">
-{"description":"近期，来自斗象科技（Tophant）的安全研究员 icez（星光） 发现著名J2EE框架——Struts2存在远程代码执行的严重漏洞。Struts2官方已经确认该漏洞（漏洞编号S2-048，CVE编号：CVE-2017-9791），漏洞危害程度为高危(High)。 在线检测 斗象科技旗下产品网藤风险感知（ www.riskivy.com ）已率先支持该漏洞检测，您可以立即 点击 试用 漏洞编号 CVE-2017-9791 S2-048 漏洞概述 Apache Struts是美国阿帕奇（Apache）软件基金会负责维护的一个开源项目，是一套用于创建企业级Java Web应用的开源MVC框架。在Struts 2.3.x 系列的Showcase 应用中演示Struts2集成Struts 1 的插件中存在一处任意代码执行漏洞。当你的应用使用了Struts2 Struts1的插件时，可能导致不受信任的输入传入到ActionMessage类中导致命令执行。 解决方案 向ActionMessage传递原始消息时使用类似下面的资源键值，不要直接传递原始数值 messages.add(&quot;msg&quot;, new ActionMessage(&quot;struts1.gangsterAdded&quot;, gform.getName())); 值不应如此： messages.add(&quot;msg&quot;, new ActionMessage(&quot;Gangster &quot; + gform.getName() + &quot; was added&quot;));","@type":"BlogPosting","url":"http://www.jfox.info/2017/%E6%BC%8F%E6%B4%9E%E9%A2%84%E8%AD%A6%E6%96%97%E8%B1%A1%E7%A7%91%E6%8A%80%E8%83%BD%E5%8A%9B%E4%B8%AD%E5%BF%83%E5%8F%91%E7%8E%B0%E9%AB%98%E5%8D%B1struts2%E8%BF%9C%E7%A8%8B%E4%BB%A3%E7%A0%81%E6%89%A7.html","headline":"漏洞预警 斗象科技能力中心发现高危Struts2远程代码执行漏洞 » java面试题","dateModified":"2017-01-01T15:54:17+00:00","datePublished":"2017-01-01T15:54:17+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/%E6%BC%8F%E6%B4%9E%E9%A2%84%E8%AD%A6%E6%96%97%E8%B1%A1%E7%A7%91%E6%8A%80%E8%83%BD%E5%8A%9B%E4%B8%AD%E5%BF%83%E5%8F%91%E7%8E%B0%E9%AB%98%E5%8D%B1struts2%E8%BF%9C%E7%A8%8B%E4%BB%A3%E7%A0%81%E6%89%A7.html"},"@context":"http://schema.org"}</script>
+{"@type":"BlogPosting","headline":"漏洞预警 斗象科技能力中心发现高危Struts2远程代码执行漏洞 » java面试题","dateModified":"2017-01-01T23:54:17+08:00","datePublished":"2017-01-01T23:54:17+08:00","url":"http://www.jfox.info/2017/%E6%BC%8F%E6%B4%9E%E9%A2%84%E8%AD%A6%E6%96%97%E8%B1%A1%E7%A7%91%E6%8A%80%E8%83%BD%E5%8A%9B%E4%B8%AD%E5%BF%83%E5%8F%91%E7%8E%B0%E9%AB%98%E5%8D%B1struts2%E8%BF%9C%E7%A8%8B%E4%BB%A3%E7%A0%81%E6%89%A7.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/%E6%BC%8F%E6%B4%9E%E9%A2%84%E8%AD%A6%E6%96%97%E8%B1%A1%E7%A7%91%E6%8A%80%E8%83%BD%E5%8A%9B%E4%B8%AD%E5%BF%83%E5%8F%91%E7%8E%B0%E9%AB%98%E5%8D%B1struts2%E8%BF%9C%E7%A8%8B%E4%BB%A3%E7%A0%81%E6%89%A7.html"},"description":"近期，来自斗象科技（Tophant）的安全研究员 icez（星光） 发现著名J2EE框架——Struts2存在远程代码执行的严重漏洞。Struts2官方已经确认该漏洞（漏洞编号S2-048，CVE编号：CVE-2017-9791），漏洞危害程度为高危(High)。","@context":"http://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
   <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
@@ -37,7 +37,7 @@
   <header class="post-header">
     <h1 class="post-title p-name" itemprop="name headline">漏洞预警 | 斗象科技能力中心发现高危Struts2远程代码执行漏洞 » java面试题</h1>
     <p class="post-meta">
-      <time class="dt-published" datetime="2017-01-01T15:54:17+00:00" itemprop="datePublished">Jan 1, 2017
+      <time class="dt-published" datetime="2017-01-01T23:54:17+08:00" itemprop="datePublished">Jan 1, 2017
       </time></p>
   </header>
 

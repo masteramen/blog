@@ -4,18 +4,18 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
 <title>java eclipse工具开发技巧总结 | Java面试</title>
-<meta name="generator" content="Jekyll v3.8.4" />
+<meta name="generator" content="Jekyll v3.8.3" />
 <meta property="og:title" content="java eclipse工具开发技巧总结" />
 <meta property="og:locale" content="zh_CN" />
-<meta name="description" content="习惯了eclipse开发java程序，公司最近的项目都是idea开发的，同时android studio也是idea原型开发的，在学android开发，所以脱离eclipse转向idea看来是一个趋势了。 开发工具的使用就是一个习惯的问题， 习惯了开发效率就高，不习惯工具使用问题，还得去百度。培养新习惯最终的目的就是忘掉旧习惯，当然，凡事都不绝对，只是有可能在长时间不使用eclipse后，会忘掉其中的使用技巧，快捷键等。所以，为了防止旧习惯完全被忘掉，这里总结一份我在开发过程中常用的eclipse或myeclipse的使用技巧。 一、快捷键 1、提示：Alt+/ 2、格式化：ctrl+shift+f 3、输入一对的符号，如””，()，会自动补全，输入后跳出:tab 4、查找某个方法被谁调用：选中方法名，ctrl+shift+g 5、查看某个类的继承关系：选中该类，ctrl+t 6、通过文件名称查找类或文件：ctrl+shift+r 7、alt+上/下，移动当前行到上或下 8、ctrl+alt+上/下，复制当前行到上或下 9、注释：ctrl+/行注释、shift+ctrl+/块注释 10、方法或者类名上部输入：/**然后回车，会自动生成文档注释 11、ctrl+d删除当前行 12、选中方法名，点击F2，提示方法信息 13、提示错误等 二、设置 1、快捷键添加set、get方法，重写或实现接口的某个方法：shift+alt+s 2、版本控制：项目名或文件名，右键 点击文件名，右键-&gt;team-&gt;show history： 版本控制update出现错误时，可以通过compare with，对左侧的当前本地版本文件进行修改，修改后保证自己的代码存在，且其他代码和服务器上的相同即可。对于完全需要被覆盖的，使用get contents即可。 3、maven maven设置 maven使用： update dependencise可以更新jar包依赖 maven添加依赖： 输入jar包的名称，会自动给你检索 reindexmaven库中的jar包 4、设置字体 5、设置整个工具的编码 6、配置项目输出文件地址、添加本地jar包等 configure build path 7、自动编译 8、junit-test 我觉得这点比idea好用，可以直接选中要测试的方法名，右击run as即可" />
-<meta property="og:description" content="习惯了eclipse开发java程序，公司最近的项目都是idea开发的，同时android studio也是idea原型开发的，在学android开发，所以脱离eclipse转向idea看来是一个趋势了。 开发工具的使用就是一个习惯的问题， 习惯了开发效率就高，不习惯工具使用问题，还得去百度。培养新习惯最终的目的就是忘掉旧习惯，当然，凡事都不绝对，只是有可能在长时间不使用eclipse后，会忘掉其中的使用技巧，快捷键等。所以，为了防止旧习惯完全被忘掉，这里总结一份我在开发过程中常用的eclipse或myeclipse的使用技巧。 一、快捷键 1、提示：Alt+/ 2、格式化：ctrl+shift+f 3、输入一对的符号，如””，()，会自动补全，输入后跳出:tab 4、查找某个方法被谁调用：选中方法名，ctrl+shift+g 5、查看某个类的继承关系：选中该类，ctrl+t 6、通过文件名称查找类或文件：ctrl+shift+r 7、alt+上/下，移动当前行到上或下 8、ctrl+alt+上/下，复制当前行到上或下 9、注释：ctrl+/行注释、shift+ctrl+/块注释 10、方法或者类名上部输入：/**然后回车，会自动生成文档注释 11、ctrl+d删除当前行 12、选中方法名，点击F2，提示方法信息 13、提示错误等 二、设置 1、快捷键添加set、get方法，重写或实现接口的某个方法：shift+alt+s 2、版本控制：项目名或文件名，右键 点击文件名，右键-&gt;team-&gt;show history： 版本控制update出现错误时，可以通过compare with，对左侧的当前本地版本文件进行修改，修改后保证自己的代码存在，且其他代码和服务器上的相同即可。对于完全需要被覆盖的，使用get contents即可。 3、maven maven设置 maven使用： update dependencise可以更新jar包依赖 maven添加依赖： 输入jar包的名称，会自动给你检索 reindexmaven库中的jar包 4、设置字体 5、设置整个工具的编码 6、配置项目输出文件地址、添加本地jar包等 configure build path 7、自动编译 8、junit-test 我觉得这点比idea好用，可以直接选中要测试的方法名，右击run as即可" />
+<meta name="description" content="习惯了eclipse开发java程序，公司最近的项目都是idea开发的，同时android studio也是idea原型开发的，在学android开发，所以脱离eclipse转向idea看来是一个趋势了。" />
+<meta property="og:description" content="习惯了eclipse开发java程序，公司最近的项目都是idea开发的，同时android studio也是idea原型开发的，在学android开发，所以脱离eclipse转向idea看来是一个趋势了。" />
 <link rel="canonical" href="http://www.jfox.info/2017/java-eclipse-gong-ju-kai-fa-ji-qiao-zong-jie.html" />
 <meta property="og:url" content="http://www.jfox.info/2017/java-eclipse-gong-ju-kai-fa-ji-qiao-zong-jie.html" />
 <meta property="og:site_name" content="Java面试" />
 <meta property="og:type" content="article" />
-<meta property="article:published_time" content="2017-01-01T15:47:41+00:00" />
+<meta property="article:published_time" content="2017-01-01T23:47:41+08:00" />
 <script type="application/ld+json">
-{"description":"习惯了eclipse开发java程序，公司最近的项目都是idea开发的，同时android studio也是idea原型开发的，在学android开发，所以脱离eclipse转向idea看来是一个趋势了。 开发工具的使用就是一个习惯的问题， 习惯了开发效率就高，不习惯工具使用问题，还得去百度。培养新习惯最终的目的就是忘掉旧习惯，当然，凡事都不绝对，只是有可能在长时间不使用eclipse后，会忘掉其中的使用技巧，快捷键等。所以，为了防止旧习惯完全被忘掉，这里总结一份我在开发过程中常用的eclipse或myeclipse的使用技巧。 一、快捷键 1、提示：Alt+/ 2、格式化：ctrl+shift+f 3、输入一对的符号，如””，()，会自动补全，输入后跳出:tab 4、查找某个方法被谁调用：选中方法名，ctrl+shift+g 5、查看某个类的继承关系：选中该类，ctrl+t 6、通过文件名称查找类或文件：ctrl+shift+r 7、alt+上/下，移动当前行到上或下 8、ctrl+alt+上/下，复制当前行到上或下 9、注释：ctrl+/行注释、shift+ctrl+/块注释 10、方法或者类名上部输入：/**然后回车，会自动生成文档注释 11、ctrl+d删除当前行 12、选中方法名，点击F2，提示方法信息 13、提示错误等 二、设置 1、快捷键添加set、get方法，重写或实现接口的某个方法：shift+alt+s 2、版本控制：项目名或文件名，右键 点击文件名，右键-&gt;team-&gt;show history： 版本控制update出现错误时，可以通过compare with，对左侧的当前本地版本文件进行修改，修改后保证自己的代码存在，且其他代码和服务器上的相同即可。对于完全需要被覆盖的，使用get contents即可。 3、maven maven设置 maven使用： update dependencise可以更新jar包依赖 maven添加依赖： 输入jar包的名称，会自动给你检索 reindexmaven库中的jar包 4、设置字体 5、设置整个工具的编码 6、配置项目输出文件地址、添加本地jar包等 configure build path 7、自动编译 8、junit-test 我觉得这点比idea好用，可以直接选中要测试的方法名，右击run as即可","@type":"BlogPosting","url":"http://www.jfox.info/2017/java-eclipse-gong-ju-kai-fa-ji-qiao-zong-jie.html","headline":"java eclipse工具开发技巧总结","dateModified":"2017-01-01T15:47:41+00:00","datePublished":"2017-01-01T15:47:41+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/java-eclipse-gong-ju-kai-fa-ji-qiao-zong-jie.html"},"@context":"http://schema.org"}</script>
+{"@type":"BlogPosting","headline":"java eclipse工具开发技巧总结","dateModified":"2017-01-01T23:47:41+08:00","datePublished":"2017-01-01T23:47:41+08:00","url":"http://www.jfox.info/2017/java-eclipse-gong-ju-kai-fa-ji-qiao-zong-jie.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/java-eclipse-gong-ju-kai-fa-ji-qiao-zong-jie.html"},"description":"习惯了eclipse开发java程序，公司最近的项目都是idea开发的，同时android studio也是idea原型开发的，在学android开发，所以脱离eclipse转向idea看来是一个趋势了。","@context":"http://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
   <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
@@ -37,7 +37,7 @@
   <header class="post-header">
     <h1 class="post-title p-name" itemprop="name headline">java eclipse工具开发技巧总结</h1>
     <p class="post-meta">
-      <time class="dt-published" datetime="2017-01-01T15:47:41+00:00" itemprop="datePublished">Jan 1, 2017
+      <time class="dt-published" datetime="2017-01-01T23:47:41+08:00" itemprop="datePublished">Jan 1, 2017
       </time></p>
   </header>
 

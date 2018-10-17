@@ -4,18 +4,18 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
 <title>追溯木马黑客技巧分享：找到他的IP，逮着他的地理位置 | Java面试</title>
-<meta name="generator" content="Jekyll v3.8.4" />
+<meta name="generator" content="Jekyll v3.8.3" />
 <meta property="og:title" content="追溯木马黑客技巧分享：找到他的IP，逮着他的地理位置" />
 <meta property="og:locale" content="zh_CN" />
-<meta name="description" content="1.Wireshark (网络分析器) 2.Sandboxie （隔离沙盒） 首先打开Wireshark。 单击无线网络连接或本地连接（根据连接类型），然后单击开始，测试环境这里选择无线网络吧。 我们配置好RAT后门木马，进行测试，这里用我自己的RAT程序。 现在我们要用到的就是Sandboxie了，Sandboxie是一个有用的工具，用于在任何病毒安全进入系统之前，让你可以对病毒进行分析，它的环境中你可以运行任何病毒，但是虽然病毒被困在沙盒里，但是黑客还是可以操控你的计算机，所以确保你删除了所有的 cookie和表单以及密码记录，否则黑客任然可以获取你的资料。 然后我们去用隔离沙盒运行木马，这里能看到木马已经成功启动了： 现在我们进入网络分析器，输入dns，进行查看(或者是 tpkt,tcp)（对于键盘记录器类木马使用”smtp”和”ftp”,因为键盘记录都是通过 ftp或者邮箱进行发送）： 回到wireshark，右边你就能看到你的电脑上的网络流量， 进行寻找RAT服务器的域名，国内的一般用f3322这类上线，这边仔细看一下，多出来的访问地址就是黑客的 RAT服务器地址。 很容易的看到黑客的IP，域名上线的则使用ping命令，获得ip： 要查具体地理位置则使用ip查地理位置接口进行查询，网上看到分享的很多非常不准确，用自己ip试一试，一般误差超过5km的就没有效率,选择一个最准确的用于你今后的事业使用吧。 保护自身：若黑客活动对你的PC和个人隐私影响巨大，可通过获得的IP查询到运营商，联系警方进行追查违法黑客。 weibo@RAT-HACK" />
-<meta property="og:description" content="1.Wireshark (网络分析器) 2.Sandboxie （隔离沙盒） 首先打开Wireshark。 单击无线网络连接或本地连接（根据连接类型），然后单击开始，测试环境这里选择无线网络吧。 我们配置好RAT后门木马，进行测试，这里用我自己的RAT程序。 现在我们要用到的就是Sandboxie了，Sandboxie是一个有用的工具，用于在任何病毒安全进入系统之前，让你可以对病毒进行分析，它的环境中你可以运行任何病毒，但是虽然病毒被困在沙盒里，但是黑客还是可以操控你的计算机，所以确保你删除了所有的 cookie和表单以及密码记录，否则黑客任然可以获取你的资料。 然后我们去用隔离沙盒运行木马，这里能看到木马已经成功启动了： 现在我们进入网络分析器，输入dns，进行查看(或者是 tpkt,tcp)（对于键盘记录器类木马使用”smtp”和”ftp”,因为键盘记录都是通过 ftp或者邮箱进行发送）： 回到wireshark，右边你就能看到你的电脑上的网络流量， 进行寻找RAT服务器的域名，国内的一般用f3322这类上线，这边仔细看一下，多出来的访问地址就是黑客的 RAT服务器地址。 很容易的看到黑客的IP，域名上线的则使用ping命令，获得ip： 要查具体地理位置则使用ip查地理位置接口进行查询，网上看到分享的很多非常不准确，用自己ip试一试，一般误差超过5km的就没有效率,选择一个最准确的用于你今后的事业使用吧。 保护自身：若黑客活动对你的PC和个人隐私影响巨大，可通过获得的IP查询到运营商，联系警方进行追查违法黑客。 weibo@RAT-HACK" />
+<meta name="description" content="1.Wireshark (网络分析器)" />
+<meta property="og:description" content="1.Wireshark (网络分析器)" />
 <link rel="canonical" href="http://www.jfox.info/2017/%E8%BF%BD%E6%BA%AF%E6%9C%A8%E9%A9%AC%E9%BB%91%E5%AE%A2%E6%8A%80%E5%B7%A7%E5%88%86%E4%BA%AB-%E6%89%BE%E5%88%B0%E4%BB%96%E7%9A%84ip-%E9%80%AE%E7%9D%80%E4%BB%96%E7%9A%84%E5%9C%B0%E7%90%86%E4%BD%8D.html" />
 <meta property="og:url" content="http://www.jfox.info/2017/%E8%BF%BD%E6%BA%AF%E6%9C%A8%E9%A9%AC%E9%BB%91%E5%AE%A2%E6%8A%80%E5%B7%A7%E5%88%86%E4%BA%AB-%E6%89%BE%E5%88%B0%E4%BB%96%E7%9A%84ip-%E9%80%AE%E7%9D%80%E4%BB%96%E7%9A%84%E5%9C%B0%E7%90%86%E4%BD%8D.html" />
 <meta property="og:site_name" content="Java面试" />
 <meta property="og:type" content="article" />
-<meta property="article:published_time" content="2017-01-01T15:52:07+00:00" />
+<meta property="article:published_time" content="2017-01-01T23:52:07+08:00" />
 <script type="application/ld+json">
-{"description":"1.Wireshark (网络分析器) 2.Sandboxie （隔离沙盒） 首先打开Wireshark。 单击无线网络连接或本地连接（根据连接类型），然后单击开始，测试环境这里选择无线网络吧。 我们配置好RAT后门木马，进行测试，这里用我自己的RAT程序。 现在我们要用到的就是Sandboxie了，Sandboxie是一个有用的工具，用于在任何病毒安全进入系统之前，让你可以对病毒进行分析，它的环境中你可以运行任何病毒，但是虽然病毒被困在沙盒里，但是黑客还是可以操控你的计算机，所以确保你删除了所有的 cookie和表单以及密码记录，否则黑客任然可以获取你的资料。 然后我们去用隔离沙盒运行木马，这里能看到木马已经成功启动了： 现在我们进入网络分析器，输入dns，进行查看(或者是 tpkt,tcp)（对于键盘记录器类木马使用”smtp”和”ftp”,因为键盘记录都是通过 ftp或者邮箱进行发送）： 回到wireshark，右边你就能看到你的电脑上的网络流量， 进行寻找RAT服务器的域名，国内的一般用f3322这类上线，这边仔细看一下，多出来的访问地址就是黑客的 RAT服务器地址。 很容易的看到黑客的IP，域名上线的则使用ping命令，获得ip： 要查具体地理位置则使用ip查地理位置接口进行查询，网上看到分享的很多非常不准确，用自己ip试一试，一般误差超过5km的就没有效率,选择一个最准确的用于你今后的事业使用吧。 保护自身：若黑客活动对你的PC和个人隐私影响巨大，可通过获得的IP查询到运营商，联系警方进行追查违法黑客。 weibo@RAT-HACK","@type":"BlogPosting","url":"http://www.jfox.info/2017/%E8%BF%BD%E6%BA%AF%E6%9C%A8%E9%A9%AC%E9%BB%91%E5%AE%A2%E6%8A%80%E5%B7%A7%E5%88%86%E4%BA%AB-%E6%89%BE%E5%88%B0%E4%BB%96%E7%9A%84ip-%E9%80%AE%E7%9D%80%E4%BB%96%E7%9A%84%E5%9C%B0%E7%90%86%E4%BD%8D.html","headline":"追溯木马黑客技巧分享：找到他的IP，逮着他的地理位置","dateModified":"2017-01-01T15:52:07+00:00","datePublished":"2017-01-01T15:52:07+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/%E8%BF%BD%E6%BA%AF%E6%9C%A8%E9%A9%AC%E9%BB%91%E5%AE%A2%E6%8A%80%E5%B7%A7%E5%88%86%E4%BA%AB-%E6%89%BE%E5%88%B0%E4%BB%96%E7%9A%84ip-%E9%80%AE%E7%9D%80%E4%BB%96%E7%9A%84%E5%9C%B0%E7%90%86%E4%BD%8D.html"},"@context":"http://schema.org"}</script>
+{"@type":"BlogPosting","headline":"追溯木马黑客技巧分享：找到他的IP，逮着他的地理位置","dateModified":"2017-01-01T23:52:07+08:00","datePublished":"2017-01-01T23:52:07+08:00","url":"http://www.jfox.info/2017/%E8%BF%BD%E6%BA%AF%E6%9C%A8%E9%A9%AC%E9%BB%91%E5%AE%A2%E6%8A%80%E5%B7%A7%E5%88%86%E4%BA%AB-%E6%89%BE%E5%88%B0%E4%BB%96%E7%9A%84ip-%E9%80%AE%E7%9D%80%E4%BB%96%E7%9A%84%E5%9C%B0%E7%90%86%E4%BD%8D.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/%E8%BF%BD%E6%BA%AF%E6%9C%A8%E9%A9%AC%E9%BB%91%E5%AE%A2%E6%8A%80%E5%B7%A7%E5%88%86%E4%BA%AB-%E6%89%BE%E5%88%B0%E4%BB%96%E7%9A%84ip-%E9%80%AE%E7%9D%80%E4%BB%96%E7%9A%84%E5%9C%B0%E7%90%86%E4%BD%8D.html"},"description":"1.Wireshark (网络分析器)","@context":"http://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
   <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
@@ -37,7 +37,7 @@
   <header class="post-header">
     <h1 class="post-title p-name" itemprop="name headline">追溯木马黑客技巧分享：找到他的IP，逮着他的地理位置</h1>
     <p class="post-meta">
-      <time class="dt-published" datetime="2017-01-01T15:52:07+00:00" itemprop="datePublished">Jan 1, 2017
+      <time class="dt-published" datetime="2017-01-01T23:52:07+08:00" itemprop="datePublished">Jan 1, 2017
       </time></p>
   </header>
 

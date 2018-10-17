@@ -4,18 +4,18 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
 <title>spring boot学习笔记：一、搭建项目 之 hello world | Java面试</title>
-<meta name="generator" content="Jekyll v3.8.4" />
+<meta name="generator" content="Jekyll v3.8.3" />
 <meta property="og:title" content="spring boot学习笔记：一、搭建项目 之 hello world" />
 <meta property="og:locale" content="zh_CN" />
-<meta name="description" content="spring boot学习笔记之一：搭建项目 之 hello world 最近在学习spring boot开发java后台项目，在网上搜集了一系列资料搭建过程中还是会遇到问题，今天把搭建过程一步步记录下来，分享出来给初学者，在入门时可以解决一些时间。 使用Intellij IDEA 开发，它自带有 Spring Initializr 工具，可以快速创建出spring boot工程项目。 步骤1:File——New————project————，选择spring Initializr————next 步骤2:接下来输入工程名字，自己设置就可以，选择Maven Project————next 步骤3:选择web依赖，如果没有选择web依赖，后面启动项目时，会找不到容器——next 步骤4:设置工程名，点击完成 此时在目录中有一个XXXApplication文件，执行main入口即可启动项目，看到端口号8080启动成功 项目搭建完成！ 写一个简单的接口： 在浏览器中请求：http://localhost:8080/demo/test @RestController @RequestMapping(value = &quot;/demo&quot;)// 通过这里配置使下面的映射都在/demo下 public class test { @GetMapping(&quot;/test&quot;) public String sayHello(){ return &quot;Hello World! &quot;; } }" />
-<meta property="og:description" content="spring boot学习笔记之一：搭建项目 之 hello world 最近在学习spring boot开发java后台项目，在网上搜集了一系列资料搭建过程中还是会遇到问题，今天把搭建过程一步步记录下来，分享出来给初学者，在入门时可以解决一些时间。 使用Intellij IDEA 开发，它自带有 Spring Initializr 工具，可以快速创建出spring boot工程项目。 步骤1:File——New————project————，选择spring Initializr————next 步骤2:接下来输入工程名字，自己设置就可以，选择Maven Project————next 步骤3:选择web依赖，如果没有选择web依赖，后面启动项目时，会找不到容器——next 步骤4:设置工程名，点击完成 此时在目录中有一个XXXApplication文件，执行main入口即可启动项目，看到端口号8080启动成功 项目搭建完成！ 写一个简单的接口： 在浏览器中请求：http://localhost:8080/demo/test @RestController @RequestMapping(value = &quot;/demo&quot;)// 通过这里配置使下面的映射都在/demo下 public class test { @GetMapping(&quot;/test&quot;) public String sayHello(){ return &quot;Hello World! &quot;; } }" />
+<meta name="description" content="spring boot学习笔记之一：搭建项目 之 hello world" />
+<meta property="og:description" content="spring boot学习笔记之一：搭建项目 之 hello world" />
 <link rel="canonical" href="http://www.jfox.info/2017/springboot%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E4%B8%80%E6%90%AD%E5%BB%BA%E9%A1%B9%E7%9B%AE%E4%B9%8Bhelloworld.html" />
 <meta property="og:url" content="http://www.jfox.info/2017/springboot%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E4%B8%80%E6%90%AD%E5%BB%BA%E9%A1%B9%E7%9B%AE%E4%B9%8Bhelloworld.html" />
 <meta property="og:site_name" content="Java面试" />
 <meta property="og:type" content="article" />
-<meta property="article:published_time" content="2017-01-01T15:53:41+00:00" />
+<meta property="article:published_time" content="2017-01-01T23:53:41+08:00" />
 <script type="application/ld+json">
-{"description":"spring boot学习笔记之一：搭建项目 之 hello world 最近在学习spring boot开发java后台项目，在网上搜集了一系列资料搭建过程中还是会遇到问题，今天把搭建过程一步步记录下来，分享出来给初学者，在入门时可以解决一些时间。 使用Intellij IDEA 开发，它自带有 Spring Initializr 工具，可以快速创建出spring boot工程项目。 步骤1:File——New————project————，选择spring Initializr————next 步骤2:接下来输入工程名字，自己设置就可以，选择Maven Project————next 步骤3:选择web依赖，如果没有选择web依赖，后面启动项目时，会找不到容器——next 步骤4:设置工程名，点击完成 此时在目录中有一个XXXApplication文件，执行main入口即可启动项目，看到端口号8080启动成功 项目搭建完成！ 写一个简单的接口： 在浏览器中请求：http://localhost:8080/demo/test @RestController @RequestMapping(value = &quot;/demo&quot;)// 通过这里配置使下面的映射都在/demo下 public class test { @GetMapping(&quot;/test&quot;) public String sayHello(){ return &quot;Hello World! &quot;; } }","@type":"BlogPosting","url":"http://www.jfox.info/2017/springboot%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E4%B8%80%E6%90%AD%E5%BB%BA%E9%A1%B9%E7%9B%AE%E4%B9%8Bhelloworld.html","headline":"spring boot学习笔记：一、搭建项目 之 hello world","dateModified":"2017-01-01T15:53:41+00:00","datePublished":"2017-01-01T15:53:41+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/springboot%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E4%B8%80%E6%90%AD%E5%BB%BA%E9%A1%B9%E7%9B%AE%E4%B9%8Bhelloworld.html"},"@context":"http://schema.org"}</script>
+{"@type":"BlogPosting","headline":"spring boot学习笔记：一、搭建项目 之 hello world","dateModified":"2017-01-01T23:53:41+08:00","datePublished":"2017-01-01T23:53:41+08:00","url":"http://www.jfox.info/2017/springboot%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E4%B8%80%E6%90%AD%E5%BB%BA%E9%A1%B9%E7%9B%AE%E4%B9%8Bhelloworld.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/springboot%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E4%B8%80%E6%90%AD%E5%BB%BA%E9%A1%B9%E7%9B%AE%E4%B9%8Bhelloworld.html"},"description":"spring boot学习笔记之一：搭建项目 之 hello world","@context":"http://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
   <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
@@ -37,7 +37,7 @@
   <header class="post-header">
     <h1 class="post-title p-name" itemprop="name headline">spring boot学习笔记：一、搭建项目 之 hello world</h1>
     <p class="post-meta">
-      <time class="dt-published" datetime="2017-01-01T15:53:41+00:00" itemprop="datePublished">Jan 1, 2017
+      <time class="dt-published" datetime="2017-01-01T23:53:41+08:00" itemprop="datePublished">Jan 1, 2017
       </time></p>
   </header>
 

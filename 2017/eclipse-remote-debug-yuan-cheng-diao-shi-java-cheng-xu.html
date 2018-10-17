@@ -4,18 +4,18 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
 <title>Eclipse Remote Debug 远程调试 Java 程序 | Java面试</title>
-<meta name="generator" content="Jekyll v3.8.4" />
+<meta name="generator" content="Jekyll v3.8.3" />
 <meta property="og:title" content="Eclipse Remote Debug 远程调试 Java 程序" />
 <meta property="og:locale" content="zh_CN" />
-<meta name="description" content="今天同事问我怎么远程调试 java 程序。我不会，那马上搜索看看。在被高度的程序中加个数据就行。然后 eclipse 调试时指定端口就行，太方便了。 比如，现在有一个代码： 把这个java 导出为 remoting-debug.jar 上传到目标机器（当然本地也行）。然后在目标机器上运行： java -Xdebug -Xrunjdwp:transport=dt_socket,server=y,address=8000 -jar remoting-debug.jar 会出现：Listening for transport dt_socket at address: 8000 程序正在等待调试。 右击 eclipse 中的 RemotingDebug 代码 -&gt; Debug As … -&gt; Debug configurations … 中，双击 Remote Java Application，如： 192.168.1.100 是本地虚拟机。然后就可以方便调试了，太方便了。 延伸：Eclipse 远程调试 Tomcat 程序。 在 tomcat 6 中可以在 startup.bat 尾加 jpda，如下： set JPDA_ADDRESS=8017 call “%EXECUTABLE%” jpda start %CMD_LINE_ARGS% 如果不要 set JPDA_ADDRESS=8017 也可以，这样就会默认的 8000 端口。 相关词语： JDI — Java 调试接口（Java Debug Interface） JDT — Java 开发工具（Java Development Tools） JDWP — Java 调试网络协议（Java Debug Wire Protocol） JPDA — Java 平台调试器架构（Java Platform Debugger Architecture） JVM — Java 虚拟机（Java Virtual Machine） JVMDI — JVM 调试接口（JVM Debug Interface） JVMTI — JVM 工具接口（JVM Tool Interface） VM — 虚拟机（Virtual Machine） 参考：http://www.ibm.com/developerworks/cn/opensource/os-eclipse-javadebug/" />
-<meta property="og:description" content="今天同事问我怎么远程调试 java 程序。我不会，那马上搜索看看。在被高度的程序中加个数据就行。然后 eclipse 调试时指定端口就行，太方便了。 比如，现在有一个代码： 把这个java 导出为 remoting-debug.jar 上传到目标机器（当然本地也行）。然后在目标机器上运行： java -Xdebug -Xrunjdwp:transport=dt_socket,server=y,address=8000 -jar remoting-debug.jar 会出现：Listening for transport dt_socket at address: 8000 程序正在等待调试。 右击 eclipse 中的 RemotingDebug 代码 -&gt; Debug As … -&gt; Debug configurations … 中，双击 Remote Java Application，如： 192.168.1.100 是本地虚拟机。然后就可以方便调试了，太方便了。 延伸：Eclipse 远程调试 Tomcat 程序。 在 tomcat 6 中可以在 startup.bat 尾加 jpda，如下： set JPDA_ADDRESS=8017 call “%EXECUTABLE%” jpda start %CMD_LINE_ARGS% 如果不要 set JPDA_ADDRESS=8017 也可以，这样就会默认的 8000 端口。 相关词语： JDI — Java 调试接口（Java Debug Interface） JDT — Java 开发工具（Java Development Tools） JDWP — Java 调试网络协议（Java Debug Wire Protocol） JPDA — Java 平台调试器架构（Java Platform Debugger Architecture） JVM — Java 虚拟机（Java Virtual Machine） JVMDI — JVM 调试接口（JVM Debug Interface） JVMTI — JVM 工具接口（JVM Tool Interface） VM — 虚拟机（Virtual Machine） 参考：http://www.ibm.com/developerworks/cn/opensource/os-eclipse-javadebug/" />
+<meta name="description" content="今天同事问我怎么远程调试 java 程序。我不会，那马上搜索看看。在被高度的程序中加个数据就行。然后 eclipse 调试时指定端口就行，太方便了。" />
+<meta property="og:description" content="今天同事问我怎么远程调试 java 程序。我不会，那马上搜索看看。在被高度的程序中加个数据就行。然后 eclipse 调试时指定端口就行，太方便了。" />
 <link rel="canonical" href="http://www.jfox.info/2017/eclipse-remote-debug-yuan-cheng-diao-shi-java-cheng-xu.html" />
 <meta property="og:url" content="http://www.jfox.info/2017/eclipse-remote-debug-yuan-cheng-diao-shi-java-cheng-xu.html" />
 <meta property="og:site_name" content="Java面试" />
 <meta property="og:type" content="article" />
-<meta property="article:published_time" content="2017-01-01T15:47:21+00:00" />
+<meta property="article:published_time" content="2017-01-01T23:47:21+08:00" />
 <script type="application/ld+json">
-{"description":"今天同事问我怎么远程调试 java 程序。我不会，那马上搜索看看。在被高度的程序中加个数据就行。然后 eclipse 调试时指定端口就行，太方便了。 比如，现在有一个代码： 把这个java 导出为 remoting-debug.jar 上传到目标机器（当然本地也行）。然后在目标机器上运行： java -Xdebug -Xrunjdwp:transport=dt_socket,server=y,address=8000 -jar remoting-debug.jar 会出现：Listening for transport dt_socket at address: 8000 程序正在等待调试。 右击 eclipse 中的 RemotingDebug 代码 -&gt; Debug As … -&gt; Debug configurations … 中，双击 Remote Java Application，如： 192.168.1.100 是本地虚拟机。然后就可以方便调试了，太方便了。 延伸：Eclipse 远程调试 Tomcat 程序。 在 tomcat 6 中可以在 startup.bat 尾加 jpda，如下： set JPDA_ADDRESS=8017 call “%EXECUTABLE%” jpda start %CMD_LINE_ARGS% 如果不要 set JPDA_ADDRESS=8017 也可以，这样就会默认的 8000 端口。 相关词语： JDI — Java 调试接口（Java Debug Interface） JDT — Java 开发工具（Java Development Tools） JDWP — Java 调试网络协议（Java Debug Wire Protocol） JPDA — Java 平台调试器架构（Java Platform Debugger Architecture） JVM — Java 虚拟机（Java Virtual Machine） JVMDI — JVM 调试接口（JVM Debug Interface） JVMTI — JVM 工具接口（JVM Tool Interface） VM — 虚拟机（Virtual Machine） 参考：http://www.ibm.com/developerworks/cn/opensource/os-eclipse-javadebug/","@type":"BlogPosting","url":"http://www.jfox.info/2017/eclipse-remote-debug-yuan-cheng-diao-shi-java-cheng-xu.html","headline":"Eclipse Remote Debug 远程调试 Java 程序","dateModified":"2017-01-01T15:47:21+00:00","datePublished":"2017-01-01T15:47:21+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/eclipse-remote-debug-yuan-cheng-diao-shi-java-cheng-xu.html"},"@context":"http://schema.org"}</script>
+{"@type":"BlogPosting","headline":"Eclipse Remote Debug 远程调试 Java 程序","dateModified":"2017-01-01T23:47:21+08:00","datePublished":"2017-01-01T23:47:21+08:00","url":"http://www.jfox.info/2017/eclipse-remote-debug-yuan-cheng-diao-shi-java-cheng-xu.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/eclipse-remote-debug-yuan-cheng-diao-shi-java-cheng-xu.html"},"description":"今天同事问我怎么远程调试 java 程序。我不会，那马上搜索看看。在被高度的程序中加个数据就行。然后 eclipse 调试时指定端口就行，太方便了。","@context":"http://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
   <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
@@ -37,7 +37,7 @@
   <header class="post-header">
     <h1 class="post-title p-name" itemprop="name headline">Eclipse Remote Debug 远程调试 Java 程序</h1>
     <p class="post-meta">
-      <time class="dt-published" datetime="2017-01-01T15:47:21+00:00" itemprop="datePublished">Jan 1, 2017
+      <time class="dt-published" datetime="2017-01-01T23:47:21+08:00" itemprop="datePublished">Jan 1, 2017
       </time></p>
   </header>
 

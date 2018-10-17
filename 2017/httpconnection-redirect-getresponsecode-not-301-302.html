@@ -4,18 +4,18 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
 <title>HttpConnection 重定向后getResponseCode 不是301/302的问题解决 | Java面试</title>
-<meta name="generator" content="Jekyll v3.8.4" />
+<meta name="generator" content="Jekyll v3.8.3" />
 <meta property="og:title" content="HttpConnection 重定向后getResponseCode 不是301/302的问题解决" />
 <meta property="og:locale" content="zh_CN" />
-<meta name="description" content="By Lee - Last updated: 星期日, 八月 3, 2014 在通过HttpURLConnection获取重定向后网页内容时发现一个小bug.发出请求时一直返回getResponseCode 200，后面查找发现是服务端进行跳转了。 解决办法很简单，设置setInstanceFollowRedirects为false就行，注明不进行跳转，也可以通过getHeaderField(“Location”)获取到要跳转的URL。 public void setInstanceFollowRedirects (boolean followRedirects) Sets whether this connection follows redirects. Parameters followRedirects true if this connection will follows redirects, false otherwise. 参考引用地址:http://keke1983.blog.51cto.com/3050676/639347." />
-<meta property="og:description" content="By Lee - Last updated: 星期日, 八月 3, 2014 在通过HttpURLConnection获取重定向后网页内容时发现一个小bug.发出请求时一直返回getResponseCode 200，后面查找发现是服务端进行跳转了。 解决办法很简单，设置setInstanceFollowRedirects为false就行，注明不进行跳转，也可以通过getHeaderField(“Location”)获取到要跳转的URL。 public void setInstanceFollowRedirects (boolean followRedirects) Sets whether this connection follows redirects. Parameters followRedirects true if this connection will follows redirects, false otherwise. 参考引用地址:http://keke1983.blog.51cto.com/3050676/639347." />
+<meta name="description" content="By Lee - Last updated: 星期日, 八月 3, 2014" />
+<meta property="og:description" content="By Lee - Last updated: 星期日, 八月 3, 2014" />
 <link rel="canonical" href="http://www.jfox.info/2017/httpconnection-redirect-getresponsecode-not-301-302.html" />
 <meta property="og:url" content="http://www.jfox.info/2017/httpconnection-redirect-getresponsecode-not-301-302.html" />
 <meta property="og:site_name" content="Java面试" />
 <meta property="og:type" content="article" />
-<meta property="article:published_time" content="2017-01-01T15:46:06+00:00" />
+<meta property="article:published_time" content="2017-01-01T23:46:06+08:00" />
 <script type="application/ld+json">
-{"description":"By Lee - Last updated: 星期日, 八月 3, 2014 在通过HttpURLConnection获取重定向后网页内容时发现一个小bug.发出请求时一直返回getResponseCode 200，后面查找发现是服务端进行跳转了。 解决办法很简单，设置setInstanceFollowRedirects为false就行，注明不进行跳转，也可以通过getHeaderField(“Location”)获取到要跳转的URL。 public void setInstanceFollowRedirects (boolean followRedirects) Sets whether this connection follows redirects. Parameters followRedirects true if this connection will follows redirects, false otherwise. 参考引用地址:http://keke1983.blog.51cto.com/3050676/639347.","@type":"BlogPosting","url":"http://www.jfox.info/2017/httpconnection-redirect-getresponsecode-not-301-302.html","headline":"HttpConnection 重定向后getResponseCode 不是301/302的问题解决","dateModified":"2017-01-01T15:46:06+00:00","datePublished":"2017-01-01T15:46:06+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/httpconnection-redirect-getresponsecode-not-301-302.html"},"@context":"http://schema.org"}</script>
+{"@type":"BlogPosting","headline":"HttpConnection 重定向后getResponseCode 不是301/302的问题解决","dateModified":"2017-01-01T23:46:06+08:00","datePublished":"2017-01-01T23:46:06+08:00","url":"http://www.jfox.info/2017/httpconnection-redirect-getresponsecode-not-301-302.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/httpconnection-redirect-getresponsecode-not-301-302.html"},"description":"By Lee - Last updated: 星期日, 八月 3, 2014","@context":"http://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
   <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
@@ -37,7 +37,7 @@
   <header class="post-header">
     <h1 class="post-title p-name" itemprop="name headline">HttpConnection 重定向后getResponseCode 不是301/302的问题解决</h1>
     <p class="post-meta">
-      <time class="dt-published" datetime="2017-01-01T15:46:06+00:00" itemprop="datePublished">Jan 1, 2017
+      <time class="dt-published" datetime="2017-01-01T23:46:06+08:00" itemprop="datePublished">Jan 1, 2017
       </time></p>
   </header>
 

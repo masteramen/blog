@@ -4,18 +4,18 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
 <title>漫画算法：什么是跳跃表？ | Java面试</title>
-<meta name="generator" content="Jekyll v3.8.4" />
+<meta name="generator" content="Jekyll v3.8.3" />
 <meta property="og:title" content="漫画算法：什么是跳跃表？" />
 <meta property="og:locale" content="zh_CN" />
-<meta name="description" content="拍卖行的商品总数量有几十万件，对应数据库商品表的几十万条记录。 如果是按照商品名称精确查询还好办，可以直接从数据库查出来，最多也就上百条记录。 如果是没有商品名称的全量查询怎么办？总不可能把数据库里的所有记录全查出来吧，而且还要支持不同字段的排序。 所以，只能提前在内存中存储有序的全量商品集合，每一种排序方式都保存成独立的集合，每次请求的时候按照请求的排序种类，返回对应的集合。 比如按价格字段排序的集合： 比如按等级字段排序的集合： 需要注意的是，当时还没有Redis这样的内存数据库，所以小灰只能自己实现一套合适的数据结构来存储。 拍卖行商品列表是线性的，最容易表达线性结构的自然是数组和链表。可是，无论是数组还是链表，在插入新商品的时候，都会存在性能问题。 按照商品等级排序的集合为例，如果使用数组，插入新商品的方式如下： 如果要插入一个等级是3的商品，首先要知道这个商品应该插入的位置。使用二分查找可以最快定位，这一步时间复杂度是O（logN）。 插入过程中，原数组中所有大于3的商品都要右移，这一步时间复杂度是O（N）。所以总体时间复杂度是O（N）。 如果使用链表，插入新商品的方式如下： 如果要插入一个等级是3的商品，首先要知道这个商品应该插入的位置。链表无法使用二分查找，只能和原链表中的节点逐一比较大小来确定位置。这一步的时间复杂度是O（N）。 插入的过程倒是很容易，直接改变节点指针的目标，时间复杂度O（1）。因此总体的时间复杂度也是O（N）。 这对于拥有几十万商品的集合来说，这两种方法显然都太慢了。" />
-<meta property="og:description" content="拍卖行的商品总数量有几十万件，对应数据库商品表的几十万条记录。 如果是按照商品名称精确查询还好办，可以直接从数据库查出来，最多也就上百条记录。 如果是没有商品名称的全量查询怎么办？总不可能把数据库里的所有记录全查出来吧，而且还要支持不同字段的排序。 所以，只能提前在内存中存储有序的全量商品集合，每一种排序方式都保存成独立的集合，每次请求的时候按照请求的排序种类，返回对应的集合。 比如按价格字段排序的集合： 比如按等级字段排序的集合： 需要注意的是，当时还没有Redis这样的内存数据库，所以小灰只能自己实现一套合适的数据结构来存储。 拍卖行商品列表是线性的，最容易表达线性结构的自然是数组和链表。可是，无论是数组还是链表，在插入新商品的时候，都会存在性能问题。 按照商品等级排序的集合为例，如果使用数组，插入新商品的方式如下： 如果要插入一个等级是3的商品，首先要知道这个商品应该插入的位置。使用二分查找可以最快定位，这一步时间复杂度是O（logN）。 插入过程中，原数组中所有大于3的商品都要右移，这一步时间复杂度是O（N）。所以总体时间复杂度是O（N）。 如果使用链表，插入新商品的方式如下： 如果要插入一个等级是3的商品，首先要知道这个商品应该插入的位置。链表无法使用二分查找，只能和原链表中的节点逐一比较大小来确定位置。这一步的时间复杂度是O（N）。 插入的过程倒是很容易，直接改变节点指针的目标，时间复杂度O（1）。因此总体的时间复杂度也是O（N）。 这对于拥有几十万商品的集合来说，这两种方法显然都太慢了。" />
+<meta name="description" content="拍卖行的商品总数量有几十万件，对应数据库商品表的几十万条记录。" />
+<meta property="og:description" content="拍卖行的商品总数量有几十万件，对应数据库商品表的几十万条记录。" />
 <link rel="canonical" href="http://www.jfox.info/2017/%E6%BC%AB%E7%94%BB%E7%AE%97%E6%B3%95%E4%BB%80%E4%B9%88%E6%98%AF%E8%B7%B3%E8%B7%83%E8%A1%A8.html" />
 <meta property="og:url" content="http://www.jfox.info/2017/%E6%BC%AB%E7%94%BB%E7%AE%97%E6%B3%95%E4%BB%80%E4%B9%88%E6%98%AF%E8%B7%B3%E8%B7%83%E8%A1%A8.html" />
 <meta property="og:site_name" content="Java面试" />
 <meta property="og:type" content="article" />
-<meta property="article:published_time" content="2017-01-01T15:52:57+00:00" />
+<meta property="article:published_time" content="2017-01-01T23:52:57+08:00" />
 <script type="application/ld+json">
-{"description":"拍卖行的商品总数量有几十万件，对应数据库商品表的几十万条记录。 如果是按照商品名称精确查询还好办，可以直接从数据库查出来，最多也就上百条记录。 如果是没有商品名称的全量查询怎么办？总不可能把数据库里的所有记录全查出来吧，而且还要支持不同字段的排序。 所以，只能提前在内存中存储有序的全量商品集合，每一种排序方式都保存成独立的集合，每次请求的时候按照请求的排序种类，返回对应的集合。 比如按价格字段排序的集合： 比如按等级字段排序的集合： 需要注意的是，当时还没有Redis这样的内存数据库，所以小灰只能自己实现一套合适的数据结构来存储。 拍卖行商品列表是线性的，最容易表达线性结构的自然是数组和链表。可是，无论是数组还是链表，在插入新商品的时候，都会存在性能问题。 按照商品等级排序的集合为例，如果使用数组，插入新商品的方式如下： 如果要插入一个等级是3的商品，首先要知道这个商品应该插入的位置。使用二分查找可以最快定位，这一步时间复杂度是O（logN）。 插入过程中，原数组中所有大于3的商品都要右移，这一步时间复杂度是O（N）。所以总体时间复杂度是O（N）。 如果使用链表，插入新商品的方式如下： 如果要插入一个等级是3的商品，首先要知道这个商品应该插入的位置。链表无法使用二分查找，只能和原链表中的节点逐一比较大小来确定位置。这一步的时间复杂度是O（N）。 插入的过程倒是很容易，直接改变节点指针的目标，时间复杂度O（1）。因此总体的时间复杂度也是O（N）。 这对于拥有几十万商品的集合来说，这两种方法显然都太慢了。","@type":"BlogPosting","url":"http://www.jfox.info/2017/%E6%BC%AB%E7%94%BB%E7%AE%97%E6%B3%95%E4%BB%80%E4%B9%88%E6%98%AF%E8%B7%B3%E8%B7%83%E8%A1%A8.html","headline":"漫画算法：什么是跳跃表？","dateModified":"2017-01-01T15:52:57+00:00","datePublished":"2017-01-01T15:52:57+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/%E6%BC%AB%E7%94%BB%E7%AE%97%E6%B3%95%E4%BB%80%E4%B9%88%E6%98%AF%E8%B7%B3%E8%B7%83%E8%A1%A8.html"},"@context":"http://schema.org"}</script>
+{"@type":"BlogPosting","headline":"漫画算法：什么是跳跃表？","dateModified":"2017-01-01T23:52:57+08:00","datePublished":"2017-01-01T23:52:57+08:00","url":"http://www.jfox.info/2017/%E6%BC%AB%E7%94%BB%E7%AE%97%E6%B3%95%E4%BB%80%E4%B9%88%E6%98%AF%E8%B7%B3%E8%B7%83%E8%A1%A8.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/%E6%BC%AB%E7%94%BB%E7%AE%97%E6%B3%95%E4%BB%80%E4%B9%88%E6%98%AF%E8%B7%B3%E8%B7%83%E8%A1%A8.html"},"description":"拍卖行的商品总数量有几十万件，对应数据库商品表的几十万条记录。","@context":"http://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
   <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
@@ -37,7 +37,7 @@
   <header class="post-header">
     <h1 class="post-title p-name" itemprop="name headline">漫画算法：什么是跳跃表？</h1>
     <p class="post-meta">
-      <time class="dt-published" datetime="2017-01-01T15:52:57+00:00" itemprop="datePublished">Jan 1, 2017
+      <time class="dt-published" datetime="2017-01-01T23:52:57+08:00" itemprop="datePublished">Jan 1, 2017
       </time></p>
   </header>
 

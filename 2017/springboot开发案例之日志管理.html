@@ -4,18 +4,18 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
 <title>SpringBoot开发案例之日志管理 | Java面试</title>
-<meta name="generator" content="Jekyll v3.8.4" />
+<meta name="generator" content="Jekyll v3.8.3" />
 <meta property="og:title" content="SpringBoot开发案例之日志管理" />
 <meta property="og:locale" content="zh_CN" />
-<meta name="description" content="顺便引用以下原文，当然看不明白也没关系，我们有-有道翻译，如果翻译的不准确，后面会提供配置分享于大家。 Spring Boot uses Commons Logging for all internal logging, but leaves the underlying log implementation open. Default configurations are provided for Java Util Logging, Log4J2 and Logback. In each case loggers are pre-configured to use console output with optional file output also available. By default, If you use the ‘Starters’, Logback will be used for logging. Appropriate Logback routing is also included to ensure that dependent libraries that use Java Util Logging, Commons Logging, Log4J or SLF4J will all work correctly. 简单概述以下spring-boot日志管理默认使用Logback，当然 Log4j2、Log4j也是支持的。" />
-<meta property="og:description" content="顺便引用以下原文，当然看不明白也没关系，我们有-有道翻译，如果翻译的不准确，后面会提供配置分享于大家。 Spring Boot uses Commons Logging for all internal logging, but leaves the underlying log implementation open. Default configurations are provided for Java Util Logging, Log4J2 and Logback. In each case loggers are pre-configured to use console output with optional file output also available. By default, If you use the ‘Starters’, Logback will be used for logging. Appropriate Logback routing is also included to ensure that dependent libraries that use Java Util Logging, Commons Logging, Log4J or SLF4J will all work correctly. 简单概述以下spring-boot日志管理默认使用Logback，当然 Log4j2、Log4j也是支持的。" />
+<meta name="description" content="顺便引用以下原文，当然看不明白也没关系，我们有-有道翻译，如果翻译的不准确，后面会提供配置分享于大家。" />
+<meta property="og:description" content="顺便引用以下原文，当然看不明白也没关系，我们有-有道翻译，如果翻译的不准确，后面会提供配置分享于大家。" />
 <link rel="canonical" href="http://www.jfox.info/2017/springboot%E5%BC%80%E5%8F%91%E6%A1%88%E4%BE%8B%E4%B9%8B%E6%97%A5%E5%BF%97%E7%AE%A1%E7%90%86.html" />
 <meta property="og:url" content="http://www.jfox.info/2017/springboot%E5%BC%80%E5%8F%91%E6%A1%88%E4%BE%8B%E4%B9%8B%E6%97%A5%E5%BF%97%E7%AE%A1%E7%90%86.html" />
 <meta property="og:site_name" content="Java面试" />
 <meta property="og:type" content="article" />
-<meta property="article:published_time" content="2017-01-01T15:59:10+00:00" />
+<meta property="article:published_time" content="2017-01-01T23:59:10+08:00" />
 <script type="application/ld+json">
-{"description":"顺便引用以下原文，当然看不明白也没关系，我们有-有道翻译，如果翻译的不准确，后面会提供配置分享于大家。 Spring Boot uses Commons Logging for all internal logging, but leaves the underlying log implementation open. Default configurations are provided for Java Util Logging, Log4J2 and Logback. In each case loggers are pre-configured to use console output with optional file output also available. By default, If you use the ‘Starters’, Logback will be used for logging. Appropriate Logback routing is also included to ensure that dependent libraries that use Java Util Logging, Commons Logging, Log4J or SLF4J will all work correctly. 简单概述以下spring-boot日志管理默认使用Logback，当然 Log4j2、Log4j也是支持的。","@type":"BlogPosting","url":"http://www.jfox.info/2017/springboot%E5%BC%80%E5%8F%91%E6%A1%88%E4%BE%8B%E4%B9%8B%E6%97%A5%E5%BF%97%E7%AE%A1%E7%90%86.html","headline":"SpringBoot开发案例之日志管理","dateModified":"2017-01-01T15:59:10+00:00","datePublished":"2017-01-01T15:59:10+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/springboot%E5%BC%80%E5%8F%91%E6%A1%88%E4%BE%8B%E4%B9%8B%E6%97%A5%E5%BF%97%E7%AE%A1%E7%90%86.html"},"@context":"http://schema.org"}</script>
+{"@type":"BlogPosting","headline":"SpringBoot开发案例之日志管理","dateModified":"2017-01-01T23:59:10+08:00","datePublished":"2017-01-01T23:59:10+08:00","url":"http://www.jfox.info/2017/springboot%E5%BC%80%E5%8F%91%E6%A1%88%E4%BE%8B%E4%B9%8B%E6%97%A5%E5%BF%97%E7%AE%A1%E7%90%86.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/springboot%E5%BC%80%E5%8F%91%E6%A1%88%E4%BE%8B%E4%B9%8B%E6%97%A5%E5%BF%97%E7%AE%A1%E7%90%86.html"},"description":"顺便引用以下原文，当然看不明白也没关系，我们有-有道翻译，如果翻译的不准确，后面会提供配置分享于大家。","@context":"http://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
   <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
@@ -37,7 +37,7 @@
   <header class="post-header">
     <h1 class="post-title p-name" itemprop="name headline">SpringBoot开发案例之日志管理</h1>
     <p class="post-meta">
-      <time class="dt-published" datetime="2017-01-01T15:59:10+00:00" itemprop="datePublished">Jan 1, 2017
+      <time class="dt-published" datetime="2017-01-01T23:59:10+08:00" itemprop="datePublished">Jan 1, 2017
       </time></p>
   </header>
 

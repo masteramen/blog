@@ -4,18 +4,18 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
 <title>Java线程之sleep(), wait(), yield() 三个方法的作用和特点 | Java面试</title>
-<meta name="generator" content="Jekyll v3.8.4" />
+<meta name="generator" content="Jekyll v3.8.3" />
 <meta property="og:title" content="Java线程之sleep(), wait(), yield() 三个方法的作用和特点" />
 <meta property="og:locale" content="zh_CN" />
-<meta name="description" content="—恢复内容开始— sleep, 线程休眠，让直行的线程暂停一段时间，进入计时等待状态。 　　方法：static void sleep(long millis) 调用sleep后，当前线程放弃CPU，在指定时间段内，sleep所在的线程不会获得执行的机会。此状态下的线程不会释放同步锁/同步监听器。 该方法更多用于模拟网络延迟，让多线程并发访问同一个资源的错误效果更明显。 　wait, 线程通信方法，java.lang.Object类提供了两类用于操作线程通信的方法。 　　wait():执行该方法的线程对象释放同步锁，JVM把该线程存放到等待池中，等待其他的线程唤醒该线程。 　　notify()：执行该方法的线程唤醒在等待池中等待的任意一个线程，把线程转到锁池中等待。 　　notifyAll():执行该方法的线程唤醒在等待池中等待的所有的线程，把线程转到锁池中等待。 (注意：上述方法只能被同步监听锁对象来调用，否则报错IllegalMonitorStateException.) yield,线程礼让，表示当前线程对象提示调度器自己愿意让出CPU，但是调度器可以自由的忽略提示。 　　 调用该方法之后，线程对象进入就绪状态，所以完全有可能：某个线程调用了 yield()之后，线程调度器又把它调度出来重新执行。 从Java7 提供的文档上可以清楚的看出，开发中很少会使用到该方法，该方法主要用于调试或测试，它可能有助于因多线程竞争条件下的错误重新现象。 另外：sleep方法和yield方法的区别： 　　1.都能使当前处于运行状态的线程放弃CPU，把运行的机会给其他线程。 　　2.sleep方法会给其他线程运行机会，但是不考虑其他线程的优先级，yield方法只会给相同优先级或者更高优先级的线程运行机会。 　　3.调用sleep方法后，线程进入计时等待状态，调用yield方法后，线程进入就绪状态。 线程的声明周期图：" />
-<meta property="og:description" content="—恢复内容开始— sleep, 线程休眠，让直行的线程暂停一段时间，进入计时等待状态。 　　方法：static void sleep(long millis) 调用sleep后，当前线程放弃CPU，在指定时间段内，sleep所在的线程不会获得执行的机会。此状态下的线程不会释放同步锁/同步监听器。 该方法更多用于模拟网络延迟，让多线程并发访问同一个资源的错误效果更明显。 　wait, 线程通信方法，java.lang.Object类提供了两类用于操作线程通信的方法。 　　wait():执行该方法的线程对象释放同步锁，JVM把该线程存放到等待池中，等待其他的线程唤醒该线程。 　　notify()：执行该方法的线程唤醒在等待池中等待的任意一个线程，把线程转到锁池中等待。 　　notifyAll():执行该方法的线程唤醒在等待池中等待的所有的线程，把线程转到锁池中等待。 (注意：上述方法只能被同步监听锁对象来调用，否则报错IllegalMonitorStateException.) yield,线程礼让，表示当前线程对象提示调度器自己愿意让出CPU，但是调度器可以自由的忽略提示。 　　 调用该方法之后，线程对象进入就绪状态，所以完全有可能：某个线程调用了 yield()之后，线程调度器又把它调度出来重新执行。 从Java7 提供的文档上可以清楚的看出，开发中很少会使用到该方法，该方法主要用于调试或测试，它可能有助于因多线程竞争条件下的错误重新现象。 另外：sleep方法和yield方法的区别： 　　1.都能使当前处于运行状态的线程放弃CPU，把运行的机会给其他线程。 　　2.sleep方法会给其他线程运行机会，但是不考虑其他线程的优先级，yield方法只会给相同优先级或者更高优先级的线程运行机会。 　　3.调用sleep方法后，线程进入计时等待状态，调用yield方法后，线程进入就绪状态。 线程的声明周期图：" />
+<meta name="description" content="—恢复内容开始—" />
+<meta property="og:description" content="—恢复内容开始—" />
 <link rel="canonical" href="http://www.jfox.info/2017/java%E7%BA%BF%E7%A8%8B%E4%B9%8Bsleep-wait-yield-%E4%B8%89%E4%B8%AA%E6%96%B9%E6%B3%95%E7%9A%84%E4%BD%9C%E7%94%A8%E5%92%8C%E7%89%B9%E7%82%B9.html" />
 <meta property="og:url" content="http://www.jfox.info/2017/java%E7%BA%BF%E7%A8%8B%E4%B9%8Bsleep-wait-yield-%E4%B8%89%E4%B8%AA%E6%96%B9%E6%B3%95%E7%9A%84%E4%BD%9C%E7%94%A8%E5%92%8C%E7%89%B9%E7%82%B9.html" />
 <meta property="og:site_name" content="Java面试" />
 <meta property="og:type" content="article" />
-<meta property="article:published_time" content="2017-01-01T15:51:36+00:00" />
+<meta property="article:published_time" content="2017-01-01T23:51:36+08:00" />
 <script type="application/ld+json">
-{"description":"—恢复内容开始— sleep, 线程休眠，让直行的线程暂停一段时间，进入计时等待状态。 　　方法：static void sleep(long millis) 调用sleep后，当前线程放弃CPU，在指定时间段内，sleep所在的线程不会获得执行的机会。此状态下的线程不会释放同步锁/同步监听器。 该方法更多用于模拟网络延迟，让多线程并发访问同一个资源的错误效果更明显。 　wait, 线程通信方法，java.lang.Object类提供了两类用于操作线程通信的方法。 　　wait():执行该方法的线程对象释放同步锁，JVM把该线程存放到等待池中，等待其他的线程唤醒该线程。 　　notify()：执行该方法的线程唤醒在等待池中等待的任意一个线程，把线程转到锁池中等待。 　　notifyAll():执行该方法的线程唤醒在等待池中等待的所有的线程，把线程转到锁池中等待。 (注意：上述方法只能被同步监听锁对象来调用，否则报错IllegalMonitorStateException.) yield,线程礼让，表示当前线程对象提示调度器自己愿意让出CPU，但是调度器可以自由的忽略提示。 　　 调用该方法之后，线程对象进入就绪状态，所以完全有可能：某个线程调用了 yield()之后，线程调度器又把它调度出来重新执行。 从Java7 提供的文档上可以清楚的看出，开发中很少会使用到该方法，该方法主要用于调试或测试，它可能有助于因多线程竞争条件下的错误重新现象。 另外：sleep方法和yield方法的区别： 　　1.都能使当前处于运行状态的线程放弃CPU，把运行的机会给其他线程。 　　2.sleep方法会给其他线程运行机会，但是不考虑其他线程的优先级，yield方法只会给相同优先级或者更高优先级的线程运行机会。 　　3.调用sleep方法后，线程进入计时等待状态，调用yield方法后，线程进入就绪状态。 线程的声明周期图：","@type":"BlogPosting","url":"http://www.jfox.info/2017/java%E7%BA%BF%E7%A8%8B%E4%B9%8Bsleep-wait-yield-%E4%B8%89%E4%B8%AA%E6%96%B9%E6%B3%95%E7%9A%84%E4%BD%9C%E7%94%A8%E5%92%8C%E7%89%B9%E7%82%B9.html","headline":"Java线程之sleep(), wait(), yield() 三个方法的作用和特点","dateModified":"2017-01-01T15:51:36+00:00","datePublished":"2017-01-01T15:51:36+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/java%E7%BA%BF%E7%A8%8B%E4%B9%8Bsleep-wait-yield-%E4%B8%89%E4%B8%AA%E6%96%B9%E6%B3%95%E7%9A%84%E4%BD%9C%E7%94%A8%E5%92%8C%E7%89%B9%E7%82%B9.html"},"@context":"http://schema.org"}</script>
+{"@type":"BlogPosting","headline":"Java线程之sleep(), wait(), yield() 三个方法的作用和特点","dateModified":"2017-01-01T23:51:36+08:00","datePublished":"2017-01-01T23:51:36+08:00","url":"http://www.jfox.info/2017/java%E7%BA%BF%E7%A8%8B%E4%B9%8Bsleep-wait-yield-%E4%B8%89%E4%B8%AA%E6%96%B9%E6%B3%95%E7%9A%84%E4%BD%9C%E7%94%A8%E5%92%8C%E7%89%B9%E7%82%B9.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/java%E7%BA%BF%E7%A8%8B%E4%B9%8Bsleep-wait-yield-%E4%B8%89%E4%B8%AA%E6%96%B9%E6%B3%95%E7%9A%84%E4%BD%9C%E7%94%A8%E5%92%8C%E7%89%B9%E7%82%B9.html"},"description":"—恢复内容开始—","@context":"http://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
   <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
@@ -37,7 +37,7 @@
   <header class="post-header">
     <h1 class="post-title p-name" itemprop="name headline">Java线程之sleep(), wait(), yield() 三个方法的作用和特点</h1>
     <p class="post-meta">
-      <time class="dt-published" datetime="2017-01-01T15:51:36+00:00" itemprop="datePublished">Jan 1, 2017
+      <time class="dt-published" datetime="2017-01-01T23:51:36+08:00" itemprop="datePublished">Jan 1, 2017
       </time></p>
   </header>
 

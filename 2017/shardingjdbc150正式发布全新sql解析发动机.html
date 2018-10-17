@@ -4,18 +4,18 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
 <title>Sharding-JDBC 1.5.0 正式发布：全新 SQL 解析发动机 | Java面试</title>
-<meta name="generator" content="Jekyll v3.8.4" />
+<meta name="generator" content="Jekyll v3.8.3" />
 <meta property="og:title" content="Sharding-JDBC 1.5.0 正式发布：全新 SQL 解析发动机" />
 <meta property="og:locale" content="zh_CN" />
-<meta name="description" content="经过了 1.5.0.M1-1.5.0.M3 这 3 次里程碑版本的发布，Sharding-JDBC 1.5.0 稳定版终于正式发布。 Sharding-JDBC 1.5.0 版本是一次里程碑式升级，工作量巨大，Sharding-JDBC 截止到 1.4.2 之前所有的提交次数为 385 次，而 1.5.0 版本的总共提交次数为 804 次。 Sharding-JDBC 定位为水平扩展数据库中间件以及云原生基础开发套件，将全力专注于 OLTP 和本地内联事务处理以及数据库访问层治理。 本次里程碑版本的重要更新是： 数据库全支持，包括 MySQL、Oracle、SQLServer 和 PostgreSQL 全新的 SQL 解析模块，去掉对 Druid 的依赖。仅解析分片上下文，对于 SQL 采用”半理解”理念，进一步提升性能和兼容性，并降低代码复杂度 全新的 SQL 改写模块，增加优化性改写模块 全新的 SQL 归并模块，重构为流式、内存以及装饰者 3 种归并引擎 Sharding-JDBC 从 2016 年开源至今，已发布了 16 个版本，其中包含 5 个里程碑版本升级。在经历了整体架构的数次精炼以及稳定性打磨后，如今它已积累了足够的底蕴，相信可以成为开发者选择技术组件时的一个参考。真诚邀请感兴趣的人关注和参与。" />
-<meta property="og:description" content="经过了 1.5.0.M1-1.5.0.M3 这 3 次里程碑版本的发布，Sharding-JDBC 1.5.0 稳定版终于正式发布。 Sharding-JDBC 1.5.0 版本是一次里程碑式升级，工作量巨大，Sharding-JDBC 截止到 1.4.2 之前所有的提交次数为 385 次，而 1.5.0 版本的总共提交次数为 804 次。 Sharding-JDBC 定位为水平扩展数据库中间件以及云原生基础开发套件，将全力专注于 OLTP 和本地内联事务处理以及数据库访问层治理。 本次里程碑版本的重要更新是： 数据库全支持，包括 MySQL、Oracle、SQLServer 和 PostgreSQL 全新的 SQL 解析模块，去掉对 Druid 的依赖。仅解析分片上下文，对于 SQL 采用”半理解”理念，进一步提升性能和兼容性，并降低代码复杂度 全新的 SQL 改写模块，增加优化性改写模块 全新的 SQL 归并模块，重构为流式、内存以及装饰者 3 种归并引擎 Sharding-JDBC 从 2016 年开源至今，已发布了 16 个版本，其中包含 5 个里程碑版本升级。在经历了整体架构的数次精炼以及稳定性打磨后，如今它已积累了足够的底蕴，相信可以成为开发者选择技术组件时的一个参考。真诚邀请感兴趣的人关注和参与。" />
+<meta name="description" content="经过了 1.5.0.M1-1.5.0.M3 这 3 次里程碑版本的发布，Sharding-JDBC 1.5.0 稳定版终于正式发布。" />
+<meta property="og:description" content="经过了 1.5.0.M1-1.5.0.M3 这 3 次里程碑版本的发布，Sharding-JDBC 1.5.0 稳定版终于正式发布。" />
 <link rel="canonical" href="http://www.jfox.info/2017/shardingjdbc150%E6%AD%A3%E5%BC%8F%E5%8F%91%E5%B8%83%E5%85%A8%E6%96%B0sql%E8%A7%A3%E6%9E%90%E5%8F%91%E5%8A%A8%E6%9C%BA.html" />
 <meta property="og:url" content="http://www.jfox.info/2017/shardingjdbc150%E6%AD%A3%E5%BC%8F%E5%8F%91%E5%B8%83%E5%85%A8%E6%96%B0sql%E8%A7%A3%E6%9E%90%E5%8F%91%E5%8A%A8%E6%9C%BA.html" />
 <meta property="og:site_name" content="Java面试" />
 <meta property="og:type" content="article" />
-<meta property="article:published_time" content="2017-01-01T15:58:53+00:00" />
+<meta property="article:published_time" content="2017-01-01T23:58:53+08:00" />
 <script type="application/ld+json">
-{"description":"经过了 1.5.0.M1-1.5.0.M3 这 3 次里程碑版本的发布，Sharding-JDBC 1.5.0 稳定版终于正式发布。 Sharding-JDBC 1.5.0 版本是一次里程碑式升级，工作量巨大，Sharding-JDBC 截止到 1.4.2 之前所有的提交次数为 385 次，而 1.5.0 版本的总共提交次数为 804 次。 Sharding-JDBC 定位为水平扩展数据库中间件以及云原生基础开发套件，将全力专注于 OLTP 和本地内联事务处理以及数据库访问层治理。 本次里程碑版本的重要更新是： 数据库全支持，包括 MySQL、Oracle、SQLServer 和 PostgreSQL 全新的 SQL 解析模块，去掉对 Druid 的依赖。仅解析分片上下文，对于 SQL 采用”半理解”理念，进一步提升性能和兼容性，并降低代码复杂度 全新的 SQL 改写模块，增加优化性改写模块 全新的 SQL 归并模块，重构为流式、内存以及装饰者 3 种归并引擎 Sharding-JDBC 从 2016 年开源至今，已发布了 16 个版本，其中包含 5 个里程碑版本升级。在经历了整体架构的数次精炼以及稳定性打磨后，如今它已积累了足够的底蕴，相信可以成为开发者选择技术组件时的一个参考。真诚邀请感兴趣的人关注和参与。","@type":"BlogPosting","url":"http://www.jfox.info/2017/shardingjdbc150%E6%AD%A3%E5%BC%8F%E5%8F%91%E5%B8%83%E5%85%A8%E6%96%B0sql%E8%A7%A3%E6%9E%90%E5%8F%91%E5%8A%A8%E6%9C%BA.html","headline":"Sharding-JDBC 1.5.0 正式发布：全新 SQL 解析发动机","dateModified":"2017-01-01T15:58:53+00:00","datePublished":"2017-01-01T15:58:53+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/shardingjdbc150%E6%AD%A3%E5%BC%8F%E5%8F%91%E5%B8%83%E5%85%A8%E6%96%B0sql%E8%A7%A3%E6%9E%90%E5%8F%91%E5%8A%A8%E6%9C%BA.html"},"@context":"http://schema.org"}</script>
+{"@type":"BlogPosting","headline":"Sharding-JDBC 1.5.0 正式发布：全新 SQL 解析发动机","dateModified":"2017-01-01T23:58:53+08:00","datePublished":"2017-01-01T23:58:53+08:00","url":"http://www.jfox.info/2017/shardingjdbc150%E6%AD%A3%E5%BC%8F%E5%8F%91%E5%B8%83%E5%85%A8%E6%96%B0sql%E8%A7%A3%E6%9E%90%E5%8F%91%E5%8A%A8%E6%9C%BA.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/shardingjdbc150%E6%AD%A3%E5%BC%8F%E5%8F%91%E5%B8%83%E5%85%A8%E6%96%B0sql%E8%A7%A3%E6%9E%90%E5%8F%91%E5%8A%A8%E6%9C%BA.html"},"description":"经过了 1.5.0.M1-1.5.0.M3 这 3 次里程碑版本的发布，Sharding-JDBC 1.5.0 稳定版终于正式发布。","@context":"http://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
   <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
@@ -37,7 +37,7 @@
   <header class="post-header">
     <h1 class="post-title p-name" itemprop="name headline">Sharding-JDBC 1.5.0 正式发布：全新 SQL 解析发动机</h1>
     <p class="post-meta">
-      <time class="dt-published" datetime="2017-01-01T15:58:53+00:00" itemprop="datePublished">Jan 1, 2017
+      <time class="dt-published" datetime="2017-01-01T23:58:53+08:00" itemprop="datePublished">Jan 1, 2017
       </time></p>
   </header>
 

@@ -4,18 +4,18 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
 <title>分布式云调度处理系统 » java面试题 | Java面试</title>
-<meta name="generator" content="Jekyll v3.8.4" />
+<meta name="generator" content="Jekyll v3.8.3" />
 <meta property="og:title" content="分布式云调度处理系统 » java面试题" />
 <meta property="og:locale" content="zh_CN" />
-<meta name="description" content="项目参考xxl-job进行若干改动。 项目基于quartz并进行若干扩展而成，适用于公司内部做定时调度处理，方便，快捷，简单。 支持bean, groovy, shell, python四种任务处理方式。 项目架构图 core: 云调度核心，封装了各种工具，基础组件。 job: quartz可视化控制台及quartz调度器，去调度具体的executor, 内置了一个最简单的executor. executor: 可选处理器，可扩展，可自定义，可分布式部署。 技术选型 业务架构图 job可视化控制台架构图 控制台首页 任务管理 脚本编辑器 日志管理 日志控制台 集群管理 项目配置 项目采用分模块开发，其中的微服务模块：facade, facade-impl, integration为测试模块，没有使用，可以自行去掉。 项目下载下来，只需要更改日志路径及数据库相关配置即可正常使用。 日志配置在：conf/config/logback.xml 数据库配置在：conf/config/application.properties 执行器模块比较简单，主要用来开发一些自定义的bean处理类。默认job模块中已经内置了一个基础处理器。 数据库表定义在：dal 模块中的 qs_scheduler.sql 中，创建所需要的表即可。其中11张表是quartz的表，另外5张表是业务扩展表。 项目站点 项目集成了一些maven的插件，如findbugs, taglist, 你可以有选择的生成项目站点，查看项目报告。 mvn clean site 即可在target目录下得到 site 信息。 各个子模块的target目录下都有 site 信息，可以查看项目报告，如findbugs。 项目启动 数据库和配置修改完毕后，直接在项目目录执行： mvn clean package -DskipTests 将项目 job/target/job.war 拷贝到 tomcat 的webapps下，启动tomcat即可。" />
-<meta property="og:description" content="项目参考xxl-job进行若干改动。 项目基于quartz并进行若干扩展而成，适用于公司内部做定时调度处理，方便，快捷，简单。 支持bean, groovy, shell, python四种任务处理方式。 项目架构图 core: 云调度核心，封装了各种工具，基础组件。 job: quartz可视化控制台及quartz调度器，去调度具体的executor, 内置了一个最简单的executor. executor: 可选处理器，可扩展，可自定义，可分布式部署。 技术选型 业务架构图 job可视化控制台架构图 控制台首页 任务管理 脚本编辑器 日志管理 日志控制台 集群管理 项目配置 项目采用分模块开发，其中的微服务模块：facade, facade-impl, integration为测试模块，没有使用，可以自行去掉。 项目下载下来，只需要更改日志路径及数据库相关配置即可正常使用。 日志配置在：conf/config/logback.xml 数据库配置在：conf/config/application.properties 执行器模块比较简单，主要用来开发一些自定义的bean处理类。默认job模块中已经内置了一个基础处理器。 数据库表定义在：dal 模块中的 qs_scheduler.sql 中，创建所需要的表即可。其中11张表是quartz的表，另外5张表是业务扩展表。 项目站点 项目集成了一些maven的插件，如findbugs, taglist, 你可以有选择的生成项目站点，查看项目报告。 mvn clean site 即可在target目录下得到 site 信息。 各个子模块的target目录下都有 site 信息，可以查看项目报告，如findbugs。 项目启动 数据库和配置修改完毕后，直接在项目目录执行： mvn clean package -DskipTests 将项目 job/target/job.war 拷贝到 tomcat 的webapps下，启动tomcat即可。" />
+<meta name="description" content="项目参考xxl-job进行若干改动。" />
+<meta property="og:description" content="项目参考xxl-job进行若干改动。" />
 <link rel="canonical" href="http://www.jfox.info/2017/%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%91%E8%B0%83%E5%BA%A6%E5%A4%84%E7%90%86%E7%B3%BB%E7%BB%9F.html" />
 <meta property="og:url" content="http://www.jfox.info/2017/%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%91%E8%B0%83%E5%BA%A6%E5%A4%84%E7%90%86%E7%B3%BB%E7%BB%9F.html" />
 <meta property="og:site_name" content="Java面试" />
 <meta property="og:type" content="article" />
-<meta property="article:published_time" content="2017-01-01T15:58:26+00:00" />
+<meta property="article:published_time" content="2017-01-01T23:58:26+08:00" />
 <script type="application/ld+json">
-{"description":"项目参考xxl-job进行若干改动。 项目基于quartz并进行若干扩展而成，适用于公司内部做定时调度处理，方便，快捷，简单。 支持bean, groovy, shell, python四种任务处理方式。 项目架构图 core: 云调度核心，封装了各种工具，基础组件。 job: quartz可视化控制台及quartz调度器，去调度具体的executor, 内置了一个最简单的executor. executor: 可选处理器，可扩展，可自定义，可分布式部署。 技术选型 业务架构图 job可视化控制台架构图 控制台首页 任务管理 脚本编辑器 日志管理 日志控制台 集群管理 项目配置 项目采用分模块开发，其中的微服务模块：facade, facade-impl, integration为测试模块，没有使用，可以自行去掉。 项目下载下来，只需要更改日志路径及数据库相关配置即可正常使用。 日志配置在：conf/config/logback.xml 数据库配置在：conf/config/application.properties 执行器模块比较简单，主要用来开发一些自定义的bean处理类。默认job模块中已经内置了一个基础处理器。 数据库表定义在：dal 模块中的 qs_scheduler.sql 中，创建所需要的表即可。其中11张表是quartz的表，另外5张表是业务扩展表。 项目站点 项目集成了一些maven的插件，如findbugs, taglist, 你可以有选择的生成项目站点，查看项目报告。 mvn clean site 即可在target目录下得到 site 信息。 各个子模块的target目录下都有 site 信息，可以查看项目报告，如findbugs。 项目启动 数据库和配置修改完毕后，直接在项目目录执行： mvn clean package -DskipTests 将项目 job/target/job.war 拷贝到 tomcat 的webapps下，启动tomcat即可。","@type":"BlogPosting","url":"http://www.jfox.info/2017/%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%91%E8%B0%83%E5%BA%A6%E5%A4%84%E7%90%86%E7%B3%BB%E7%BB%9F.html","headline":"分布式云调度处理系统 » java面试题","dateModified":"2017-01-01T15:58:26+00:00","datePublished":"2017-01-01T15:58:26+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%91%E8%B0%83%E5%BA%A6%E5%A4%84%E7%90%86%E7%B3%BB%E7%BB%9F.html"},"@context":"http://schema.org"}</script>
+{"@type":"BlogPosting","headline":"分布式云调度处理系统 » java面试题","dateModified":"2017-01-01T23:58:26+08:00","datePublished":"2017-01-01T23:58:26+08:00","url":"http://www.jfox.info/2017/%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%91%E8%B0%83%E5%BA%A6%E5%A4%84%E7%90%86%E7%B3%BB%E7%BB%9F.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%91%E8%B0%83%E5%BA%A6%E5%A4%84%E7%90%86%E7%B3%BB%E7%BB%9F.html"},"description":"项目参考xxl-job进行若干改动。","@context":"http://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
   <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
@@ -37,7 +37,7 @@
   <header class="post-header">
     <h1 class="post-title p-name" itemprop="name headline">分布式云调度处理系统 » java面试题</h1>
     <p class="post-meta">
-      <time class="dt-published" datetime="2017-01-01T15:58:26+00:00" itemprop="datePublished">Jan 1, 2017
+      <time class="dt-published" datetime="2017-01-01T23:58:26+08:00" itemprop="datePublished">Jan 1, 2017
       </time></p>
   </header>
 

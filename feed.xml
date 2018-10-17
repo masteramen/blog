@@ -1,4 +1,893 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.8.4">Jekyll</generator><link href="http://www.jfox.info/feed.xml" rel="self" type="application/atom+xml" /><link href="http://www.jfox.info/" rel="alternate" type="text/html" /><updated>2018-10-12T02:50:05+00:00</updated><id>http://www.jfox.info/feed.xml</id><title type="html">Java面试</title><entry xml:lang="zh_CN"><title type="html">如何捕获express框架app.listen的异常？</title><link href="http://www.jfox.info/2018/458aead/index.html" rel="alternate" type="text/html" title="如何捕获express框架app.listen的异常？" /><published>2018-10-10T06:46:54+00:00</published><updated>2018-10-10T06:46:54+00:00</updated><id>http://www.jfox.info/2018/458aead/458aead</id><content type="html" xml:base="http://www.jfox.info/2018/458aead/index.html">&lt;h3 id=&quot;问题背景&quot;&gt;问题背景&lt;/h3&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.8.3">Jekyll</generator><link href="http://www.jfox.info/feed.xml" rel="self" type="application/atom+xml" /><link href="http://www.jfox.info/" rel="alternate" type="text/html" /><updated>2018-10-17T21:45:01+08:00</updated><id>http://www.jfox.info/feed.xml</id><title type="html">Java面试</title><entry xml:lang="en"><title type="html">Java Spring面试问题与解答</title><link href="http://www.jfox.info/2018/6438d34/index.html" rel="alternate" type="text/html" title="Java Spring面试问题与解答" /><published>2018-10-16T08:42:36+08:00</published><updated>2018-10-16T08:42:36+08:00</updated><id>http://www.jfox.info/2018/6438d34/6438d34</id><content type="html" xml:base="http://www.jfox.info/2018/6438d34/index.html">&lt;p&gt;This post will help you get through &lt;strong&gt;Spring interview Questions&lt;/strong&gt; explaining the core concepts in detail.
+这篇文章将帮助你通过 &lt;strong&gt;Spring 面试问题&lt;/strong&gt; 解释详细的核心概念。(zh_CN)&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Spring Framework&lt;/strong&gt; is one of the most popular Java EE framework for web applications. &lt;strong&gt;Dependency Injection&lt;/strong&gt; and &lt;strong&gt;Aspect Oriented Programming&lt;/strong&gt; are at the heart of Spring framework. If you are good in Spring Framework, chances of getting selected gets high.
+&lt;strong&gt;Spring Framework&lt;/strong&gt; 是最流行的 Web 应用程序 Java EE 框架之一。 &lt;strong&gt;依赖注入&lt;/strong&gt; 和 &lt;strong&gt;面向方面编程&lt;/strong&gt;是 Spring 框架的核心。如果你擅长 Spring Framework，那么获得选择的机会就会很高。(zh_CN)&lt;/p&gt;
+
+&lt;p&gt;You should bookmark this post because Spring Framework is a lot bigger and chances are that I will keep on adding more questions to this list and you don’t want to miss them out.
+你应该将这篇文章加入书签，因为 Spring Framework 要大得多，我可能会继续在这个列表中添加更多问题，你不想错过它们。(zh_CN)&lt;/p&gt;
+
+&lt;h3 id=&quot;1what-is-spring-framework&quot;&gt;1.What is Spring Framework?&lt;/h3&gt;
+
+&lt;h3 id=&quot;1-什么是-spring-frameworkzh_cn&quot;&gt;1. 什么是 Spring Framework？(zh_CN)&lt;/h3&gt;
+
+&lt;p&gt;Spring is one of the most widely used Java EE framework. Spring framework core concepts are “Dependency Injection” and “Aspect Oriented Programming”.
+Spring 是使用最广泛的 Java EE 框架之一。 Spring 框架核心概念是“依赖注入”和“面向方面编程”。(zh_CN)&lt;/p&gt;
+
+&lt;p&gt;Spring framework can be used in normal java applications also to achieve loose coupling between different components by implementing dependency injection and we can perform cross cutting tasks such as logging and authentication using spring support for aspect oriented programming.
+Spring 框架也可以在普通的 java 应用程序中使用，通过实现依赖注入来实现不同组件之间的松散耦合，我们可以使用 spring 支持面向方面编程来执行交叉切割任务，例如日志记录和身份验证。(zh_CN)&lt;/p&gt;
+
+&lt;p&gt;I like spring because it provides a lot of features and different modules for specific tasks such as Spring MVC and Spring JDBC. Since it’s an open source framework with a lot of online resources and active community members, working with Spring framework is easy and fun at same time.
+我喜欢 spring，因为它为 Spring MVC 和 Spring JDBC 等特定任务提供了许多功能和不同的模块。由于它是一个包含大量在线资源和活跃社区成员的开源框架，因此使用 Spring 框架既简单又有趣。(zh_CN)&lt;/p&gt;
+
+&lt;h3 id=&quot;2what-are-some-of-the-important-features-and-advantages-of-spring-framework&quot;&gt;2.What are some of the important features and advantages of Spring Framework?&lt;/h3&gt;
+
+&lt;h3 id=&quot;2spring-framework-的一些重要特性和优势是什么zh_cn&quot;&gt;2.Spring Framework 的一些重要特性和优势是什么？(zh_CN)&lt;/h3&gt;
+
+&lt;p&gt;Spring Framework is built on top of two design concepts – Dependency Injection and Aspect Oriented Programming.
+Spring Framework 构建于两个设计概念之上 - 依赖注入和面向方面编程。(zh_CN)&lt;/p&gt;
+
+&lt;p&gt;Some of the features of spring framework are:
+spring 框架的一些特性是：(zh_CN)&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Lightweight and very little overhead of using framework for our development.&lt;/li&gt;
+  &lt;li&gt;使用框架进行开发的轻量级和非常小的开销。(zh_CN)&lt;/li&gt;
+  &lt;li&gt;Dependency Injection or Inversion of Control to write components that are independent of each other, spring container takes care of wiring them together to achieve our work.&lt;/li&gt;
+  &lt;li&gt;依赖注入或控制反转来编写彼此独立的组件，spring 容器负责将它们连接在一起以实现我们的工作。(zh_CN)&lt;/li&gt;
+  &lt;li&gt;Spring IoC container manages Spring Bean life cycle and project specific configurations such as JNDI lookup.&lt;/li&gt;
+  &lt;li&gt;Spring IoC 容器管理 Spring Bean 生命周期和项目特定配置，例如 JNDI 查找。(zh_CN)&lt;/li&gt;
+  &lt;li&gt;Spring MVC framework can be used to create web applications as well as restful web services capable of returning XML as well as JSON response.&lt;/li&gt;
+  &lt;li&gt;Spring MVC 框架可用于创建 Web 应用程序以及能够返回 XML 和 JSON 响应的 restful Web 服务。(zh_CN)&lt;/li&gt;
+  &lt;li&gt;Support for transaction management, JDBC operations, File uploading, Exception Handling etc with very little configurations, either by using annotations or by spring bean configuration file.&lt;/li&gt;
+  &lt;li&gt;通过使用注释或 spring bean 配置文件，支持事务管理，JDBC 操作，文件上载，异常处理等，配置非常少。(zh_CN)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Some of the advantages of using Spring Framework are:
+使用 Spring Framework 的一些优点是：(zh_CN)&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Reducing direct dependencies between different components of the application, usually Spring IoC container is responsible for initializing resources or beans and inject them as dependencies.&lt;/li&gt;
+  &lt;li&gt;减少应用程序的不同组件之间的直接依赖关系，通常 Spring IoC 容器负责初始化资源或 bean 并将它们作为依赖项注入。(zh_CN)&lt;/li&gt;
+  &lt;li&gt;Writing unit test cases are easy in Spring framework because our business logic doesn’t have direct dependencies with actual resource implementation classes. We can easily write a test configuration and inject our mock beans for testing purposes.&lt;/li&gt;
+  &lt;li&gt;在 Spring 框架中编写单元测试用例很容易，因为我们的业务逻辑与实际的资源实现类没有直接的依赖关系。我们可以轻松编写测试配置并注入我们的模拟 bean 用于测试目的。(zh_CN)&lt;/li&gt;
+  &lt;li&gt;Reduces the amount of boiler-plate code, such as initializing objects, open/close resources. I like JdbcTemplate class a lot because it helps us in removing all the boiler-plate code that comes with JDBC programming.&lt;/li&gt;
+  &lt;li&gt;减少重复代码的数量，例如初始化对象，打开/关闭资源。我非常喜欢 JdbcTemplate 类，因为它有助于我们删除 JDBC 编程附带的所有样板代码。(zh_CN)&lt;/li&gt;
+  &lt;li&gt;Spring framework is divided into several modules, it helps us in keeping our application lightweight. For example, if we don’t need Spring transaction management features, we don’t need to add that dependency in our project.&lt;/li&gt;
+  &lt;li&gt;Spring 框架分为几个模块，它有助于我们保持应用程序的轻量级。例如，如果我们不需要 Spring 事务管理功能，我们就不需要在项目中添加该依赖项。(zh_CN)&lt;/li&gt;
+  &lt;li&gt;Spring framework support most of the Java EE features and even much more. It’s always on top of the new technologies, for example there is a Spring project for Android to help us write better code for native android applications. This makes spring framework a complete package and we don’t need to look after different framework for different requirements.&lt;/li&gt;
+  &lt;li&gt;Spring 框架支持大多数 Java EE 功能甚至更多功能。它总是在新技术之上，例如，有一个 Android 的 Spring 项目，可以帮助我们为原生 Android 应用程序编写更好的代码。这使得 spring 框架成为一个完整的包，我们不需要为不同的需求提供不同的框架。(zh_CN)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;3.&lt;/p&gt;
+
+&lt;h3 id=&quot;what-do-you-understand-by-dependency-injection&quot;&gt;What do you understand by Dependency Injection?&lt;/h3&gt;
+
+&lt;h3 id=&quot;你对依赖注入有什么了解zh_cn&quot;&gt;你对依赖注入有什么了解？(zh_CN)&lt;/h3&gt;
+
+&lt;p&gt;Dependency Injection &lt;a href=&quot;https://www.journaldev.com/1827/java-design-patterns-example-tutorial&quot;&gt;design pattern&lt;/a&gt; allows us to remove the hard-coded dependencies and make our application loosely coupled, extendable and maintainable. We can implement dependency injection pattern to move the dependency resolution from compile-time to runtime.
+依赖注入[设计模式]（https://www.journaldev.com/1827/java-design-patterns-example-tutorial）允许我们删除硬编码的依赖项，并使我们的应用程序松散耦合，可扩展和可维护。我们可以实现依赖注入模式，将依赖关系解析从编译时移动到运行时。(zh_CN)&lt;/p&gt;
+
+&lt;p&gt;Some of the benefits of using Dependency Injection are: Separation of Concerns, Boilerplate Code reduction, Configurable components and easy unit testing.
+使用依赖注入的一些好处是：关注点分离，Boilerplate 代码减少，可配置组件和简单的单元测试。(zh_CN)&lt;/p&gt;
+
+&lt;p&gt;Read more at &lt;a href=&quot;https://www.journaldev.com/2394/java-dependency-injection-design-pattern-example-tutorial&quot;&gt;Dependency Injection Tutorial&lt;/a&gt;. We can also use &lt;a href=&quot;https://www.journaldev.com/2403/google-guice-dependency-injection-example-tutorial&quot;&gt;Google Guice for Dependency Injection&lt;/a&gt; to automate the process of dependency injection. But in most of the cases we are looking for more than just dependency injection and that’s why Spring is the top choice for this.
+阅读[依赖注入教程]（https://www.journaldev.com/2394/java-dependency-injection-design-pattern-example-tutorial）。我们还可以使用[Google Guice for Dependency Injection]（https://www.journaldev.com/2403/google-guice-dependency-injection-example-tutorial）自动执行依赖注入过程。但在大多数情况下，我们寻求的不仅仅是依赖注入，这就是为什么Spring是最佳选择。(zh_CN)&lt;/p&gt;
+
+&lt;p&gt;4.&lt;/p&gt;
+
+&lt;h3 id=&quot;how-do-we-implement-di-in-spring-framework&quot;&gt;How do we implement DI in Spring Framework?&lt;/h3&gt;
+
+&lt;h3 id=&quot;我们如何在-spring-framework-中实现-dizh_cn&quot;&gt;我们如何在 Spring Framework 中实现 DI？(zh_CN)&lt;/h3&gt;
+
+&lt;p&gt;We can use Spring XML based as well as Annotation based configuration to implement DI in spring applications. For better understanding, please read &lt;a href=&quot;https://www.journaldev.com/2410/spring-dependency-injection&quot;&gt;Spring Dependency Injection&lt;/a&gt; example where you can learn both the ways with JUnit test case. The post also contains sample project zip file, that you can download and play around to learn more.
+我们可以使用基于 Spring XML 和基于 Annotation 的配置来在 spring 应用程序中实现 DI。为了更好地理解，请阅读[Spring Dependency Injection]（https://www.journaldev.com/2410/spring-dependency-injection）示例，其中您可以了解JUnit测试用例的两种方法。该帖子还包含示例项目zip文件，您可以下载和播放以了解更多信息。(zh_CN)&lt;/p&gt;
+
+&lt;p&gt;5.&lt;/p&gt;
+
+&lt;h3 id=&quot;what-are-the-benefits-of-using-spring-tool-suite&quot;&gt;What are the benefits of using Spring Tool Suite?&lt;/h3&gt;
+
+&lt;h3 id=&quot;使用-spring-tool-suite-有什么好处zh_cn&quot;&gt;使用 Spring Tool Suite 有什么好处？(zh_CN)&lt;/h3&gt;
+
+&lt;p&gt;We can install plugins into Eclipse to get all the features of Spring Tool Suite. However STS comes with Eclipse with some other important stuffs such as Maven support, Templates for creating different types of Spring projects and tc server for better performance with Spring applications.
+我们可以在 Eclipse 中安装插件以获得 Spring Tool Suite 的所有功能。然而，STS 附带了 Eclipse 以及一些其他重要的东西，例如 Maven 支持，用于创建不同类型的 Spring 项目的模板和用于 Spring 应用程序的更好性能的 tc 服务器。(zh_CN)&lt;/p&gt;
+
+&lt;p&gt;I like STS because it highlights the Spring components and if you are using AOP pointcuts and advices, then it clearly shows which methods will come under the specific pointcut. So rather than installing everything on our own, I prefer using STS when developing Spring based applications.
+我喜欢 STS，因为它突出了 Spring 组件，如果你正在使用 AOP 切入点和建议，那么它清楚地显示了特定切入点下的哪些方法。因此，我宁愿在开发基于 Spring 的应用程序时使用 STS，而不是自己安装所有内容。(zh_CN)&lt;/p&gt;
+
+&lt;p&gt;6.&lt;/p&gt;
+
+&lt;h3 id=&quot;name-some-of-the-important-spring-modules&quot;&gt;Name some of the important Spring Modules?&lt;/h3&gt;
+
+&lt;h3 id=&quot;列举一些重要的-spring-模块zh_cn&quot;&gt;列举一些重要的 Spring 模块？(zh_CN)&lt;/h3&gt;
+
+&lt;p&gt;Some of the important Spring Framework modules are:
+一些重要的 Spring Framework 模块是：(zh_CN)&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;Spring Context&lt;/strong&gt; – for dependency injection.&lt;/li&gt;
+  &lt;li&gt;**Spring Context ** - 用于依赖注入。(zh_CN)&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Spring AOP&lt;/strong&gt; – for aspect oriented programming.&lt;/li&gt;
+  &lt;li&gt;**Spring AOP ** - 用于面向方面的编程。(zh_CN)&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Spring DAO&lt;/strong&gt; – for database operations using DAO pattern&lt;/li&gt;
+  &lt;li&gt;**Spring DAO ** - 用于使用 DAO 模式的数据库操作(zh_CN)&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Spring JDBC&lt;/strong&gt; – for JDBC and DataSource support.&lt;/li&gt;
+  &lt;li&gt;**Spring JDBC ** - 用于 JDBC 和 DataSource 支持。(zh_CN)&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Spring ORM&lt;/strong&gt; – for ORM tools support such as Hibernate&lt;/li&gt;
+  &lt;li&gt;**Spring ORM ** - 用于 ORM 工具支持，如 Hibernate(zh_CN)&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Spring Web Module&lt;/strong&gt; – for creating web applications.&lt;/li&gt;
+  &lt;li&gt;**Spring Web Module ** - 用于创建 Web 应用程序。(zh_CN)&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Spring MVC&lt;/strong&gt; – Model-View-Controller implementation for creating web applications, web services etc.&lt;/li&gt;
+  &lt;li&gt;**Spring MVC ** - 用于创建 Web 应用程序，Web 服务等的 Model-View-Controller 实现。(zh_CN)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;7.&lt;/p&gt;
+
+&lt;h3 id=&quot;what-do-you-understand-by-aspect-oriented-programming&quot;&gt;What do you understand by Aspect Oriented Programming?&lt;/h3&gt;
+
+&lt;h3 id=&quot;面向方面编程你有什么理解zh_cn&quot;&gt;面向方面编程你有什么理解？(zh_CN)&lt;/h3&gt;
+
+&lt;p&gt;Enterprise applications have some common cross-cutting concerns that is applicable for different types of Objects and application modules, such as logging, transaction management, data validation, authentication etc. In Object Oriented Programming, modularity of application is achieved by Classes whereas in AOP application modularity is achieved by Aspects and they are configured to cut across different classes methods.
+企业应用程序有一些常见的横切关注点，适用于不同类型的对象和应用程序模块，如日志记录，事务管理，数据验证，身份验证等。在面向对象编程中，应用程序的模块化是通过类实现的，而在 AOP 应用程序中模块化由 Aspects 实现，它们被配置为跨越不同的类方法。(zh_CN)&lt;/p&gt;
+
+&lt;p&gt;AOP takes out the direct dependency of cross-cutting tasks from classes that is not possible in normal object oriented programming. For example, we can have a separate class for logging but again the classes will have to call these methods for logging the data. Read more about Spring AOP support at &lt;a href=&quot;https://www.journaldev.com/2583/spring-aop-example-tutorial-aspect-advice-pointcut-joinpoint-annotations&quot;&gt;Spring AOP Example&lt;/a&gt;.
+AOP 从普通面向对象编程中不可能的类中获取横切任务的直接依赖性。例如，我们可以有一个单独的日志记录类，但类再次调用这些方法来记录数据。在[Spring AOP 示例]（https://www.journaldev.com/2583/spring-aop-example-tutorial-aspect-advice-pointcut-joinpoint-annotations）上阅读有关Spring AOP 支持的更多信息。(zh_CN)&lt;/p&gt;
+
+&lt;p&gt;8.&lt;/p&gt;
+
+&lt;h3 id=&quot;what-is-aspect-advice-pointcut-jointpoint-and-advice-arguments-in-aop&quot;&gt;What is Aspect, Advice, Pointcut, JointPoint and Advice Arguments in AOP?&lt;/h3&gt;
+
+&lt;h3 id=&quot;aop-中的-aspectadvicepointcutjointpoint-和-advice-arguments-是什么zh_cn&quot;&gt;AOP 中的 Aspect，Advice，Pointcut，JointPoint 和 Advice Arguments 是什么？(zh_CN)&lt;/h3&gt;
+
+&lt;p&gt;&lt;strong&gt;Aspect&lt;/strong&gt;: Aspect is a class that implements cross-cutting concerns, such as transaction management. Aspects can be a normal class configured and then configured in Spring Bean configuration file or we can use Spring AspectJ support to declare a class as Aspect using &lt;code class=&quot;highlighter-rouge&quot;&gt;@Aspect&lt;/code&gt; annotation.
+**Aspect **：Aspect 是一个实现交叉问题的类，例如事务管理。方面可以是配置的普通类，然后在 Spring Bean 配置文件中配置，或者我们可以使用 Spring AspectJ 支持将类声明为 Aspect 使用&lt;code class=&quot;highlighter-rouge&quot;&gt;@Aspect&lt;/code&gt; 注解。(zh_CN)&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Advice&lt;/strong&gt;: Advice is the action taken for a particular join point. In terms of programming, they are methods that gets executed when a specific join point with matching pointcut is reached in the application. You can think of Advices as &lt;a href=&quot;https://www.journaldev.com/2676/spring-mvc-interceptor-example-handlerinterceptor-handlerinterceptoradapter&quot;&gt;Spring interceptors&lt;/a&gt; or &lt;a href=&quot;https://www.journaldev.com/1933/java-servlet-filter-example-tutorial&quot;&gt;Servlet Filters&lt;/a&gt;.
+&lt;strong&gt;建议&lt;/strong&gt;：建议是针对特定连接点采取的操作。在编程方面，它们是在应用程序中达到具有匹配切入点的特定连接点时执行的方法。您可以将建议视为[Spring interceptors]（https://www.journaldev.com/2676/spring-mvc-interceptor-example-handlerinterceptor-handlerinterceptoradapter）或[Servlet Filters]（https://www.journaldev.com / 1933 / java 的 servlet 的过滤器 - 例如教程）。(zh_CN)&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Pointcut&lt;/strong&gt;: Pointcut are regular expressions that is matched with join points to determine whether advice needs to be executed or not. Pointcut uses different kinds of expressions that are matched with the join points. Spring framework uses the AspectJ pointcut expression language for determining the join points where advice methods will be applied.
+&lt;strong&gt;切入点&lt;/strong&gt;：切入点是与连接点匹配的正则表达式，用于确定是否需要执行建议。 Pointcut 使用与连接点匹配的不同类型的表达式。 Spring 框架使用 AspectJ 切入点表达式语言来确定将应用通知方法的连接点。(zh_CN)&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Join Point&lt;/strong&gt;: A join point is the specific point in the application such as method execution, exception handling, changing object variable values etc. In Spring AOP a join points is always the execution of a method.
+**Join Point **：连接点是应用程序中的特定点，例如方法执行，异常处理，更改对象变量值等。在 Spring AOP 中，连接点始终是方法的执行。(zh_CN)&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Advice Arguments&lt;/strong&gt;: We can pass arguments in the advice methods. We can use args() expression in the pointcut to be applied to any method that matches the argument pattern. If we use this, then we need to use the same name in the advice method from where argument type is determined.
+&lt;strong&gt;建议参数&lt;/strong&gt;：我们可以在通知方法中传递参数。我们可以在切入点中使用 args（）表达式来应用于与参数模式匹配的任何方法。如果我们使用它，那么我们需要在确定参数类型的 advice 方法中使用相同的名称。(zh_CN)&lt;/p&gt;
+
+&lt;p&gt;These concepts seems confusing at first, but if you go through &lt;a href=&quot;https://www.journaldev.com/2583/spring-aop-example-tutorial-aspect-advice-pointcut-joinpoint-annotations&quot;&gt;Spring Aspect, Advice Example&lt;/a&gt; then you can easily relate to them.
+这些概念最初似乎令人困惑，但如果你经历[Spring Aspect，Advice Example]（https://www.journaldev.com/2583/spring-aop-example-tutorial-aspect-advice-pointcut-joinpoint-annotations）然后你可以轻松地与他们联系。(zh_CN)&lt;/p&gt;
+
+&lt;p&gt;9.&lt;/p&gt;
+
+&lt;h3 id=&quot;what-is-the-difference-between-spring-aop-and-aspectj-aop&quot;&gt;What is the difference between Spring AOP and AspectJ AOP?&lt;/h3&gt;
+
+&lt;h3 id=&quot;spring-aop-和-aspectj-aop-有什么区别zh_cn&quot;&gt;Spring AOP 和 AspectJ AOP 有什么区别？(zh_CN)&lt;/h3&gt;
+
+&lt;p&gt;AspectJ is the industry-standard implementation for Aspect Oriented Programming whereas Spring implements AOP for some cases. Main differences between Spring AOP and AspectJ are:
+AspectJ 是面向方面编程的行业标准实现，而 Spring 在某些情况下实现了 AOP。 Spring AOP 和 AspectJ 之间的主要区别是：(zh_CN)&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Spring AOP is simpler to use than AspectJ because we don’t need to worry about the weaving process.&lt;/li&gt;
+  &lt;li&gt;Spring AOP 比 AspectJ 更易于使用，因为我们不需要担心编织过程。(zh_CN)&lt;/li&gt;
+  &lt;li&gt;Spring AOP supports AspectJ annotations, so if you are familiar with AspectJ then working with Spring AOP is easier.&lt;/li&gt;
+  &lt;li&gt;Spring AOP 支持 AspectJ 注释，因此如果您熟悉 AspectJ，那么使用 Spring AOP 会更容易。(zh_CN)&lt;/li&gt;
+  &lt;li&gt;Spring AOP supports only proxy-based AOP, so it can be applied only to method execution join points. AspectJ support all kinds of pointcuts.&lt;/li&gt;
+  &lt;li&gt;Spring AOP 仅支持基于代理的 AOP，因此它只能应用于方法执行连接点。 AspectJ 支持各种切入点。(zh_CN)&lt;/li&gt;
+  &lt;li&gt;One of the shortcoming of Spring AOP is that it can be applied only to the beans created through Spring Context.&lt;/li&gt;
+  &lt;li&gt;Spring AOP 的一个缺点是它只能应用于通过 Spring Context 创建的 bean。(zh_CN)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;10.&lt;/p&gt;
+
+&lt;h3 id=&quot;what-is-spring-ioc-container&quot;&gt;What is Spring IoC Container?&lt;/h3&gt;
+
+&lt;h3 id=&quot;什么是-spring-ioc-containerzh_cn&quot;&gt;什么是 Spring IoC Container？(zh_CN)&lt;/h3&gt;
+
+&lt;p&gt;&lt;strong&gt;Inversion of Control&lt;/strong&gt; (IoC) is the mechanism to achieve loose-coupling between Objects dependencies. To achieve loose coupling and dynamic binding of the objects at runtime, the objects define their dependencies that are being injected by other assembler objects. Spring IoC container is the program that injects dependencies into an object and make it ready for our use.
+&lt;strong&gt;控制反转&lt;/strong&gt;（IoC）是实现对象依赖关系之间松散耦合的机制。为了在运行时实现对象的松耦合和动态绑定，对象定义了由其他汇编器对象注入的依赖关系。 Spring IoC 容器是将依赖项注入对象并使其可供我们使用的程序。(zh_CN)&lt;/p&gt;
+
+&lt;p&gt;Spring Framework IoC container classes are part of &lt;code class=&quot;highlighter-rouge&quot;&gt;org.springframework.beans&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;org.springframework.context&lt;/code&gt; packages and provides us different ways to decouple the object dependencies.
+Spring Framework IoC 容器类是其中的一部分&lt;code class=&quot;highlighter-rouge&quot;&gt;org.springframework.beans&lt;/code&gt; 和&lt;code class=&quot;highlighter-rouge&quot;&gt;org.springframework.context&lt;/code&gt; 包并为我们提供了解耦对象依赖关系的不同方法。(zh_CN)&lt;/p&gt;
+
+&lt;p&gt;Some of the useful ApplicationContext implementations that we use are;
+我们使用的一些有用的 ApplicationContext 实现是;(zh_CN)&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;AnnotationConfigApplicationContext&lt;/code&gt;: For standalone java applications using annotations based configuration.&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;AnnotationConfigApplicationContext&lt;/code&gt;: 对于使用基于注释的配置的独立 Java 应用程序。(zh_CN)&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;ClassPathXmlApplicationContext&lt;/code&gt;: For standalone java applications using XML based configuration.&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;ClassPathXmlApplicationContext&lt;/code&gt;: 对于使用基于 XML 的配置的独立 Java 应用程序。(zh_CN)&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;FileSystemXmlApplicationContext&lt;/code&gt;: Similar to ClassPathXmlApplicationContext except that the xml configuration file can be loaded from anywhere in the file system.&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;FileSystemXmlApplicationContext&lt;/code&gt;: 与 ClassPathXmlApplicationContext 类似，不同之处在于可以从文件系统中的任何位置加载 xml 配置文件。(zh_CN)&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;AnnotationConfigWebApplicationContext&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;XmlWebApplicationContext&lt;/code&gt; for web applications.&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;AnnotationConfigWebApplicationContext&lt;/code&gt; 和&lt;code class=&quot;highlighter-rouge&quot;&gt;XmlWebApplicationContext&lt;/code&gt; 用于 Web 应用程序。(zh_CN)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;11.&lt;/p&gt;
+
+&lt;h3 id=&quot;what-is-a-spring-bean&quot;&gt;What is a Spring Bean?&lt;/h3&gt;
+
+&lt;h3 id=&quot;什么是-spring-beanzh_cn&quot;&gt;什么是 Spring Bean？(zh_CN)&lt;/h3&gt;
+
+&lt;p&gt;Any normal java class that is initialized by Spring IoC container is called Spring Bean. We use Spring &lt;code class=&quot;highlighter-rouge&quot;&gt;ApplicationContext&lt;/code&gt; to get the Spring Bean instance.
+由 Spring IoC 容器初始化的任何普通 java 类都称为 Spring Bean。我们用 Spring&lt;code class=&quot;highlighter-rouge&quot;&gt;ApplicationContext&lt;/code&gt; 获取 Spring Bean 实例。(zh_CN)&lt;/p&gt;
+
+&lt;p&gt;Spring IoC container manages the life cycle of Spring Bean, bean scopes and injecting any required dependencies in the bean.
+Spring IoC 容器管理 Spring Bean 的生命周期，bean 作用域以及在 bean 中注入任何所需的依赖项。(zh_CN)&lt;/p&gt;
+
+&lt;p&gt;12.&lt;/p&gt;
+
+&lt;h3 id=&quot;what-is-the-importance-of-spring-bean-configuration-file&quot;&gt;What is the importance of Spring bean configuration file?&lt;/h3&gt;
+
+&lt;h3 id=&quot;spring-bean-配置文件的重要性是什么zh_cn&quot;&gt;Spring bean 配置文件的重要性是什么？(zh_CN)&lt;/h3&gt;
+
+&lt;p&gt;We use Spring Bean configuration file to define all the beans that will be initialized by Spring Context. When we create the instance of Spring ApplicationContext, it reads the spring bean xml file and initialize all of them. Once the context is initialized, we can use it to get different bean instances.
+我们使用 Spring Bean 配置文件来定义将由 Spring Context 初始化的所有 bean。当我们创建 Spring ApplicationContext 的实例时，它会读取 spring bean xml 文件并初始化所有这些文件。初始化上下文后，我们可以使用它来获取不同的 bean 实例。(zh_CN)&lt;/p&gt;
+
+&lt;p&gt;Apart from Spring Bean configuration, this file also contains spring MVC interceptors, view resolvers and other elements to support annotations based configurations.
+除了 Spring Bean 配置，该文件还包含 spring MVC 拦截器，视图解析器和其他元素，以支持基于注释的配置。(zh_CN)&lt;/p&gt;
+
+&lt;p&gt;13.&lt;/p&gt;
+
+&lt;h3 id=&quot;what-are-different-ways-to-configure-a-class-as-spring-bean&quot;&gt;What are different ways to configure a class as Spring Bean?&lt;/h3&gt;
+
+&lt;h3 id=&quot;将类配置为-spring-bean-有哪些不同的方法zh_cn&quot;&gt;将类配置为 Spring Bean 有哪些不同的方法？(zh_CN)&lt;/h3&gt;
+
+&lt;p&gt;There are three different ways to configure Spring Bean.
+配置 Spring Bean 有三种不同的方法。(zh_CN)&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;&lt;strong&gt;XML Configuration&lt;/strong&gt;: This is the most popular configuration and we can use bean element in context file to configure a Spring Bean. For example:&lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;XML 配置&lt;/strong&gt;：这是最流行的配置，我们可以在上下文文件中使用 bean 元素来配置 Spring Bean。例如：(zh_CN)&lt;/p&gt;
+
+    &lt;p&gt;Copy&lt;/p&gt;
+    &lt;bean name=&quot;myBean&quot; class=&quot;com.journaldev.spring.beans.MyBean&quot;&gt;&lt;/bean&gt;
+  &lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Java Based Configuration&lt;/strong&gt;: If you are using only annotations, you can configure a Spring bean using &lt;code class=&quot;highlighter-rouge&quot;&gt;@Bean&lt;/code&gt; annotation. This annotation is used with &lt;code class=&quot;highlighter-rouge&quot;&gt;@Configuration&lt;/code&gt; classes to configure a spring bean. Sample configuration is:&lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;基于 Java 的配置&lt;/strong&gt;：如果您只使用注释，则可以使用配置 Spring bean&lt;code class=&quot;highlighter-rouge&quot;&gt;@Bean&lt;/code&gt; 注解。此注释用于&lt;code class=&quot;highlighter-rouge&quot;&gt;@Configuration&lt;/code&gt; 用于配置 spring bean 的类。示例配置是：(zh_CN)&lt;/p&gt;
+
+    &lt;p&gt;Copy
+@Configuration @ComponentScan(value=”com.journaldev.spring.main”) public class MyConfiguration { @Bean public MyService getService(){ return new MyService(); } }&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;To get this bean from spring context, we need to use following code snippet:
+要从 spring 上下文获取此 bean，我们需要使用以下代码片段：(zh_CN)&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Copy
+ AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext( 		MyConfiguration.class); MyService service = ctx.getBean(MyService.class);
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;&lt;strong&gt;Annotation Based Configuration&lt;/strong&gt;: We can also use @Component, @Service, @Repository and @Controller annotations with classes to configure them to be as spring bean. For these, we would need to provide base package location to scan for these classes. For example:&lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;基于注释的配置&lt;/strong&gt;：我们还可以使用@Component，@ Service，@ Repository 和@Controller 注释与类来配置它们作为 spring bean。对于这些，我们需要提供基本包位置来扫描这些类。例如：(zh_CN)&lt;/p&gt;
+
+    &lt;p&gt;Copy&lt;/p&gt;
+    &lt;context:component-scan base-package=&quot;com.journaldev.spring&quot; /&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;5.&lt;/p&gt;
+
+&lt;h3 id=&quot;what-are-different-scopes-of-spring-bean&quot;&gt;What are different scopes of Spring Bean?&lt;/h3&gt;
+
+&lt;h3 id=&quot;spring-bean-有哪些不同的范围zh_cn&quot;&gt;Spring Bean 有哪些不同的范围？(zh_CN)&lt;/h3&gt;
+
+&lt;p&gt;There are five scopes defined for Spring Beans.
+为 Spring Beans 定义了五个范围。(zh_CN)&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;&lt;strong&gt;&lt;a href=&quot;https://www.journaldev.com/1377/java-singleton-design-pattern-best-practices-examples&quot;&gt;singleton&lt;/a&gt;&lt;/strong&gt;: Only one instance of the bean will be created for each container. This is the default scope for the spring beans. While using this scope, make sure spring bean doesn’t have shared instance variables otherwise it might lead to data inconsistency issues because it’s not thread-safe.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;[singleton]（https://www.journaldev.com/1377/java-singleton-design-pattern-best-practices-examples）&lt;/strong&gt;：只为每个容器创建一个 bean 实例。这是 spring bean 的默认范围。使用此范围时，请确保 spring bean 没有共享实例变量，否则可能会导致数据不一致问题，因为它不是线程安全的。(zh_CN)&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;prototype&lt;/strong&gt;: A new instance will be created every time the bean is requested.&lt;/li&gt;
+  &lt;li&gt;**prototype **：每次请求 bean 时都会创建一个新实例。(zh_CN)&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;request&lt;/strong&gt;: This is same as prototype scope, however it’s meant to be used for web applications. A new instance of the bean will be created for each HTTP request.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;请求&lt;/strong&gt;：这与原型范围相同，但它意味着用于 Web 应用程序。将为每个 HTTP 请求创建一个新的 bean 实例。(zh_CN)&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;session&lt;/strong&gt;: A new bean will be created for each HTTP session by the container.&lt;/li&gt;
+  &lt;li&gt;**session **：将为容器的每个 HTTP 会话创建一个新 bean。(zh_CN)&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;global-session&lt;/strong&gt;: This is used to create global session beans for Portlet applications.&lt;/li&gt;
+  &lt;li&gt;**global-session **：用于为 Portlet 应用程序创建全局会话 bean。(zh_CN)&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;Spring Framework is extendable and we can create our own scopes too, however most of the times we are good with the scopes provided by the framework.
+Spring Framework 是可扩展的，我们也可以创建自己的作用域，但是大多数时候我们都很好地使用框架提供的作用域。(zh_CN)&lt;/p&gt;
+
+&lt;p&gt;To set spring bean scopes we can use “scope” attribute in bean element or @Scope annotation for annotation based configurations.
+要设置 spring bean 范围，我们可以在 bean 元素中使用“scope”属性，或者为基于注释的配置使用@Scope 注释。(zh_CN)&lt;/p&gt;
+
+&lt;p&gt;15.&lt;/p&gt;
+
+&lt;h3 id=&quot;what-is-spring-bean-life-cycle&quot;&gt;What is Spring Bean life cycle?&lt;/h3&gt;
+
+&lt;h3 id=&quot;什么是-spring-bean-生命周期zh_cn&quot;&gt;什么是 Spring Bean 生命周期？(zh_CN)&lt;/h3&gt;
+
+&lt;p&gt;Spring Beans are initialized by Spring Container and all the dependencies are also injected. When context is destroyed, it also destroys all the initialized beans. This works well in most of the cases but sometimes we want to initialize other resources or do some validation before making our beans ready to use. Spring framework provides support for post-initialization and pre-destroy methods in spring beans.
+Spring Bean 初始化 Spring Bean，并且还注入了所有依赖项。当上下文被破坏时，它也会破坏所有已初始化的 bean。这在大多数情况下运行良好，但有时我们想要初始化其他资源或在使我们的 bean 准备好使用之前进行一些验证。 Spring 框架为 spring bean 中的 post-initialization 和 pre-destroy 方法提供支持。(zh_CN)&lt;/p&gt;
+
+&lt;p&gt;We can do this by two ways – by implementing &lt;code class=&quot;highlighter-rouge&quot;&gt;InitializingBean&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;DisposableBean&lt;/code&gt; interfaces or using &lt;strong&gt;init-method&lt;/strong&gt; and &lt;strong&gt;destroy-method&lt;/strong&gt; attribute in spring bean configurations. For more details, please read &lt;a href=&quot;https://www.journaldev.com/2637/spring-bean-life-cycle&quot;&gt;Spring Bean Life Cycle Methods&lt;/a&gt;.
+我们可以通过两种方式实现这一目标 - 通过实施&lt;code class=&quot;highlighter-rouge&quot;&gt;InitializingBean&lt;/code&gt; 和&lt;code class=&quot;highlighter-rouge&quot;&gt;DisposableBean&lt;/code&gt; 接口或在 spring bean 配置中使用** init-method &lt;strong&gt;和&lt;/strong&gt; destroy-method **属性。有关更多详细信息，请阅读[Spring Bean 生命周期方法]（https://www.journaldev.com/2637/spring-bean-life-cycle）。(zh_CN)&lt;/p&gt;
+
+&lt;p&gt;16.&lt;/p&gt;
+
+&lt;h3 id=&quot;how-to-get-servletcontext-and-servletconfig-object-in-a-spring-bean&quot;&gt;How to get ServletContext and ServletConfig object in a Spring Bean?&lt;/h3&gt;
+
+&lt;h3 id=&quot;如何在-spring-bean-中获取-servletcontext-和-servletconfig-对象zh_cn&quot;&gt;如何在 Spring Bean 中获取 ServletContext 和 ServletConfig 对象？(zh_CN)&lt;/h3&gt;
+
+&lt;p&gt;There are two ways to get Container specific objects in the spring bean.
+有两种方法可以在 spring bean 中获取 Container 特定对象。(zh_CN)&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Implementing Spring *Aware interfaces, for these ServletContextAware and ServletConfigAware interfaces, for complete example of these aware interfaces, please read &lt;a href=&quot;https://www.journaldev.com/2637/spring-bean-life-cycle&quot;&gt;Spring Aware Interfaces&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;为这些 ServletContextAware 和 ServletConfigAware 接口实现 Spring * Aware 接口，请参阅[Spring Aware Interfaces]（https://www.journaldev.com/2637/spring-bean-life-cycle）(zh_CN)&lt;/li&gt;
+  &lt;li&gt;Using &lt;code class=&quot;highlighter-rouge&quot;&gt;@Autowired&lt;/code&gt; annotation with bean variable of type &lt;code class=&quot;highlighter-rouge&quot;&gt;ServletContext&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;ServletConfig&lt;/code&gt;. They will work only in servlet container specific environment only though.&lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;运用&lt;code class=&quot;highlighter-rouge&quot;&gt;@Autowired&lt;/code&gt; 带有 bean 类型变量的注释&lt;code class=&quot;highlighter-rouge&quot;&gt;ServletContext&lt;/code&gt; 和&lt;code class=&quot;highlighter-rouge&quot;&gt;ServletConfig&lt;/code&gt;. 它们仅适用于 servlet 容器特定环境。(zh_CN)&lt;/p&gt;
+
+    &lt;p&gt;Copy
+@Autowired ServletContext servletContext;&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;1.&lt;/p&gt;
+
+&lt;h3 id=&quot;what-is-bean-wiring-and-autowired-annotation&quot;&gt;What is Bean wiring and @Autowired annotation?&lt;/h3&gt;
+
+&lt;h3 id=&quot;什么是-bean-接线和autowired-注释zh_cn&quot;&gt;什么是 Bean 接线和@Autowired 注释？(zh_CN)&lt;/h3&gt;
+
+&lt;p&gt;The process of injection spring bean dependencies while initializing it called Spring Bean Wiring.
+初始化时注入 spring bean 依赖项的过程称为 Spring Bean Wiring。(zh_CN)&lt;/p&gt;
+
+&lt;p&gt;Usually it’s best practice to do the explicit wiring of all the bean dependencies, but spring framework also supports autowiring. We can use &lt;code class=&quot;highlighter-rouge&quot;&gt;@Autowired&lt;/code&gt; annotation with fields or methods for &lt;strong&gt;autowiring byType&lt;/strong&gt;. For this annotation to work, we also need to enable annotation based configuration in spring bean configuration file. This can be done by &lt;strong&gt;context:annotation-config&lt;/strong&gt; element.
+通常，最佳做法是对所有 bean 依赖项进行显式连接，但 spring 框架也支持自动装配。我们可以用&lt;code class=&quot;highlighter-rouge&quot;&gt;@Autowired&lt;/code&gt; 带有&lt;strong&gt;自动装配的字段或方法的注释&lt;/strong&gt;。为了使这个注释起作用，我们还需要在 spring bean 配置文件中启用基于注释的配置。这可以通过** context：annotation-config **元素来完成。(zh_CN)&lt;/p&gt;
+
+&lt;p&gt;For more details about &lt;code class=&quot;highlighter-rouge&quot;&gt;@Autowired&lt;/code&gt; annotation, please read &lt;a href=&quot;https://www.journaldev.com/2623/spring-autowired-annotation&quot;&gt;Spring Autowire Example&lt;/a&gt;.
+有关的更多详细信息&lt;code class=&quot;highlighter-rouge&quot;&gt;@Autowired&lt;/code&gt; 注释，请阅读[Spring Autowire 示例]（https://www.journaldev.com/2623/spring-autowired-annotation）。(zh_CN)&lt;/p&gt;
+
+&lt;p&gt;18.&lt;/p&gt;
+
+&lt;h3 id=&quot;what-are-different-types-of-spring-bean-autowiring&quot;&gt;What are different types of Spring Bean autowiring?&lt;/h3&gt;
+
+&lt;h3 id=&quot;什么是不同类型的-spring-bean-自动装配zh_cn&quot;&gt;什么是不同类型的 Spring Bean 自动装配？(zh_CN)&lt;/h3&gt;
+
+&lt;p&gt;There are four types of autowiring in Spring framework.
+Spring 框架中有四种类型的自动装配。(zh_CN)&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;&lt;strong&gt;autowire byName&lt;/strong&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;autowire byType&lt;/strong&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;autowire by constructor&lt;/strong&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;由构造函数&lt;/strong&gt;自动装配(zh_CN)&lt;/li&gt;
+  &lt;li&gt;autowiring by &lt;strong&gt;@Autowired&lt;/strong&gt; and &lt;strong&gt;@Qualifier&lt;/strong&gt; annotations&lt;/li&gt;
+  &lt;li&gt;通过** @Autowired &lt;strong&gt;和&lt;/strong&gt; @ Qualifier **注释自动装配(zh_CN)&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;Prior to Spring 3.1, &lt;strong&gt;autowire by autodetect&lt;/strong&gt; was also supported that was similar to autowire by constructor or byType. For more details about these options, please read &lt;a href=&quot;https://www.journaldev.com/2623/spring-autowired-annotation&quot;&gt;Spring Bean Autowiring&lt;/a&gt;.
+在 Spring 3.1 之前，还支持** autodeire by autodetect **，类似于构造函数或 byType 的 autowire。有关这些选项的更多详细信息，请阅读[Spring Bean Autowiring]（https://www.journaldev.com/2623/spring-autowired-annotation）。(zh_CN)&lt;/p&gt;
+
+&lt;p&gt;19.&lt;/p&gt;
+
+&lt;h3 id=&quot;does-spring-bean-provide-thread-safety&quot;&gt;Does Spring Bean provide thread safety?&lt;/h3&gt;
+
+&lt;h3 id=&quot;spring-bean-是否提供线程安全性zh_cn&quot;&gt;Spring Bean 是否提供线程安全性？(zh_CN)&lt;/h3&gt;
+
+&lt;p&gt;The default scope of Spring bean is singleton, so there will be only one instance per context. That means that all the having a class level variable that any thread can update will lead to inconsistent data. Hence in default mode spring beans are not thread-safe.
+Spring bean 的默认范围是 singleton，因此每个上下文只有一个实例。这意味着所有拥有任何线程可以更新的类级别变量都将导致数据不一致。因此，在默认模式下，spring bean 不是线程安全的。(zh_CN)&lt;/p&gt;
+
+&lt;p&gt;However we can change spring bean scope to request, prototype or session to achieve thread-safety at the cost of performance. It’s a design decision and based on the project requirements.
+但是我们可以将 spring bean 范围更改为请求，原型或会话，以牺牲性能为代价来实现线程安全。这是一个设计决策，并基于项目要求。(zh_CN)&lt;/p&gt;
+
+&lt;p&gt;20.&lt;/p&gt;
+
+&lt;h3 id=&quot;what-is-a-controller-in-spring-mvc&quot;&gt;What is a Controller in Spring MVC?&lt;/h3&gt;
+
+&lt;h3 id=&quot;什么是-spring-mvc-中的-controllerzh_cn&quot;&gt;什么是 Spring MVC 中的 Controller？(zh_CN)&lt;/h3&gt;
+
+&lt;p&gt;Just like MVC design pattern, Controller is the class that takes care of all the client requests and send them to the configured resources to handle it. In Spring MVC, &lt;code class=&quot;highlighter-rouge&quot;&gt;org.springframework.web.servlet.DispatcherServlet&lt;/code&gt; is the front controller class that initializes the context based on the spring beans configurations.
+就像 MVC 设计模式一样，Controller 是负责处理所有客户端请求并将它们发送到配置资源来处理它的类。在 Spring MVC 中，&lt;code class=&quot;highlighter-rouge&quot;&gt;org.springframework.web.servlet.DispatcherServlet&lt;/code&gt; 是前端控制器类，它基于 spring bean 配置初始化上下文。(zh_CN)&lt;/p&gt;
+
+&lt;p&gt;A Controller class is responsible to handle different kind of client requests based on the request mappings. We can create a controller class by using &lt;code class=&quot;highlighter-rouge&quot;&gt;@Controller&lt;/code&gt; annotation. Usually it’s used with &lt;code class=&quot;highlighter-rouge&quot;&gt;@RequestMapping&lt;/code&gt; annotation to define handler methods for specific URI mapping.
+Controller 类负责根据请求映射处理不同类型的客户端请求。我们可以使用创建一个控制器类&lt;code class=&quot;highlighter-rouge&quot;&gt;@Controller&lt;/code&gt; 注解。通常它用于&lt;code class=&quot;highlighter-rouge&quot;&gt;@RequestMapping&lt;/code&gt; 注释，用于定义特定 URI 映射的处理程序方法。(zh_CN)&lt;/p&gt;
+
+&lt;p&gt;21.&lt;/p&gt;
+
+&lt;h3 id=&quot;whats-the-difference-between-component-controller-repository--service-annotations-in-spring&quot;&gt;What’s the difference between @Component, @Controller, @Repository &amp;amp; @Service annotations in Spring?&lt;/h3&gt;
+
+&lt;h3 id=&quot;spring-中的-component-controller-repository-和service-注释有什么区别zh_cn&quot;&gt;Spring 中的@ Component，@ Controller，@ Repository 和@Service 注释有什么区别？(zh_CN)&lt;/h3&gt;
+
+&lt;p&gt;&lt;strong&gt;@Component&lt;/strong&gt; is used to indicate that a class is a component. These classes are used for auto detection and configured as bean, when annotation based configurations are used.
+&lt;strong&gt;@组件&lt;/strong&gt;用于指示类是组件。当使用基于注释的配置时，这些类用于自动检测并配置为 bean。(zh_CN)&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;@Controller&lt;/strong&gt; is a specific type of component, used in MVC applications and mostly used with RequestMapping annotation.
+**@Controller **是一种特定类型的组件，用于 MVC 应用程序，主要用于 RequestMapping 注释。(zh_CN)&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;@Repository&lt;/strong&gt; annotation is used to indicate that a component is used as repository and a mechanism to store/retrieve/search data. We can apply this annotation with DAO pattern implementation classes.
+&lt;strong&gt;@存储库&lt;/strong&gt;注释用于指示组件用作存储库以及用于存储/检索/搜索数据的机制。我们可以将这个注释应用于 DAO 模式实现类。(zh_CN)&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;@Service&lt;/strong&gt; is used to indicate that a class is a Service. Usually the business facade classes that provide some services are annotated with this.
+&lt;strong&gt;@服务&lt;/strong&gt;用于表示班级是服务。通常，提供某些服务的业务外观类都使用此注释。(zh_CN)&lt;/p&gt;
+
+&lt;p&gt;We can use any of the above annotations for a class for auto-detection but different types are provided so that you can easily distinguish the purpose of the annotated classes.
+我们可以将上述任何注释用于自动检测类，但提供了不同的类型，以便您可以轻松区分注释类的用途。(zh_CN)&lt;/p&gt;
+
+&lt;p&gt;22.&lt;/p&gt;
+
+&lt;h3 id=&quot;what-is-dispatcherservlet-and-contextloaderlistener&quot;&gt;What is DispatcherServlet and ContextLoaderListener?&lt;/h3&gt;
+
+&lt;h3 id=&quot;什么是-dispatcherservlet-和-contextloaderlistenerzh_cn&quot;&gt;什么是 DispatcherServlet 和 ContextLoaderListener？(zh_CN)&lt;/h3&gt;
+
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;DispatcherServlet&lt;/code&gt; is the front controller in the Spring MVC application and it loads the spring bean configuration file and initialize all the beans that are configured. If annotations are enabled, it also scans the packages and configure any bean annotated with &lt;code class=&quot;highlighter-rouge&quot;&gt;@Component&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;@Controller&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;@Repository&lt;/code&gt; or &lt;code class=&quot;highlighter-rouge&quot;&gt;@Service&lt;/code&gt; annotations.
+&lt;code class=&quot;highlighter-rouge&quot;&gt;DispatcherServlet&lt;/code&gt; 是 Spring MVC 应用程序中的前端控制器，它加载 spring bean 配置文件并初始化所有配置的 bean。如果启用了注释，它还会扫描包并配置注释的任何 bean&lt;code class=&quot;highlighter-rouge&quot;&gt;@Component&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;@Controller&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;@Repository&lt;/code&gt; 要么&lt;code class=&quot;highlighter-rouge&quot;&gt;@Service&lt;/code&gt; 注释。(zh_CN)&lt;/p&gt;
+
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;ContextLoaderListener&lt;/code&gt; is the listener to start up and shut down Spring’s root &lt;code class=&quot;highlighter-rouge&quot;&gt;WebApplicationContext&lt;/code&gt;. It’s important functions are to tie up the lifecycle of &lt;code class=&quot;highlighter-rouge&quot;&gt;ApplicationContext&lt;/code&gt; to the lifecycle of the &lt;code class=&quot;highlighter-rouge&quot;&gt;ServletContext&lt;/code&gt; and to automate the creation of &lt;code class=&quot;highlighter-rouge&quot;&gt;ApplicationContext&lt;/code&gt;. We can use it to define shared beans that can be used across different spring contexts.
+&lt;code class=&quot;highlighter-rouge&quot;&gt;ContextLoaderListener&lt;/code&gt; 是启动和关闭 Spring 根的监听器&lt;code class=&quot;highlighter-rouge&quot;&gt;WebApplicationContext&lt;/code&gt;. 它的重要功能是结束生命周期&lt;code class=&quot;highlighter-rouge&quot;&gt;ApplicationContext&lt;/code&gt; 到了生命周期&lt;code class=&quot;highlighter-rouge&quot;&gt;ServletContext&lt;/code&gt; 并自动创建&lt;code class=&quot;highlighter-rouge&quot;&gt;ApplicationContext&lt;/code&gt;. 我们可以使用它来定义可以在不同的 spring 上下文中使用的共享 bean。(zh_CN)&lt;/p&gt;
+
+&lt;p&gt;23.&lt;/p&gt;
+
+&lt;h3 id=&quot;what-is-viewresolver-in-spring&quot;&gt;What is ViewResolver in Spring?&lt;/h3&gt;
+
+&lt;h3 id=&quot;spring-中的-viewresolver-是什么zh_cn&quot;&gt;Spring 中的 ViewResolver 是什么？(zh_CN)&lt;/h3&gt;
+
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;ViewResolver&lt;/code&gt; implementations are used to resolve the view pages by name. Usually we configure it in the spring bean configuration file. For example:
+&lt;code class=&quot;highlighter-rouge&quot;&gt;ViewResolver&lt;/code&gt; 实现用于按名称解析视图页面。通常我们在 spring bean 配置文件中配置它。例如：(zh_CN)&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Copy
+ &amp;lt;!-- Resolves views selected for rendering by @Controllers to .jsp resources in the /WEB-INF/views directory --&amp;gt; &amp;lt;beans:bean class=&quot;org.springframework.web.servlet.view.InternalResourceViewResolver&quot;&amp;gt; 	&amp;lt;beans:property name=&quot;prefix&quot; value=&quot;/WEB-INF/views/&quot; /&amp;gt; 	&amp;lt;beans:property name=&quot;suffix&quot; value=&quot;.jsp&quot; /&amp;gt; &amp;lt;/beans:bean&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;InternalResourceViewResolver&lt;/code&gt; is one of the implementation of &lt;code class=&quot;highlighter-rouge&quot;&gt;ViewResolver&lt;/code&gt; interface and we are providing the view pages directory and suffix location through the bean properties. So if a controller handler method returns “home”, view resolver will use view page located at &lt;em&gt;/WEB-INF/views/home.jsp&lt;/em&gt;.
+&lt;code class=&quot;highlighter-rouge&quot;&gt;InternalResourceViewResolver&lt;/code&gt; 是其中一个实施&lt;code class=&quot;highlighter-rouge&quot;&gt;ViewResolver&lt;/code&gt; 接口，我们通过 bean 属性提供视图页面目录和后缀位置。因此，如果控制器处理程序方法返回“home”，则视图解析程序将使用位于* / WEB-INF / views / home.jsp *的视图页面。(zh_CN)&lt;/p&gt;
+
+&lt;p&gt;24.&lt;/p&gt;
+
+&lt;h3 id=&quot;what-is-a-multipartresolver-and-when-its-used&quot;&gt;What is a MultipartResolver and when its used?&lt;/h3&gt;
+
+&lt;h3 id=&quot;什么是-multipartresolver-以及何时使用zh_cn&quot;&gt;什么是 MultipartResolver 以及何时使用？(zh_CN)&lt;/h3&gt;
+
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;MultipartResolver&lt;/code&gt; interface is used for uploading files – &lt;code class=&quot;highlighter-rouge&quot;&gt;CommonsMultipartResolver&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;StandardServletMultipartResolver&lt;/code&gt; are two implementations provided by spring framework for file uploading. By default there are no multipart resolvers configured but to use them for uploading files, all we need to define a bean named “multipartResolver” with type as MultipartResolver in spring bean configurations.
+&lt;code class=&quot;highlighter-rouge&quot;&gt;MultipartResolver&lt;/code&gt; 界面用于上传文件 - &lt;code class=&quot;highlighter-rouge&quot;&gt;CommonsMultipartResolver&lt;/code&gt; 和&lt;code class=&quot;highlighter-rouge&quot;&gt;StandardServletMultipartResolver&lt;/code&gt; 是 spring 框架提供的两种实现文件上传。默认情况下，没有配置多部分解析器但是要使用它们来上传文件，我们需要在 spring bean 配置中定义一个名为“multipartResolver”的 bean，其类型为 MultipartResolver。(zh_CN)&lt;/p&gt;
+
+&lt;p&gt;Once configured, any multipart request will be resolved by the configured MultipartResolver and pass on a wrapped HttpServletRequest. Then it’s used in the controller class to get the file and process it. For a complete example, please read &lt;a href=&quot;https://www.journaldev.com/2573/spring-mvc-file-upload-example-single-multiple-files&quot;&gt;Spring MVC File Upload Example&lt;/a&gt;.
+配置完成后，任何多部分请求都将由配置的 MultipartResolver 解析并传递一个包装好的 HttpServletRequest。然后在控制器类中使用它来获取文件并对其进行处理。有关完整示例，请阅读[Spring MVC 文件上载示例]（https://www.journaldev.com/2573/spring-mvc-file-upload-example-single-multiple-files）。(zh_CN)&lt;/p&gt;
+
+&lt;p&gt;25.&lt;/p&gt;
+
+&lt;h3 id=&quot;how-to-handle-exceptions-in-spring-mvc-framework&quot;&gt;How to handle exceptions in Spring MVC Framework?&lt;/h3&gt;
+
+&lt;h3 id=&quot;如何处理-spring-mvc-framework-中的异常zh_cn&quot;&gt;如何处理 Spring MVC Framework 中的异常？(zh_CN)&lt;/h3&gt;
+
+&lt;p&gt;Spring MVC Framework provides following ways to help us achieving robust exception handling.
+Spring MVC Framework 提供了以下方法来帮助我们实现强大的异常处理。(zh_CN)&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;&lt;strong&gt;Controller Based&lt;/strong&gt; – We can define exception handler methods in our controller classes. All we need is to annotate these methods with @ExceptionHandler annotation.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;基于控制器&lt;/strong&gt; - 我们可以在控制器类中定义异常处理程序方法。我们所需要的只是使用@ExceptionHandler 注释来注释这些方法。(zh_CN)&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Global Exception Handler&lt;/strong&gt; – Exception Handling is a cross-cutting concern and Spring provides @ControllerAdvice annotation that we can use with any class to define our global exception handler.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;全局异常处理程序&lt;/strong&gt; - 异常处理是一个跨领域的问题，Spring 提供了@ControllerAdvice 注释，我们可以使用它来定义我们的全局异常处理程序。(zh_CN)&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;HandlerExceptionResolver implementation&lt;/strong&gt; – For generic exceptions, most of the times we serve static pages. Spring Framework provides &lt;code class=&quot;highlighter-rouge&quot;&gt;HandlerExceptionResolver&lt;/code&gt; interface that we can implement to create global exception handler. The reason behind this additional way to define global exception handler is that Spring framework also provides default implementation classes that we can define in our spring bean configuration file to get spring framework exception handling benefits.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;HandlerExceptionResolver 实现&lt;/strong&gt; - 对于一般异常，大多数时候我们提供静态页面。 Spring Framework 提供&lt;code class=&quot;highlighter-rouge&quot;&gt;HandlerExceptionResolver&lt;/code&gt; 我们可以实现的接口来创建全局异常处理程序。这种额外定义全局异常处理程序的原因是 Spring 框架还提供了我们可以在 spring bean 配置文件中定义的默认实现类，以获得 spring 框架异常处理的好处。(zh_CN)&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;For a complete example, please read &lt;a href=&quot;https://www.journaldev.com/2651/spring-mvc-exception-handling-controlleradvice-exceptionhandler-handlerexceptionresolver&quot;&gt;Spring Exception Handling Example&lt;/a&gt;.
+有关完整示例，请阅读[Spring 异常处理示例]（https://www.journaldev.com/2651/spring-mvc-exception-handling-controlleradvice-exceptionhandler-handlerexceptionresolver）。(zh_CN)&lt;/p&gt;
+
+&lt;p&gt;26.&lt;/p&gt;
+
+&lt;h3 id=&quot;how-to-create-applicationcontext-in-a-java-program&quot;&gt;How to create ApplicationContext in a Java Program?&lt;/h3&gt;
+
+&lt;h3 id=&quot;如何在-java-程序中创建-applicationcontextzh_cn&quot;&gt;如何在 Java 程序中创建 ApplicationContext？(zh_CN)&lt;/h3&gt;
+
+&lt;p&gt;There are following ways to create spring context in a standalone java program.
+有以下方法可以在独立的 Java 程序中创建 spring 上下文。(zh_CN)&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;&lt;strong&gt;AnnotationConfigApplicationContext&lt;/strong&gt;: If we are using Spring in standalone java applications and using annotations for Configuration, then we can use this to initialize the container and get the bean objects.&lt;/li&gt;
+  &lt;li&gt;**AnnotationConfigApplicationContext **：如果我们在独立的 Java 应用程序中使用 Spring 并使用 Configuration 的注释，那么我们可以使用它来初始化容器并获取 bean 对象。(zh_CN)&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;ClassPathXmlApplicationContext&lt;/strong&gt;: If we have spring bean configuration xml file in standalone application, then we can use this class to load the file and get the container object.&lt;/li&gt;
+  &lt;li&gt;**ClassPathXmlApplicationContext **：如果我们在独立应用程序中有 spring bean 配置 xml 文件，那么我们可以使用这个类来加载文件并获取容器对象。(zh_CN)&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;FileSystemXmlApplicationContext&lt;/strong&gt;: This is similar to ClassPathXmlApplicationContext except that the xml configuration file can be loaded from anywhere in the file system.&lt;/li&gt;
+  &lt;li&gt;**FileSystemXmlApplicationContext **：这类似于 ClassPathXmlApplicationContext，除了可以从文件系统中的任何位置加载 xml 配置文件。(zh_CN)&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;1.&lt;/p&gt;
+
+&lt;h3 id=&quot;can-we-have-multiple-spring-configuration-files&quot;&gt;Can we have multiple Spring configuration files?&lt;/h3&gt;
+
+&lt;h3 id=&quot;我们可以有多个-spring-配置文件吗zh_cn&quot;&gt;我们可以有多个 Spring 配置文件吗？(zh_CN)&lt;/h3&gt;
+
+&lt;p&gt;For Spring MVC applications, we can define multiple spring context configuration files through &lt;code class=&quot;highlighter-rouge&quot;&gt;contextConfigLocation&lt;/code&gt;. This location string can consist of multiple locations separated by any number of commas and spaces. For example;
+对于 Spring MVC 应用程序，我们可以通过定义多个 spring 上下文配置文件&lt;code class=&quot;highlighter-rouge&quot;&gt;contextConfigLocation&lt;/code&gt;. 此位置字符串可以包含由任意数量的逗号和空格分隔的多个位置。例如;(zh_CN)&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Copy
+ &amp;lt;servlet&amp;gt; 	&amp;lt;servlet-name&amp;gt;appServlet&amp;lt;/servlet-name&amp;gt; 	&amp;lt;servlet-class&amp;gt;org.springframework.web.servlet.DispatcherServlet&amp;lt;/servlet-class&amp;gt; 	&amp;lt;init-param&amp;gt;             &amp;lt;param-name&amp;gt;contextConfigLocation&amp;lt;/param-name&amp;gt; 	    &amp;lt;param-value&amp;gt;/WEB-INF/spring/appServlet/servlet-context.xml,/WEB-INF/spring/appServlet/servlet-jdbc.xml&amp;lt;/param-value&amp;gt; 	&amp;lt;/init-param&amp;gt; 	&amp;lt;load-on-startup&amp;gt;1&amp;lt;/load-on-startup&amp;gt; &amp;lt;/servlet&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;We can also define multiple root level spring configurations and load it through context-param. For example;
+我们还可以定义多个根级弹簧配置并通过 context-param 加载它。例如;(zh_CN)&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Copy
+ &amp;lt;context-param&amp;gt; 	&amp;lt;param-name&amp;gt;contextConfigLocation&amp;lt;/param-name&amp;gt; 	&amp;lt;param-value&amp;gt;/WEB-INF/spring/root-context.xml /WEB-INF/spring/root-security.xml&amp;lt;/param-value&amp;gt; &amp;lt;/context-param&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Another option is to use import element in the context configuration file to import other configurations, for example:
+另一个选项是在上下文配置文件中使用 import 元素来导入其他配置，例如：(zh_CN)&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Copy
+ &amp;lt;beans:import resource=&quot;spring-jdbc.xml&quot;/&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;28.&lt;/p&gt;
+
+&lt;h3 id=&quot;what-is-contextloaderlistener&quot;&gt;What is ContextLoaderListener?&lt;/h3&gt;
+
+&lt;h3 id=&quot;什么是-contextloaderlistenerzh_cn&quot;&gt;什么是 ContextLoaderListener？(zh_CN)&lt;/h3&gt;
+
+&lt;p&gt;ContextLoaderListener is the listener class used to load root context and define spring bean configurations that will be visible to all other contexts. It’s configured in web.xml file as:
+ContextLoaderListener 是用于加载根上下文并定义将对所有其他上下文可见的 spring bean 配置的侦听器类。它在 web.xml 文件中配置为：(zh_CN)&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Copy
+ &amp;lt;context-param&amp;gt; 	&amp;lt;param-name&amp;gt;contextConfigLocation&amp;lt;/param-name&amp;gt; 	&amp;lt;param-value&amp;gt;/WEB-INF/spring/root-context.xml&amp;lt;/param-value&amp;gt; &amp;lt;/context-param&amp;gt; 	 &amp;lt;listener&amp;gt; 	&amp;lt;listener-class&amp;gt;org.springframework.web.context.ContextLoaderListener&amp;lt;/listener-class&amp;gt; &amp;lt;/listener&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;29.&lt;/p&gt;
+
+&lt;h3 id=&quot;what-are-the-minimum-configurations-needed-to-create-spring-mvc-application&quot;&gt;What are the minimum configurations needed to create Spring MVC application?&lt;/h3&gt;
+
+&lt;h3 id=&quot;创建-spring-mvc-应用程序所需的最低配置是什么zh_cn&quot;&gt;创建 Spring MVC 应用程序所需的最低配置是什么？(zh_CN)&lt;/h3&gt;
+
+&lt;p&gt;For creating a simple Spring MVC application, we would need to do following tasks.
+要创建一个简单的 Spring MVC 应用程序，我们需要执行以下任务。(zh_CN)&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Add &lt;code class=&quot;highlighter-rouge&quot;&gt;spring-context&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;spring-webmvc&lt;/code&gt; dependencies in the project.&lt;/li&gt;
+  &lt;li&gt;加&lt;code class=&quot;highlighter-rouge&quot;&gt;spring-context&lt;/code&gt; 和&lt;code class=&quot;highlighter-rouge&quot;&gt;spring-webmvc&lt;/code&gt; 项目中的依赖项。(zh_CN)&lt;/li&gt;
+  &lt;li&gt;Configure &lt;code class=&quot;highlighter-rouge&quot;&gt;DispatcherServlet&lt;/code&gt; in the web.xml file to handle requests through spring container.&lt;/li&gt;
+  &lt;li&gt;配置&lt;code class=&quot;highlighter-rouge&quot;&gt;DispatcherServlet&lt;/code&gt; 在 web.xml 文件中通过 spring 容器处理请求。(zh_CN)&lt;/li&gt;
+  &lt;li&gt;Spring bean configuration file to define beans, if using annotations then it has to be configured here. Also we need to configure view resolver for view pages.&lt;/li&gt;
+  &lt;li&gt;用于定义 bean 的 Spring bean 配置文件，如果使用注释，则必须在此处进行配置。我们还需要为视图页面配置视图解析器。(zh_CN)&lt;/li&gt;
+  &lt;li&gt;Controller class with request mappings defined to handle the client requests.&lt;/li&gt;
+  &lt;li&gt;控制器类，其中定义了请求映射以处理客户端请求。(zh_CN)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Above steps should be enough to create a simple Spring MVC Hello World application.
+上面的步骤应该足以创建一个简单的 Spring MVC Hello World 应用程序。(zh_CN)&lt;/p&gt;
+
+&lt;p&gt;30.&lt;/p&gt;
+
+&lt;h3 id=&quot;how-would-you-relate-spring-mvc-framework-to-mvc-architecture&quot;&gt;How would you relate Spring MVC Framework to MVC architecture?&lt;/h3&gt;
+
+&lt;h3 id=&quot;您如何将-spring-mvc-framework-与-mvc-架构联系起来zh_cn&quot;&gt;您如何将 Spring MVC Framework 与 MVC 架构联系起来？(zh_CN)&lt;/h3&gt;
+
+&lt;p&gt;As the name suggests Spring MVC is built on top of &lt;strong&gt;Model-View-Controller&lt;/strong&gt; architecture. &lt;code class=&quot;highlighter-rouge&quot;&gt;DispatcherServlet&lt;/code&gt; is the Front Controller in the Spring MVC application that takes care of all the incoming requests and delegate it to different controller handler methods.
+顾名思义，Spring MVC 建立在** Model-View-Controller **架构之上。&lt;code class=&quot;highlighter-rouge&quot;&gt;DispatcherServlet&lt;/code&gt; 是 Spring MVC 应用程序中的 Front Controller，负责处理所有传入的请求并将其委托给不同的控制器处理程序方法。(zh_CN)&lt;/p&gt;
+
+&lt;p&gt;Model can be any Java Bean in the Spring Framework, just like any other MVC framework Spring provides automatic binding of form data to java beans. We can set model beans as attributes to be used in the view pages.
+Model 可以是 Spring Framework 中的任何 Java Bean，就像任何其他 MVC 框架一样，Spring 提供表单数据到 java bean 的自动绑定。我们可以将模型 bean 设置为要在视图页面中使用的属性。(zh_CN)&lt;/p&gt;
+
+&lt;p&gt;View Pages can be JSP, static HTMLs etc. and view resolvers are responsible for finding the correct view page. Once the view page is identified, control is given back to the DispatcherServlet controller. DispatcherServlet is responsible for rendering the view and returning the final response to the client.
+查看页面可以是 JSP，静态 HTML 等，视图解析器负责查找正确的视图页面。一旦识别出视图页面，就会将控制权返回给 DispatcherServlet 控制器。 DispatcherServlet 负责呈现视图并将最终响应返回给客户端。(zh_CN)&lt;/p&gt;
+
+&lt;p&gt;31.&lt;/p&gt;
+
+&lt;h3 id=&quot;how-to-achieve-localization-in-spring-mvc-applications&quot;&gt;How to achieve localization in Spring MVC applications?&lt;/h3&gt;
+
+&lt;h3 id=&quot;如何在-spring-mvc-应用程序中实现本地化zh_cn&quot;&gt;如何在 Spring MVC 应用程序中实现本地化？(zh_CN)&lt;/h3&gt;
+
+&lt;p&gt;Spring provides excellent support for localization or i18n through resource bundles. Basis steps needed to make our application localized are:
+Spring 通过资源包为本地化或 i18n 提供了出色的支持。使我们的应用程序本地化所需的基础步骤是：(zh_CN)&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Creating message resource bundles for different locales, such as messages_en.properties, messages_fr.properties etc.&lt;/li&gt;
+  &lt;li&gt;为不同的语言环境创建消息资源包，例如 messages_en.properties，messages_fr.properties 等。(zh_CN)&lt;/li&gt;
+  &lt;li&gt;Defining messageSource bean in the spring bean configuration file of type &lt;code class=&quot;highlighter-rouge&quot;&gt;ResourceBundleMessageSource&lt;/code&gt; or &lt;code class=&quot;highlighter-rouge&quot;&gt;ReloadableResourceBundleMessageSource&lt;/code&gt;.&lt;/li&gt;
+  &lt;li&gt;在类型的 spring bean 配置文件中定义 messageSource bean&lt;code class=&quot;highlighter-rouge&quot;&gt;ResourceBundleMessageSource&lt;/code&gt; 要么&lt;code class=&quot;highlighter-rouge&quot;&gt;ReloadableResourceBundleMessageSource&lt;/code&gt;.(zh_CN)&lt;/li&gt;
+  &lt;li&gt;For change of locale support, define localeResolver bean of type CookieLocaleResolver and configure LocaleChangeInterceptor interceptor. Example configuration can be like below:&lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;要更改语言环境支持，请定义 CookieLocaleResolver 类型的 localeResolver bean 并配置 LocaleChangeInterceptor 拦截器。示例配置如下所示：(zh_CN)&lt;/p&gt;
+
+    &lt;p&gt;Copy&lt;/p&gt;
+    &lt;beans:bean id=&quot;messageSource&quot; class=&quot;org.springframework.context.support.ReloadableResourceBundleMessageSource&quot;&gt; &lt;beans:property name=&quot;basename&quot; value=&quot;classpath:messages&quot; /&gt; &lt;beans:property name=&quot;defaultEncoding&quot; value=&quot;UTF-8&quot; /&gt; &lt;/beans:bean&gt;
+    &lt;beans:bean id=&quot;localeResolver&quot; class=&quot;org.springframework.web.servlet.i18n.CookieLocaleResolver&quot;&gt; &lt;beans:property name=&quot;defaultLocale&quot; value=&quot;en&quot; /&gt; &lt;beans:property name=&quot;cookieName&quot; value=&quot;myAppLocaleCookie&quot;&gt;&lt;/beans:property&gt; &lt;beans:property name=&quot;cookieMaxAge&quot; value=&quot;3600&quot;&gt;&lt;/beans:property&gt; &lt;/beans:bean&gt;
+    &lt;interceptors&gt; &lt;beans:bean class=&quot;org.springframework.web.servlet.i18n.LocaleChangeInterceptor&quot;&gt; &lt;beans:property name=&quot;paramName&quot; value=&quot;locale&quot; /&gt; &lt;/beans:bean&gt; &lt;/interceptors&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Use &lt;code class=&quot;highlighter-rouge&quot;&gt;spring:message&lt;/code&gt; element in the view pages with key names, DispatcherServlet picks the corresponding value and renders the page in corresponding locale and return as response.&lt;/li&gt;
+  &lt;li&gt;使用&lt;code class=&quot;highlighter-rouge&quot;&gt;spring:message&lt;/code&gt; 在具有键名称的视图页面中，DispatcherServlet 选择相应的值并在相应的语言环境中呈现页面并作为响应返回。(zh_CN)&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;For a complete example, please read &lt;a href=&quot;https://www.journaldev.com/2610/spring-mvc-internationalization-i18n-and-localization-l10n-example&quot;&gt;Spring Localization Example&lt;/a&gt;.
+有关完整示例，请阅读[Spring Localization Example]（https://www.journaldev.com/2610/spring-mvc-internationalization-i18n-and-localization-l10n-example）。(zh_CN)&lt;/p&gt;
+
+&lt;p&gt;32.&lt;/p&gt;
+
+&lt;h3 id=&quot;how-can-we-use-spring-to-create-restful-web-service-returning-json-response&quot;&gt;How can we use Spring to create Restful Web Service returning JSON response?&lt;/h3&gt;
+
+&lt;h3 id=&quot;我们如何使用-spring-创建-restful-web-service-返回-json-响应zh_cn&quot;&gt;我们如何使用 Spring 创建 Restful Web Service 返回 JSON 响应？(zh_CN)&lt;/h3&gt;
+
+&lt;p&gt;We can use Spring Framework to create Restful web services that returns JSON data. Spring provides integration with &lt;a href=&quot;https://www.journaldev.com/2324/jackson-json-java-parser-api-example-tutorial&quot;&gt;Jackson JSON&lt;/a&gt; API that we can use to send JSON response in restful web service.
+我们可以使用 Spring Framework 创建返回 JSON 数据的 Restful Web 服务。 Spring 提供了与[Jackson JSON]（https://www.journaldev.com/2324/jackson-json-java-parser-api-example-tutorial）API的集成，我们可以使用它在宁静的Web服务中发送JSON响应。(zh_CN)&lt;/p&gt;
+
+&lt;p&gt;We would need to do following steps to configure our Spring MVC application to send JSON response:
+我们需要执行以下步骤来配置 Spring MVC 应用程序以发送 JSON 响应：(zh_CN)&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Adding &lt;a href=&quot;https://www.journaldev.com/2324/jackson-json-java-parser-api-example-tutorial&quot;&gt;Jackson&lt;/a&gt; JSON dependencies, if you are using Maven it can be done with following code:&lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;添加[Jackson]（https://www.journaldev.com/2324/jackson-json-java-parser-api-example-tutorial）JSON依赖项，如果您使用的是Maven，可以使用以下代码完成：(zh_CN)&lt;/p&gt;
+
+    &lt;p&gt;Copy&lt;/p&gt;
+
+    &lt;p&gt;&lt;!-- Jackson --&gt; &lt;dependency&gt;     &lt;groupId&gt;com.fasterxml.jackson.core&lt;/groupId&gt;     &lt;artifactId&gt;jackson-databind&lt;/artifactId&gt;     &lt;version&gt;${jackson.databind-version}&lt;/version&gt; &lt;/dependency&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Configure &lt;code class=&quot;highlighter-rouge&quot;&gt;RequestMappingHandlerAdapter&lt;/code&gt; bean in the spring bean configuration file and set the messageConverters property to MappingJackson2HttpMessageConverter bean. Sample configuration will be:&lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;配置&lt;code class=&quot;highlighter-rouge&quot;&gt;RequestMappingHandlerAdapter&lt;/code&gt; bean 在 spring bean 配置文件中并将 messageConverters 属性设置为 MappingJackson2HttpMessageConverter bean。示例配置将是：(zh_CN)&lt;/p&gt;
+
+    &lt;p&gt;Copy&lt;/p&gt;
+
+    &lt;p&gt;&lt;!-- Configure to plugin JSON as request and response in method handler --&gt; &lt;beans:bean class=&quot;org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter&quot;&gt;     &lt;beans:property name=&quot;messageConverters&quot;&gt;         &lt;beans:list&gt;             &lt;beans:ref bean=&quot;jsonMessageConverter&quot;&gt;&lt;/beans:ref&gt;         &lt;/beans:list&gt;     &lt;/beans:property&gt; &lt;/beans:bean&gt;       &lt;!-- Configure bean to convert JSON to POJO and vice versa --&gt; &lt;beans:bean id=&quot;jsonMessageConverter&quot; class=&quot;org.springframework.http.converter.json.MappingJackson2HttpMessageConverter&quot;&gt; &lt;/beans:bean&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;In the controller handler methods, return the Object as response using &lt;code class=&quot;highlighter-rouge&quot;&gt;@ResponseBody&lt;/code&gt; annotation. Sample code:&lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;在控制器处理程序方法中，使用返回 Object 作为响应&lt;code class=&quot;highlighter-rouge&quot;&gt;@ResponseBody&lt;/code&gt; 注解。示例代码：(zh_CN)&lt;/p&gt;
+
+    &lt;p&gt;Copy
+@RequestMapping(value = EmpRestURIConstants.GET_EMP, method = RequestMethod.GET) public @ResponseBody Employee getEmployee(@PathVariable(“id”) int empId) { logger.info(“Start getEmployee. ID=”+empId); return empData.get(empId); }&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;You can invoke the rest service through any API, but if you want to use Spring then we can easily do it using RestTemplate class.&lt;/li&gt;
+  &lt;li&gt;您可以通过任何 API 调用其余服务，但是如果您想使用 Spring，那么我们可以使用 RestTemplate 类轻松地完成它。(zh_CN)&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;For a complete example, please read &lt;a href=&quot;https://www.journaldev.com/2552/spring-rest-example-tutorial-spring-restful-web-services&quot;&gt;Spring Restful Webservice Example&lt;/a&gt;.
+有关完整示例，请阅读[Spring Restful Webservice 示例]（https://www.journaldev.com/2552/spring-rest-example-tutorial-spring-restful-web-services）。(zh_CN)&lt;/p&gt;
+
+&lt;p&gt;33.&lt;/p&gt;
+
+&lt;h3 id=&quot;what-are-some-of-the-important-spring-annotations-you-have-used&quot;&gt;What are some of the important Spring annotations you have used?&lt;/h3&gt;
+
+&lt;h3 id=&quot;您使用过的一些重要的-spring-注释是什么zh_cn&quot;&gt;您使用过的一些重要的 Spring 注释是什么？(zh_CN)&lt;/h3&gt;
+
+&lt;p&gt;Some of the Spring annotations that I have used in my project are:
+我在项目中使用的一些 Spring 注释是：(zh_CN)&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;@Controller&lt;/strong&gt; – for controller classes in Spring MVC project.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;@控制器&lt;/strong&gt; - 用于 Spring MVC 项目中的控制器类。(zh_CN)&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;@RequestMapping&lt;/strong&gt; – for configuring URI mapping in controller handler methods. This is a very important annotation, so you should go through &lt;a href=&quot;https://www.journaldev.com/3358/spring-requestmapping-requestparam-pathvariable-example&quot;&gt;Spring MVC RequestMapping Annotation Examples&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;**@RequestMapping ** - 用于在控制器处理程序方法中配置 URI 映射。这是一个非常重要的注释，所以你应该通过[Spring MVC RequestMapping Annotation examples]（https://www.journaldev.com/3358/spring-requestmapping-requestparam-pathvariable-example）(zh_CN)&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;@ResponseBody&lt;/strong&gt; – for sending Object as response, usually for sending XML or JSON data as response.&lt;/li&gt;
+  &lt;li&gt;**@ResponseBody ** - 用于发送 Object 作为响应，通常用于发送 XML 或 JSON 数据作为响应。(zh_CN)&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;@PathVariable&lt;/strong&gt; – for mapping dynamic values from the URI to handler method arguments.&lt;/li&gt;
+  &lt;li&gt;**@PathVariable ** - 用于将动态值从 URI 映射到处理程序方法参数。(zh_CN)&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;@Autowired&lt;/strong&gt; – for autowiring dependencies in spring beans.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;@自动装配&lt;/strong&gt; - 用于在 spring bean 中自动连接依赖项。(zh_CN)&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;@Qualifier&lt;/strong&gt; – with @Autowired annotation to avoid confusion when multiple instances of bean type is present.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;@限定符&lt;/strong&gt; - 使用@Autowired 注释以避免在存在多个 bean 类型实例时出现混淆。(zh_CN)&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;@Service&lt;/strong&gt; – for service classes.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;@服务&lt;/strong&gt; - 用于服务类。(zh_CN)&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;@Scope&lt;/strong&gt; – for configuring scope of the spring bean.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;@范围&lt;/strong&gt; - 用于配置 spring bean 的范围。(zh_CN)&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;@Configuration&lt;/strong&gt;, &lt;strong&gt;@ComponentScan&lt;/strong&gt; and &lt;strong&gt;@Bean&lt;/strong&gt; – for java based configurations.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;@配置&lt;/strong&gt;，** @ ComponentScan &lt;strong&gt;和&lt;/strong&gt; @ Bean ** - 用于基于 java 的配置。(zh_CN)&lt;/li&gt;
+  &lt;li&gt;AspectJ annotations for configuring aspects and advices, &lt;strong&gt;@Aspect&lt;/strong&gt;, &lt;strong&gt;@Before&lt;/strong&gt;, &lt;strong&gt;@After&lt;/strong&gt;, &lt;strong&gt;@Around&lt;/strong&gt;, &lt;strong&gt;@Pointcut&lt;/strong&gt; etc.&lt;/li&gt;
+  &lt;li&gt;用于配置方面和建议的 AspectJ 注释，** @ Aspect &lt;strong&gt;，&lt;/strong&gt; @ Before &lt;strong&gt;，&lt;/strong&gt; @ After &lt;strong&gt;，&lt;/strong&gt; @ Around &lt;strong&gt;，&lt;/strong&gt; @ Pointcut **等(zh_CN)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;34.&lt;/p&gt;
+
+&lt;h3 id=&quot;can-we-send-an-object-as-the-response-of-controller-handler-method&quot;&gt;Can we send an Object as the response of Controller handler method?&lt;/h3&gt;
+
+&lt;h3 id=&quot;我们可以发送一个-object-作为-controller-处理程序方法的响应吗zh_cn&quot;&gt;我们可以发送一个 Object 作为 Controller 处理程序方法的响应吗？(zh_CN)&lt;/h3&gt;
+
+&lt;p&gt;Yes we can, using &lt;strong&gt;@ResponseBody&lt;/strong&gt; annotation. This is how we send JSON or XML based response in restful web services.
+是的，我们可以使用** @ ResponseBody **注释。这就是我们在 restful Web 服务中发送基于 JSON 或 XML 的响应的方式。(zh_CN)&lt;/p&gt;
+
+&lt;p&gt;35.&lt;/p&gt;
+
+&lt;h3 id=&quot;how-to-upload-file-in-spring-mvc-application&quot;&gt;How to upload file in Spring MVC Application?&lt;/h3&gt;
+
+&lt;h3 id=&quot;如何在-spring-mvc-application-中上传文件zh_cn&quot;&gt;如何在 Spring MVC Application 中上传文件？(zh_CN)&lt;/h3&gt;
+
+&lt;p&gt;Spring provides built-in support for uploading files through &lt;strong&gt;MultipartResolver&lt;/strong&gt; interface implementations. It’s very easy to use and requires only configuration changes to get it working. Obviously we would need to write controller handler method to handle the incoming file and process it. For a complete example, please refer &lt;a href=&quot;https://www.journaldev.com/2573/spring-mvc-file-upload-example-single-multiple-files&quot;&gt;Spring File Upload Example&lt;/a&gt;.
+Spring 通过** MultipartResolver **接口实现为上传文件提供内置支持。它非常易于使用，只需要更改配置即可使其正常工作。显然，我们需要编写控制器处理程序方法来处理传入的文件并对其进行处理。有关完整示例，请参阅[Spring File Upload Example]（https://www.journaldev.com/2573/spring-mvc-file-upload-example-single-multiple-files）。(zh_CN)&lt;/p&gt;
+
+&lt;p&gt;36.&lt;/p&gt;
+
+&lt;h3 id=&quot;how-to-validate-form-data-in-spring-web-mvc-framework&quot;&gt;How to validate form data in Spring Web MVC Framework?&lt;/h3&gt;
+
+&lt;h3 id=&quot;如何在-spring-web-mvc-framework-中验证表单数据zh_cn&quot;&gt;如何在 Spring Web MVC Framework 中验证表单数据？(zh_CN)&lt;/h3&gt;
+
+&lt;p&gt;Spring supports JSR-303 annotation based validations as well as provide Validator interface that we can implement to create our own custom validator. For using JSR-303 based validation, we need to annotate bean variables with the required validations.
+Spring 支持基于 JSR-303 注释的验证，并提供我们可以实现的 Validator 接口来创建我们自己的自定义验证器。对于使用基于 JSR-303 的验证，我们需要使用所需的验证来注释 bean 变量。(zh_CN)&lt;/p&gt;
+
+&lt;p&gt;For custom validator implementation, we need to configure it in the controller class. For a complete example, please read &lt;a href=&quot;https://www.journaldev.com/2668/spring-validation-example-mvc-validator&quot;&gt;Spring MVC Form Validation Example&lt;/a&gt;.
+对于自定义验证器实现，我们需要在控制器类中进行配置。有关完整示例，请阅读[Spring MVC 表单验证示例]（https://www.journaldev.com/2668/spring-validation-example-mvc-validator）。(zh_CN)&lt;/p&gt;
+
+&lt;p&gt;37.&lt;/p&gt;
+
+&lt;h3 id=&quot;what-is-spring-mvc-interceptor-and-how-to-use-it&quot;&gt;What is Spring MVC Interceptor and how to use it?&lt;/h3&gt;
+
+&lt;h3 id=&quot;什么是-spring-mvc-interceptor-以及如何使用它zh_cn&quot;&gt;什么是 Spring MVC Interceptor 以及如何使用它？(zh_CN)&lt;/h3&gt;
+
+&lt;p&gt;Spring MVC Interceptors are like Servlet Filters and allow us to intercept client request and process it. We can intercept client request at three places – &lt;strong&gt;preHandle&lt;/strong&gt;, &lt;strong&gt;postHandle&lt;/strong&gt; and &lt;strong&gt;afterCompletion&lt;/strong&gt;.
+Spring MVC 拦截器就像 Servlet 过滤器，允许我们拦截客户端请求并对其进行处理。我们可以在三个地方拦截客户请求 - ** preHandle &lt;strong&gt;，&lt;/strong&gt; postHandle &lt;strong&gt;和&lt;/strong&gt; afterCompletion **。(zh_CN)&lt;/p&gt;
+
+&lt;p&gt;We can create spring interceptor by implementing HandlerInterceptor interface or by extending abstract class &lt;strong&gt;HandlerInterceptorAdapter&lt;/strong&gt;.
+我们可以通过实现 HandlerInterceptor 接口或扩展抽象类** HandlerInterceptorAdapter **来创建 spring 拦截器。(zh_CN)&lt;/p&gt;
+
+&lt;p&gt;We need to configure interceptors in the spring bean configuration file. We can define an interceptor to intercept all the client requests or we can configure it for specific URI mapping too. For a detailed example, please refer &lt;a href=&quot;https://www.journaldev.com/2676/spring-mvc-interceptor-example-handlerinterceptor-handlerinterceptoradapter&quot;&gt;Spring MVC Interceptor Example&lt;/a&gt;.
+我们需要在 spring bean 配置文件中配置拦截器。我们可以定义拦截器来拦截所有客户端请求，或者我们也可以为特定的 URI 映射配置拦截器。有关详细示例，请参阅[Spring MVC Interceptor 示例]（https://www.journaldev.com/2676/spring-mvc-interceptor-example-handlerinterceptor-handlerinterceptoradapter）。(zh_CN)&lt;/p&gt;
+
+&lt;p&gt;38.&lt;/p&gt;
+
+&lt;h3 id=&quot;what-is-spring-jdbctemplate-class-and-how-to-use-it&quot;&gt;What is Spring JdbcTemplate class and how to use it?&lt;/h3&gt;
+
+&lt;h3 id=&quot;什么是-spring-jdbctemplate-类以及如何使用它zh_cn&quot;&gt;什么是 Spring JdbcTemplate 类以及如何使用它？(zh_CN)&lt;/h3&gt;
+
+&lt;p&gt;Spring Framework provides excellent integration with JDBC API and provides JdbcTemplate utility class that we can use to avoid bolier-plate code from our database operations logic such as Opening/Closing Connection, ResultSet, PreparedStatement etc.
+Spring Framework 提供了与 JDBC API 的出色集成，并提供了 JdbcTemplate 实用程序类，我们可以使用它来避免来自我们的数据库操作逻辑的 bolier-plate 代码，例如 Opening / Closing Connection，ResultSet，PreparedStatement 等。(zh_CN)&lt;/p&gt;
+
+&lt;p&gt;For JdbcTemplate example, please refer &lt;a href=&quot;https://www.journaldev.com/2593/spring-jdbc-example&quot;&gt;Spring JDBC Example&lt;/a&gt;.
+有关 JdbcTemplate 示例，请参阅[Spring JDBC 示例]（https://www.journaldev.com/2593/spring-jdbc-example）。(zh_CN)&lt;/p&gt;
+
+&lt;p&gt;39.&lt;/p&gt;
+
+&lt;h3 id=&quot;how-to-use-tomcat-jndi-datasource-in-spring-web-application&quot;&gt;How to use Tomcat JNDI DataSource in Spring Web Application?&lt;/h3&gt;
+
+&lt;h3 id=&quot;如何在-spring-web-应用程序中使用-tomcat-jndi-datasourcezh_cn&quot;&gt;如何在 Spring Web 应用程序中使用 Tomcat JNDI DataSource？(zh_CN)&lt;/h3&gt;
+
+&lt;p&gt;For using servlet container configured JNDI DataSource, we need to configure it in the spring bean configuration file and then inject it to spring beans as dependencies. Then we can use it with &lt;code class=&quot;highlighter-rouge&quot;&gt;JdbcTemplate&lt;/code&gt; to perform database operations.
+为了使用 servlet 容器配置的 JNDI DataSource，我们需要在 spring bean 配置文件中配置它，然后将它作为依赖项注入 spring bean。然后我们可以用它&lt;code class=&quot;highlighter-rouge&quot;&gt;JdbcTemplate&lt;/code&gt; 执行数据库操作。(zh_CN)&lt;/p&gt;
+
+&lt;p&gt;Sample configuration would be:
+示例配置为：(zh_CN)&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Copy
+ &amp;lt;beans:bean id=&quot;dbDataSource&quot; class=&quot;org.springframework.jndi.JndiObjectFactoryBean&quot;&amp;gt;     &amp;lt;beans:property name=&quot;jndiName&quot; value=&quot;java:comp/env/jdbc/MyLocalDB&quot;/&amp;gt; &amp;lt;/beans:bean&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;For complete example, please refer &lt;a href=&quot;https://www.journaldev.com/2597/spring-datasource-jndi-with-tomcat-example&quot;&gt;Spring Tomcat JNDI Example&lt;/a&gt;.
+有关完整示例，请参阅[Spring Tomcat JNDI 示例]（https://www.journaldev.com/2597/spring-datasource-jndi-with-tomcat-example）。(zh_CN)&lt;/p&gt;
+
+&lt;p&gt;40.&lt;/p&gt;
+
+&lt;h3 id=&quot;how-would-you-achieve-transaction-management-in-spring&quot;&gt;How would you achieve Transaction Management in Spring?&lt;/h3&gt;
+
+&lt;h3 id=&quot;您如何在-spring-中实现事务管理zh_cn&quot;&gt;您如何在 Spring 中实现事务管理？(zh_CN)&lt;/h3&gt;
+
+&lt;p&gt;Spring framework provides transaction management support through Declarative Transaction Management as well as programmatic transaction management. Declarative transaction management is most widely used because it’s easy to use and works in most of the cases.
+Spring 框架通过声明式事务管理以及程序化事务管理提供事务管理支持。声明式事务管理是最广泛使用的，因为它易于使用并且在大多数情况下都有效。(zh_CN)&lt;/p&gt;
+
+&lt;p&gt;We use annotate a method with &lt;code class=&quot;highlighter-rouge&quot;&gt;@Transactional&lt;/code&gt; annotation for Declarative transaction management. We need to configure transaction manager for the DataSource in the spring bean configuration file.
+我们使用注释方法&lt;code class=&quot;highlighter-rouge&quot;&gt;@Transactional&lt;/code&gt; 声明式事务管理的注释。我们需要在 spring bean 配置文件中为 DataSource 配置事务管理器。(zh_CN)&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Copy
+ &amp;lt;bean id=&quot;transactionManager&quot;     class=&quot;org.springframework.jdbc.datasource.DataSourceTransactionManager&quot;&amp;gt;     &amp;lt;property name=&quot;dataSource&quot; ref=&quot;dataSource&quot; /&amp;gt; &amp;lt;/bean&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;41.&lt;/p&gt;
+
+&lt;h3 id=&quot;what-is-spring-dao&quot;&gt;What is Spring DAO?&lt;/h3&gt;
+
+&lt;h3 id=&quot;什么是春天-daozh_cn&quot;&gt;什么是春天 DAO？(zh_CN)&lt;/h3&gt;
+
+&lt;p&gt;Spring DAO support is provided to work with data access technologies like JDBC, Hibernate in a consistent and easy way. For example we have &lt;code class=&quot;highlighter-rouge&quot;&gt;JdbcDaoSupport&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;HibernateDaoSupport&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;JdoDaoSupport&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;JpaDaoSupport&lt;/code&gt; for respective technologies.
+提供 Spring DAO 支持以一致且简单的方式使用 JDBC，Hibernate 等数据访问技术。例如，我们有&lt;code class=&quot;highlighter-rouge&quot;&gt;JdbcDaoSupport&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;HibernateDaoSupport&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;JdoDaoSupport&lt;/code&gt; 和&lt;code class=&quot;highlighter-rouge&quot;&gt;JpaDaoSupport&lt;/code&gt; 各种技术。(zh_CN)&lt;/p&gt;
+
+&lt;p&gt;Spring DAO also provides consistency in exception hierarchy and we don’t need to catch specific exceptions.
+Spring DAO 还提供异常层次结构的一致性，我们不需要捕获特定的异常。(zh_CN)&lt;/p&gt;
+
+&lt;p&gt;42.&lt;/p&gt;
+
+&lt;h3 id=&quot;how-to-integrate-spring-and-hibernate-frameworks&quot;&gt;How to integrate Spring and Hibernate Frameworks?&lt;/h3&gt;
+
+&lt;h3 id=&quot;如何集成-spring-和-hibernate-框架zh_cn&quot;&gt;如何集成 Spring 和 Hibernate 框架？(zh_CN)&lt;/h3&gt;
+
+&lt;p&gt;We can use Spring ORM module to integrate Spring and Hibernate frameworks, if you are using Hibernate 3+ where SessionFactory provides current session, then you should avoid using &lt;code class=&quot;highlighter-rouge&quot;&gt;HibernateTemplate&lt;/code&gt; or &lt;code class=&quot;highlighter-rouge&quot;&gt;HibernateDaoSupport&lt;/code&gt; classes and better to use DAO pattern with dependency injection for the integration.
+我们可以使用 Spring ORM 模块来集成 Spring 和 Hibernate 框架，如果你使用 Hibernate 3+，其中 SessionFactory 提供当前会话，那么你应该避免使用&lt;code class=&quot;highlighter-rouge&quot;&gt;HibernateTemplate&lt;/code&gt; 要么&lt;code class=&quot;highlighter-rouge&quot;&gt;HibernateDaoSupport&lt;/code&gt; 类和更好地使用 DAO 模式和依赖注入进行集成。(zh_CN)&lt;/p&gt;
+
+&lt;p&gt;Also Spring ORM provides support for using Spring declarative transaction management, so you should utilize that rather than going for hibernate boiler-plate code for transaction management.
+此外，Spring ORM 还支持使用 Spring 声明式事务管理，因此您应该使用它而不是使用 hibernate 样板代码进行事务管理。(zh_CN)&lt;/p&gt;
+
+&lt;p&gt;For better understanding you should go through following tutorials:
+为了更好地理解，您应该阅读以下教程：(zh_CN)&lt;/p&gt;
+
+&lt;p&gt;43.&lt;/p&gt;
+
+&lt;h3 id=&quot;what-is-spring-security&quot;&gt;What is Spring Security?&lt;/h3&gt;
+
+&lt;h3 id=&quot;什么是-spring-securityzh_cn&quot;&gt;什么是 Spring Security？(zh_CN)&lt;/h3&gt;
+
+&lt;p&gt;Spring security framework focuses on providing both authentication and authorization in java applications. It also takes care of most of the common security vulnerabilities such as CSRF attack.
+Spring 安全框架侧重于在 Java 应用程序中提供身份验证和授权。它还会处理大多数常见的安全漏洞，例如 CSRF 攻击。(zh_CN)&lt;/p&gt;
+
+&lt;p&gt;It’s very beneficial and easy to use Spring security in web applications, through the use of annotations such as &lt;code class=&quot;highlighter-rouge&quot;&gt;@EnableWebSecurity&lt;/code&gt;. You should go through following posts to learn how to use Spring Security framework.
+通过使用诸如的注释，在 Web 应用程序中使用 Spring 安全性非常有用且易于使用&lt;code class=&quot;highlighter-rouge&quot;&gt;@EnableWebSecurity&lt;/code&gt;. 您应该通过以下帖子来了解如何使用 Spring Security 框架。(zh_CN)&lt;/p&gt;
+
+&lt;p&gt;44.&lt;/p&gt;
+
+&lt;h3 id=&quot;how-to-inject-a-javautilproperties-into-a-spring-bean&quot;&gt;How to inject a java.util.Properties into a Spring Bean?&lt;/h3&gt;
+
+&lt;h3 id=&quot;如何将-javautilproperties-注入-spring-beanzh_cn&quot;&gt;如何将 java.util.Properties 注入 Spring Bean？(zh_CN)&lt;/h3&gt;
+
+&lt;p&gt;We need to define propertyConfigurer bean that will load the properties from the given property file. Then we can use Spring EL support to inject properties into other bean dependencies. For example;
+我们需要定义 propertyConfigurer bean，它将从给定的属性文件加载属性。然后我们可以使用 Spring EL 支持将属性注入其他 bean 依赖项。例如;(zh_CN)&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Copy
+ &amp;lt;bean id=&quot;propertyConfigurer&quot;    class=&quot;org.springframework.context.support.PropertySourcesPlaceholderConfigurer&quot;&amp;gt;     &amp;lt;property name=&quot;location&quot; value=&quot;/WEB-INF/application.properties&quot; /&amp;gt; &amp;lt;/bean&amp;gt;   &amp;lt;bean class=&quot;com.journaldev.spring.EmployeeDaoImpl&quot;&amp;gt;     &amp;lt;property name=&quot;maxReadResults&quot; value=&quot;${results.read.max}&quot;/&amp;gt; &amp;lt;/bean&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;If you are using annotation to configure the spring bean, then you can inject property like below.
+如果您使用注释来配置 spring bean，那么您可以注入如下所示的属性。(zh_CN)&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Copy
+ @Value(&quot;${maxReadResults}&quot;)  private int maxReadResults;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;45.&lt;/p&gt;
+
+&lt;h3 id=&quot;name-some-of-the-design-patterns-used-in-spring-framework&quot;&gt;Name some of the design patterns used in Spring Framework?&lt;/h3&gt;
+
+&lt;h3 id=&quot;列举-spring-framework-中使用的一些设计模式zh_cn&quot;&gt;列举 Spring Framework 中使用的一些设计模式？(zh_CN)&lt;/h3&gt;
+
+&lt;p&gt;Spring Framework is using a lot of design patterns, some of the common ones are:
+Spring Framework 使用了很多设计模式，其中一些常见的是：(zh_CN)&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Singleton Pattern: Creating beans with default scope.&lt;/li&gt;
+  &lt;li&gt;单例模式：创建具有默认范围的 bean。(zh_CN)&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://www.journaldev.com/1392/factory-design-pattern-in-java&quot;&gt;Factory Pattern&lt;/a&gt;: Bean Factory classes&lt;/li&gt;
+  &lt;li&gt;[工厂模式]（https://www.journaldev.com/1392/factory-design-pattern-in-java）：Bean工厂类(zh_CN)&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://www.journaldev.com/1440/prototype-design-pattern-in-java&quot;&gt;Prototype Pattern&lt;/a&gt;: Bean scopes&lt;/li&gt;
+  &lt;li&gt;[原型模式]（https://www.journaldev.com/1440/prototype-design-pattern-in-java）：Bean范围(zh_CN)&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://www.journaldev.com/1487/adapter-design-pattern-java&quot;&gt;Adapter Pattern&lt;/a&gt;: Spring Web and Spring MVC&lt;/li&gt;
+  &lt;li&gt;[适配器模式]（https://www.journaldev.com/1487/adapter-design-pattern-java）：Spring Web 和 Spring MVC(zh_CN)&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://www.journaldev.com/1572/proxy-design-pattern&quot;&gt;Proxy Pattern&lt;/a&gt;: Spring Aspect Oriented Programming support&lt;/li&gt;
+  &lt;li&gt;[代理模式]（https://www.journaldev.com/1572/proxy-design-pattern）：Spring面向方面编程支持(zh_CN)&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://www.journaldev.com/1763/template-method-design-pattern-in-java&quot;&gt;Template Method Pattern&lt;/a&gt;: JdbcTemplate, HibernateTemplate etc&lt;/li&gt;
+  &lt;li&gt;[模板方法模式]（https://www.journaldev.com/1763/template-method-design-pattern-in-java）：JdbcTemplate，HibernateTemplate等(zh_CN)&lt;/li&gt;
+  &lt;li&gt;Front Controller: Spring MVC DispatcherServlet&lt;/li&gt;
+  &lt;li&gt;Data Access Object: Spring DAO support&lt;/li&gt;
+  &lt;li&gt;数据访问对象：Spring DAO 支持(zh_CN)&lt;/li&gt;
+  &lt;li&gt;Dependency Injection and Aspect Oriented Programming&lt;/li&gt;
+  &lt;li&gt;依赖注入和面向方面编程(zh_CN)&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;1.&lt;/p&gt;
+
+&lt;h3 id=&quot;what-are-some-of-the-best-practices-for-spring-framework&quot;&gt;What are some of the best practices for Spring Framework?&lt;/h3&gt;
+
+&lt;h3 id=&quot;spring-framework-有哪些最佳实践zh_cn&quot;&gt;Spring Framework 有哪些最佳实践？(zh_CN)&lt;/h3&gt;
+
+&lt;p&gt;Some of the best practices for Spring Framework are:
+Spring Framework 的一些最佳实践是：(zh_CN)&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Avoid version numbers in schema reference, to make sure we have the latest configs.&lt;/li&gt;
+  &lt;li&gt;避免模 ​​ 式参考中的版本号，以确保我们有最新的配置。(zh_CN)&lt;/li&gt;
+  &lt;li&gt;Divide spring bean configurations based on their concerns such as spring-jdbc.xml, spring-security.xml.&lt;/li&gt;
+  &lt;li&gt;根据 spring-jdbc.xml，spring-security.xml 等问题划分 spring bean 配置。(zh_CN)&lt;/li&gt;
+  &lt;li&gt;For spring beans that are used in multiple contexts in Spring MVC, create them in the root context and initialize with listener.&lt;/li&gt;
+  &lt;li&gt;对于在 Spring MVC 中的多个上下文中使用的 spring bean，在根上下文中创建它们并使用 listener 初始化。(zh_CN)&lt;/li&gt;
+  &lt;li&gt;Configure bean dependencies as much as possible, try to avoid autowiring as much as possible.&lt;/li&gt;
+  &lt;li&gt;尽可能配置 bean 依赖关系，尽量避免自动装配。(zh_CN)&lt;/li&gt;
+  &lt;li&gt;For application level properties, best approach is to create a property file and read it in the spring bean configuration file.&lt;/li&gt;
+  &lt;li&gt;对于应用程序级属性，最好的方法是创建属性文件并在 spring bean 配置文件中读取它。(zh_CN)&lt;/li&gt;
+  &lt;li&gt;For smaller applications, annotations are useful but for larger applications annotations can become a pain. If we have all the configuration in xml files, maintaining it will be easier.&lt;/li&gt;
+  &lt;li&gt;对于较小的应用程序，注释很有用，但对于较大的应用程序，注释可能会变得很麻烦。如果我们在 xml 文件中拥有所有配置，那么维护它将更容易。(zh_CN)&lt;/li&gt;
+  &lt;li&gt;Use correct annotations for components for understanding the purpose easily. For services use @Service and for DAO beans use @Repository.&lt;/li&gt;
+  &lt;li&gt;对组件使用正确的注释可以轻松理解目的。对于服务，使用@Service 和 DAO bean 使用@Repository。(zh_CN)&lt;/li&gt;
+  &lt;li&gt;Spring framework has a lot of modules, use what you need. Remove all the extra dependencies that gets usually added when you create projects through Spring Tool Suite templates.&lt;/li&gt;
+  &lt;li&gt;Spring 框架有很多模块，使用你需要的东西。删除通过 Spring Tool Suite 模板创建项目时通常添加的所有额外依赖项。(zh_CN)&lt;/li&gt;
+  &lt;li&gt;If you are using Aspects, make sure to keep the join pint as narrow as possible to avoid advice on unwanted methods. Consider custom annotations that are easier to use and avoid any issues.&lt;/li&gt;
+  &lt;li&gt;如果您使用的是 Aspects，请确保尽可能缩小连接点，以避免对不需要的方法提出建议。考虑更易于使用的自定义注释并避免任何问题。(zh_CN)&lt;/li&gt;
+  &lt;li&gt;Use dependency injection when there is actual benefit, just for the sake of loose-coupling don’t use it because it’s harder to maintain.&lt;/li&gt;
+  &lt;li&gt;当有实际好处时使用依赖注入，仅仅为了松散耦合而不使用它因为它更难维护。(zh_CN)&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;That’s all for Spring Framework interview questions. I hope these questions will help you in coming Java EE interview. I will keep on adding more questions to the list as soon as I found them. If you know some more questions that should be part of the list, make sure to add a comment for it and I will include it.
+这就是 Spring Framework 面试问题的全部内容。我希望这些问题可以帮助您进行 Java EE 访谈。我一发现就会在列表中继续添加更多问题。如果您知道应该成为列表一部分的更多问题，请确保为其添加注释，我将包含它。(zh_CN)&lt;/p&gt;</content><author><name></name></author><summary type="html">This post will help you get through Spring interview Questions explaining the core concepts in detail. 这篇文章将帮助你通过 Spring 面试问题 解释详细的核心概念。(zh_CN)</summary></entry><entry xml:lang="zh_CN"><title type="html">如何捕获express框架app.listen的异常？</title><link href="http://www.jfox.info/2018/458aead/index.html" rel="alternate" type="text/html" title="如何捕获express框架app.listen的异常？" /><published>2018-10-10T14:46:54+08:00</published><updated>2018-10-10T14:46:54+08:00</updated><id>http://www.jfox.info/2018/458aead/458aead</id><content type="html" xml:base="http://www.jfox.info/2018/458aead/index.html">&lt;h3 id=&quot;问题背景&quot;&gt;问题背景&lt;/h3&gt;
 
 &lt;p&gt;由于在启动项目时会出现&lt;/p&gt;
 
@@ -31,9 +920,9 @@
 &lt;ul&gt;
   &lt;li&gt;通过 server.listening 方法可以提前判断端口是否被占用；&lt;/li&gt;
   &lt;li&gt;listen 时指定端口为 0 ，会随机分配一个可用的端口&lt;/li&gt;
-&lt;/ul&gt;</content><author><name></name></author><summary type="html">问题背景 由于在启动项目时会出现 uncaught exception: Error: listen EADDRINUSR 155.145.111.11:45621 … … 解决方法 所以想捕获 listen 的异常。但在网上查了之后都是用的 process.on(‘uncaughtexception’,function)此方法。 有没有直接捕获 listen 的异常的方法呀，求助。 1、process.on(‘uncaughtexception’, callback) 是进程级别的异常捕获； 2、app.listen(port, callback); 这里的 callback 可以理解为，整个框架都是通过一个回调函数来处理 HTTP 请求，里面进程 MVC 等各种设计； 来看看 app.listen 到底做了什么：https://github.com/expressjs/express/blob/master/lib/application.js#L617。 ====== 正义分割线 通过 app.listen 我们其实得到一个 server 对象，通过监听 server 对象的错误事件可以获取到错误信息； server.on(&quot;error&quot;, e =&amp;gt; { if (e.code === &quot;EADDRINUSE&quot;) { console.log(&quot;Address in use, retrying...&quot;); setTimeout(() =&amp;gt; { server.close(); server.listen(PORT, HOST); }, 1000); } }); 通过 server.listening 方法可以提前判断端口是否被占用； listen 时指定端口为 0 ，会随机分配一个可用的端口</summary></entry><entry xml:lang="zh_CN"><title type="html">Oracle Audit AUD$ 增长过大异常处理</title><link href="http://www.jfox.info/2018/8c91b1e/index.html" rel="alternate" type="text/html" title="Oracle Audit AUD$ 增长过大异常处理" /><published>2018-10-09T19:06:42+00:00</published><updated>2018-10-09T19:06:42+00:00</updated><id>http://www.jfox.info/2018/8c91b1e/8c91b1e</id><content type="html" xml:base="http://www.jfox.info/2018/8c91b1e/index.html">&lt;p&gt;某天突然发现一个 Oracle 数据库中 system 表空间大小有点异常，经过统计，原来是启用了 Oracle 的 Audit 功能，并将审计的信息存放在系统表空间。&lt;/p&gt;
-
-&lt;p&gt;数据文件大小&lt;/p&gt;
+&lt;/ul&gt;</content><author><name></name></author><summary type="html"></summary></entry><entry xml:lang="zh_CN"><title type="html">Oracle Audit AUD$ 增长过大异常处理</title><link href="http://www.jfox.info/2018/8c91b1e/index.html" rel="alternate" type="text/html" title="Oracle Audit AUD$ 增长过大异常处理" /><published>2018-10-10T03:06:42+08:00</published><updated>2018-10-10T03:06:42+08:00</updated><id>http://www.jfox.info/2018/8c91b1e/8c91b1e</id><content type="html" xml:base="http://www.jfox.info/2018/8c91b1e/index.html">&lt;p&gt;某天突然发现一个 Oracle 数据库中 system 表空间大小有点异常，经过统计，原来是启用了 Oracle 的 Audit 功能，并将审计的信息存放在系统表空间。
+test
+数据文件大小&lt;/p&gt;
 
 &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;[[email protected] DEV]$ ll -h
 total 11G
@@ -214,7 +1103,7 @@ PL/SQL procedure successfully completed.
 
 &lt;p&gt;The following table shows what will happen when using different combinations for these parameters/factors:&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;b5e705a.jpg&quot; alt=&quot;auditing_location_corr.jpg&quot; /&gt;&lt;/p&gt;</content><author><name></name></author><summary type="html">某天突然发现一个 Oracle 数据库中 system 表空间大小有点异常，经过统计，原来是启用了 Oracle 的 Audit 功能，并将审计的信息存放在系统表空间。</summary></entry><entry xml:lang="zh_CN"><title type="html">node环境下如何使用jquery？</title><link href="http://www.jfox.info/2018/50f3d18/index.html" rel="alternate" type="text/html" title="node环境下如何使用jquery？" /><published>2018-09-06T19:07:21+00:00</published><updated>2018-09-06T19:07:21+00:00</updated><id>http://www.jfox.info/2018/50f3d18/50f3d18</id><content type="html" xml:base="http://www.jfox.info/2018/50f3d18/index.html">&lt;p&gt;版权声明：本文为博主原创文章，未经博主允许不得转载。 https://blog.csdn.net/cvper/article/details/79576071&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;b5e705a.jpg&quot; alt=&quot;auditing_location_corr.jpg&quot; /&gt;&lt;/p&gt;</content><author><name></name></author><summary type="html">某天突然发现一个 Oracle 数据库中 system 表空间大小有点异常，经过统计，原来是启用了 Oracle 的 Audit 功能，并将审计的信息存放在系统表空间。 test 数据文件大小</summary></entry><entry xml:lang="zh_CN"><title type="html">node环境下如何使用jquery？</title><link href="http://www.jfox.info/2018/50f3d18/index.html" rel="alternate" type="text/html" title="node环境下如何使用jquery？" /><published>2018-09-07T03:07:21+08:00</published><updated>2018-09-07T03:07:21+08:00</updated><id>http://www.jfox.info/2018/50f3d18/50f3d18</id><content type="html" xml:base="http://www.jfox.info/2018/50f3d18/index.html">&lt;p&gt;版权声明：本文为博主原创文章，未经博主允许不得转载。 https://blog.csdn.net/cvper/article/details/79576071&lt;/p&gt;
 
 &lt;p&gt;（测试环境：node 7.6.0 npm 5.6.0 jquery 3.3.1 jsdom 11.6.2）&lt;/p&gt;
 
@@ -247,7 +1136,7 @@ PL/SQL procedure successfully completed.
 
 &lt;p&gt;&lt;img src=&quot;2a53e6d&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;证明 jquery 可以正常使用了；&lt;/p&gt;</content><author><name></name></author><summary type="html">版权声明：本文为博主原创文章，未经博主允许不得转载。 https://blog.csdn.net/cvper/article/details/79576071 （测试环境：node 7.6.0 npm 5.6.0 jquery 3.3.1 jsdom 11.6.2） 第一步，下载 jquery 包 命令：npm install jquery 第二步 , 下载 jsdom 包 命令：npm install jsdom 第三步，我们新建一个 index.js 代码如下： const jsdom = require(&quot;jsdom&quot;); const { JSDOM } = jsdom; const { window } = newJSDOM(`&amp;lt;!DOCTYPE html&amp;gt;`); const $ = require(&quot;jQuery&quot;)(window); console.log($); //测试 jquery 是否可以正常工作 第四步：执行命令 node index.js 查看输出信息： 证明 jquery 可以正常使用了；</summary></entry><entry xml:lang="zh_CN"><title type="html">回眸Spring – 事物运行原理机制</title><link href="http://www.jfox.info/2018/2443f3f/index.html" rel="alternate" type="text/html" title="回眸Spring – 事物运行原理机制" /><published>2018-09-06T16:44:59+00:00</published><updated>2018-09-06T16:44:59+00:00</updated><id>http://www.jfox.info/2018/2443f3f/2443f3f</id><content type="html" xml:base="http://www.jfox.info/2018/2443f3f/index.html">&lt;p&gt;By - Last updated: 星期四, 八月 10, 2017&lt;/p&gt;
+&lt;p&gt;证明 jquery 可以正常使用了；&lt;/p&gt;</content><author><name></name></author><summary type="html">版权声明：本文为博主原创文章，未经博主允许不得转载。 https://blog.csdn.net/cvper/article/details/79576071</summary></entry><entry xml:lang="zh_CN"><title type="html">回眸Spring – 事物运行原理机制</title><link href="http://www.jfox.info/2018/2443f3f/index.html" rel="alternate" type="text/html" title="回眸Spring – 事物运行原理机制" /><published>2018-09-07T00:44:59+08:00</published><updated>2018-09-07T00:44:59+08:00</updated><id>http://www.jfox.info/2018/2443f3f/2443f3f</id><content type="html" xml:base="http://www.jfox.info/2018/2443f3f/index.html">&lt;p&gt;By - Last updated: 星期四, 八月 10, 2017&lt;/p&gt;
 
 &lt;p&gt;H2M_LI_HEADER Spring 的事物是通过哪些原理实现的?
 H2M_LI_HEADER Spring 的事物机制是如何提交和回滚的?&lt;/p&gt;
@@ -903,7 +1792,7 @@ List&amp;lt;Object&amp;gt; chain = this.advised.getInterceptorsAndDynamicInterce
 
 &lt;p&gt;由于 spring 里面代码层次划分很细,导致贴出来的代码特别多,可能会影响你们阅读,不过 Spring 里面的很多东西封装的都是很完善的,几乎全部都是组件化,导致很多方法很深,不过我们只要了解它大概的原理就行了,至少能够在我们遇到问题时能够推断出从哪个步骤进行下手.可能这篇文章代码和图片比较凌乱,最好是大家有 spring 的一些基本原理基础,比如 bean 的实例化啊等等,不然有的地方会看不懂,好了就说这么多了… 希望对大家有帮助.. 也非常欢迎大家提意见!!! 谢谢&lt;/p&gt;
 
-&lt;p&gt;&lt;a href=&quot;https://itunes.apple.com/cn/app/学英语听新闻/id1368539116?mt=8&quot;&gt;&lt;img src=&quot;6bf2383.png&quot; alt=&quot;&quot; /&gt;&lt;/a&gt;&lt;/p&gt;</content><author><name></name></author><summary type="html">By - Last updated: 星期四, 八月 10, 2017 H2M_LI_HEADER Spring 的事物是通过哪些原理实现的? H2M_LI_HEADER Spring 的事物机制是如何提交和回滚的? ==希望你有阅读过 Spring 源码的经历,不然有的东西可能理解不清楚..== Spring 的事物是通过哪些原理实现的? 首先给大家布置一个代码场景(以项目代码为例): spring-dataSource.xml 文件 &amp;lt;bean id=&quot;db1&quot; class=&quot;com.alibaba.druid.pool.DruidDataSource&quot; destroy-method=&quot;close&quot;&amp;gt; .... &amp;lt;/bean&amp;gt; &amp;lt;!-- 数据源配置 --&amp;gt; &amp;lt;bean id=&quot;transactionManager&quot; class=&quot;org.springframework.jdbc.datasource.DataSourceTransactionManager&quot;&amp;gt; &amp;lt;property name=&quot;dataSource&quot; ref=&quot;db1&quot;/&amp;gt; &amp;lt;qualifier value=&quot;&quot;/&amp;gt; &amp;lt;/bean&amp;gt; &amp;lt;!-- 事物管理器 --&amp;gt; &amp;lt;tx:annotation-driven transaction-manager=&quot;transactionManager&quot; proxy-target-class=&quot;true&quot;&amp;gt;&amp;lt;/tx:annotation-driven&amp;gt; Spring-service.xml &amp;lt;!-- 注解扫描包 --&amp;gt; &amp;lt;context:component-scan base-package=&quot;com.elab.execute.services,com.elab.execute.dao,com.elab.execute.utils&quot;&amp;gt; &amp;lt;context:include-filter type=&quot;annotation&quot; expression=&quot;org.springframework.stereotype.Service&quot;/&amp;gt; &amp;lt;context:include-filter type=&quot;annotation&quot; expression=&quot;org.springframework.stereotype.Repository&quot;/&amp;gt; &amp;lt;context:include-filter type=&quot;annotation&quot; expression=&quot;org.springframework.stereotype.Component&quot;/&amp;gt; &amp;lt;context:exclude-filter type=&quot;annotation&quot; expression=&quot;org.springframework.stereotype.Controller&quot;/&amp;gt; &amp;lt;/context:component-scan&amp;gt; Serivce.java //方法上只要加上@Transactional方法就行了,一个DML操作 @Transactional public void testTransactional() throws Exception { System.out.println(&quot;=====================开始处理事物&quot;); TGirl girl = new TGirl(); girl.setAge(11); girl.setGirl_name(&quot;hah&quot;); girl.setStatus(1); int insert = girlMapper.insert(girl); System.out.println(&quot;=====================结束处理事物&quot;); System.out.println(&quot;处理完成...&quot;); // 模拟程序报错 // int i = 1 / 0; } ==注意我们这只是模拟一个简单的事物管理配置场景,大概就是这么一些要配置的东西== 测试类: 我没有用 Junit,不过效果是差不多的 String xml[] = new String[]{&quot;applicationContext-service.xml&quot;, &quot;applicationContext-datasource.xml&quot;, }; ApplicationContext app = new ClassPathXmlApplicationContext(xml); IDemoService demoService = (IDemoService) app.getBean(&quot;demoService&quot;); // DML操作 demoService.testTransactional(); 首先我们的目的是想知道 Spring 事物的运行流程,这时候可能就需要 Debug 调试,我们也就只关注事物这块初始化和执行的情况,我们可以采用倒推的方式 先看 spring 事物的执行过程,再看初始化过程 debug 断点打在 demoService.testTransactional(); 这块,然后 F5 进去 image 进入到的是一个 CglibAopProxy 内部类DynamicAdvisedInterceptor的intercept方法,从这里看的话,其实这个类就是一个责任链类型的处理类 注意这一块是一个责任链模式,表示需要经过一系列链条之后才会到达最终的方法,当然这三个类切入点类型的类,是通过动态代理加入到责任链中的,下面初始化的时候会讲到 // 这一段代码表示获取到你将要执行最终方法前要经过的一系列拦截类的处理,也就是责任链类的中的核心集合 List&amp;lt;Object&amp;gt; chain = this.advised.getInterceptorsAndDynamicInterceptionAdvice(method, targetClass); image 图中 chain 集合有三个类,表示执行到目的方法之前需要经过这几个类 我们来看到执行到目标方法的执行轨迹: image 确实是经过了三个拦截链 我们直接看事物相关的拦截链类 下面代码是不是似曾相识,这都是开启事物的操作和异常情况下,回滚和提交操作 image 经过这些代理类之后到达最终的方法,这是一个大概的运行过程.异常会被事物捕获到,没有则提交… 都是通过这个 TransactionAspectSupport 的 invokeWithinTransaction 方法去做的 那 Spring 又是如何初始化这一系列的代理类操作的呢? 回到运行的第一步我们在那个 Aop 的拦截器类中(CglibApoProxy),想一想既然 spring 运行这个方法的时候会执行这个拦截器方法,那么初始化的时候应该也和这个类相关,然后从上面实例化的地方和可以的地方打打断点… 果然,初始化的方法断点被触发了… image 这时候我们可以看断点的运行轨迹 image 我们发现,触发到这个断点的时候,会经过一系列的方法执行,这些执行的方法链都是创建 bean 的时候必须经过的过程,也就是说每个 bean 创建的时候,都会经过这一系列的链路的检查(applyBeanPostProcessorsAfterInitialization 方法里面的 getBeanPostProcessors()方法),才会生成最终的 bean,这时候我们需要定位到执行这个 CglibAopProxy 初始化的方法这块,在什么情况下,会执行这个创建代理的类 image 我们现在已经知道他创建了代理类的过程,现在需要知道在什么情况下会为某些 bean 创建代理。了解了 getAdvicesAndAdvisorsForBean 这个方法运行做了什么事情,就大概知道创建代理类 bean 的条件 首先我们一步步看这个方法的代码: /** 这是一个获取切入点和包含切入点的bean方法 /* protected Object[] getAdvicesAndAdvisorsForBean(Class&amp;lt;?&amp;gt; beanClass, String beanName, TargetSource targetSource) { // 查询当前的bean是否包含切入点 List&amp;lt;Advisor&amp;gt; advisors = findEligibleAdvisors(beanClass, beanName); if (advisors.isEmpty()) { return DO_NOT_PROXY; } return advisors.toArray(); } findEligibleAdvisors 方法 /** * 大概意思是为这个bean找到合适的自动代理类 * Find all eligible Advisors for auto-proxying this class. * @param beanClass the clazz to find advisors for * @param beanName the name of the currently proxied bean * @return the empty List, not {@code null}, * if there are no pointcuts or interceptors * @see #findCandidateAdvisors * @see #sortAdvisors * @see #extendAdvisors */ protected List&amp;lt;Advisor&amp;gt; findEligibleAdvisors(Class&amp;lt;?&amp;gt; beanClass, String beanName) { // 找到当前已经注册好的代理类bean List&amp;lt;Advisor&amp;gt; candidateAdvisors = findCandidateAdvisors(); //将注册好的bean和当前bean的类型进行搜索查询,是否有合适的切入点类 List&amp;lt;Advisor&amp;gt; eligibleAdvisors = findAdvisorsThatCanApply(candidateAdvisors, beanClass, beanName); extendAdvisors(eligibleAdvisors); if (!eligibleAdvisors.isEmpty()) { eligibleAdvisors = sortAdvisors(eligibleAdvisors); } return eligibleAdvisors; } findAdvisorsThatCanApply : /** 大概意思就是搜索给定的切入点集合,以用于找到可以应用到当前bean的合适的切入点集合 * Search the given candidate Advisors to find all Advisors that * can apply to the specified bean. * @param candidateAdvisors the candidate Advisors * @param beanClass the target's bean class * @param beanName the target's bean name * @return the List of applicable Advisors * @see ProxyCreationContext#getCurrentProxiedBeanName() */ protected List&amp;lt;Advisor&amp;gt; findAdvisorsThatCanApply( List&amp;lt;Advisor&amp;gt; candidateAdvisors, Class&amp;lt;?&amp;gt; beanClass, String beanName) { // 设置代理的上下文,只针当前线程 ProxyCreationContext.setCurrentProxiedBeanName(beanName); try { // 这是一个AOP的工具类,用于 return AopUtils.findAdvisorsThatCanApply(candidateAdvisors, beanClass); } finally { ProxyCreationContext.setCurrentProxiedBeanName(null); } } AopUtils.findAdvisorsThatCanApply /** * 确定能应用到当前clazz的List&amp;lt;Advisor&amp;gt; * Determine the sublist of the {@code candidateAdvisors} list * that is applicable to the given class. * @param candidateAdvisors the Advisors to evaluate * @param clazz the target class * @return sublist of Advisors that can apply to an object of the given class * (may be the incoming List as-is) */ public static List&amp;lt;Advisor&amp;gt; findAdvisorsThatCanApply(List&amp;lt;Advisor&amp;gt; candidateAdvisors, Class&amp;lt;?&amp;gt; clazz) { if (candidateAdvisors.isEmpty()) { return candidateAdvisors; } List&amp;lt;Advisor&amp;gt; eligibleAdvisors = new LinkedList&amp;lt;Advisor&amp;gt;(); for (Advisor candidate : candidateAdvisors) { if (candidate instanceof IntroductionAdvisor &amp;amp;&amp;amp; canApply(candidate, clazz)) { eligibleAdvisors.add(candidate); } } boolean hasIntroductions = !eligibleAdvisors.isEmpty(); for (Advisor candidate : candidateAdvisors) { if (candidate instanceof IntroductionAdvisor) { // already processed continue; } // 这个方法很关键,用于判断是否能将当前Advisor应用到这个bean上 if (canApply(candidate, clazz, hasIntroductions)) { // 如果验证通过,则会将当前切入点加入进来 eligibleAdvisors.add(candidate); } } return eligibleAdvisors; } 我们来看看 canApply 做了些什么? // 大概就是比较了Advisor的类型 public static boolean canApply(Advisor advisor, Class&amp;lt;?&amp;gt; targetClass, boolean hasIntroductions) { if (advisor instanceof IntroductionAdvisor) { return ((IntroductionAdvisor) advisor).getClassFilter().matches(targetClass); } else if (advisor instanceof PointcutAdvisor) { PointcutAdvisor pca = (PointcutAdvisor) advisor; // 最终会执行到这个方法 return canApply(pca.getPointcut(), targetClass, hasIntroductions); } else { // It doesn't have a pointcut so we assume it applies. return true; } } public static boolean canApply(Pointcut pc, Class&amp;lt;?&amp;gt; targetClass, boolean hasIntroductions) { Assert.notNull(pc, &quot;Pointcut must not be null&quot;); if (!pc.getClassFilter().matches(targetClass)) { return false; } // 获取当前切入点的类型 MethodMatcher methodMatcher = pc.getMethodMatcher(); IntroductionAwareMethodMatcher introductionAwareMethodMatcher = null; //比较类型 if (methodMatcher instanceof IntroductionAwareMethodMatcher) { introductionAwareMethodMatcher = (IntroductionAwareMethodMatcher) methodMatcher; } // !!!!! 这一部分的代码很关键!!!! // 获取所有相关的类 Set&amp;lt;Class&amp;lt;?&amp;gt;&amp;gt; classes = new LinkedHashSet&amp;lt;Class&amp;lt;?&amp;gt;&amp;gt;(ClassUtils.getAllInterfacesForClassAsSet(targetClass)); classes.add(targetClass); // 遍历这些类 for (Class&amp;lt;?&amp;gt; clazz : classes) { // 获取类的所有方法 Method[] methods = clazz.getMethods(); // 遍历这些方法 for (Method method : methods) { //methodMatcher.matches(method, targetClass) 这个方法很重要 if ((introductionAwareMethodMatcher != null &amp;amp;&amp;amp; introductionAwareMethodMatcher.matches(method, targetClass, hasIntroductions)) || methodMatcher.matches(method, targetClass)) { return true; } } } return false; } matches 方法 public boolean matches(Method method, Class&amp;lt;?&amp;gt; targetClass) { TransactionAttributeSource tas = getTransactionAttributeSource(); // tas.getTransactionAttribute(method, targetClass) 这是个获取事物注解的方法 return (tas == null || tas.getTransactionAttribute(method, targetClass) != null); } // 获取事务属性的方法 public TransactionAttribute getTransactionAttribute(Method method, Class&amp;lt;?&amp;gt; targetClass) { // First, see if we have a cached value. Object cacheKey = getCacheKey(method, targetClass); Object cached = this.attributeCache.get(cacheKey); if (cached != null) { // Value will either be canonical value indicating there is no transaction attribute, // or an actual transaction attribute. if (cached == NULL_TRANSACTION_ATTRIBUTE) { return null; } else { return (TransactionAttribute) cached; } } else { // We need to work it out. // 获取事物属性的方法 TransactionAttribute txAtt = computeTransactionAttribute(method, targetClass); // Put it in the cache. if (txAtt == null) { this.attributeCache.put(cacheKey, NULL_TRANSACTION_ATTRIBUTE); } else { if (logger.isDebugEnabled()) { Class&amp;lt;?&amp;gt; classToLog = (targetClass != null ? targetClass : method.getDeclaringClass()); logger.debug(&quot;Adding transactional method '&quot; + classToLog.getSimpleName() + &quot;.&quot; + method.getName() + &quot;' with attribute: &quot; + txAtt); } this.attributeCache.put(cacheKey, txAtt); } return txAtt; } } private TransactionAttribute computeTransactionAttribute(Method method, Class&amp;lt;?&amp;gt; targetClass) { // Don't allow no-public methods as required. if (allowPublicMethodsOnly() &amp;amp;&amp;amp; !Modifier.isPublic(method.getModifiers())) { return null; } // Ignore CGLIB subclasses - introspect the actual user class. Class&amp;lt;?&amp;gt; userClass = ClassUtils.getUserClass(targetClass); // The method may be on an interface, but we need attributes from the target class. // If the target class is null, the method will be unchanged. Method specificMethod = ClassUtils.getMostSpecificMethod(method, userClass); // If we are dealing with method with generic parameters, find the original method. specificMethod = BridgeMethodResolver.findBridgedMethod(specificMethod); // First try is the method in the target class. // 查找该方法的事物属性 TransactionAttribute txAtt = findTransactionAttribute(specificMethod); if (txAtt != null) { return txAtt; } // Second try is the transaction attribute on the target class. txAtt = findTransactionAttribute(specificMethod.getDeclaringClass()); if (txAtt != null) { return txAtt; } if (specificMethod != method) { // Fallback is to look at the original method. txAtt = findTransactionAttribute(method); if (txAtt != null) { return txAtt; } // Last fallback is the class of the original method. return findTransactionAttribute(method.getDeclaringClass()); } return null; } 详细看下 findTransactionAttribute 方法,由于比较深我就直接贴最终执行的方法了 public TransactionAttribute parseTransactionAnnotation(AnnotatedElement ae) { // 查看是否方法上面有@Transactional注解 AnnotationAttributes ann = AnnotatedElementUtils.getAnnotationAttributes(ae, Transactional.class.getName()); if (ann != null) { return parseTransactionAnnotation(ann); } else { return null; } } // 处理这个注解所包含的属性如传播途径和隔离级别 protected TransactionAttribute parseTransactionAnnotation(AnnotationAttributes attributes) { RuleBasedTransactionAttribute rbta = new RuleBasedTransactionAttribute(); Propagation propagation = attributes.getEnum(&quot;propagation&quot;); rbta.setPropagationBehavior(propagation.value()); Isolation isolation = attributes.getEnum(&quot;isolation&quot;); rbta.setIsolationLevel(isolation.value()); rbta.setTimeout(attributes.getNumber(&quot;timeout&quot;).intValue()); rbta.setReadOnly(attributes.getBoolean(&quot;readOnly&quot;)); rbta.setQualifier(attributes.getString(&quot;value&quot;)); ArrayList&amp;lt;RollbackRuleAttribute&amp;gt; rollBackRules = new ArrayList&amp;lt;RollbackRuleAttribute&amp;gt;(); Class&amp;lt;?&amp;gt;[] rbf = attributes.getClassArray(&quot;rollbackFor&quot;); for (Class&amp;lt;?&amp;gt; rbRule : rbf) { RollbackRuleAttribute rule = new RollbackRuleAttribute(rbRule); rollBackRules.add(rule); } String[] rbfc = attributes.getStringArray(&quot;rollbackForClassName&quot;); for (String rbRule : rbfc) { RollbackRuleAttribute rule = new RollbackRuleAttribute(rbRule); rollBackRules.add(rule); } Class&amp;lt;?&amp;gt;[] nrbf = attributes.getClassArray(&quot;noRollbackFor&quot;); for (Class&amp;lt;?&amp;gt; rbRule : nrbf) { NoRollbackRuleAttribute rule = new NoRollbackRuleAttribute(rbRule); rollBackRules.add(rule); } String[] nrbfc = attributes.getStringArray(&quot;noRollbackForClassName&quot;); for (String rbRule : nrbfc) { NoRollbackRuleAttribute rule = new NoRollbackRuleAttribute(rbRule); rollBackRules.add(rule); } rbta.getRollbackRules().addAll(rollBackRules); return rbta; } 这时候我们就可以大概的清楚知道哪些 bean 需要被事物代理的原因了 这时候我们在回过头来看 spring 是如何构建代理类的,这里我就不在详细各种贴流程代码了,只贴关键的 DefaultAopProxyFactory 默认的AOP代理工厂 // 创建一个AopProxy的代理类,它这里提供了两种代理方式,一种是JDK代理,一种是CGlib代理 public AopProxy createAopProxy(AdvisedSupport config) throws AopConfigException { if (config.isOptimize() || config.isProxyTargetClass() || hasNoUserSuppliedProxyInterfaces(config)) { Class&amp;lt;?&amp;gt; targetClass = config.getTargetClass(); if (targetClass == null) { throw new AopConfigException(&quot;TargetSource cannot determine target class: &quot; + &quot;Either an interface or a target is required for proxy creation.&quot;); } // 如果需要代理的类是接口的时候采用JDK if (targetClass.isInterface()) { return new JdkDynamicAopProxy(config); } // 普通类用CGlib代理 return new ObjenesisCglibAopProxy(config); } else { return new JdkDynamicAopProxy(config); } } ObjenesisCglibAopProxy 的 父类是 CglibAopProxy 所以初始化 ObjenesisCglibAopProxy 的构造方法时会调用 super(config); /** * 实例化Cglib对象时,会初始化他的父类方法,并且把拦截器传递给父类,告诉他的需要加上代理的拦截器,也就是我们的TransactionInterceptor,如果有多个的话可能就会代理多个,这里我们只看事物的 * */ public ObjenesisCglibAopProxy(AdvisedSupport config) { super(config); this.objenesis = new ObjenesisStd(true); } 初始化完成之后会调用它的 ObjenesisCglibAopProxy 的 getProxy()方法,这个方法是它的父类实现的,这里面才是真正实现了真正代理的对象,原理是构成一个责任链,将代理一个个链接起来 public Object getProxy(ClassLoader classLoader) { if (logger.isDebugEnabled()) { logger.debug(&quot;Creating CGLIB proxy: target source is &quot; + this.advised.getTargetSource()); } try { Class&amp;lt;?&amp;gt; rootClass = this.advised.getTargetClass(); Assert.state(rootClass != null, &quot;Target class must be available for creating a CGLIB proxy&quot;); Class&amp;lt;?&amp;gt; proxySuperClass = rootClass; if (ClassUtils.isCglibProxyClass(rootClass)) { proxySuperClass = rootClass.getSuperclass(); Class&amp;lt;?&amp;gt;[] additionalInterfaces = rootClass.getInterfaces(); for (Class&amp;lt;?&amp;gt; additionalInterface : additionalInterfaces) { this.advised.addInterface(additionalInterface); } } // Validate the class, writing log messages as necessary. validateClassIfNecessary(proxySuperClass, classLoader); // Configure CGLIB Enhancer... // 这一部分是创建一个Enhancer 对象 Enhancer enhancer = createEnhancer(); if (classLoader != null) { enhancer.setClassLoader(classLoader); if (classLoader instanceof SmartClassLoader &amp;amp;&amp;amp; ((SmartClassLoader) classLoader).isClassReloadable(proxySuperClass)) { enhancer.setUseCache(false); } } enhancer.setSuperclass(proxySuperClass); enhancer.setInterfaces(AopProxyUtils.completeProxiedInterfaces(this.advised)); enhancer.setNamingPolicy(SpringNamingPolicy.INSTANCE); enhancer.setStrategy(new UndeclaredThrowableStrategy(UndeclaredThrowableException.class)); // 这部分代码非常关键,里面会创建一个DynamicAdvisedInterceptor对象,这个就是责任链的头端,所有的切入点都需要经过这个拦截器一步步执行到最终的方法 Callback[] callbacks = getCallbacks(rootClass); Class&amp;lt;?&amp;gt;[] types = new Class&amp;lt;?&amp;gt;[callbacks.length]; for (int x = 0; x &amp;lt; types.length; x++) { types[x] = callbacks[x].getClass(); } // fixedInterceptorMap only populated at this point, after getCallbacks call above enhancer.setCallbackFilter(new ProxyCallbackFilter( this.advised.getConfigurationOnlyCopy(), this.fixedInterceptorMap, this.fixedInterceptorOffset)); enhancer.setCallbackTypes(types); // Generate the proxy class and create a proxy instance. // 生成代理类并且创建实例,里面做的应该就是把DynamicAdvisedInterceptor对象和serviceImpl对象做了一个代理绑定,先进入DynamicAdvisedInterceptor,经过责任链模式一步步到达最终方法 return createProxyClassAndInstance(enhancer, callbacks); } catch (CodeGenerationException ex) { throw new AopConfigException(&quot;Could not generate CGLIB subclass of class [&quot; + this.advised.getTargetClass() + &quot;]: &quot; + &quot;Common causes of this problem include using a final class or a non-visible class&quot;, ex); } catch (IllegalArgumentException ex) { throw new AopConfigException(&quot;Could not generate CGLIB subclass of class [&quot; + this.advised.getTargetClass() + &quot;]: &quot; + &quot;Common causes of this problem include using a final class or a non-visible class&quot;, ex); } catch (Exception ex) { // TargetSource.getTarget() failed throw new AopConfigException(&quot;Unexpected AOP exception&quot;, ex); } } private Callback[] getCallbacks(Class&amp;lt;?&amp;gt; rootClass) throws Exception { // Parameters used for optimisation choices... boolean exposeProxy = this.advised.isExposeProxy(); boolean isFrozen = this.advised.isFrozen(); boolean isStatic = this.advised.getTargetSource().isStatic(); // Choose an &quot;aop&quot; interceptor (used for AOP calls). // 创建一个拦截器对象,所有被代理的类都走这个对象,最终返回的bean执行的起始方法 Callback aopInterceptor = new DynamicAdvisedInterceptor(this.advised); // Choose a &quot;straight to target&quot; interceptor. (used for calls that are // unadvised but can return this). May be required to expose the proxy. Callback targetInterceptor; if (exposeProxy) { targetInterceptor = isStatic ? new StaticUnadvisedExposedInterceptor(this.advised.getTargetSource().getTarget()) : new DynamicUnadvisedExposedInterceptor(this.advised.getTargetSource()); } else { targetInterceptor = isStatic ? new StaticUnadvisedInterceptor(this.advised.getTargetSource().getTarget()) : new DynamicUnadvisedInterceptor(this.advised.getTargetSource()); } // Choose a &quot;direct to target&quot; dispatcher (used for // unadvised calls to static targets that cannot return this). Callback targetDispatcher = isStatic ? new StaticDispatcher(this.advised.getTargetSource().getTarget()) : new SerializableNoOp(); Callback[] mainCallbacks = new Callback[]{ aopInterceptor, // for normal advice targetInterceptor, // invoke target without considering advice, if optimized new SerializableNoOp(), // no override for methods mapped to this targetDispatcher, this.advisedDispatcher, new EqualsInterceptor(this.advised), new HashCodeInterceptor(this.advised) }; Callback[] callbacks; // If the target is a static one and the advice chain is frozen, // then we can make some optimisations by sending the AOP calls // direct to the target using the fixed chain for that method. if (isStatic &amp;amp;&amp;amp; isFrozen) { Method[] methods = rootClass.getMethods(); Callback[] fixedCallbacks = new Callback[methods.length]; this.fixedInterceptorMap = new HashMap&amp;lt;String, Integer&amp;gt;(methods.length); // TODO: small memory optimisation here (can skip creation for methods with no advice) for (int x = 0; x &amp;lt; methods.length; x++) { List&amp;lt;Object&amp;gt; chain = this.advised.getInterceptorsAndDynamicInterceptionAdvice(methods[x], rootClass); fixedCallbacks[x] = new FixedChainStaticTargetInterceptor( chain, this.advised.getTargetSource().getTarget(), this.advised.getTargetClass()); this.fixedInterceptorMap.put(methods[x].toString(), x); } // Now copy both the callbacks from mainCallbacks // and fixedCallbacks into the callbacks array. callbacks = new Callback[mainCallbacks.length + fixedCallbacks.length]; System.arraycopy(mainCallbacks, 0, callbacks, 0, mainCallbacks.length); System.arraycopy(fixedCallbacks, 0, callbacks, mainCallbacks.length, fixedCallbacks.length); this.fixedInterceptorOffset = mainCallbacks.length; } else { callbacks = mainCallbacks; } return callbacks; } 最终生成了代理对象,将这个对象放入ioc容器当中,当调用这个对象时,ioc会直接取出代理对象,也就是先进入DynamicAdvisedInterceptor的intercept方法。 大概梳理一下事物的流程 一. 初始化流程 1.首先开始初始化配置文件 2.然后执行到&amp;lt;context:component-scan base-package=&quot;com.service&quot;&amp;gt;&amp;lt;/context:component-scan&amp;gt;这里时,会开始扫描注解 3.当循环扫描到ServiceImpl的时候,会扫描每个方法,经过getAdvicesAndAdvisorsForBean这个方法时会判断每个方法是否触发代理的条件, 怎么触发代理条件, 这里以事物为例: &amp;lt;!-- 这里注册了一个事物管理器,也就是说每个类都会经过这个事物管理器判断,是否有@Transactional方法; 需要注意的是,这个驱动相当于新加了一个方法环绕类型的切入点. --&amp;gt; &amp;lt;tx:annotation-driven transaction-manager=&quot;transactionManager&quot; proxy-target-class=&quot;true&quot;&amp;gt;&amp;lt;/tx:annotation-driven&amp;gt; getAdvicesAndAdvisorsForBean如果返回有值时,则表示需要生成代理类 因为我们service中已经定义好了@Transactional方法了,所以触发了执行生成代理类的条件. 4. 生成代理类时,他主要做了两个步骤: 实现一个责任链的类[DynamicAdvisedInterceptor],然后将这个责任链类和service的实现类做绑定生成一个代理,然后返回这个代理对象到IOC容器中,初始化完成 二. 调用 service 的过程 1. 当调用service这个实现类的时候,会从ioc容器里面去查找,找到了这个bean类则直接返回,注意这里的bean是一个代理类 2. 直接进入代理类DynamicAdvisedInterceptor的intercept方法里面; 3. 开始执行责任链机制,查找与这个类绑定的切入点 // 这里是直接查找与这个类相关的切入点,然后一个个执行完之后到达最终的service方法 List&amp;lt;Object&amp;gt; chain = this.advised.getInterceptorsAndDynamicInterceptionAdvice(method, targetClass); 4. 需要注意的是这个责任链中有一个TransactionAspectSupport类,这是一个事物的切入点类,这个类中的invokeWithinTransaction方法,它里面详细包含了事物的一系列操作,包括事物开启、提交、回滚等等一系列操作 5. 执行切入点后,直接到达目标方法,也就是service层的方法,service层的方法处理完毕,在回到invokeWithinTransaction判断是否报错,没有报错则事物提交,报错则进入到它的try/catch方法中进行回滚,最终执行完成; 最终我们总结上面的问题: Spring 的事物是通过哪些原理实现的? 动态代理 以及 切入点配合责任链组成的拦截器机制 Spring 的事物机制是如何提交和回滚的? Spring 提供了一个事物管理器,这个事物管理器专门扫描所有方法的@Transactional 注解,一旦扫描到了,则会为这个方法的类设置代理,这个事物管理器可以理解为一个环绕类型的切入点,配合责任链模式,当方法执行的时候,会被拦截到 TransactionAspectSupport 的 invokeWithinTransaction 方法中,这个里面包含了事物的一系列操作。 编后语 由于 spring 里面代码层次划分很细,导致贴出来的代码特别多,可能会影响你们阅读,不过 Spring 里面的很多东西封装的都是很完善的,几乎全部都是组件化,导致很多方法很深,不过我们只要了解它大概的原理就行了,至少能够在我们遇到问题时能够推断出从哪个步骤进行下手.可能这篇文章代码和图片比较凌乱,最好是大家有 spring 的一些基本原理基础,比如 bean 的实例化啊等等,不然有的地方会看不懂,好了就说这么多了… 希望对大家有帮助.. 也非常欢迎大家提意见!!! 谢谢</summary></entry><entry xml:lang="en"><title type="html">where子句的顺序在SQL中是否重要</title><link href="http://www.jfox.info/2018/4ef2675/index.html" rel="alternate" type="text/html" title="where子句的顺序在SQL中是否重要" /><published>2018-09-05T00:53:57+00:00</published><updated>2018-09-05T00:53:57+00:00</updated><id>http://www.jfox.info/2018/4ef2675/4ef2675</id><content type="html" xml:base="http://www.jfox.info/2018/4ef2675/index.html">&lt;p&gt;不，这个顺序无关紧要（或至少：无所谓）。&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://itunes.apple.com/cn/app/学英语听新闻/id1368539116?mt=8&quot;&gt;&lt;img src=&quot;6bf2383.png&quot; alt=&quot;&quot; /&gt;&lt;/a&gt;&lt;/p&gt;</content><author><name></name></author><summary type="html">By - Last updated: 星期四, 八月 10, 2017</summary></entry><entry xml:lang="en"><title type="html">where子句的顺序在SQL中是否重要</title><link href="http://www.jfox.info/2018/4ef2675/index.html" rel="alternate" type="text/html" title="where子句的顺序在SQL中是否重要" /><published>2018-09-05T08:53:57+08:00</published><updated>2018-09-05T08:53:57+08:00</updated><id>http://www.jfox.info/2018/4ef2675/4ef2675</id><content type="html" xml:base="http://www.jfox.info/2018/4ef2675/index.html">&lt;p&gt;不，这个顺序无关紧要（或至少：无所谓）。&lt;/p&gt;
 
 &lt;p&gt;任何体面的查询优化器都会查看&lt;strong&gt;所有&lt;/strong&gt;部分&lt;code class=&quot;highlighter-rouge&quot;&gt;WHERE&lt;/code&gt; 子句并找出满足该查询的最有效方法。&lt;/p&gt;
 
@@ -919,7 +1808,7 @@ List&amp;lt;Object&amp;gt; chain = this.advised.getInterceptorsAndDynamicInterce
   &lt;li&gt;关于公正的指数&lt;code class=&quot;highlighter-rouge&quot;&gt;(LastName)&lt;/code&gt;, 要不就&lt;code class=&quot;highlighter-rouge&quot;&gt;(FirstName)&lt;/code&gt; (或两者）&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;p&gt;另一方面 - 再次为 SQL Server - 如果您使用&lt;code class=&quot;highlighter-rouge&quot;&gt;SELECT *&lt;/code&gt; 从表中获取&lt;strong&gt;所有&lt;/strong&gt;列，并且表格相当小，然后查询优化器很可能只执行表（或聚簇索引）扫描而不是使用索引（因为查找到完整数据页面得到&lt;strong&gt;所有&lt;/strong&gt;其他列只是很快就太贵了）。&lt;/p&gt;</content><author><name></name></author><summary type="html">不，这个顺序无关紧要（或至少：无所谓）。 任何体面的查询优化器都会查看所有部分WHERE 子句并找出满足该查询的最有效方法。 我知道 SQL Server 查询优化器会选择一个合适的索引 - 无论你有两个条件的顺序。我假设其他 RDBMS 将有类似的策略。 重要的是你是否有适合的指数！ 对于 SQL Server，如果您有以下情况，它可能会使用索引： 一个索引(LastName, FirstName) 一个索引(FirstName, LastName) 关于公正的指数(LastName), 要不就(FirstName) (或两者） 另一方面 - 再次为 SQL Server - 如果您使用SELECT * 从表中获取所有列，并且表格相当小，然后查询优化器很可能只执行表（或聚簇索引）扫描而不是使用索引（因为查找到完整数据页面得到所有其他列只是很快就太贵了）。</summary></entry><entry xml:lang="en"><title type="html">面向开发人员的SQL数据库性能调优</title><link href="http://www.jfox.info/2018/510e517/index.html" rel="alternate" type="text/html" title="面向开发人员的SQL数据库性能调优" /><published>2018-09-03T23:19:10+00:00</published><updated>2018-09-03T23:19:10+00:00</updated><id>http://www.jfox.info/2018/510e517/510e517</id><content type="html" xml:base="http://www.jfox.info/2018/510e517/index.html">&lt;p&gt;SQL 性能调优可能是一项非常困难的任务，尤其是在处理大规模数据时，即使是最微小的变化也会对性能产生巨大的（正面或负面）影响。&lt;/p&gt;
+&lt;p&gt;另一方面 - 再次为 SQL Server - 如果您使用&lt;code class=&quot;highlighter-rouge&quot;&gt;SELECT *&lt;/code&gt; 从表中获取&lt;strong&gt;所有&lt;/strong&gt;列，并且表格相当小，然后查询优化器很可能只执行表（或聚簇索引）扫描而不是使用索引（因为查找到完整数据页面得到&lt;strong&gt;所有&lt;/strong&gt;其他列只是很快就太贵了）。&lt;/p&gt;</content><author><name></name></author><summary type="html">不，这个顺序无关紧要（或至少：无所谓）。</summary></entry><entry xml:lang="en"><title type="html">面向开发人员的SQL数据库性能调优</title><link href="http://www.jfox.info/2018/510e517/index.html" rel="alternate" type="text/html" title="面向开发人员的SQL数据库性能调优" /><published>2018-09-04T07:19:10+08:00</published><updated>2018-09-04T07:19:10+08:00</updated><id>http://www.jfox.info/2018/510e517/510e517</id><content type="html" xml:base="http://www.jfox.info/2018/510e517/index.html">&lt;p&gt;SQL 性能调优可能是一项非常困难的任务，尤其是在处理大规模数据时，即使是最微小的变化也会对性能产生巨大的（正面或负面）影响。&lt;/p&gt;
 
 &lt;p&gt;在中型和大型公司中，大多数 SQL 性能调优将由数据库管理员（DBA）处理。但请相信我，有很多开发人员（https://www.toptal.com/sql），他们必须执行类似DBA的任务。此外，在许多公司中，我见过&lt;em&gt;做&lt;/em&gt;有DBA，他们往往很难与开发人员合作 - 这些职位只需要不同的问题解决方式，这可能会导致同事之间的分歧。&lt;/p&gt;
 
@@ -1180,7 +2069,7 @@ ON t.RegionID = r.RegionID
 
 &lt;p&gt;会员自 2012 年 6 月 24 日起&lt;/p&gt;
 
-&lt;p&gt;Rodrigo 是使用 C＃的.NET Web 应用程序的 Microsoft 认证专家。他的双重国籍使他成为德国和巴西开发商的宝贵资源。他具有强大的开发和故障排除技能，并且具有匹配的组合;他广泛的知名客户包括雀巢，Chartis 保险和卡西欧巴西。如今，他在三星拉丁美洲工作。 [[点击继续…]]（https://www.toptal.com/resume/rodrigo-koch）&lt;/p&gt;</content><author><name></name></author><summary type="html">SQL 性能调优可能是一项非常困难的任务，尤其是在处理大规模数据时，即使是最微小的变化也会对性能产生巨大的（正面或负面）影响。 在中型和大型公司中，大多数 SQL 性能调优将由数据库管理员（DBA）处理。但请相信我，有很多开发人员（https://www.toptal.com/sql），他们必须执行类似DBA的任务。此外，在许多公司中，我见过做有DBA，他们往往很难与开发人员合作 - 这些职位只需要不同的问题解决方式，这可能会导致同事之间的分歧。 在处理大规模数据时，即使是最微小的变化也会对性能产生巨大影响。 最重要的是，企业结构也可以发挥作用。假设 DBA 团队位于 10 楼，所有数据库都在，而开发人员在 15 楼，甚至在完全独立的报告结构下的不同建筑物中 - 在这些条件下很难顺利合作。 ￼ 在本文中，我想完成两件事： 为开发人员提供一些开发人员端的 SQL 性能调优技术。 解释开发人员和 DBA 如何有效地协同工作。 SQL 性能调优（在代码库中）：索引 如果你是数据库的全新成员，甚至会问自己“什么是 SQL [性能调优]（https://www.toptal.com/sql-server/how-to-tune-microsoft-sql-server-for-性能）？“，您应该知道索引是调整SQL数据库的有效方法，在开发过程中经常被忽略。在基本术语中，[index]（https://en.wikipedia.org/wiki/Database_index）是一种数据结构，它通过提供快速随机查找和有序访问有序记录来提高数据库表上数据检索操作的速度。这意味着，一旦创建了索引，就可以比以前更快地选择或排序行。 索引还用于定义主键或唯一索引，以确保没有其他列具有相同的值。当然，数据库索引是一个非常有趣的话题，我无法用这个简短的描述来做到这一点（但是[这里有更详细的报道]（http://stackoverflow.com/questions/1108/how-does -database 索引工作/ 1130＃1130））。 如果您不熟悉索引，我建议您在构建查询时使用此图表： ￼ 基本上，目标是索引主要的搜索和排序列。 请注意，如果您的表经常被敲打INSERT, UPDATE, 和DELETE, 索引时应该小心 - 因为所有索引需要，你最终会降低[性能下降]（http://stackoverflow.com/questions/141232/how-many-database-indexes-is-too-many/141243#141243）在这些操作之后进行修改。 此外，DBA 经常删除其 SQL 索引，然后执行百万行以上的批量插入[加快插入过程]（http://stackoverflow.com/questions/13700575/is-a-good-practice-to-disable-指数先于插入的一对多-记录上-SQL-SE）。插入批处理后，它们会重新创建索引。但请记住，删除索引会影响该表中运行的每个查询;因此，只有在使用单个大插入时才建议使用此方法。 SQL 调优：SQL Server 中的执行计划 顺便说一句：SQL Server 中的执行计划工具可用于创建索引。 它的主要功能是以图形方式显示 SQL Server 查询优化器选择的数据检索方法。如果你以前从未见过它们，那就是[详细的演练]（https://youtu.be/lH2_SI04PWQ）。 要检索执行计划（在 SQL Server Management Studio 中），只需在运行查询之前单击“包含实际执行计划”（CTRL + M）。 之后，将出现名为“执行计划”的第三个选项卡。您可能会看到检测到的缺失索引。要创建它，只需右键单击执行计划并选择“缺少索引详细信息…”。就这么简单！ (点击放大） SQL 调优：避免编码循环 想象一下，1000 个查询按顺序锤击您的数据库的场景。就像是： for (int i = 0; i &amp;lt; 1000; i++) { SqlCommand cmd = new SqlCommand(&quot;INSERT INTO TBL (A,B,C) VALUES...&quot;); cmd.ExecuteNonQuery(); } 您应该[在代码中避免此类循环]（http://codeutopia.net/blog/2010/10/07/optimizing-sql-removing-queries-inside-loops/）。例如，我们可以使用唯一的转换上面的代码段INSERT 要么UPDATE 具有多个行和值的语句： INSERT INTO TableName (A,B,C) VALUES (1,2,3),(4,5,6),(7,8,9) -- SQL SERVER 2008 INSERT INTO TableName (A,B,C) SELECT 1,2,3 UNION ALL SELECT 4,5,6 -- SQL SERVER 2005 UPDATE TableName SET A = CASE B WHEN 1 THEN 'NEW VALUE' WHEN 2 THEN 'NEW VALUE 2' WHEN 3 THEN 'NEW VALUE 3' END WHERE B in (1,2,3) 确保你的WHERE 子句避免在存储值与现有值匹配时更新存储值。这种简单的优化可以通过仅更新数百行而不是数千行来显着提高 SQL 查询性能。例如： UPDATE TableName SET A = @VALUE WHERE B = 'YOUR CONDITION' AND A &amp;lt;&amp;gt; @VALUE -- VALIDATION [相关子查询]（https://en.wikipedia.org/wiki/Correlated_subquery）是使用父查询中的值的子查询。这种SQL查询倾向于[逐行]运行（http://technet.microsoft.com/en-us/library/ms187638（v = sql.105）.aspx），对于每行返回一次外部查询，从而降低 SQL 查询性能。新的 SQL 开发人员经常被抓住以这种方式构建他们的查询 - 因为它通常是简单的路径。 以下是相关子查询的示例： SELECT c.Name, c.City, (SELECT CompanyName FROM Company WHERE ID = c.CompanyID) AS CompanyName FROM Customer c 特别是，问题是内部查询（SELECT CompanyName…) 为外部查询返回的* each *行运行（SELECT c.Name…). 但为什么要过去Company 对于外部查询处理的每一行，一次又一次？ 更高效的 SQL 性能调优技术是将相关子查询重构为连接： SELECT c.Name, c.City, co.CompanyName FROM Customer c LEFT JOIN Company co ON c.CompanyID = co.CompanyID 在这种情况下，我们过去了Company 表只是一次，在开始时，和它一起加入Customer 表。从那时起，我们可以选择我们需要的值（co.CompanyName) 更有效率。 SQL 调优：选择 Sparingly 我最喜欢的 SQL 优化技巧之一是避免SELECT *! 相反，您应该单独包含所需的特定列。再次，这听起来很简单，但我看到这个错误到处都是。考虑一个包含数百列和数百万行的表 - 如果您的应用程序只需要几列，那么查询* all *数据就没有意义。这是对资源的巨大浪费。 （有关更多问题，请参阅[此处]（http://stackoverflow.com/questions/3639861/why-is-select-considered-harmful#answer-3639964）。） 例如： SELECT * FROM Employees vs. SELECT FirstName, City, Country FROM Employees 如果您确实需要每一列，请明确列出每一列。这不是一个规则，而是一种防止未来系统错误和额外 SQL 性能调整的方法。例如，如果您正在使用INSERT... SELECT... 并且通过添加新列来更改源表，即使目标表不需要该列，也可能遇到问题，例如： ￼￼￼￼￼￼￼INSERT INTO Employees SELECT * FROM OldEmployees Msg 213, Level 16, State 1, Line 1 Insert Error: Column name or number of supplied values does not match table definition. 要避免 SQL Server 出现此类错误，您应该单独声明每个列： INSERT INTO Employees (FirstName, City, Country) SELECT Name, CityName, CountryName FROM OldEmployees 但请注意，有些情况下使用SELECT * 可能是合适的。例如，使用临时表 - 这将引导我们进入下一个主题。 SQL 调优：临时表的明智使用（#Temp） [临时表]（http://www.tutorialspoint.com/sql/sql-temporary-tables.htm）通常会增加查询的复杂性。如果您的代码可以用简单，直接的方式编写，我建议避免使用临时表。 但是如果你有一个带有一些数据操作的存储过程*不能用单个查询来处理，你可以使用临时表作为中介来帮助你生成最终结果。 当您必须加入一个大表并且所述表上有条件时，您可以通过在临时表中传输数据，然后在* that *上进行连接来提高数据库性能。您的临时表将比原始（大）表具有更少的行，因此连接将更快完成！ 这个决定并不总是直截了当，但是这个例子将让您了解可能需要使用临时表的情况： 想象一下拥有数百万条记录的客户表。您必须在特定区域进行联接。你可以通过使用 a 来实现这一点SELECT INTO 语句然后加入临时表： SELECT * INTO #Temp FROM Customer WHERE RegionID = 5 SELECT r.RegionName, t.Name FROM Region r JOIN #Temp t ON t.RegionID = r.RegionID (注意：一些 SQL 开发人员也避免使用SELECT INTO 创建临时表，说该命令锁定 tempdb 数据库，禁止其他用户创建临时表。幸运的是，这是[在 7.0 及更高版本中修复]（http://stackoverflow.com/questions/1302670/sql-server-select-into-and-blocking-with-temp-tables#answer-1302787）。） 作为临时表的替代方法，您可以考虑将子查询用作表： SELECT r.RegionName, t.Name FROM Region r JOIN (SELECT * FROM Customer WHERE RegionID = 5) AS t ON t.RegionID = r.RegionID 可是等等！第二个查询存在问题。如上所述，我们应该只在子查询中包含我们需要的列（即，不使用SELECT *). 考虑到这一点： SELECT r.RegionName, t.Name FROM Region r JOIN (SELECT Name, RegionID FROM Customer WHERE RegionID = 5) AS t ON t.RegionID = r.RegionID 所有这些 SQL 片段都将返回相同的数据。但是使用临时表，我们可以在临时表中创建一个索引来提高性能。有一些很好的讨论[这里]（http://stackoverflow.com/questions/11169550/is-there-a-speed-difference-between-cte-subquery-and-temp-tables/11169910#11169910）之间的差异临时表和子查询。 最后，当你完成临时表时，删除它以清除 tempdb 资源，而不是等待它被自动删除（就像你终止与数据库的连接时一样）： DROP TABLE #temp SQL 调优：“我的记录存在吗？” 这种 SQL 优化技术涉及到的使用EXISTS(). 如果要检查记录是否存在，请使用EXISTS() 代替COUNT(). 而COUNT() 扫描整个表格，计算符合条件的所有条目，EXISTS() 一看到它需要的结果就会退出。这将为您提供[更好的性能和更清晰的代码]（http://sqlblog.com/blogs/andrew_kelly/archive/2007/12/15/exists-vs-count-the-battle-never-ends.aspx）。 IF (SELECT COUNT(1) FROM EMPLOYEES WHERE FIRSTNAME LIKE '%JOHN%') &amp;gt; 0 PRINT 'YES' vs. IF EXISTS(SELECT FIRSTNAME FROM EMPLOYEES WHERE FIRSTNAME LIKE '%JOHN%') PRINT 'YES' SQL Server 2016 的 SQL 性能调优 由于使用 SQL Server 2016 的 DBA 可能知道，该版本标志着[默认和兼容性管理]的重要转变（https://www.sqlshack.com/query-optimizer-changes-in-sql-server-2016-explained /）。作为一个主要版本，它当然会带来新的查询优化，但现在可以通过简化控制它们是否被使用sys.databases.compatibility_level. SQL 性能调优（在 Office 中） SQL 数据库管理员（DBA）和开发人员经常会遇到与数据和非数据相关的问题。根据我的经验，这里有一些关于如何相处和有效合作的提示（双方）。 开发人员的数据库优化： 1. 如果您的应用程序突然停止工作，则可能不是数据库问题。例如，您可能遇到网络问题。在指责 DBA 之前调查一下！ 2. 即使您是忍者 SQL 数据建模者，也请 DBA 帮助您处理关系图。他们有很多东西要分享和提供。 3. DBA 不喜欢快速变化。这很自然：他们需要整体分析数据库，并从各个角度检查任何变化的影响。列中的简单更改可能需要一周才能实现 - 但这是因为错误可能会成为公司的巨大损失。耐心一点！ 4. 不要让 SQL DBA 在生产环境中进行数据更改。如果要访问生产数据库，则必须对所有自己的更改负责。 SQL Server DBA 的数据库优化： 1. 如果您不喜欢人们向您询问数据库，请为他们提供实时状态面板。 [开发人员]（https://www.toptal.com/sql-server）总是怀疑数据库的状态，这样的面板可以节省每个人的时间和精力。 2. 在测试/质量保证环境中帮助开发人员。通过对真实数据的简单测试，可以轻松地模拟生产服务器。对于其他人和您自己来说，这将节省大量时间。 3. 开发人员整天都在经常更改业务逻辑的系统上花费一整天。尝试理解这个世界更灵活，并能够在关键时刻打破一些规则。 4. SQL 数据库不断发展。必须将数据迁移到新版本的那一天。开发人员依靠每个新版本的重要新功能。不要拒绝接受他们的更改，而是提前计划并为迁移做好准备。 了解基础知识 什么是 DBMS 中的查询处理？ 像 SQL Server 这样的数据库管理系统必须将您提供的 SQL 查询转换为他们必须执行的实际指令，以读取或更改数据库中的数据。在处理之后，数据库引擎然后还尝试在可能的情况下自动优化查询。 什么是 SQL Server 中的查询优化？ 查询优化是指开发人员或数据库引擎以这样的方式更改查询，即 SQL Server 能够更有效地返回相同的结果。有时候使用 EXISTS（）而不是 COUNT（）很简单，但有时候需要用不同的方法重写查询。 什么是 SQL Server 中的性能调优？ 性能调优包括查询优化，SQL 客户端代码优化，数据库索引管理，以及在另一种意义上，开发人员和 DBA 之间更好的协调。 SQL 中的索引有什么用？ 索引跟踪表数据的目标子集，以便可以更快地完成选择和排序，而服务器不必查看该表的每个最后一位数据。 为什么 EXISTS（）比 COUNT（）更快？ EXISTS（）一找到匹配的行就会停止处理，而 COUNT（）必须计算每一行，无论你最后是否真的需要这个细节。 关于作者 [Rodrigo Koch，巴西]（https://www.toptal.com/resume/rodrigo-koch） 会员自 2012 年 6 月 24 日起 Rodrigo 是使用 C＃的.NET Web 应用程序的 Microsoft 认证专家。他的双重国籍使他成为德国和巴西开发商的宝贵资源。他具有强大的开发和故障排除技能，并且具有匹配的组合;他广泛的知名客户包括雀巢，Chartis 保险和卡西欧巴西。如今，他在三星拉丁美洲工作。 [[点击继续…]]（https://www.toptal.com/resume/rodrigo-koch）</summary></entry><entry xml:lang="zh_CN"><title type="html">xmake-vscode插件开发过程记录</title><link href="http://www.jfox.info/2018/246d3da/index.html" rel="alternate" type="text/html" title="xmake-vscode插件开发过程记录" /><published>2018-09-03T05:14:08+00:00</published><updated>2018-09-03T05:14:08+00:00</updated><id>http://www.jfox.info/2018/246d3da/246d3da</id><content type="html" xml:base="http://www.jfox.info/2018/246d3da/index.html">&lt;p&gt;最近打算给&lt;a href=&quot;https://github.com/tboox/xmake&quot;&gt;xmake&lt;/a&gt;写一些 IDE 和编辑器的集成插件，发现 vscode 的编辑器插件比较容易上手的，就先研究了下 vscode 的插件开发流程，并且完成了&lt;a href=&quot;https://github.com/tboox/xmake-vscode&quot;&gt;xmake-vscode&lt;/a&gt;插件的开发。&lt;/p&gt;
+&lt;p&gt;Rodrigo 是使用 C＃的.NET Web 应用程序的 Microsoft 认证专家。他的双重国籍使他成为德国和巴西开发商的宝贵资源。他具有强大的开发和故障排除技能，并且具有匹配的组合;他广泛的知名客户包括雀巢，Chartis 保险和卡西欧巴西。如今，他在三星拉丁美洲工作。 [[点击继续…]]（https://www.toptal.com/resume/rodrigo-koch）&lt;/p&gt;</content><author><name></name></author><summary type="html">SQL 性能调优可能是一项非常困难的任务，尤其是在处理大规模数据时，即使是最微小的变化也会对性能产生巨大的（正面或负面）影响。</summary></entry><entry xml:lang="zh_CN"><title type="html">xmake-vscode插件开发过程记录</title><link href="http://www.jfox.info/2018/246d3da/index.html" rel="alternate" type="text/html" title="xmake-vscode插件开发过程记录" /><published>2018-09-03T13:14:08+08:00</published><updated>2018-09-03T13:14:08+08:00</updated><id>http://www.jfox.info/2018/246d3da/246d3da</id><content type="html" xml:base="http://www.jfox.info/2018/246d3da/index.html">&lt;p&gt;最近打算给&lt;a href=&quot;https://github.com/tboox/xmake&quot;&gt;xmake&lt;/a&gt;写一些 IDE 和编辑器的集成插件，发现 vscode 的编辑器插件比较容易上手的，就先研究了下 vscode 的插件开发流程，并且完成了&lt;a href=&quot;https://github.com/tboox/xmake-vscode&quot;&gt;xmake-vscode&lt;/a&gt;插件的开发。&lt;/p&gt;
 
 &lt;p&gt;我们先来看几张最后的效果图：&lt;/p&gt;
 
@@ -1522,7 +2411,7 @@ if (chosen) {
 
 &lt;p&gt;本文讲述的一些 vscode 插件代码都来自&lt;a href=&quot;https://github.com/tboox/xmake-vscode&quot;&gt;xmake-vscode&lt;/a&gt;，有兴趣的同学可以直接参考源码，写个自己的插件。&lt;/p&gt;
 
-&lt;p&gt;原文出处：&lt;a href=&quot;http://tboox.org/cn/2017/10/11/xmake-vscode/&quot;&gt;http://tboox.org/cn/2017/10/11/xmake-vscode/&lt;/a&gt;&lt;/p&gt;</content><author><name></name></author><summary type="html">最近打算给xmake写一些 IDE 和编辑器的集成插件，发现 vscode 的编辑器插件比较容易上手的，就先研究了下 vscode 的插件开发流程，并且完成了xmake-vscode插件的开发。 我们先来看几张最后的效果图： 语法高亮和自动补全 状态栏 要实现上面的效果，其实并不复杂，首先我们先来简单介绍下，vscode 的插件开发的基本流程： 安装插件开发环境 安装 cnpm 由于国内环境比较复杂，直接用 npm 安装也许很慢或者访问不稳定，因此这里先安装了 cnpm 去默认使用淘宝的镜像源。 $ npm install -g cnpm --registry=https://registry.npm.taobao.org 创建空工程 通过 cnpm 去安装 yo 工具，用来创建一个 vscode 插件的空工程 $ cnpm install -g yo generator-code $ yo code 大体的源码结构如下： 选择创建项目后有四个输入和一个选择： 输入你扩展的名称 xmake-vscode 输入一个标志（项目创建的文件名称用这个）xmake-vscode 输入对这个扩展的描述 输入以后要发布用到的一名称（和以后再发布时候有一个名字是对应上的）tboox 是问你要不要创建一个 git 仓库用于版本管理 创建完成后的空工程，我们可以用 vscode 直接打开，然后进行调试加载运行下： 加载起来后，敲 F1 打开命令窗口，运行默认的 hello world 测试命令： 到此，一个简答的 demo 插件就搞定了，接下来我们简单介绍下如何发布这个插件到 vscode 的 market 上去。 创建发布者 首先我们需要在marketplace.visualstudio.com上注册一个账号，创建一个发布者，这里我取名为 tboox 然后，我们需要在自己的账号里面，添加一个 Personal Access Token（地址：https://[your name].visualstudio.com/_details/security/tokens，注意 Token 只显示一次，最好自己保存一份） 接着，我们安装下 vsce 这个工具，用于 vscode 的插件工程打包编译和发布。 $ cnpm install -g vsce 安装好 vsce 后，我们先创建一个发布者，这里为 tboox，输入刚刚 market 账号里面提供的 token 进行绑定。 $ vsce create-publisher (publisher name) 构建发布 最后，只需要通过下面命令进行打包或者发布就行了，如果仅仅打个本地包，拖入 vscode 加载测试，可以运行： $ vsce package 这将会生成一个类似xmake-vscode-0.0.1.vslx的插件包文件，用 vscode 可直接加载运行。 如果，我们已经开发完了插件，想要发布到 market 市场，可以执行： $ vsce publish [version] 这个时候，我们就可以在xmake-vscode on marketplace上看到你的插件了，用户也可以直接通过 vscode 进行搜索和安装使用。 插件开发详解 插件的加载机制 插件通过工程根目录 extension.json 中配置的 activationEvents 进行触发，例如： { &quot;activationEvents&quot;: [ &quot;workspaceContains:xmake.lua&quot;, &quot;onCommand:xmake.sayHello&quot; ] } 当 vscode 打开带有xmake.lua的目录或者执行xmake.XXX相关命令的时候，都会触发加载 xmake-vscode 插件，然后调用src/extension.ts中的 activate 入口函数，进行插件的加载和初始化。 export functionactivate(context: vscode.ExtensionContext) {let disposable = vscode.commands.registerCommand('xmake.sayHello', () =&amp;gt; { vscode.window.showInformationMessage('Hello XMake!'); }); context.subscriptions.push(disposable); } 上述代码，在加载插件的时候，注册sayHello命令，去显示Hello XMake!提示信息。 创建自定义输出 vscode 通过创建 OutputChannel 来输出自己的日志信息，代码如下： import * as vscode from 'vscode'; let log = vscode.window.createOutputChannel(&quot;xmake/log&quot;); log.show(); log.appendLine(&quot;hello xmake!&quot;); 在创建的时候可以指定一个 label 名，用于区分不同的输出通道，最后显示的结果如下： 需要注意的是，必须执行log.show()，输出才会被显示出来，并且输出行为是带缓存刷新的，并不会实时输出，也不支持色彩高亮输出。 创建和控制终端 之前，xmake-vscode 就是采用 channel 的方式来输出 xmake 的构建信息，效果不是很理想，因此后来改用了终端直接执行的方式，可以看下下面的效果图： 那如何控制终端，执行自己的命令呢，其实也非常简单： let terminal = vscode.window.createTerminal({name: &quot;xmake&quot;}); terminal.show(true); terminal.sendText(&quot;xmake&quot;); 上面的代码，通过创建一个 label 名为 xmake 的独立终端，然后发送执行命令：xmake，去让终端执行 xmake 进行项目的构建，当然如果要显示出来，还是要先调用下terminal.show(true)。 添加和读取全局配置 xmake-vscode 里面增加了一些全局 vscode 配置项，用于控制 xmake-vscode 插件的行为，配置清单是在 package.json 文件中进行描述的，例如： { &quot;configuration&quot;: { &quot;type&quot;: &quot;object&quot;, &quot;title&quot;: &quot;XMake configuration&quot;, &quot;properties&quot;: { &quot;xmake.logLevel&quot;: { &quot;type&quot;: &quot;string&quot;, &quot;default&quot;: &quot;normal&quot;, &quot;description&quot;: &quot;The Log Level: normal/verbose/minimal&quot;, &quot;enum&quot;: [ &quot;verbose&quot;, &quot;normal&quot;, &quot;minimal&quot; ] }, &quot;xmake.buildDirectory&quot;: { &quot;type&quot;: &quot;string&quot;, &quot;default&quot;: &quot;${workspaceRoot}/build&quot;, &quot;description&quot;: &quot;The Build Output Directory&quot;}, &quot;xmake.androidNDKDirectory&quot;: { &quot;type&quot;: &quot;string&quot;, &quot;default&quot;: &quot;&quot;, &quot;description&quot;: &quot;The Android NDK Directory&quot;} } } } 上述配置，增加了三个配置项，都在xmake.域下面，可在 vscode 配置中直接搜索 xmake 相关字样就能方便找到。 读取配置也很方便，只要获取 xmake 相关域配置，进行读取就行了： const config = vscode.workspace.getConfiguration('xmake'); config.get(&quot;buildDirectory&quot;); 创建状态栏 状态栏上的按钮是可以响应之前创建的那些命令的，例如：xmake.sayHello等，下面我们在状态栏上创建一个 debug 按钮，用来调试运行 xmake 构建的程序： let debugButton = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 4.5); debugButton.command = 'xmake.onDebug'; debugButton.text = `$(bug)`; debugButton.tooltip = &quot;Debug the given target&quot;; debugButton.show(); createStatusBarItem 中第二个参数 4.5 用于控制按钮在状态栏上的布局顺序，创建好后，再设置下一些基础属性就行了，这里按钮的文本直接通过$(bug)设置了一个图标来显示，更加的直观。 更多 vscode 内置支持的图标，可以自己从octicons上面去找。 点击这个按钮，将会触发xmake.onDebug命令，然后在终端上执行xmake run -d命令，去运行调试程序。 添加选项输入列表 在xmake-vscode的状态栏上，我们还增加了几个快速配置的状态按钮，用于快速切换不同的平台、架构、编译模式，例如： 这个时候，需要有个选项选择列表的支持，在点击按钮后，列出可以选择的几个选项，然后选择切换，那如何创建这个选项列表呢，直接上代码： let items: vscode.QuickPickItem[] = []; items.push({label: &quot;linux&quot;, description: &quot;The Linux Platform&quot;}); items.push({label: &quot;macosx&quot;, description: &quot;The MacOS Platform&quot;}); items.push({label: &quot;windows&quot;, description: &quot;The Windows Platform&quot;}); items.push({label: &quot;android&quot;, description: &quot;The Android Platform&quot;}); items.push({label: &quot;iphoneos&quot;, description: &quot;The iPhoneOS Platform&quot;}); items.push({label: &quot;watchos&quot;, description: &quot;The WatchOS Platform&quot;}); items.push({label: &quot;mingw&quot;, description: &quot;The MingW Platform&quot;}); items.push({label: &quot;cross&quot;, description: &quot;The Cross Platform&quot;}); const chosen: vscode.QuickPickItem|undefined = await vscode.window.showQuickPick(items); if (chosen) { platButton.text = chosen.label; } 自定义语法高亮 语法高亮完全可以通过配置文件来搞定，不用写代码，当然也可以在代码中动态配置，这样稍微繁琐些。 xmake-vscode 里面需要处理工程 xmake.lua 描述文件的语法高亮，因此这边在 package.json 里面先定义了一个叫 xmake 的语言类型，如果编辑器打开xmake.lua文件，就会对其进行语法高亮处理。 { &quot;contributes&quot;: { &quot;languages&quot;: [ { &quot;id&quot;: &quot;xmake&quot;, &quot;filenames&quot;: [ &quot;xmake.lua&quot; ], &quot;aliases&quot;: [ &quot;XMake&quot; ], &quot;configuration&quot;: &quot;./languages/xmake-configuration.json&quot;} ], &quot;grammars&quot;: [ { &quot;language&quot;: &quot;xmake&quot;, &quot;scopeName&quot;: &quot;source.xmake&quot;, &quot;path&quot;: &quot;./languages/xmake-grammars.json&quot;} ] } } 跟语法高亮相关的描述，都放置在/languages/xmake-grammars.json中，用 json 来描述，我们也可以用 xml 的格式来描述，但是这样可读性不是很好。 xmake-grammars.json中的描述规则，我们摘录自 lua 的 grammars 文件，因为xmake.lua本身就是基于 lua 语法的，例如，我们匹配'xxx'单引号字符串的规则，进行字符串的高亮输出。 { &quot;begin&quot;: &quot;'&quot;, &quot;beginCaptures&quot;: { &quot;0&quot;: { &quot;name&quot;: &quot;punctuation.definition.string.begin.xmake&quot;} }, &quot;end&quot;: &quot;'&quot;, &quot;endCaptures&quot;: { &quot;0&quot;: { &quot;name&quot;: &quot;punctuation.definition.string.end.xmake&quot;} }, &quot;name&quot;: &quot;string.quoted.single.xmake&quot;, &quot;patterns&quot;: [ { &quot;include&quot;: &quot;#escaped_char&quot;} ] } 自动补全的实现 代码的自动提示和补全比较麻烦下，需要写个自定义的 class，通过 languages 进行注册： vscode.languages.registerCompletionItemProvider(&quot;xmake&quot;, new Completion()); 这里我们定义了一个 Completion 类，注册到 xmake 语言上去，xmake 语言定义，就是刚才讲的在 package.json 中的配置。 然后我们实现下这个 Completion 类： export class Completion implements vscode.CompletionItemProvider { public provideCompletionItems(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken): Thenable&amp;lt;vscode.CompletionItem[]&amp;gt; { // 获取当前输入的单词文本let wordAtPosition = document.getWordRangeAtPosition(position); var currentWord = ''; if (wordAtPosition &amp;amp;&amp;amp; wordAtPosition.start.character &amp;lt; position.character) { var word = document.getText(wordAtPosition); currentWord = word.substr(0, position.character - wordAtPosition.start.character); } returnnew Promise(function(resolve, reject) { Promise.all([ getLuaKeywordsSuggestions(currentWord), getXMakeCommandsSuggestions(currentWord) ]).then(function(results) {var suggestions = Array.prototype.concat.apply([], results); resolve(suggestions); }).catch(err =&amp;gt; { reject(err); }); }); } public resolveCompletionItem(item: vscode.CompletionItem, token: vscode.CancellationToken): Thenable&amp;lt;vscode.CompletionItem&amp;gt; { // 对每个候选文本增加文档描述returnnew Promise(function(resolve, reject) { item.documentation = &quot;xxxxxxxxxxx&quot;; resolve(item); }); } } 这部分代码比较多，就不完全贴出来了，完整实现，可参考：completion.ts 结语 本文讲述的一些 vscode 插件代码都来自xmake-vscode，有兴趣的同学可以直接参考源码，写个自己的插件。 原文出处：http://tboox.org/cn/2017/10/11/xmake-vscode/</summary></entry><entry xml:lang="zh_CN"><title type="html">回眸Spring – 事物运行原理机制</title><link href="http://www.jfox.info/2017/%E5%9B%9E%E7%9C%B8spring%E4%BA%8B%E7%89%A9%E8%BF%90%E8%A1%8C%E5%8E%9F%E7%90%86%E6%9C%BA%E5%88%B6.html" rel="alternate" type="text/html" title="回眸Spring – 事物运行原理机制" /><published>2017-01-01T15:59:59+00:00</published><updated>2017-01-01T15:59:59+00:00</updated><id>http://www.jfox.info/2017/20170101499</id><content type="html" xml:base="http://www.jfox.info/2017/%E5%9B%9E%E7%9C%B8spring%E4%BA%8B%E7%89%A9%E8%BF%90%E8%A1%8C%E5%8E%9F%E7%90%86%E6%9C%BA%E5%88%B6.html">&lt;p&gt;H2M_LI_HEADER Spring的事物是通过哪些原理实现的?
+&lt;p&gt;原文出处：&lt;a href=&quot;http://tboox.org/cn/2017/10/11/xmake-vscode/&quot;&gt;http://tboox.org/cn/2017/10/11/xmake-vscode/&lt;/a&gt;&lt;/p&gt;</content><author><name></name></author><summary type="html">最近打算给xmake写一些 IDE 和编辑器的集成插件，发现 vscode 的编辑器插件比较容易上手的，就先研究了下 vscode 的插件开发流程，并且完成了xmake-vscode插件的开发。</summary></entry><entry xml:lang="zh_CN"><title type="html">回眸Spring – 事物运行原理机制</title><link href="http://www.jfox.info/2017/%E5%9B%9E%E7%9C%B8spring%E4%BA%8B%E7%89%A9%E8%BF%90%E8%A1%8C%E5%8E%9F%E7%90%86%E6%9C%BA%E5%88%B6.html" rel="alternate" type="text/html" title="回眸Spring – 事物运行原理机制" /><published>2017-01-01T23:59:59+08:00</published><updated>2017-01-01T23:59:59+08:00</updated><id>http://www.jfox.info/2017/20170101499</id><content type="html" xml:base="http://www.jfox.info/2017/%E5%9B%9E%E7%9C%B8spring%E4%BA%8B%E7%89%A9%E8%BF%90%E8%A1%8C%E5%8E%9F%E7%90%86%E6%9C%BA%E5%88%B6.html">&lt;p&gt;H2M_LI_HEADER Spring的事物是通过哪些原理实现的?
 H2M_LI_HEADER Spring的事物机制是如何提交和回滚的?&lt;/p&gt;
 
 &lt;p&gt;&lt;strong&gt;==希望你有阅读过Spring源码的经历,不然有的东西可能理解不清楚..==&lt;/strong&gt;&lt;/p&gt;
@@ -2174,7 +3063,7 @@ List&amp;lt;Object&amp;gt; chain = this.advised.getInterceptorsAndDynamicInterce
 
 &lt;h3 id=&quot;编后语&quot;&gt;编后语&lt;/h3&gt;
 
-&lt;p&gt;由于spring里面代码层次划分很细,导致贴出来的代码特别多,可能会影响你们阅读,不过Spring里面的很多东西封装的都是很完善的,几乎全部都是组件化,导致很多方法很深,不过我们只要了解它大概的原理就行了,至少能够在我们遇到问题时能够推断出从哪个步骤进行下手.可能这篇文章代码和图片比较凌乱,最好是大家有spring的一些基本原理基础,比如bean的实例化啊等等,不然有的地方会看不懂,好了就说这么多了… 希望对大家有帮助.. 也非常欢迎大家提意见!!! 谢谢&lt;/p&gt;</content><author><name></name></author><summary type="html">H2M_LI_HEADER Spring的事物是通过哪些原理实现的? H2M_LI_HEADER Spring的事物机制是如何提交和回滚的? ==希望你有阅读过Spring源码的经历,不然有的东西可能理解不清楚..== Spring的事物是通过哪些原理实现的? 首先给大家布置一个代码场景(以项目代码为例): spring-dataSource.xml文件 &amp;lt;bean id=&quot;db1&quot; class=&quot;com.alibaba.druid.pool.DruidDataSource&quot; destroy-method=&quot;close&quot;&amp;gt; .... &amp;lt;/bean&amp;gt; &amp;lt;!-- 数据源配置 --&amp;gt; &amp;lt;bean id=&quot;transactionManager&quot; class=&quot;org.springframework.jdbc.datasource.DataSourceTransactionManager&quot;&amp;gt; &amp;lt;property name=&quot;dataSource&quot; ref=&quot;db1&quot;/&amp;gt; &amp;lt;qualifier value=&quot;&quot;/&amp;gt; &amp;lt;/bean&amp;gt; &amp;lt;!-- 事物管理器 --&amp;gt; &amp;lt;tx:annotation-driven transaction-manager=&quot;transactionManager&quot; proxy-target-class=&quot;true&quot;&amp;gt;&amp;lt;/tx:annotation-driven&amp;gt; Spring-service.xml &amp;lt;!-- 注解扫描包 --&amp;gt; &amp;lt;context:component-scan base-package=&quot;com.elab.execute.services,com.elab.execute.dao,com.elab.execute.utils&quot;&amp;gt; &amp;lt;context:include-filter type=&quot;annotation&quot; expression=&quot;org.springframework.stereotype.Service&quot;/&amp;gt; &amp;lt;context:include-filter type=&quot;annotation&quot; expression=&quot;org.springframework.stereotype.Repository&quot;/&amp;gt; &amp;lt;context:include-filter type=&quot;annotation&quot; expression=&quot;org.springframework.stereotype.Component&quot;/&amp;gt; &amp;lt;context:exclude-filter type=&quot;annotation&quot; expression=&quot;org.springframework.stereotype.Controller&quot;/&amp;gt; &amp;lt;/context:component-scan&amp;gt; Serivce.java //方法上只要加上@Transactional方法就行了,一个DML操作 @Transactional public void testTransactional() throws Exception { System.out.println(&quot;=====================开始处理事物&quot;); TGirl girl = new TGirl(); girl.setAge(11); girl.setGirl_name(&quot;hah&quot;); girl.setStatus(1); int insert = girlMapper.insert(girl); System.out.println(&quot;=====================结束处理事物&quot;); System.out.println(&quot;处理完成...&quot;); // 模拟程序报错 // int i = 1 / 0; } ==注意我们这只是模拟一个简单的事物管理配置场景,大概就是这么一些要配置的东西== 测试类: 我没有用Junit,不过效果是差不多的 String xml[] = new String[]{&quot;applicationContext-service.xml&quot;, &quot;applicationContext-datasource.xml&quot;, }; ApplicationContext app = new ClassPathXmlApplicationContext(xml); IDemoService demoService = (IDemoService) app.getBean(&quot;demoService&quot;); // DML操作 demoService.testTransactional(); 首先我们的目的是想知道Spring事物的运行流程,这时候可能就需要Debug调试,我们也就只关注事物这块初始化和执行的情况,我们可以采用倒推的方式 先看spring事物的执行过程,再看初始化过程 debug断点打在 demoService.testTransactional(); 这块,然后F5进去 image 进入到的是一个CglibAopProxy内部类DynamicAdvisedInterceptor的intercept方法,从这里看的话,其实这个类就是一个责任链类型的处理类 注意这一块是一个责任链模式,表示需要经过一系列链条之后才会到达最终的方法,当然这三个类切入点类型的类,是通过动态代理加入到责任链中的,下面初始化的时候会讲到 // 这一段代码表示获取到你将要执行最终方法前要经过的一系列拦截类的处理,也就是责任链类的中的核心集合 List&amp;lt;Object&amp;gt; chain = this.advised.getInterceptorsAndDynamicInterceptionAdvice(method, targetClass); image 图中chain集合有三个类,表示执行到目的方法之前需要经过这几个类 我们来看到执行到目标方法的执行轨迹: image 确实是经过了三个拦截链 我们直接看事物相关的拦截链类 下面代码是不是似曾相识,这都是开启事物的操作和异常情况下,回滚和提交操作 image 经过这些代理类之后到达最终的方法,这是一个大概的运行过程.异常会被事物捕获到,没有则提交… 都是通过这个TransactionAspectSupport的invokeWithinTransaction方法去做的 那Spring又是如何初始化这一系列的代理类操作的呢? 回到运行的第一步我们在那个Aop的拦截器类中(CglibApoProxy),想一想既然spring运行这个方法的时候会执行这个拦截器方法,那么初始化的时候应该也和这个类相关,然后从上面实例化的地方和可以的地方打打断点… 果然,初始化的方法断点被触发了… image 这时候我们可以看断点的运行轨迹 image 我们发现,触发到这个断点的时候,会经过一系列的方法执行,这些执行的方法链都是创建bean的时候必须经过的过程,也就是说每个bean创建的时候,都会经过这一系列的链路的检查(applyBeanPostProcessorsAfterInitialization方法里面的getBeanPostProcessors()方法),才会生成最终的bean,这时候我们需要定位到执行这个CglibAopProxy初始化的方法这块,在什么情况下,会执行这个创建代理的类 image 我们现在已经知道他创建了代理类的过程,现在需要知道在什么情况下会为某些bean创建代理。了解了getAdvicesAndAdvisorsForBean这个方法运行做了什么事情,就大概知道创建代理类bean的条件 首先我们一步步看这个方法的代码: /** 这是一个获取切入点和包含切入点的bean方法 /* protected Object[] getAdvicesAndAdvisorsForBean(Class&amp;lt;?&amp;gt; beanClass, String beanName, TargetSource targetSource) { // 查询当前的bean是否包含切入点 List&amp;lt;Advisor&amp;gt; advisors = findEligibleAdvisors(beanClass, beanName); if (advisors.isEmpty()) { return DO_NOT_PROXY; } return advisors.toArray(); } findEligibleAdvisors方法 /** * 大概意思是为这个bean找到合适的自动代理类 * Find all eligible Advisors for auto-proxying this class. * @param beanClass the clazz to find advisors for * @param beanName the name of the currently proxied bean * @return the empty List, not {@code null}, * if there are no pointcuts or interceptors * @see #findCandidateAdvisors * @see #sortAdvisors * @see #extendAdvisors */ protected List&amp;lt;Advisor&amp;gt; findEligibleAdvisors(Class&amp;lt;?&amp;gt; beanClass, String beanName) { // 找到当前已经注册好的代理类bean List&amp;lt;Advisor&amp;gt; candidateAdvisors = findCandidateAdvisors(); //将注册好的bean和当前bean的类型进行搜索查询,是否有合适的切入点类 List&amp;lt;Advisor&amp;gt; eligibleAdvisors = findAdvisorsThatCanApply(candidateAdvisors, beanClass, beanName); extendAdvisors(eligibleAdvisors); if (!eligibleAdvisors.isEmpty()) { eligibleAdvisors = sortAdvisors(eligibleAdvisors); } return eligibleAdvisors; } findAdvisorsThatCanApply : /** 大概意思就是搜索给定的切入点集合,以用于找到可以应用到当前bean的合适的切入点集合 * Search the given candidate Advisors to find all Advisors that * can apply to the specified bean. * @param candidateAdvisors the candidate Advisors * @param beanClass the target's bean class * @param beanName the target's bean name * @return the List of applicable Advisors * @see ProxyCreationContext#getCurrentProxiedBeanName() */ protected List&amp;lt;Advisor&amp;gt; findAdvisorsThatCanApply( List&amp;lt;Advisor&amp;gt; candidateAdvisors, Class&amp;lt;?&amp;gt; beanClass, String beanName) { // 设置代理的上下文,只针当前线程 ProxyCreationContext.setCurrentProxiedBeanName(beanName); try { // 这是一个AOP的工具类,用于 return AopUtils.findAdvisorsThatCanApply(candidateAdvisors, beanClass); } finally { ProxyCreationContext.setCurrentProxiedBeanName(null); } } AopUtils.findAdvisorsThatCanApply /** * 确定能应用到当前clazz的List&amp;lt;Advisor&amp;gt; * Determine the sublist of the {@code candidateAdvisors} list * that is applicable to the given class. * @param candidateAdvisors the Advisors to evaluate * @param clazz the target class * @return sublist of Advisors that can apply to an object of the given class * (may be the incoming List as-is) */ public static List&amp;lt;Advisor&amp;gt; findAdvisorsThatCanApply(List&amp;lt;Advisor&amp;gt; candidateAdvisors, Class&amp;lt;?&amp;gt; clazz) { if (candidateAdvisors.isEmpty()) { return candidateAdvisors; } List&amp;lt;Advisor&amp;gt; eligibleAdvisors = new LinkedList&amp;lt;Advisor&amp;gt;(); for (Advisor candidate : candidateAdvisors) { if (candidate instanceof IntroductionAdvisor &amp;amp;&amp;amp; canApply(candidate, clazz)) { eligibleAdvisors.add(candidate); } } boolean hasIntroductions = !eligibleAdvisors.isEmpty(); for (Advisor candidate : candidateAdvisors) { if (candidate instanceof IntroductionAdvisor) { // already processed continue; } // 这个方法很关键,用于判断是否能将当前Advisor应用到这个bean上 if (canApply(candidate, clazz, hasIntroductions)) { // 如果验证通过,则会将当前切入点加入进来 eligibleAdvisors.add(candidate); } } return eligibleAdvisors; } 我们来看看canApply做了些什么? // 大概就是比较了Advisor的类型 public static boolean canApply(Advisor advisor, Class&amp;lt;?&amp;gt; targetClass, boolean hasIntroductions) { if (advisor instanceof IntroductionAdvisor) { return ((IntroductionAdvisor) advisor).getClassFilter().matches(targetClass); } else if (advisor instanceof PointcutAdvisor) { PointcutAdvisor pca = (PointcutAdvisor) advisor; // 最终会执行到这个方法 return canApply(pca.getPointcut(), targetClass, hasIntroductions); } else { // It doesn't have a pointcut so we assume it applies. return true; } } public static boolean canApply(Pointcut pc, Class&amp;lt;?&amp;gt; targetClass, boolean hasIntroductions) { Assert.notNull(pc, &quot;Pointcut must not be null&quot;); if (!pc.getClassFilter().matches(targetClass)) { return false; } // 获取当前切入点的类型 MethodMatcher methodMatcher = pc.getMethodMatcher(); IntroductionAwareMethodMatcher introductionAwareMethodMatcher = null; //比较类型 if (methodMatcher instanceof IntroductionAwareMethodMatcher) { introductionAwareMethodMatcher = (IntroductionAwareMethodMatcher) methodMatcher; } // !!!!! 这一部分的代码很关键!!!! // 获取所有相关的类 Set&amp;lt;Class&amp;lt;?&amp;gt;&amp;gt; classes = new LinkedHashSet&amp;lt;Class&amp;lt;?&amp;gt;&amp;gt;(ClassUtils.getAllInterfacesForClassAsSet(targetClass)); classes.add(targetClass); // 遍历这些类 for (Class&amp;lt;?&amp;gt; clazz : classes) { // 获取类的所有方法 Method[] methods = clazz.getMethods(); // 遍历这些方法 for (Method method : methods) { //methodMatcher.matches(method, targetClass) 这个方法很重要 if ((introductionAwareMethodMatcher != null &amp;amp;&amp;amp; introductionAwareMethodMatcher.matches(method, targetClass, hasIntroductions)) || methodMatcher.matches(method, targetClass)) { return true; } } } return false; } matches 方法 public boolean matches(Method method, Class&amp;lt;?&amp;gt; targetClass) { TransactionAttributeSource tas = getTransactionAttributeSource(); // tas.getTransactionAttribute(method, targetClass) 这是个获取事物注解的方法 return (tas == null || tas.getTransactionAttribute(method, targetClass) != null); } // 获取事务属性的方法 public TransactionAttribute getTransactionAttribute(Method method, Class&amp;lt;?&amp;gt; targetClass) { // First, see if we have a cached value. Object cacheKey = getCacheKey(method, targetClass); Object cached = this.attributeCache.get(cacheKey); if (cached != null) { // Value will either be canonical value indicating there is no transaction attribute, // or an actual transaction attribute. if (cached == NULL_TRANSACTION_ATTRIBUTE) { return null; } else { return (TransactionAttribute) cached; } } else { // We need to work it out. // 获取事物属性的方法 TransactionAttribute txAtt = computeTransactionAttribute(method, targetClass); // Put it in the cache. if (txAtt == null) { this.attributeCache.put(cacheKey, NULL_TRANSACTION_ATTRIBUTE); } else { if (logger.isDebugEnabled()) { Class&amp;lt;?&amp;gt; classToLog = (targetClass != null ? targetClass : method.getDeclaringClass()); logger.debug(&quot;Adding transactional method '&quot; + classToLog.getSimpleName() + &quot;.&quot; + method.getName() + &quot;' with attribute: &quot; + txAtt); } this.attributeCache.put(cacheKey, txAtt); } return txAtt; } } private TransactionAttribute computeTransactionAttribute(Method method, Class&amp;lt;?&amp;gt; targetClass) { // Don't allow no-public methods as required. if (allowPublicMethodsOnly() &amp;amp;&amp;amp; !Modifier.isPublic(method.getModifiers())) { return null; } // Ignore CGLIB subclasses - introspect the actual user class. Class&amp;lt;?&amp;gt; userClass = ClassUtils.getUserClass(targetClass); // The method may be on an interface, but we need attributes from the target class. // If the target class is null, the method will be unchanged. Method specificMethod = ClassUtils.getMostSpecificMethod(method, userClass); // If we are dealing with method with generic parameters, find the original method. specificMethod = BridgeMethodResolver.findBridgedMethod(specificMethod); // First try is the method in the target class. // 查找该方法的事物属性 TransactionAttribute txAtt = findTransactionAttribute(specificMethod); if (txAtt != null) { return txAtt; } // Second try is the transaction attribute on the target class. txAtt = findTransactionAttribute(specificMethod.getDeclaringClass()); if (txAtt != null) { return txAtt; } if (specificMethod != method) { // Fallback is to look at the original method. txAtt = findTransactionAttribute(method); if (txAtt != null) { return txAtt; } // Last fallback is the class of the original method. return findTransactionAttribute(method.getDeclaringClass()); } return null; } 详细看下findTransactionAttribute方法,由于比较深我就直接贴最终执行的方法了 public TransactionAttribute parseTransactionAnnotation(AnnotatedElement ae) { // 查看是否方法上面有@Transactional注解 AnnotationAttributes ann = AnnotatedElementUtils.getAnnotationAttributes(ae, Transactional.class.getName()); if (ann != null) { return parseTransactionAnnotation(ann); } else { return null; } } // 处理这个注解所包含的属性如传播途径和隔离级别 protected TransactionAttribute parseTransactionAnnotation(AnnotationAttributes attributes) { RuleBasedTransactionAttribute rbta = new RuleBasedTransactionAttribute(); Propagation propagation = attributes.getEnum(&quot;propagation&quot;); rbta.setPropagationBehavior(propagation.value()); Isolation isolation = attributes.getEnum(&quot;isolation&quot;); rbta.setIsolationLevel(isolation.value()); rbta.setTimeout(attributes.getNumber(&quot;timeout&quot;).intValue()); rbta.setReadOnly(attributes.getBoolean(&quot;readOnly&quot;)); rbta.setQualifier(attributes.getString(&quot;value&quot;)); ArrayList&amp;lt;RollbackRuleAttribute&amp;gt; rollBackRules = new ArrayList&amp;lt;RollbackRuleAttribute&amp;gt;(); Class&amp;lt;?&amp;gt;[] rbf = attributes.getClassArray(&quot;rollbackFor&quot;); for (Class&amp;lt;?&amp;gt; rbRule : rbf) { RollbackRuleAttribute rule = new RollbackRuleAttribute(rbRule); rollBackRules.add(rule); } String[] rbfc = attributes.getStringArray(&quot;rollbackForClassName&quot;); for (String rbRule : rbfc) { RollbackRuleAttribute rule = new RollbackRuleAttribute(rbRule); rollBackRules.add(rule); } Class&amp;lt;?&amp;gt;[] nrbf = attributes.getClassArray(&quot;noRollbackFor&quot;); for (Class&amp;lt;?&amp;gt; rbRule : nrbf) { NoRollbackRuleAttribute rule = new NoRollbackRuleAttribute(rbRule); rollBackRules.add(rule); } String[] nrbfc = attributes.getStringArray(&quot;noRollbackForClassName&quot;); for (String rbRule : nrbfc) { NoRollbackRuleAttribute rule = new NoRollbackRuleAttribute(rbRule); rollBackRules.add(rule); } rbta.getRollbackRules().addAll(rollBackRules); return rbta; } 这时候我们就可以大概的清楚知道哪些bean需要被事物代理的原因了 这时候我们在回过头来看spring是如何构建代理类的,这里我就不在详细各种贴流程代码了,只贴关键的 DefaultAopProxyFactory 默认的AOP代理工厂 // 创建一个AopProxy的代理类,它这里提供了两种代理方式,一种是JDK代理,一种是CGlib代理 public AopProxy createAopProxy(AdvisedSupport config) throws AopConfigException { if (config.isOptimize() || config.isProxyTargetClass() || hasNoUserSuppliedProxyInterfaces(config)) { Class&amp;lt;?&amp;gt; targetClass = config.getTargetClass(); if (targetClass == null) { throw new AopConfigException(&quot;TargetSource cannot determine target class: &quot; + &quot;Either an interface or a target is required for proxy creation.&quot;); } // 如果需要代理的类是接口的时候采用JDK if (targetClass.isInterface()) { return new JdkDynamicAopProxy(config); } // 普通类用CGlib代理 return new ObjenesisCglibAopProxy(config); } else { return new JdkDynamicAopProxy(config); } } ObjenesisCglibAopProxy 的 父类是 CglibAopProxy 所以初始化ObjenesisCglibAopProxy 的构造方法时会调用super(config); /** * 实例化Cglib对象时,会初始化他的父类方法,并且把拦截器传递给父类,告诉他的需要加上代理的拦截器,也就是我们的TransactionInterceptor,如果有多个的话可能就会代理多个,这里我们只看事物的 * */ public ObjenesisCglibAopProxy(AdvisedSupport config) { super(config); this.objenesis = new ObjenesisStd(true); } 初始化完成之后会调用它的ObjenesisCglibAopProxy的getProxy()方法,这个方法是它的父类实现的,这里面才是真正实现了真正代理的对象,原理是构成一个责任链,将代理一个个链接起来 public Object getProxy(ClassLoader classLoader) { if (logger.isDebugEnabled()) { logger.debug(&quot;Creating CGLIB proxy: target source is &quot; + this.advised.getTargetSource()); } try { Class&amp;lt;?&amp;gt; rootClass = this.advised.getTargetClass(); Assert.state(rootClass != null, &quot;Target class must be available for creating a CGLIB proxy&quot;); Class&amp;lt;?&amp;gt; proxySuperClass = rootClass; if (ClassUtils.isCglibProxyClass(rootClass)) { proxySuperClass = rootClass.getSuperclass(); Class&amp;lt;?&amp;gt;[] additionalInterfaces = rootClass.getInterfaces(); for (Class&amp;lt;?&amp;gt; additionalInterface : additionalInterfaces) { this.advised.addInterface(additionalInterface); } } // Validate the class, writing log messages as necessary. validateClassIfNecessary(proxySuperClass, classLoader); // Configure CGLIB Enhancer... // 这一部分是创建一个Enhancer 对象 Enhancer enhancer = createEnhancer(); if (classLoader != null) { enhancer.setClassLoader(classLoader); if (classLoader instanceof SmartClassLoader &amp;amp;&amp;amp; ((SmartClassLoader) classLoader).isClassReloadable(proxySuperClass)) { enhancer.setUseCache(false); } } enhancer.setSuperclass(proxySuperClass); enhancer.setInterfaces(AopProxyUtils.completeProxiedInterfaces(this.advised)); enhancer.setNamingPolicy(SpringNamingPolicy.INSTANCE); enhancer.setStrategy(new UndeclaredThrowableStrategy(UndeclaredThrowableException.class)); // 这部分代码非常关键,里面会创建一个DynamicAdvisedInterceptor对象,这个就是责任链的头端,所有的切入点都需要经过这个拦截器一步步执行到最终的方法 Callback[] callbacks = getCallbacks(rootClass); Class&amp;lt;?&amp;gt;[] types = new Class&amp;lt;?&amp;gt;[callbacks.length]; for (int x = 0; x &amp;lt; types.length; x++) { types[x] = callbacks[x].getClass(); } // fixedInterceptorMap only populated at this point, after getCallbacks call above enhancer.setCallbackFilter(new ProxyCallbackFilter( this.advised.getConfigurationOnlyCopy(), this.fixedInterceptorMap, this.fixedInterceptorOffset)); enhancer.setCallbackTypes(types); // Generate the proxy class and create a proxy instance. // 生成代理类并且创建实例,里面做的应该就是把DynamicAdvisedInterceptor对象和serviceImpl对象做了一个代理绑定,先进入DynamicAdvisedInterceptor,经过责任链模式一步步到达最终方法 return createProxyClassAndInstance(enhancer, callbacks); } catch (CodeGenerationException ex) { throw new AopConfigException(&quot;Could not generate CGLIB subclass of class [&quot; + this.advised.getTargetClass() + &quot;]: &quot; + &quot;Common causes of this problem include using a final class or a non-visible class&quot;, ex); } catch (IllegalArgumentException ex) { throw new AopConfigException(&quot;Could not generate CGLIB subclass of class [&quot; + this.advised.getTargetClass() + &quot;]: &quot; + &quot;Common causes of this problem include using a final class or a non-visible class&quot;, ex); } catch (Exception ex) { // TargetSource.getTarget() failed throw new AopConfigException(&quot;Unexpected AOP exception&quot;, ex); } } private Callback[] getCallbacks(Class&amp;lt;?&amp;gt; rootClass) throws Exception { // Parameters used for optimisation choices... boolean exposeProxy = this.advised.isExposeProxy(); boolean isFrozen = this.advised.isFrozen(); boolean isStatic = this.advised.getTargetSource().isStatic(); // Choose an &quot;aop&quot; interceptor (used for AOP calls). // 创建一个拦截器对象,所有被代理的类都走这个对象,最终返回的bean执行的起始方法 Callback aopInterceptor = new DynamicAdvisedInterceptor(this.advised); // Choose a &quot;straight to target&quot; interceptor. (used for calls that are // unadvised but can return this). May be required to expose the proxy. Callback targetInterceptor; if (exposeProxy) { targetInterceptor = isStatic ? new StaticUnadvisedExposedInterceptor(this.advised.getTargetSource().getTarget()) : new DynamicUnadvisedExposedInterceptor(this.advised.getTargetSource()); } else { targetInterceptor = isStatic ? new StaticUnadvisedInterceptor(this.advised.getTargetSource().getTarget()) : new DynamicUnadvisedInterceptor(this.advised.getTargetSource()); } // Choose a &quot;direct to target&quot; dispatcher (used for // unadvised calls to static targets that cannot return this). Callback targetDispatcher = isStatic ? new StaticDispatcher(this.advised.getTargetSource().getTarget()) : new SerializableNoOp(); Callback[] mainCallbacks = new Callback[]{ aopInterceptor, // for normal advice targetInterceptor, // invoke target without considering advice, if optimized new SerializableNoOp(), // no override for methods mapped to this targetDispatcher, this.advisedDispatcher, new EqualsInterceptor(this.advised), new HashCodeInterceptor(this.advised) }; Callback[] callbacks; // If the target is a static one and the advice chain is frozen, // then we can make some optimisations by sending the AOP calls // direct to the target using the fixed chain for that method. if (isStatic &amp;amp;&amp;amp; isFrozen) { Method[] methods = rootClass.getMethods(); Callback[] fixedCallbacks = new Callback[methods.length]; this.fixedInterceptorMap = new HashMap&amp;lt;String, Integer&amp;gt;(methods.length); // TODO: small memory optimisation here (can skip creation for methods with no advice) for (int x = 0; x &amp;lt; methods.length; x++) { List&amp;lt;Object&amp;gt; chain = this.advised.getInterceptorsAndDynamicInterceptionAdvice(methods[x], rootClass); fixedCallbacks[x] = new FixedChainStaticTargetInterceptor( chain, this.advised.getTargetSource().getTarget(), this.advised.getTargetClass()); this.fixedInterceptorMap.put(methods[x].toString(), x); } // Now copy both the callbacks from mainCallbacks // and fixedCallbacks into the callbacks array. callbacks = new Callback[mainCallbacks.length + fixedCallbacks.length]; System.arraycopy(mainCallbacks, 0, callbacks, 0, mainCallbacks.length); System.arraycopy(fixedCallbacks, 0, callbacks, mainCallbacks.length, fixedCallbacks.length); this.fixedInterceptorOffset = mainCallbacks.length; } else { callbacks = mainCallbacks; } return callbacks; } 最终生成了代理对象,将这个对象放入ioc容器当中,当调用这个对象时,ioc会直接取出代理对象,也就是先进入DynamicAdvisedInterceptor的intercept方法。 大概梳理一下事物的流程 一. 初始化流程 1.首先开始初始化配置文件 2.然后执行到&amp;lt;context:component-scan base-package=&quot;com.service&quot;&amp;gt;&amp;lt;/context:component-scan&amp;gt;这里时,会开始扫描注解 3.当循环扫描到ServiceImpl的时候,会扫描每个方法,经过getAdvicesAndAdvisorsForBean这个方法时会判断每个方法是否触发代理的条件, 怎么触发代理条件, 这里以事物为例: &amp;lt;!-- 这里注册了一个事物管理器,也就是说每个类都会经过这个事物管理器判断,是否有@Transactional方法; 需要注意的是,这个驱动相当于新加了一个方法环绕类型的切入点. --&amp;gt; &amp;lt;tx:annotation-driven transaction-manager=&quot;transactionManager&quot; proxy-target-class=&quot;true&quot;&amp;gt;&amp;lt;/tx:annotation-driven&amp;gt; getAdvicesAndAdvisorsForBean如果返回有值时,则表示需要生成代理类 因为我们service中已经定义好了@Transactional方法了,所以触发了执行生成代理类的条件. 4. 生成代理类时,他主要做了两个步骤: 实现一个责任链的类[DynamicAdvisedInterceptor],然后将这个责任链类和service的实现类做绑定生成一个代理,然后返回这个代理对象到IOC容器中,初始化完成 二. 调用service的过程 1. 当调用service这个实现类的时候,会从ioc容器里面去查找,找到了这个bean类则直接返回,注意这里的bean是一个代理类 2. 直接进入代理类DynamicAdvisedInterceptor的intercept方法里面; 3. 开始执行责任链机制,查找与这个类绑定的切入点 // 这里是直接查找与这个类相关的切入点,然后一个个执行完之后到达最终的service方法 List&amp;lt;Object&amp;gt; chain = this.advised.getInterceptorsAndDynamicInterceptionAdvice(method, targetClass); 4. 需要注意的是这个责任链中有一个TransactionAspectSupport类,这是一个事物的切入点类,这个类中的invokeWithinTransaction方法,它里面详细包含了事物的一系列操作,包括事物开启、提交、回滚等等一系列操作 5. 执行切入点后,直接到达目标方法,也就是service层的方法,service层的方法处理完毕,在回到invokeWithinTransaction判断是否报错,没有报错则事物提交,报错则进入到它的try/catch方法中进行回滚,最终执行完成; 最终我们总结上面的问题: Spring的事物是通过哪些原理实现的? 动态代理 以及 切入点配合责任链组成的拦截器机制 Spring的事物机制是如何提交和回滚的? Spring提供了一个事物管理器,这个事物管理器专门扫描所有方法的@Transactional注解,一旦扫描到了,则会为这个方法的类设置代理,这个事物管理器可以理解为一个环绕类型的切入点,配合责任链模式,当方法执行的时候,会被拦截到TransactionAspectSupport的invokeWithinTransaction方法中,这个里面包含了事物的一系列操作。 编后语 由于spring里面代码层次划分很细,导致贴出来的代码特别多,可能会影响你们阅读,不过Spring里面的很多东西封装的都是很完善的,几乎全部都是组件化,导致很多方法很深,不过我们只要了解它大概的原理就行了,至少能够在我们遇到问题时能够推断出从哪个步骤进行下手.可能这篇文章代码和图片比较凌乱,最好是大家有spring的一些基本原理基础,比如bean的实例化啊等等,不然有的地方会看不懂,好了就说这么多了… 希望对大家有帮助.. 也非常欢迎大家提意见!!! 谢谢</summary></entry><entry xml:lang="zh_CN"><title type="html">Spring+SpringMVC+MyBatis+easyUI集成进阶篇(二)RESTful API实战笔记(接口设计及Java后端实现)</title><link href="http://www.jfox.info/2017/springspringmvcmybatiseasyui%E9%9B%86%E6%88%90%E8%BF%9B%E9%98%B6%E7%AF%87%E4%BA%8Crestfulapi%E5%AE%9E%E6%88%98%E7%AC%94%E8%AE%B0%E6%8E%A5%E5%8F%A3%E8%AE%BE%E8%AE%A1%E5%8F%8Ajava%E5%90%8E%E7%AB%AF.html" rel="alternate" type="text/html" title="Spring+SpringMVC+MyBatis+easyUI集成进阶篇(二)RESTful API实战笔记(接口设计及Java后端实现)" /><published>2017-01-01T15:59:58+00:00</published><updated>2017-01-01T15:59:58+00:00</updated><id>http://www.jfox.info/2017/20170101498</id><content type="html" xml:base="http://www.jfox.info/2017/springspringmvcmybatiseasyui%E9%9B%86%E6%88%90%E8%BF%9B%E9%98%B6%E7%AF%87%E4%BA%8Crestfulapi%E5%AE%9E%E6%88%98%E7%AC%94%E8%AE%B0%E6%8E%A5%E5%8F%A3%E8%AE%BE%E8%AE%A1%E5%8F%8Ajava%E5%90%8E%E7%AB%AF.html">&lt;p&gt;原计划这部分代码的更新也是上传到ssm-demo仓库中，因为如下原因并没有这么做：&lt;/p&gt;
+&lt;p&gt;由于spring里面代码层次划分很细,导致贴出来的代码特别多,可能会影响你们阅读,不过Spring里面的很多东西封装的都是很完善的,几乎全部都是组件化,导致很多方法很深,不过我们只要了解它大概的原理就行了,至少能够在我们遇到问题时能够推断出从哪个步骤进行下手.可能这篇文章代码和图片比较凌乱,最好是大家有spring的一些基本原理基础,比如bean的实例化啊等等,不然有的地方会看不懂,好了就说这么多了… 希望对大家有帮助.. 也非常欢迎大家提意见!!! 谢谢&lt;/p&gt;</content><author><name></name></author><summary type="html">H2M_LI_HEADER Spring的事物是通过哪些原理实现的? H2M_LI_HEADER Spring的事物机制是如何提交和回滚的?</summary></entry><entry xml:lang="zh_CN"><title type="html">Spring+SpringMVC+MyBatis+easyUI集成进阶篇(二)RESTful API实战笔记(接口设计及Java后端实现)</title><link href="http://www.jfox.info/2017/springspringmvcmybatiseasyui%E9%9B%86%E6%88%90%E8%BF%9B%E9%98%B6%E7%AF%87%E4%BA%8Crestfulapi%E5%AE%9E%E6%88%98%E7%AC%94%E8%AE%B0%E6%8E%A5%E5%8F%A3%E8%AE%BE%E8%AE%A1%E5%8F%8Ajava%E5%90%8E%E7%AB%AF.html" rel="alternate" type="text/html" title="Spring+SpringMVC+MyBatis+easyUI集成进阶篇(二)RESTful API实战笔记(接口设计及Java后端实现)" /><published>2017-01-01T23:59:58+08:00</published><updated>2017-01-01T23:59:58+08:00</updated><id>http://www.jfox.info/2017/20170101498</id><content type="html" xml:base="http://www.jfox.info/2017/springspringmvcmybatiseasyui%E9%9B%86%E6%88%90%E8%BF%9B%E9%98%B6%E7%AF%87%E4%BA%8Crestfulapi%E5%AE%9E%E6%88%98%E7%AC%94%E8%AE%B0%E6%8E%A5%E5%8F%A3%E8%AE%BE%E8%AE%A1%E5%8F%8Ajava%E5%90%8E%E7%AB%AF.html">&lt;p&gt;原计划这部分代码的更新也是上传到ssm-demo仓库中，因为如下原因并没有这么做：&lt;/p&gt;
 
 &lt;ul&gt;
   &lt;li&gt;
@@ -2371,43 +3260,4 @@ public static final int RESULT_CODE_SERVER_ERROR = 500;  // 没有对应结果
   &lt;li&gt;@RequestParam&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;p&gt;代码中大量的出现，本文中也一再强调，因此，给正在看本篇文章的你一个建议就是如果你不熟悉这几个注解，花点时间去认真学习和实践一下，知道这几个注解的用法和注意事项，网上针对这些注解的文章有很多，可以针对性的学习一下，这篇文章就不再占用篇幅去赘述了，需要代码的话，直接去我的GitHub仓库中去下载就好。&lt;/p&gt;</content><author><name></name></author><summary type="html">原计划这部分代码的更新也是上传到ssm-demo仓库中，因为如下原因并没有这么做： 有些使用了该项目的朋友建议重新创建一个仓库，因为原来仓库中的项目太多，结构多少有些乱糟糟的。 而且这次的代码改动较大，与原来的目录结构及代码风格相比都有很大的差别。 同时也考虑到不同的人所处的学习阶段不同，担心有人不习惯也不适应这种风格及后面的更新，有的朋友甚至可能是初学者，更适合学习ssm-demo这个基础项目。 基于以上几点，最终并没有选择把几个项目都放在一个代码仓库中，而是另外花了些时间改动并且重新创建了一个仓库，perfect-ssm另起炉灶，项目也在新的服务器和域名下部署。 接口设计 项目共有三个模块: 针对以上三个模块，并结合前文《设计一套好的RESTful API》中所总结的RESTful API设计原则，对api进行改造，目标接口如下： 图片上传： 原接口 [] http://ssm-demo.hanshuai.xin/loadimage/upload.do 现接口 [POST] http://perfect-ssm.hanshuai.xin/images 文章添加： 原接口 [] http://ssm-demo.hanshuai.xin/article/save.do 现接口 [POST] http://perfect-ssm.hanshuai.xin/articles 文章修改： 原接口 [] http://ssm-demo.hanshuai.xin/article/save.do 现接口 [PUT] http://perfect-ssm.hanshuai.xin/articles 文章列表： 原接口 [] http://ssm-demo.hanshuai.xin/article/list.do 现接口 [GET] http://perfect-ssm.hanshuai.xin/articles 文章删除： 原接口 [] http://ssm-demo.hanshuai.xin/article/delete.do 现接口 [DELETE]http://perfect-ssm.hanshuai.xin/articles 图片添加： 原接口 [] http://ssm-demo.hanshuai.xin/picture/save.do 现接口 [POST] http://perfect-ssm.hanshuai.xin/pictures 图片修改： 原接口 [] http://ssm-demo.hanshuai.xin/picture/save.do 现接口 [PUT] http://perfect-ssm.hanshuai.xin/pictures 图片列表： 原接口 [] http://ssm-demo.hanshuai.xin/picture/list.do 现接口 [GET] http://perfect-ssm.hanshuai.xin/pictures 图片删除： 原接口 [] http://ssm-demo.hanshuai.xin/picture/delete.do 现接口 [DELETE]http://perfect-ssm.hanshuai.xin/pictures 用户登录： 原接口 [] http://ssm-demo.hanshuai.xin/user/login.do 现接口 [POST] http://perfect-ssm.hanshuai.xin/users/cookie 用户列表： 原接口 [] http://ssm-demo.hanshuai.xin/user/list.do 现接口 [GET] http://perfect-ssm.hanshuai.xin/users 用户删除： 原接口 [] http://ssm-demo.hanshuai.xin/user/delete.do 现接口 [DELETE]http://perfect-ssm.hanshuai.xin/users 用户添加： 原接口 [] http://ssm-demo.hanshuai.xin/user/save.do 现接口 [POST] http://perfect-ssm.hanshuai.xin/users 修改密码： 原接口 [] http://ssm-demo.hanshuai.xin/user/modifyPassword.do 现接口 [PUT] http://perfect-ssm.hanshuai.xin/users 根据不同资源映射成不同的uri，对于资源的具体操作类型，由HTTP动词来表示。 java后端实现 前文中提到了一些设计原则，这一篇就是将这些原则运用到项目中，但是理论性的知识看看就忘了，我写博客的目的不是为了写理论概念，没有实际项目配合我是不会写的，我觉得通过代码实现出来，配合实战才能让理论知识吸收的更好。 由于是ssm项目，因此主要是通过SpringMVC实现，更多的是使用了SpringMVC的注解来进行简化开发。 整合过程： 首先是修改web.xml配置文件，使得URI可以符合RESTful风格。 &amp;lt;servlet&amp;gt; &amp;lt;servlet-name&amp;gt;springMVC&amp;lt;/servlet-name&amp;gt; &amp;lt;servlet-class&amp;gt;org.springframework.web.servlet.DispatcherServlet&amp;lt;/servlet-class&amp;gt; &amp;lt;init-param&amp;gt; &amp;lt;param-name&amp;gt;contextConfigLocation&amp;lt;/param-name&amp;gt; &amp;lt;param-value&amp;gt;classpath:spring-context-mvc.xml&amp;lt;/param-value&amp;gt; &amp;lt;/init-param&amp;gt; &amp;lt;!--加载顺序为1 --&amp;gt; &amp;lt;load-on-startup&amp;gt;1&amp;lt;/load-on-startup&amp;gt; &amp;lt;/servlet&amp;gt; &amp;lt;servlet-mapping&amp;gt; &amp;lt;servlet-name&amp;gt;springMVC&amp;lt;/servlet-name&amp;gt; &amp;lt;url-pattern&amp;gt;/&amp;lt;/url-pattern&amp;gt; &amp;lt;/servlet-mapping&amp;gt; 修改spring-context-mvc.xml配置文件，配置json消息转换器及动态资源过滤。 &amp;lt;!-- Start: 配置json消息转换器 &amp;amp; 参数解析--&amp;gt; &amp;lt;bean id=&quot;objectMapper&quot; class=&quot;com.fasterxml.jackson.databind.ObjectMapper&quot;&amp;gt; &amp;lt;property name=&quot;dateFormat&quot;&amp;gt; &amp;lt;bean class=&quot;java.text.SimpleDateFormat&quot;&amp;gt; &amp;lt;constructor-arg index=&quot;0&quot; type=&quot;java.lang.String&quot; value=&quot;yyyy-MM-dd HH:mm:ss&quot;/&amp;gt; &amp;lt;/bean&amp;gt; &amp;lt;/property&amp;gt; &amp;lt;/bean&amp;gt; &amp;lt;mvc:annotation-driven&amp;gt; &amp;lt;mvc:message-converters register-defaults=&quot;true&quot;&amp;gt; &amp;lt;bean class=&quot;org.springframework.http.converter.json.MappingJackson2HttpMessageConverter&quot;&amp;gt; &amp;lt;property name=&quot;supportedMediaTypes&quot;&amp;gt; &amp;lt;list&amp;gt; &amp;lt;value&amp;gt;application/json; charset=UTF-8&amp;lt;/value&amp;gt; &amp;lt;/list&amp;gt; &amp;lt;/property&amp;gt; &amp;lt;property name=&quot;prettyPrint&quot; value=&quot;true&quot;/&amp;gt; &amp;lt;property name=&quot;objectMapper&quot; ref=&quot;objectMapper&quot;/&amp;gt; &amp;lt;/bean&amp;gt; &amp;lt;/mvc:message-converters&amp;gt; &amp;lt;/mvc:annotation-driven&amp;gt; &amp;lt;!-- End: 配置json消息转换器 &amp;amp; 参数解析 --&amp;gt; &amp;lt;!-- 使用了&amp;lt;url-pattern&amp;gt;/&amp;lt;/url-pattern&amp;gt;,所以要对静态资源进行处理 --&amp;gt; &amp;lt;mvc:default-servlet-handler/&amp;gt; &amp;lt;!-- 默认的视图解析器 在上边的解析错误时使用 (默认使用html)- --&amp;gt; &amp;lt;bean id=&quot;defaultViewResolver&quot; class=&quot;org.springframework.web.servlet.view.InternalResourceViewResolver&quot; p:order=&quot;1&quot;&amp;gt; &amp;lt;property name=&quot;viewClass&quot; value=&quot;org.springframework.web.servlet.view.JstlView&quot;/&amp;gt; &amp;lt;property name=&quot;contentType&quot; value=&quot;text/html&quot;/&amp;gt; &amp;lt;property name=&quot;prefix&quot; value=&quot;/WEB-INF/&quot;/&amp;gt; &amp;lt;property name=&quot;suffix&quot; value=&quot;.jsp&quot;/&amp;gt; &amp;lt;/bean&amp;gt; @RequestMapping注解，规范和限制Http请求的请求方法。 @RequestMapping(value = “”, method = RequestMethod.PUT) @RequestMapping(value = “/{ids}”, method = RequestMethod.DELETE) @ResponseBody注解，将返回结果转换为JSON格式。 增加common包，其中的工具类规定了返回状态码及返回数据的基本格式。 public class Constants { public static final int RESULT_CODE_SUCCESS = 200; // 成功处理请求 public static final int RESULT_CODE_BAD_REQUEST = 412; // bad request public static final int RESULT_CODE_SERVER_ERROR = 500; // 没有对应结果 } public class Result implements Serializable { private static final long serialVersionUID = 1L; private int resultCode; private String message; private T data; public Result() { } } 注意事项 几个需要注意的注解： @RequestMapping @PathVariable @ResponseBody @RequestParam 代码中大量的出现，本文中也一再强调，因此，给正在看本篇文章的你一个建议就是如果你不熟悉这几个注解，花点时间去认真学习和实践一下，知道这几个注解的用法和注意事项，网上针对这些注解的文章有很多，可以针对性的学习一下，这篇文章就不再占用篇幅去赘述了，需要代码的话，直接去我的GitHub仓库中去下载就好。</summary></entry><entry xml:lang="zh_CN"><title type="html">我的网站之struts2笔记2</title><link href="http://www.jfox.info/2017/%E6%88%91%E7%9A%84%E7%BD%91%E7%AB%99%E4%B9%8Bstruts2%E7%AC%94%E8%AE%B02.html" rel="alternate" type="text/html" title="我的网站之struts2笔记2" /><published>2017-01-01T15:59:57+00:00</published><updated>2017-01-01T15:59:57+00:00</updated><id>http://www.jfox.info/2017/20170101497</id><content type="html" xml:base="http://www.jfox.info/2017/%E6%88%91%E7%9A%84%E7%BD%91%E7%AB%99%E4%B9%8Bstruts2%E7%AC%94%E8%AE%B02.html">&lt;p&gt;作者&lt;a href=&quot;/u/a8ae22295f18&quot;&gt;金字塔的蜗牛&lt;/a&gt;2017.08.07 10:24*字数 842
-越学习，越发现自己的无知。
-（法国）笛卡尔&lt;/p&gt;
-
-&lt;p&gt;上一篇笔记总结了struts的版本、入门案例和相关的配置说明，链接：&lt;a href=&quot;https://www.jfox.info/go.php?url=http://www.jianshu.com/p/a40a60ed4681&quot;&gt;我的网站之struts2笔记1&lt;/a&gt;，这篇总结一下struts2中action配置的三种方式以及三种可用的类方法配置。&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;1、struts2中action配置的三种方式&lt;/strong&gt;&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;方式一： 创建普通类，不继承任何类，不实现任何接口，默认执行execute方法。如下图所示，action就是一个普通的类。如果想让类能够访问到，记得在struts.xml文件进行类的配置。 
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;img src=&quot;3cb87ec.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;方式二：创建类，实现Action接口，大家知道实现一个接口，必须实现该接口中的方法，所以实现Action接口的类中需要实现execute()方法。 
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;img src=&quot;be8182b.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;方式三：创建类，继承ActionSupport，之所以继承ActionSupport类成为一个action，是因为ActionSupport类也实现了方式二中的Action接口。 
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;img src=&quot;e2eb3e4.png&quot; alt=&quot;&quot; /&gt;
-以上三种方式均可以创建一个action，一般建议使用第三种方式。&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;2、struts2的action方法访问的三种方式&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;方式一：使用action标签的method属性，在这个属性里配置执行action的方法，过程步骤如下。
-&lt;code class=&quot;highlighter-rouge&quot;&gt;1：先创建一个action，然后在该action中创建多个方法。&lt;/code&gt;
-&lt;img src=&quot;592983d.png&quot; alt=&quot;&quot; /&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;2：进行struts.xml的配置，我们使用method方式进行配置，但是由于每个方法都需要配置，所以action方法很多的话，需要很多配置，这一点是个缺陷，我们可以在方式二中进行改进。&lt;/code&gt;&lt;img src=&quot;/wp-content/uploads/2017/08/1502353880.png&quot; alt=&quot;&quot; /&gt;
-方式二：使用通配符方式实现（&lt;strong&gt;重点&lt;/strong&gt;）
-我们可以在action中的name属性值里写 * 号代表任何配置，例如实现一本书的增删改查，我们可以用book_&lt;em&gt;代替：book_insert，book_update，book_delete。
-其中{1}代表第一个星号内容，book_&lt;/em&gt;中只有一个&lt;em&gt;号，所以&lt;/em&gt;值就是方法名，如book_update就是访问update方法。
-&lt;strong&gt;当有多个星号，如我的代码库网站采用&lt;em&gt;_&lt;/em&gt;的配置用来处理所有jsp页面的跳转，不执行任何业务逻辑，比如想访问resource文件夹下的index.jsp时，只需要浏览器访问resource_index即可进行跳转，如果想访问根目录的index.jsp文件，只需要输入（_index）即可，约定大于配置，使用起来很方便。&lt;/strong&gt;
-&lt;img src=&quot;c23ec85.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;方式三：动态访问方式实现，这个使用不是很常见，帖一下我学习视频时截的图。通过在页面上按照一定的规则进行路径的配置，通过struts.xml的跳转，进入到指定的action中执行对应的方法。 
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;img src=&quot;bcc60cb.png&quot; alt=&quot;&quot; /&gt;
-这篇笔记总结了struts2中action书写的三种方式以及类方法配置的三种方式，一般建议通过继承ActionSupport来创建action，约定大于配置，推荐使用通配符方式实现方法的访问。下篇笔记将总结struts2中action获取页面表单提交的数据以及数据的处理封装。&lt;/p&gt;</content><author><name></name></author><summary type="html">作者金字塔的蜗牛2017.08.07 10:24*字数 842 越学习，越发现自己的无知。 （法国）笛卡尔 上一篇笔记总结了struts的版本、入门案例和相关的配置说明，链接：我的网站之struts2笔记1，这篇总结一下struts2中action配置的三种方式以及三种可用的类方法配置。 1、struts2中action配置的三种方式 方式一： 创建普通类，不继承任何类，不实现任何接口，默认执行execute方法。如下图所示，action就是一个普通的类。如果想让类能够访问到，记得在struts.xml文件进行类的配置。 方式二：创建类，实现Action接口，大家知道实现一个接口，必须实现该接口中的方法，所以实现Action接口的类中需要实现execute()方法。 方式三：创建类，继承ActionSupport，之所以继承ActionSupport类成为一个action，是因为ActionSupport类也实现了方式二中的Action接口。 以上三种方式均可以创建一个action，一般建议使用第三种方式。 2、struts2的action方法访问的三种方式 方式一：使用action标签的method属性，在这个属性里配置执行action的方法，过程步骤如下。 1：先创建一个action，然后在该action中创建多个方法。 2：进行struts.xml的配置，我们使用method方式进行配置，但是由于每个方法都需要配置，所以action方法很多的话，需要很多配置，这一点是个缺陷，我们可以在方式二中进行改进。 方式二：使用通配符方式实现（重点） 我们可以在action中的name属性值里写 * 号代表任何配置，例如实现一本书的增删改查，我们可以用book_代替：book_insert，book_update，book_delete。 其中{1}代表第一个星号内容，book_中只有一个号，所以值就是方法名，如book_update就是访问update方法。 当有多个星号，如我的代码库网站采用_的配置用来处理所有jsp页面的跳转，不执行任何业务逻辑，比如想访问resource文件夹下的index.jsp时，只需要浏览器访问resource_index即可进行跳转，如果想访问根目录的index.jsp文件，只需要输入（_index）即可，约定大于配置，使用起来很方便。 方式三：动态访问方式实现，这个使用不是很常见，帖一下我学习视频时截的图。通过在页面上按照一定的规则进行路径的配置，通过struts.xml的跳转，进入到指定的action中执行对应的方法。 这篇笔记总结了struts2中action书写的三种方式以及类方法配置的三种方式，一般建议通过继承ActionSupport来创建action，约定大于配置，推荐使用通配符方式实现方法的访问。下篇笔记将总结struts2中action获取页面表单提交的数据以及数据的处理封装。</summary></entry></feed>
+&lt;p&gt;代码中大量的出现，本文中也一再强调，因此，给正在看本篇文章的你一个建议就是如果你不熟悉这几个注解，花点时间去认真学习和实践一下，知道这几个注解的用法和注意事项，网上针对这些注解的文章有很多，可以针对性的学习一下，这篇文章就不再占用篇幅去赘述了，需要代码的话，直接去我的GitHub仓库中去下载就好。&lt;/p&gt;</content><author><name></name></author><summary type="html">原计划这部分代码的更新也是上传到ssm-demo仓库中，因为如下原因并没有这么做：</summary></entry></feed>

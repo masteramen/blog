@@ -4,18 +4,18 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
 <title>JAVA主流框架—SSM集成 | Java面试</title>
-<meta name="generator" content="Jekyll v3.8.4" />
+<meta name="generator" content="Jekyll v3.8.3" />
 <meta property="og:title" content="JAVA主流框架—SSM集成" />
 <meta property="og:locale" content="zh_CN" />
-<meta name="description" content="1.通过监听器的形式引入spring 2.SpringMVC容器和Spring容器间的关系 3.汇通的主旨 让大家熟练掌握SSM调用过程.并且将后台调用彻底掌握. 4.传统项目的搭建的弊端 1.传统项目的jar包都是架构师凭借经验来完成的. 2.传统的打包方式(通过压缩文件打包不通用) 3.传统项目的文件都写在Src下,管理器不便捷. 5.Maven项目管理工具 使用Maven能够实现项目的快速构建,快速打包,快速部署. 6.Maven的下载 7.引入Maven工具 1.安装JDK 1.从官网下载安装包,直接进行安装 2.直接拷贝jdk文件,之后通过配置环境变量即可" />
-<meta property="og:description" content="1.通过监听器的形式引入spring 2.SpringMVC容器和Spring容器间的关系 3.汇通的主旨 让大家熟练掌握SSM调用过程.并且将后台调用彻底掌握. 4.传统项目的搭建的弊端 1.传统项目的jar包都是架构师凭借经验来完成的. 2.传统的打包方式(通过压缩文件打包不通用) 3.传统项目的文件都写在Src下,管理器不便捷. 5.Maven项目管理工具 使用Maven能够实现项目的快速构建,快速打包,快速部署. 6.Maven的下载 7.引入Maven工具 1.安装JDK 1.从官网下载安装包,直接进行安装 2.直接拷贝jdk文件,之后通过配置环境变量即可" />
+<meta name="description" content="1.通过监听器的形式引入spring" />
+<meta property="og:description" content="1.通过监听器的形式引入spring" />
 <link rel="canonical" href="http://www.jfox.info/2017/java%E4%B8%BB%E6%B5%81%E6%A1%86%E6%9E%B6-ssm%E9%9B%86%E6%88%90.html" />
 <meta property="og:url" content="http://www.jfox.info/2017/java%E4%B8%BB%E6%B5%81%E6%A1%86%E6%9E%B6-ssm%E9%9B%86%E6%88%90.html" />
 <meta property="og:site_name" content="Java面试" />
 <meta property="og:type" content="article" />
-<meta property="article:published_time" content="2017-01-01T15:52:06+00:00" />
+<meta property="article:published_time" content="2017-01-01T23:52:06+08:00" />
 <script type="application/ld+json">
-{"description":"1.通过监听器的形式引入spring 2.SpringMVC容器和Spring容器间的关系 3.汇通的主旨 让大家熟练掌握SSM调用过程.并且将后台调用彻底掌握. 4.传统项目的搭建的弊端 1.传统项目的jar包都是架构师凭借经验来完成的. 2.传统的打包方式(通过压缩文件打包不通用) 3.传统项目的文件都写在Src下,管理器不便捷. 5.Maven项目管理工具 使用Maven能够实现项目的快速构建,快速打包,快速部署. 6.Maven的下载 7.引入Maven工具 1.安装JDK 1.从官网下载安装包,直接进行安装 2.直接拷贝jdk文件,之后通过配置环境变量即可","@type":"BlogPosting","url":"http://www.jfox.info/2017/java%E4%B8%BB%E6%B5%81%E6%A1%86%E6%9E%B6-ssm%E9%9B%86%E6%88%90.html","headline":"JAVA主流框架—SSM集成","dateModified":"2017-01-01T15:52:06+00:00","datePublished":"2017-01-01T15:52:06+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/java%E4%B8%BB%E6%B5%81%E6%A1%86%E6%9E%B6-ssm%E9%9B%86%E6%88%90.html"},"@context":"http://schema.org"}</script>
+{"@type":"BlogPosting","headline":"JAVA主流框架—SSM集成","dateModified":"2017-01-01T23:52:06+08:00","datePublished":"2017-01-01T23:52:06+08:00","url":"http://www.jfox.info/2017/java%E4%B8%BB%E6%B5%81%E6%A1%86%E6%9E%B6-ssm%E9%9B%86%E6%88%90.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/java%E4%B8%BB%E6%B5%81%E6%A1%86%E6%9E%B6-ssm%E9%9B%86%E6%88%90.html"},"description":"1.通过监听器的形式引入spring","@context":"http://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
   <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
@@ -37,7 +37,7 @@
   <header class="post-header">
     <h1 class="post-title p-name" itemprop="name headline">JAVA主流框架—SSM集成</h1>
     <p class="post-meta">
-      <time class="dt-published" datetime="2017-01-01T15:52:06+00:00" itemprop="datePublished">Jan 1, 2017
+      <time class="dt-published" datetime="2017-01-01T23:52:06+08:00" itemprop="datePublished">Jan 1, 2017
       </time></p>
   </header>
 

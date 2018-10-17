@@ -4,18 +4,18 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
 <title>React 如何转 Vue.js | Java面试</title>
-<meta name="generator" content="Jekyll v3.8.4" />
+<meta name="generator" content="Jekyll v3.8.3" />
 <meta property="og:title" content="React 如何转 Vue.js" />
 <meta property="og:locale" content="zh_CN" />
-<meta name="description" content="如果你是一个 React 开发人员，并决定尝试 Vue.js。欢迎参加这场聚会。 React 和 Vue 就像可口可乐和百事可乐，很多你可以在 React 中做的事，也同样可以在 Vue 中做。不过两者仍然有一些重要的概念上的差异，其中一些反映了 Angular 对 Vue 的影响。 接下来的文章中，我将重点讨论下两者的差异，以便你准备好切换到Vue，并且能马上写出高效的代码。 React 和 Vue 之间有多大的区别？ React 和 Vue 的相似性多于差异性： 都是用于创建 UI 的 JavaScript 库 都是快速和轻量级的 都有基于组件的架构 都使用虚拟 DOM 都可以放在单独的 HTML 文件中，或者在更复杂的 Webpack 设置中的一个模块 都有独立但常用的路由器和状态管理库 它们最大的区别在于 Vue 通常使用 HTML 模板文件，而 React 是完全使用 JavaScript。Vue 还有具有可变状态和称为 “reactivity” 的重新渲染的自动系统。 我们将在下面一一道来。 Components 使用 Vue.js，组件将使用 API 方法 .component 进行声明，该方法接收 id 和定义对象的参数。你可能会注意到 Vue 组件中熟悉的方面，以及不太熟悉的方面： JavaScript Vue.component(‘my-component’, { // Props props: [ ‘myprop’ ], // Local state data() { return { firstName: ‘John’, lastName: ‘Smith’ } }, // Computed property computed: { fullName() { return this.firstName + ‘ ‘ + this.lastName; } }, // Template template: Vue components typically have string templates. Here’s some local state: {{ firstName }} Here’s a computed value: {{ fullName }} Here’s a prop passed down from the parent: {{ myprop }} , // Lifecycle hook created() { setTimeout(() =&gt; { this.message = ‘Goodbye World’ }, 2000);" />
-<meta property="og:description" content="如果你是一个 React 开发人员，并决定尝试 Vue.js。欢迎参加这场聚会。 React 和 Vue 就像可口可乐和百事可乐，很多你可以在 React 中做的事，也同样可以在 Vue 中做。不过两者仍然有一些重要的概念上的差异，其中一些反映了 Angular 对 Vue 的影响。 接下来的文章中，我将重点讨论下两者的差异，以便你准备好切换到Vue，并且能马上写出高效的代码。 React 和 Vue 之间有多大的区别？ React 和 Vue 的相似性多于差异性： 都是用于创建 UI 的 JavaScript 库 都是快速和轻量级的 都有基于组件的架构 都使用虚拟 DOM 都可以放在单独的 HTML 文件中，或者在更复杂的 Webpack 设置中的一个模块 都有独立但常用的路由器和状态管理库 它们最大的区别在于 Vue 通常使用 HTML 模板文件，而 React 是完全使用 JavaScript。Vue 还有具有可变状态和称为 “reactivity” 的重新渲染的自动系统。 我们将在下面一一道来。 Components 使用 Vue.js，组件将使用 API 方法 .component 进行声明，该方法接收 id 和定义对象的参数。你可能会注意到 Vue 组件中熟悉的方面，以及不太熟悉的方面： JavaScript Vue.component(‘my-component’, { // Props props: [ ‘myprop’ ], // Local state data() { return { firstName: ‘John’, lastName: ‘Smith’ } }, // Computed property computed: { fullName() { return this.firstName + ‘ ‘ + this.lastName; } }, // Template template: Vue components typically have string templates. Here’s some local state: {{ firstName }} Here’s a computed value: {{ fullName }} Here’s a prop passed down from the parent: {{ myprop }} , // Lifecycle hook created() { setTimeout(() =&gt; { this.message = ‘Goodbye World’ }, 2000);" />
+<meta name="description" content="如果你是一个 React 开发人员，并决定尝试 Vue.js。欢迎参加这场聚会。" />
+<meta property="og:description" content="如果你是一个 React 开发人员，并决定尝试 Vue.js。欢迎参加这场聚会。" />
 <link rel="canonical" href="http://www.jfox.info/2017/react-%E5%A6%82%E4%BD%95%E8%BD%AC-vue-js.html" />
 <meta property="og:url" content="http://www.jfox.info/2017/react-%E5%A6%82%E4%BD%95%E8%BD%AC-vue-js.html" />
 <meta property="og:site_name" content="Java面试" />
 <meta property="og:type" content="article" />
-<meta property="article:published_time" content="2017-01-01T15:50:12+00:00" />
+<meta property="article:published_time" content="2017-01-01T23:50:12+08:00" />
 <script type="application/ld+json">
-{"description":"如果你是一个 React 开发人员，并决定尝试 Vue.js。欢迎参加这场聚会。 React 和 Vue 就像可口可乐和百事可乐，很多你可以在 React 中做的事，也同样可以在 Vue 中做。不过两者仍然有一些重要的概念上的差异，其中一些反映了 Angular 对 Vue 的影响。 接下来的文章中，我将重点讨论下两者的差异，以便你准备好切换到Vue，并且能马上写出高效的代码。 React 和 Vue 之间有多大的区别？ React 和 Vue 的相似性多于差异性： 都是用于创建 UI 的 JavaScript 库 都是快速和轻量级的 都有基于组件的架构 都使用虚拟 DOM 都可以放在单独的 HTML 文件中，或者在更复杂的 Webpack 设置中的一个模块 都有独立但常用的路由器和状态管理库 它们最大的区别在于 Vue 通常使用 HTML 模板文件，而 React 是完全使用 JavaScript。Vue 还有具有可变状态和称为 “reactivity” 的重新渲染的自动系统。 我们将在下面一一道来。 Components 使用 Vue.js，组件将使用 API 方法 .component 进行声明，该方法接收 id 和定义对象的参数。你可能会注意到 Vue 组件中熟悉的方面，以及不太熟悉的方面： JavaScript Vue.component(‘my-component’, { // Props props: [ ‘myprop’ ], // Local state data() { return { firstName: ‘John’, lastName: ‘Smith’ } }, // Computed property computed: { fullName() { return this.firstName + ‘ ‘ + this.lastName; } }, // Template template: Vue components typically have string templates. Here’s some local state: {{ firstName }} Here’s a computed value: {{ fullName }} Here’s a prop passed down from the parent: {{ myprop }} , // Lifecycle hook created() { setTimeout(() =&gt; { this.message = ‘Goodbye World’ }, 2000);","@type":"BlogPosting","url":"http://www.jfox.info/2017/react-%E5%A6%82%E4%BD%95%E8%BD%AC-vue-js.html","headline":"React 如何转 Vue.js","dateModified":"2017-01-01T15:50:12+00:00","datePublished":"2017-01-01T15:50:12+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/react-%E5%A6%82%E4%BD%95%E8%BD%AC-vue-js.html"},"@context":"http://schema.org"}</script>
+{"@type":"BlogPosting","headline":"React 如何转 Vue.js","dateModified":"2017-01-01T23:50:12+08:00","datePublished":"2017-01-01T23:50:12+08:00","url":"http://www.jfox.info/2017/react-%E5%A6%82%E4%BD%95%E8%BD%AC-vue-js.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/react-%E5%A6%82%E4%BD%95%E8%BD%AC-vue-js.html"},"description":"如果你是一个 React 开发人员，并决定尝试 Vue.js。欢迎参加这场聚会。","@context":"http://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
   <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
@@ -37,7 +37,7 @@
   <header class="post-header">
     <h1 class="post-title p-name" itemprop="name headline">React 如何转 Vue.js</h1>
     <p class="post-meta">
-      <time class="dt-published" datetime="2017-01-01T15:50:12+00:00" itemprop="datePublished">Jan 1, 2017
+      <time class="dt-published" datetime="2017-01-01T23:50:12+08:00" itemprop="datePublished">Jan 1, 2017
       </time></p>
   </header>
 

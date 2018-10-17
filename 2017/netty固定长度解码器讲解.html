@@ -4,18 +4,18 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
 <title>netty 固定长度解码器讲解 | Java面试</title>
-<meta name="generator" content="Jekyll v3.8.4" />
+<meta name="generator" content="Jekyll v3.8.3" />
 <meta property="og:title" content="netty 固定长度解码器讲解" />
 <meta property="og:locale" content="zh_CN" />
-<meta name="description" content="FixedLengthFrameDecoder是固定长度解码器，它能够按照指定的长度对消息进行自动解码，开发者不需要考虑TCP的粘包/拆包问题。 FixedLengthFrameDecoder服务端开发 在服务端的ChannelPipeline中新增FixedLengthFrameDecoder，长度设置为20，然后再依次增加字符串解码器和EchoServerHandler: 利用telnet命令行测试EchoServer服务端 （1）在【运行】菜单中输入cmd命令，打开命令行窗口。 （2）在命令行中输入“telnet localhost 8080”，通过telnet连接服务端。 （3）输入命令行内容:从头开始自学java welcome to Netty at guangzhou （4）EchoServer服务端运行结果: 服务端运行结果完全符合预期，FixedLengthFrameDecoder解码器按照20个字节长度对请求消息进行截取。 总结 DelimiterBasedFrameDecoder用于对使用分隔符结尾的消息进行自动解码，FixedLengthFrameDecoder用于对固定长度的消息进行自动解码。 有了上述两种解码器，再结合其他的解码器，如字符串解码器等，可以轻松地完成对很多消息的自动解码，而且不再需要考虑TCP粘包/拆包导致的读半包问题，极大地提升了开发效率。 只要将DelimiterBasedFrameDecoder或FixedLengthFrameDecoder添加到对应ChannelPipeline的起始位即可。" />
-<meta property="og:description" content="FixedLengthFrameDecoder是固定长度解码器，它能够按照指定的长度对消息进行自动解码，开发者不需要考虑TCP的粘包/拆包问题。 FixedLengthFrameDecoder服务端开发 在服务端的ChannelPipeline中新增FixedLengthFrameDecoder，长度设置为20，然后再依次增加字符串解码器和EchoServerHandler: 利用telnet命令行测试EchoServer服务端 （1）在【运行】菜单中输入cmd命令，打开命令行窗口。 （2）在命令行中输入“telnet localhost 8080”，通过telnet连接服务端。 （3）输入命令行内容:从头开始自学java welcome to Netty at guangzhou （4）EchoServer服务端运行结果: 服务端运行结果完全符合预期，FixedLengthFrameDecoder解码器按照20个字节长度对请求消息进行截取。 总结 DelimiterBasedFrameDecoder用于对使用分隔符结尾的消息进行自动解码，FixedLengthFrameDecoder用于对固定长度的消息进行自动解码。 有了上述两种解码器，再结合其他的解码器，如字符串解码器等，可以轻松地完成对很多消息的自动解码，而且不再需要考虑TCP粘包/拆包导致的读半包问题，极大地提升了开发效率。 只要将DelimiterBasedFrameDecoder或FixedLengthFrameDecoder添加到对应ChannelPipeline的起始位即可。" />
+<meta name="description" content="FixedLengthFrameDecoder是固定长度解码器，它能够按照指定的长度对消息进行自动解码，开发者不需要考虑TCP的粘包/拆包问题。" />
+<meta property="og:description" content="FixedLengthFrameDecoder是固定长度解码器，它能够按照指定的长度对消息进行自动解码，开发者不需要考虑TCP的粘包/拆包问题。" />
 <link rel="canonical" href="http://www.jfox.info/2017/netty%E5%9B%BA%E5%AE%9A%E9%95%BF%E5%BA%A6%E8%A7%A3%E7%A0%81%E5%99%A8%E8%AE%B2%E8%A7%A3.html" />
 <meta property="og:url" content="http://www.jfox.info/2017/netty%E5%9B%BA%E5%AE%9A%E9%95%BF%E5%BA%A6%E8%A7%A3%E7%A0%81%E5%99%A8%E8%AE%B2%E8%A7%A3.html" />
 <meta property="og:site_name" content="Java面试" />
 <meta property="og:type" content="article" />
-<meta property="article:published_time" content="2017-01-01T15:55:12+00:00" />
+<meta property="article:published_time" content="2017-01-01T23:55:12+08:00" />
 <script type="application/ld+json">
-{"description":"FixedLengthFrameDecoder是固定长度解码器，它能够按照指定的长度对消息进行自动解码，开发者不需要考虑TCP的粘包/拆包问题。 FixedLengthFrameDecoder服务端开发 在服务端的ChannelPipeline中新增FixedLengthFrameDecoder，长度设置为20，然后再依次增加字符串解码器和EchoServerHandler: 利用telnet命令行测试EchoServer服务端 （1）在【运行】菜单中输入cmd命令，打开命令行窗口。 （2）在命令行中输入“telnet localhost 8080”，通过telnet连接服务端。 （3）输入命令行内容:从头开始自学java welcome to Netty at guangzhou （4）EchoServer服务端运行结果: 服务端运行结果完全符合预期，FixedLengthFrameDecoder解码器按照20个字节长度对请求消息进行截取。 总结 DelimiterBasedFrameDecoder用于对使用分隔符结尾的消息进行自动解码，FixedLengthFrameDecoder用于对固定长度的消息进行自动解码。 有了上述两种解码器，再结合其他的解码器，如字符串解码器等，可以轻松地完成对很多消息的自动解码，而且不再需要考虑TCP粘包/拆包导致的读半包问题，极大地提升了开发效率。 只要将DelimiterBasedFrameDecoder或FixedLengthFrameDecoder添加到对应ChannelPipeline的起始位即可。","@type":"BlogPosting","url":"http://www.jfox.info/2017/netty%E5%9B%BA%E5%AE%9A%E9%95%BF%E5%BA%A6%E8%A7%A3%E7%A0%81%E5%99%A8%E8%AE%B2%E8%A7%A3.html","headline":"netty 固定长度解码器讲解","dateModified":"2017-01-01T15:55:12+00:00","datePublished":"2017-01-01T15:55:12+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/netty%E5%9B%BA%E5%AE%9A%E9%95%BF%E5%BA%A6%E8%A7%A3%E7%A0%81%E5%99%A8%E8%AE%B2%E8%A7%A3.html"},"@context":"http://schema.org"}</script>
+{"@type":"BlogPosting","headline":"netty 固定长度解码器讲解","dateModified":"2017-01-01T23:55:12+08:00","datePublished":"2017-01-01T23:55:12+08:00","url":"http://www.jfox.info/2017/netty%E5%9B%BA%E5%AE%9A%E9%95%BF%E5%BA%A6%E8%A7%A3%E7%A0%81%E5%99%A8%E8%AE%B2%E8%A7%A3.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/netty%E5%9B%BA%E5%AE%9A%E9%95%BF%E5%BA%A6%E8%A7%A3%E7%A0%81%E5%99%A8%E8%AE%B2%E8%A7%A3.html"},"description":"FixedLengthFrameDecoder是固定长度解码器，它能够按照指定的长度对消息进行自动解码，开发者不需要考虑TCP的粘包/拆包问题。","@context":"http://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
   <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
@@ -37,7 +37,7 @@
   <header class="post-header">
     <h1 class="post-title p-name" itemprop="name headline">netty 固定长度解码器讲解</h1>
     <p class="post-meta">
-      <time class="dt-published" datetime="2017-01-01T15:55:12+00:00" itemprop="datePublished">Jan 1, 2017
+      <time class="dt-published" datetime="2017-01-01T23:55:12+08:00" itemprop="datePublished">Jan 1, 2017
       </time></p>
   </header>
 

@@ -4,18 +4,18 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
 <title>Java 生产环境 debug | Java面试</title>
-<meta name="generator" content="Jekyll v3.8.4" />
+<meta name="generator" content="Jekyll v3.8.3" />
 <meta property="og:title" content="Java 生产环境 debug" />
 <meta property="og:locale" content="zh_CN" />
-<meta name="description" content="要解决的问题：生产环境是内网服务器，只提供跳板机额外网访问权限，通过 idea 对生产环境进行调试。 1、生产环境启动参数 start.sh JAVA_DEBUG_OPTS=&quot;&quot; if [ &quot;$1&quot; = &quot;debug&quot; ]; then JAVA_DEBUG_OPTS=&quot; -Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n &quot; fi # JAVA_DEBUG_OPTS 放在Java脚本启动的JVM参数 # 解释: 随着jkd版本的升高，上面的写法变了，但是功能并不影响，待会儿到idea的时候就能看到了。 # -Xrunjdwp 是通知JVM使用(java debug wire protocol)来运行调试环境。该参数同时了一系列的调试选项： # transport 指定了调试数据的传送方式 # dt_socket 是指用SOCKET模式 # address 端口 # server=y/n VM 是否需要作为调试服务器执行。 # suspend=y/n 是否在调试客户端创建连接之后启动 VM 。 2、idea 配置调试端口 打开 idea 当前工程，Edit configurations…，如下图 在Remote配置如下，其实就是host和端口而已，其实上面脚本里面的就类似于idea里面的这些。 3、SecureCRT 配置端口转发 我只会用SecureCRT 做端口转发，其他要是有好的工具欢迎建议给大家 首先在 SecureCRT 登录跳板机，比如我的跳板机是120.27.227.13，右键 properties 或者点工具栏的 options-&gt;session options 然后点 Port Forwarding，Add增加一条 编辑 4、以debug模式启动服务器 ./start.sh debug 5、idea 点debug，就发现已经连接上了 现在就可以愉快的打断点调你的服务了，即将进入debug模式" />
-<meta property="og:description" content="要解决的问题：生产环境是内网服务器，只提供跳板机额外网访问权限，通过 idea 对生产环境进行调试。 1、生产环境启动参数 start.sh JAVA_DEBUG_OPTS=&quot;&quot; if [ &quot;$1&quot; = &quot;debug&quot; ]; then JAVA_DEBUG_OPTS=&quot; -Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n &quot; fi # JAVA_DEBUG_OPTS 放在Java脚本启动的JVM参数 # 解释: 随着jkd版本的升高，上面的写法变了，但是功能并不影响，待会儿到idea的时候就能看到了。 # -Xrunjdwp 是通知JVM使用(java debug wire protocol)来运行调试环境。该参数同时了一系列的调试选项： # transport 指定了调试数据的传送方式 # dt_socket 是指用SOCKET模式 # address 端口 # server=y/n VM 是否需要作为调试服务器执行。 # suspend=y/n 是否在调试客户端创建连接之后启动 VM 。 2、idea 配置调试端口 打开 idea 当前工程，Edit configurations…，如下图 在Remote配置如下，其实就是host和端口而已，其实上面脚本里面的就类似于idea里面的这些。 3、SecureCRT 配置端口转发 我只会用SecureCRT 做端口转发，其他要是有好的工具欢迎建议给大家 首先在 SecureCRT 登录跳板机，比如我的跳板机是120.27.227.13，右键 properties 或者点工具栏的 options-&gt;session options 然后点 Port Forwarding，Add增加一条 编辑 4、以debug模式启动服务器 ./start.sh debug 5、idea 点debug，就发现已经连接上了 现在就可以愉快的打断点调你的服务了，即将进入debug模式" />
+<meta name="description" content="要解决的问题：生产环境是内网服务器，只提供跳板机额外网访问权限，通过 idea 对生产环境进行调试。" />
+<meta property="og:description" content="要解决的问题：生产环境是内网服务器，只提供跳板机额外网访问权限，通过 idea 对生产环境进行调试。" />
 <link rel="canonical" href="http://www.jfox.info/2017/java%E7%94%9F%E4%BA%A7%E7%8E%AF%E5%A2%83debug.html" />
 <meta property="og:url" content="http://www.jfox.info/2017/java%E7%94%9F%E4%BA%A7%E7%8E%AF%E5%A2%83debug.html" />
 <meta property="og:site_name" content="Java面试" />
 <meta property="og:type" content="article" />
-<meta property="article:published_time" content="2017-01-01T15:57:03+00:00" />
+<meta property="article:published_time" content="2017-01-01T23:57:03+08:00" />
 <script type="application/ld+json">
-{"description":"要解决的问题：生产环境是内网服务器，只提供跳板机额外网访问权限，通过 idea 对生产环境进行调试。 1、生产环境启动参数 start.sh JAVA_DEBUG_OPTS=&quot;&quot; if [ &quot;$1&quot; = &quot;debug&quot; ]; then JAVA_DEBUG_OPTS=&quot; -Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n &quot; fi # JAVA_DEBUG_OPTS 放在Java脚本启动的JVM参数 # 解释: 随着jkd版本的升高，上面的写法变了，但是功能并不影响，待会儿到idea的时候就能看到了。 # -Xrunjdwp 是通知JVM使用(java debug wire protocol)来运行调试环境。该参数同时了一系列的调试选项： # transport 指定了调试数据的传送方式 # dt_socket 是指用SOCKET模式 # address 端口 # server=y/n VM 是否需要作为调试服务器执行。 # suspend=y/n 是否在调试客户端创建连接之后启动 VM 。 2、idea 配置调试端口 打开 idea 当前工程，Edit configurations…，如下图 在Remote配置如下，其实就是host和端口而已，其实上面脚本里面的就类似于idea里面的这些。 3、SecureCRT 配置端口转发 我只会用SecureCRT 做端口转发，其他要是有好的工具欢迎建议给大家 首先在 SecureCRT 登录跳板机，比如我的跳板机是120.27.227.13，右键 properties 或者点工具栏的 options-&gt;session options 然后点 Port Forwarding，Add增加一条 编辑 4、以debug模式启动服务器 ./start.sh debug 5、idea 点debug，就发现已经连接上了 现在就可以愉快的打断点调你的服务了，即将进入debug模式","@type":"BlogPosting","url":"http://www.jfox.info/2017/java%E7%94%9F%E4%BA%A7%E7%8E%AF%E5%A2%83debug.html","headline":"Java 生产环境 debug","dateModified":"2017-01-01T15:57:03+00:00","datePublished":"2017-01-01T15:57:03+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/java%E7%94%9F%E4%BA%A7%E7%8E%AF%E5%A2%83debug.html"},"@context":"http://schema.org"}</script>
+{"@type":"BlogPosting","headline":"Java 生产环境 debug","dateModified":"2017-01-01T23:57:03+08:00","datePublished":"2017-01-01T23:57:03+08:00","url":"http://www.jfox.info/2017/java%E7%94%9F%E4%BA%A7%E7%8E%AF%E5%A2%83debug.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/java%E7%94%9F%E4%BA%A7%E7%8E%AF%E5%A2%83debug.html"},"description":"要解决的问题：生产环境是内网服务器，只提供跳板机额外网访问权限，通过 idea 对生产环境进行调试。","@context":"http://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
   <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
@@ -37,7 +37,7 @@
   <header class="post-header">
     <h1 class="post-title p-name" itemprop="name headline">Java 生产环境 debug</h1>
     <p class="post-meta">
-      <time class="dt-published" datetime="2017-01-01T15:57:03+00:00" itemprop="datePublished">Jan 1, 2017
+      <time class="dt-published" datetime="2017-01-01T23:57:03+08:00" itemprop="datePublished">Jan 1, 2017
       </time></p>
   </header>
 

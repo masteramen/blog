@@ -4,18 +4,18 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
 <title>在java中，将String类型字符串s赋值为null后，将字符串与其他字符串拼接后得到结果出现了null字符串与其他字符连接的样式 | Java面试</title>
-<meta name="generator" content="Jekyll v3.8.4" />
+<meta name="generator" content="Jekyll v3.8.3" />
 <meta property="og:title" content="在java中，将String类型字符串s赋值为null后，将字符串与其他字符串拼接后得到结果出现了null字符串与其他字符连接的样式" />
 <meta property="og:locale" content="zh_CN" />
-<meta name="description" content="String s = null; s += “hello”; System.out.println(s); 结果为：nullhello 原因： 先应用String.valueOf 得出s的value值，再通过StringBuilder拼接hello，因此将value与hello进行了拼接； String s = null; s = (new StringBuilder(String.valueOf(s))).append(“hello”).toString(); System.out.println(s);" />
-<meta property="og:description" content="String s = null; s += “hello”; System.out.println(s); 结果为：nullhello 原因： 先应用String.valueOf 得出s的value值，再通过StringBuilder拼接hello，因此将value与hello进行了拼接； String s = null; s = (new StringBuilder(String.valueOf(s))).append(“hello”).toString(); System.out.println(s);" />
+<meta name="description" content="String s = null;" />
+<meta property="og:description" content="String s = null;" />
 <link rel="canonical" href="http://www.jfox.info/2017/%E5%9C%A8java%E4%B8%AD-%E5%B0%86string%E7%B1%BB%E5%9E%8B%E5%AD%97%E7%AC%A6%E4%B8%B2s%E8%B5%8B%E5%80%BC%E4%B8%BAnull%E5%90%8E-%E5%B0%86%E5%AD%97%E7%AC%A6%E4%B8%B2%E4%B8%8E%E5%85%B6%E4%BB%96%E5%AD%97.html" />
 <meta property="og:url" content="http://www.jfox.info/2017/%E5%9C%A8java%E4%B8%AD-%E5%B0%86string%E7%B1%BB%E5%9E%8B%E5%AD%97%E7%AC%A6%E4%B8%B2s%E8%B5%8B%E5%80%BC%E4%B8%BAnull%E5%90%8E-%E5%B0%86%E5%AD%97%E7%AC%A6%E4%B8%B2%E4%B8%8E%E5%85%B6%E4%BB%96%E5%AD%97.html" />
 <meta property="og:site_name" content="Java面试" />
 <meta property="og:type" content="article" />
-<meta property="article:published_time" content="2017-01-01T15:49:52+00:00" />
+<meta property="article:published_time" content="2017-01-01T23:49:52+08:00" />
 <script type="application/ld+json">
-{"description":"String s = null; s += “hello”; System.out.println(s); 结果为：nullhello 原因： 先应用String.valueOf 得出s的value值，再通过StringBuilder拼接hello，因此将value与hello进行了拼接； String s = null; s = (new StringBuilder(String.valueOf(s))).append(“hello”).toString(); System.out.println(s);","@type":"BlogPosting","url":"http://www.jfox.info/2017/%E5%9C%A8java%E4%B8%AD-%E5%B0%86string%E7%B1%BB%E5%9E%8B%E5%AD%97%E7%AC%A6%E4%B8%B2s%E8%B5%8B%E5%80%BC%E4%B8%BAnull%E5%90%8E-%E5%B0%86%E5%AD%97%E7%AC%A6%E4%B8%B2%E4%B8%8E%E5%85%B6%E4%BB%96%E5%AD%97.html","headline":"在java中，将String类型字符串s赋值为null后，将字符串与其他字符串拼接后得到结果出现了null字符串与其他字符连接的样式","dateModified":"2017-01-01T15:49:52+00:00","datePublished":"2017-01-01T15:49:52+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/%E5%9C%A8java%E4%B8%AD-%E5%B0%86string%E7%B1%BB%E5%9E%8B%E5%AD%97%E7%AC%A6%E4%B8%B2s%E8%B5%8B%E5%80%BC%E4%B8%BAnull%E5%90%8E-%E5%B0%86%E5%AD%97%E7%AC%A6%E4%B8%B2%E4%B8%8E%E5%85%B6%E4%BB%96%E5%AD%97.html"},"@context":"http://schema.org"}</script>
+{"@type":"BlogPosting","headline":"在java中，将String类型字符串s赋值为null后，将字符串与其他字符串拼接后得到结果出现了null字符串与其他字符连接的样式","dateModified":"2017-01-01T23:49:52+08:00","datePublished":"2017-01-01T23:49:52+08:00","url":"http://www.jfox.info/2017/%E5%9C%A8java%E4%B8%AD-%E5%B0%86string%E7%B1%BB%E5%9E%8B%E5%AD%97%E7%AC%A6%E4%B8%B2s%E8%B5%8B%E5%80%BC%E4%B8%BAnull%E5%90%8E-%E5%B0%86%E5%AD%97%E7%AC%A6%E4%B8%B2%E4%B8%8E%E5%85%B6%E4%BB%96%E5%AD%97.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/%E5%9C%A8java%E4%B8%AD-%E5%B0%86string%E7%B1%BB%E5%9E%8B%E5%AD%97%E7%AC%A6%E4%B8%B2s%E8%B5%8B%E5%80%BC%E4%B8%BAnull%E5%90%8E-%E5%B0%86%E5%AD%97%E7%AC%A6%E4%B8%B2%E4%B8%8E%E5%85%B6%E4%BB%96%E5%AD%97.html"},"description":"String s = null;","@context":"http://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
   <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
@@ -37,7 +37,7 @@
   <header class="post-header">
     <h1 class="post-title p-name" itemprop="name headline">在java中，将String类型字符串s赋值为null后，将字符串与其他字符串拼接后得到结果出现了null字符串与其他字符连接的样式</h1>
     <p class="post-meta">
-      <time class="dt-published" datetime="2017-01-01T15:49:52+00:00" itemprop="datePublished">Jan 1, 2017
+      <time class="dt-published" datetime="2017-01-01T23:49:52+08:00" itemprop="datePublished">Jan 1, 2017
       </time></p>
   </header>
 

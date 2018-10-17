@@ -4,18 +4,18 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
 <title>idea2017+tomcat热部署配置 | Java面试</title>
-<meta name="generator" content="Jekyll v3.8.4" />
+<meta name="generator" content="Jekyll v3.8.3" />
 <meta property="og:title" content="idea2017+tomcat热部署配置" />
 <meta property="og:locale" content="zh_CN" />
-<meta name="description" content="idea2017+tomcat热部署配置 作者landy85302017.07.13 12:31*字数 685 引言：部署在项目开发过程中是常有的事，特别是debug的时候，但是如果每次修改一个bug都要把整个项目重新部署一遍,以便测试修改的效果或者继续debug其他bug，那对开发人员来说无疑是一大噩梦。不过有了JVM的hotSwap以及Intellij Idea对debug，hotSwap的支持，热部署就变得很容易的一件事情。今天就简单介绍一下通过对Intellij Idea 2017热部署的设置达到最方便的最高效的debug效果。 1.设置Debugger-HotSwap 在setting界面，打开Debugger-HotSwap选项，确保勾选了Build project before reloading classes，同时选择Reload classes after compilation为Always。这样我们在编译某个修改了的java文件之后，就会利用HotSwap机制reload class，而Build project before reloading classes就确保了其他修改过的文件一起同步到部署目录。 设置Debugger-HotSwap.png 2.项目设置 在Project Structure视图中，在Project setting –&gt; Articfacts选项中，选择war:Exploded类型的modules，然后设置编译输出项目的路径 项目设置.png 将你的构建输出目录直接设置在源程序目录中，然后重定向的docBase直接指向你的web根目录（就是WEB-INF的父目录）。这样，你只要将编译输出目录设置为WEB-INFclasses就行了，而且，修改JSP文件都不要重新构建，唯一要做的就是修改了java文件之后compile一下。 注：关于如何设置web工程的方法请参照文章《idea设置tomcat》 3.配置tomcat image.png 在Deployment选项卡中选择war exploded项目 image.png image.png 注：如果选项中没有update classes and resources 选项，则是由于服务器添加的Artifact类型问题，一般一个module对应两种类型的Artifact，一种是war，一种是war explored。war就是已war包形式发布，当前项目是这种形式，在这种形式下on frame deactivation配置没有update classes and resources选项。war explored是发布文件目录，选择这种形式，on frame deactivation中就出现update classes and resources选项了。" />
-<meta property="og:description" content="idea2017+tomcat热部署配置 作者landy85302017.07.13 12:31*字数 685 引言：部署在项目开发过程中是常有的事，特别是debug的时候，但是如果每次修改一个bug都要把整个项目重新部署一遍,以便测试修改的效果或者继续debug其他bug，那对开发人员来说无疑是一大噩梦。不过有了JVM的hotSwap以及Intellij Idea对debug，hotSwap的支持，热部署就变得很容易的一件事情。今天就简单介绍一下通过对Intellij Idea 2017热部署的设置达到最方便的最高效的debug效果。 1.设置Debugger-HotSwap 在setting界面，打开Debugger-HotSwap选项，确保勾选了Build project before reloading classes，同时选择Reload classes after compilation为Always。这样我们在编译某个修改了的java文件之后，就会利用HotSwap机制reload class，而Build project before reloading classes就确保了其他修改过的文件一起同步到部署目录。 设置Debugger-HotSwap.png 2.项目设置 在Project Structure视图中，在Project setting –&gt; Articfacts选项中，选择war:Exploded类型的modules，然后设置编译输出项目的路径 项目设置.png 将你的构建输出目录直接设置在源程序目录中，然后重定向的docBase直接指向你的web根目录（就是WEB-INF的父目录）。这样，你只要将编译输出目录设置为WEB-INFclasses就行了，而且，修改JSP文件都不要重新构建，唯一要做的就是修改了java文件之后compile一下。 注：关于如何设置web工程的方法请参照文章《idea设置tomcat》 3.配置tomcat image.png 在Deployment选项卡中选择war exploded项目 image.png image.png 注：如果选项中没有update classes and resources 选项，则是由于服务器添加的Artifact类型问题，一般一个module对应两种类型的Artifact，一种是war，一种是war explored。war就是已war包形式发布，当前项目是这种形式，在这种形式下on frame deactivation配置没有update classes and resources选项。war explored是发布文件目录，选择这种形式，on frame deactivation中就出现update classes and resources选项了。" />
+<meta name="description" content="idea2017+tomcat热部署配置" />
+<meta property="og:description" content="idea2017+tomcat热部署配置" />
 <link rel="canonical" href="http://www.jfox.info/2017/idea2017tomcat%E7%83%AD%E9%83%A8%E7%BD%B2%E9%85%8D%E7%BD%AE.html" />
 <meta property="og:url" content="http://www.jfox.info/2017/idea2017tomcat%E7%83%AD%E9%83%A8%E7%BD%B2%E9%85%8D%E7%BD%AE.html" />
 <meta property="og:site_name" content="Java面试" />
 <meta property="og:type" content="article" />
-<meta property="article:published_time" content="2017-01-01T15:57:26+00:00" />
+<meta property="article:published_time" content="2017-01-01T23:57:26+08:00" />
 <script type="application/ld+json">
-{"description":"idea2017+tomcat热部署配置 作者landy85302017.07.13 12:31*字数 685 引言：部署在项目开发过程中是常有的事，特别是debug的时候，但是如果每次修改一个bug都要把整个项目重新部署一遍,以便测试修改的效果或者继续debug其他bug，那对开发人员来说无疑是一大噩梦。不过有了JVM的hotSwap以及Intellij Idea对debug，hotSwap的支持，热部署就变得很容易的一件事情。今天就简单介绍一下通过对Intellij Idea 2017热部署的设置达到最方便的最高效的debug效果。 1.设置Debugger-HotSwap 在setting界面，打开Debugger-HotSwap选项，确保勾选了Build project before reloading classes，同时选择Reload classes after compilation为Always。这样我们在编译某个修改了的java文件之后，就会利用HotSwap机制reload class，而Build project before reloading classes就确保了其他修改过的文件一起同步到部署目录。 设置Debugger-HotSwap.png 2.项目设置 在Project Structure视图中，在Project setting –&gt; Articfacts选项中，选择war:Exploded类型的modules，然后设置编译输出项目的路径 项目设置.png 将你的构建输出目录直接设置在源程序目录中，然后重定向的docBase直接指向你的web根目录（就是WEB-INF的父目录）。这样，你只要将编译输出目录设置为WEB-INFclasses就行了，而且，修改JSP文件都不要重新构建，唯一要做的就是修改了java文件之后compile一下。 注：关于如何设置web工程的方法请参照文章《idea设置tomcat》 3.配置tomcat image.png 在Deployment选项卡中选择war exploded项目 image.png image.png 注：如果选项中没有update classes and resources 选项，则是由于服务器添加的Artifact类型问题，一般一个module对应两种类型的Artifact，一种是war，一种是war explored。war就是已war包形式发布，当前项目是这种形式，在这种形式下on frame deactivation配置没有update classes and resources选项。war explored是发布文件目录，选择这种形式，on frame deactivation中就出现update classes and resources选项了。","@type":"BlogPosting","url":"http://www.jfox.info/2017/idea2017tomcat%E7%83%AD%E9%83%A8%E7%BD%B2%E9%85%8D%E7%BD%AE.html","headline":"idea2017+tomcat热部署配置","dateModified":"2017-01-01T15:57:26+00:00","datePublished":"2017-01-01T15:57:26+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/idea2017tomcat%E7%83%AD%E9%83%A8%E7%BD%B2%E9%85%8D%E7%BD%AE.html"},"@context":"http://schema.org"}</script>
+{"@type":"BlogPosting","headline":"idea2017+tomcat热部署配置","dateModified":"2017-01-01T23:57:26+08:00","datePublished":"2017-01-01T23:57:26+08:00","url":"http://www.jfox.info/2017/idea2017tomcat%E7%83%AD%E9%83%A8%E7%BD%B2%E9%85%8D%E7%BD%AE.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/idea2017tomcat%E7%83%AD%E9%83%A8%E7%BD%B2%E9%85%8D%E7%BD%AE.html"},"description":"idea2017+tomcat热部署配置","@context":"http://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
   <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
@@ -37,7 +37,7 @@
   <header class="post-header">
     <h1 class="post-title p-name" itemprop="name headline">idea2017+tomcat热部署配置</h1>
     <p class="post-meta">
-      <time class="dt-published" datetime="2017-01-01T15:57:26+00:00" itemprop="datePublished">Jan 1, 2017
+      <time class="dt-published" datetime="2017-01-01T23:57:26+08:00" itemprop="datePublished">Jan 1, 2017
       </time></p>
   </header>
 

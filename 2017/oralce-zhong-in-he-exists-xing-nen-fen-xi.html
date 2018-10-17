@@ -4,18 +4,18 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
 <title>oralce中in和exists性能分析 | Java面试</title>
-<meta name="generator" content="Jekyll v3.8.4" />
+<meta name="generator" content="Jekyll v3.8.3" />
 <meta property="og:title" content="oralce中in和exists性能分析" />
 <meta property="og:locale" content="zh_CN" />
-<meta name="description" content="在我们平常写sql的时候，in和exists这两个关键词会经常用到，所以我们有必要对它们的性能作一个分析。 **[in和exists性能分析] ** 1) select * from T1 where exists(select 1 from T2 where T1.a=T2.a) ; T1数据量小而T2数据量非常大时，即数据量T1 &lt;&lt; T2 时，1) 的查询效率高。 2) select * from T1 where T1.a in (select T2.a from T2) ; T1数据量非常大而T2数据量小时，即数据量T1 &gt;&gt; T2 时，2) 的查询效率高。 简而言之，一般来说：外表大，用IN；内表大，用EXISTS。如果查询的两个表大小相当，那么用in和用exists基本没什么区别。 **[not in和not exists性能分析] ** 如果查询语句用到了not in， 那么内外表都进行全表扫描，没有用到索引。 而not exists的子查询依然能用到表上的索引。所以无论那个表大，用not exists都比not in要快。" />
-<meta property="og:description" content="在我们平常写sql的时候，in和exists这两个关键词会经常用到，所以我们有必要对它们的性能作一个分析。 **[in和exists性能分析] ** 1) select * from T1 where exists(select 1 from T2 where T1.a=T2.a) ; T1数据量小而T2数据量非常大时，即数据量T1 &lt;&lt; T2 时，1) 的查询效率高。 2) select * from T1 where T1.a in (select T2.a from T2) ; T1数据量非常大而T2数据量小时，即数据量T1 &gt;&gt; T2 时，2) 的查询效率高。 简而言之，一般来说：外表大，用IN；内表大，用EXISTS。如果查询的两个表大小相当，那么用in和用exists基本没什么区别。 **[not in和not exists性能分析] ** 如果查询语句用到了not in， 那么内外表都进行全表扫描，没有用到索引。 而not exists的子查询依然能用到表上的索引。所以无论那个表大，用not exists都比not in要快。" />
+<meta name="description" content="在我们平常写sql的时候，in和exists这两个关键词会经常用到，所以我们有必要对它们的性能作一个分析。" />
+<meta property="og:description" content="在我们平常写sql的时候，in和exists这两个关键词会经常用到，所以我们有必要对它们的性能作一个分析。" />
 <link rel="canonical" href="http://www.jfox.info/2017/oralce-zhong-in-he-exists-xing-nen-fen-xi.html" />
 <meta property="og:url" content="http://www.jfox.info/2017/oralce-zhong-in-he-exists-xing-nen-fen-xi.html" />
 <meta property="og:site_name" content="Java面试" />
 <meta property="og:type" content="article" />
-<meta property="article:published_time" content="2017-01-01T15:47:03+00:00" />
+<meta property="article:published_time" content="2017-01-01T23:47:03+08:00" />
 <script type="application/ld+json">
-{"description":"在我们平常写sql的时候，in和exists这两个关键词会经常用到，所以我们有必要对它们的性能作一个分析。 **[in和exists性能分析] ** 1) select * from T1 where exists(select 1 from T2 where T1.a=T2.a) ; T1数据量小而T2数据量非常大时，即数据量T1 &lt;&lt; T2 时，1) 的查询效率高。 2) select * from T1 where T1.a in (select T2.a from T2) ; T1数据量非常大而T2数据量小时，即数据量T1 &gt;&gt; T2 时，2) 的查询效率高。 简而言之，一般来说：外表大，用IN；内表大，用EXISTS。如果查询的两个表大小相当，那么用in和用exists基本没什么区别。 **[not in和not exists性能分析] ** 如果查询语句用到了not in， 那么内外表都进行全表扫描，没有用到索引。 而not exists的子查询依然能用到表上的索引。所以无论那个表大，用not exists都比not in要快。","@type":"BlogPosting","url":"http://www.jfox.info/2017/oralce-zhong-in-he-exists-xing-nen-fen-xi.html","headline":"oralce中in和exists性能分析","dateModified":"2017-01-01T15:47:03+00:00","datePublished":"2017-01-01T15:47:03+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/oralce-zhong-in-he-exists-xing-nen-fen-xi.html"},"@context":"http://schema.org"}</script>
+{"@type":"BlogPosting","headline":"oralce中in和exists性能分析","dateModified":"2017-01-01T23:47:03+08:00","datePublished":"2017-01-01T23:47:03+08:00","url":"http://www.jfox.info/2017/oralce-zhong-in-he-exists-xing-nen-fen-xi.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/oralce-zhong-in-he-exists-xing-nen-fen-xi.html"},"description":"在我们平常写sql的时候，in和exists这两个关键词会经常用到，所以我们有必要对它们的性能作一个分析。","@context":"http://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
   <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
@@ -37,7 +37,7 @@
   <header class="post-header">
     <h1 class="post-title p-name" itemprop="name headline">oralce中in和exists性能分析</h1>
     <p class="post-meta">
-      <time class="dt-published" datetime="2017-01-01T15:47:03+00:00" itemprop="datePublished">Jan 1, 2017
+      <time class="dt-published" datetime="2017-01-01T23:47:03+08:00" itemprop="datePublished">Jan 1, 2017
       </time></p>
   </header>
 

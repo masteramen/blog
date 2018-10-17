@@ -4,18 +4,18 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
 <title>coverity&amp;fortify1–Poor Error Handling: Overly Broad Catch | Java面试</title>
-<meta name="generator" content="Jekyll v3.8.4" />
+<meta name="generator" content="Jekyll v3.8.3" />
 <meta property="og:title" content="coverity&amp;fortify1–Poor Error Handling: Overly Broad Catch" />
 <meta property="og:locale" content="zh_CN" />
-<meta name="description" content="ganchuanpu 阅读( …) 评论( …) 编辑收藏 1.描述： 　　多个 catch 块看上去既难看又繁琐，但使用一个“简约”的 catch 块捕获高级别的异常类（如 Exception），可能会混淆那些需要特殊处理的异常，或是捕获了不应在程序中这一点捕获的异常。本质上，捕获范围过大的异常与“Java 分类定义异常”这一目的是相违背的。 ### 2.风险： 随着程序的增加而抛出新异常时，这种做法会十分危险。而新发生的异常类型也不会被注意到。 3.例子： try{ //IOoperation // } catch(Exception ex){ Log(ex); } Fortify建议你分别处理可能出现的异常，因为不同类型的异常需要不同的处理方法，所以应该把try{}里可能出现的异常都枚举出来，然后分别处理，正确的代码写法如下： try { //IOoperation // } catch (IOException e) { logger.error(&quot;doExchange failed&quot;, e); } catch (InvocationTargetException e) { logger.error(&quot;doExchange failed&quot;, e); } catch (SQLException e) { logger.error(&quot;doExchange failed&quot;, e); }" />
-<meta property="og:description" content="ganchuanpu 阅读( …) 评论( …) 编辑收藏 1.描述： 　　多个 catch 块看上去既难看又繁琐，但使用一个“简约”的 catch 块捕获高级别的异常类（如 Exception），可能会混淆那些需要特殊处理的异常，或是捕获了不应在程序中这一点捕获的异常。本质上，捕获范围过大的异常与“Java 分类定义异常”这一目的是相违背的。 ### 2.风险： 随着程序的增加而抛出新异常时，这种做法会十分危险。而新发生的异常类型也不会被注意到。 3.例子： try{ //IOoperation // } catch(Exception ex){ Log(ex); } Fortify建议你分别处理可能出现的异常，因为不同类型的异常需要不同的处理方法，所以应该把try{}里可能出现的异常都枚举出来，然后分别处理，正确的代码写法如下： try { //IOoperation // } catch (IOException e) { logger.error(&quot;doExchange failed&quot;, e); } catch (InvocationTargetException e) { logger.error(&quot;doExchange failed&quot;, e); } catch (SQLException e) { logger.error(&quot;doExchange failed&quot;, e); }" />
+<meta name="description" content="ganchuanpu 阅读( …) 评论( …) 编辑收藏 1.描述：" />
+<meta property="og:description" content="ganchuanpu 阅读( …) 评论( …) 编辑收藏 1.描述：" />
 <link rel="canonical" href="http://www.jfox.info/2017/coverityfortify1poorerrorhandlingoverlybroadcatch.html" />
 <meta property="og:url" content="http://www.jfox.info/2017/coverityfortify1poorerrorhandlingoverlybroadcatch.html" />
 <meta property="og:site_name" content="Java面试" />
 <meta property="og:type" content="article" />
-<meta property="article:published_time" content="2017-01-01T15:56:17+00:00" />
+<meta property="article:published_time" content="2017-01-01T23:56:17+08:00" />
 <script type="application/ld+json">
-{"description":"ganchuanpu 阅读( …) 评论( …) 编辑收藏 1.描述： 　　多个 catch 块看上去既难看又繁琐，但使用一个“简约”的 catch 块捕获高级别的异常类（如 Exception），可能会混淆那些需要特殊处理的异常，或是捕获了不应在程序中这一点捕获的异常。本质上，捕获范围过大的异常与“Java 分类定义异常”这一目的是相违背的。 ### 2.风险： 随着程序的增加而抛出新异常时，这种做法会十分危险。而新发生的异常类型也不会被注意到。 3.例子： try{ //IOoperation // } catch(Exception ex){ Log(ex); } Fortify建议你分别处理可能出现的异常，因为不同类型的异常需要不同的处理方法，所以应该把try{}里可能出现的异常都枚举出来，然后分别处理，正确的代码写法如下： try { //IOoperation // } catch (IOException e) { logger.error(&quot;doExchange failed&quot;, e); } catch (InvocationTargetException e) { logger.error(&quot;doExchange failed&quot;, e); } catch (SQLException e) { logger.error(&quot;doExchange failed&quot;, e); }","@type":"BlogPosting","url":"http://www.jfox.info/2017/coverityfortify1poorerrorhandlingoverlybroadcatch.html","headline":"coverity&amp;fortify1–Poor Error Handling: Overly Broad Catch","dateModified":"2017-01-01T15:56:17+00:00","datePublished":"2017-01-01T15:56:17+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/coverityfortify1poorerrorhandlingoverlybroadcatch.html"},"@context":"http://schema.org"}</script>
+{"@type":"BlogPosting","headline":"coverity&amp;fortify1–Poor Error Handling: Overly Broad Catch","dateModified":"2017-01-01T23:56:17+08:00","datePublished":"2017-01-01T23:56:17+08:00","url":"http://www.jfox.info/2017/coverityfortify1poorerrorhandlingoverlybroadcatch.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2017/coverityfortify1poorerrorhandlingoverlybroadcatch.html"},"description":"ganchuanpu 阅读( …) 评论( …) 编辑收藏 1.描述：","@context":"http://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
   <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
@@ -37,7 +37,7 @@
   <header class="post-header">
     <h1 class="post-title p-name" itemprop="name headline">coverity&amp;fortify1–Poor Error Handling: Overly Broad Catch</h1>
     <p class="post-meta">
-      <time class="dt-published" datetime="2017-01-01T15:56:17+00:00" itemprop="datePublished">Jan 1, 2017
+      <time class="dt-published" datetime="2017-01-01T23:56:17+08:00" itemprop="datePublished">Jan 1, 2017
       </time></p>
   </header>
 

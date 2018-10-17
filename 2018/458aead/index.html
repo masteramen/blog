@@ -4,18 +4,16 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
 <title>如何捕获express框架app.listen的异常？ | Java面试</title>
-<meta name="generator" content="Jekyll v3.8.4" />
+<meta name="generator" content="Jekyll v3.8.3" />
 <meta property="og:title" content="如何捕获express框架app.listen的异常？" />
 <meta property="og:locale" content="zh_CN" />
-<meta name="description" content="问题背景 由于在启动项目时会出现 uncaught exception: Error: listen EADDRINUSR 155.145.111.11:45621 … … 解决方法 所以想捕获 listen 的异常。但在网上查了之后都是用的 process.on(‘uncaughtexception’,function)此方法。 有没有直接捕获 listen 的异常的方法呀，求助。 1、process.on(‘uncaughtexception’, callback) 是进程级别的异常捕获； 2、app.listen(port, callback); 这里的 callback 可以理解为，整个框架都是通过一个回调函数来处理 HTTP 请求，里面进程 MVC 等各种设计； 来看看 app.listen 到底做了什么：https://github.com/expressjs/express/blob/master/lib/application.js#L617。 ====== 正义分割线 通过 app.listen 我们其实得到一个 server 对象，通过监听 server 对象的错误事件可以获取到错误信息； server.on(&quot;error&quot;, e =&gt; { if (e.code === &quot;EADDRINUSE&quot;) { console.log(&quot;Address in use, retrying...&quot;); setTimeout(() =&gt; { server.close(); server.listen(PORT, HOST); }, 1000); } }); 通过 server.listening 方法可以提前判断端口是否被占用； listen 时指定端口为 0 ，会随机分配一个可用的端口" />
-<meta property="og:description" content="问题背景 由于在启动项目时会出现 uncaught exception: Error: listen EADDRINUSR 155.145.111.11:45621 … … 解决方法 所以想捕获 listen 的异常。但在网上查了之后都是用的 process.on(‘uncaughtexception’,function)此方法。 有没有直接捕获 listen 的异常的方法呀，求助。 1、process.on(‘uncaughtexception’, callback) 是进程级别的异常捕获； 2、app.listen(port, callback); 这里的 callback 可以理解为，整个框架都是通过一个回调函数来处理 HTTP 请求，里面进程 MVC 等各种设计； 来看看 app.listen 到底做了什么：https://github.com/expressjs/express/blob/master/lib/application.js#L617。 ====== 正义分割线 通过 app.listen 我们其实得到一个 server 对象，通过监听 server 对象的错误事件可以获取到错误信息； server.on(&quot;error&quot;, e =&gt; { if (e.code === &quot;EADDRINUSE&quot;) { console.log(&quot;Address in use, retrying...&quot;); setTimeout(() =&gt; { server.close(); server.listen(PORT, HOST); }, 1000); } }); 通过 server.listening 方法可以提前判断端口是否被占用； listen 时指定端口为 0 ，会随机分配一个可用的端口" />
 <link rel="canonical" href="http://www.jfox.info/2018/458aead/" />
 <meta property="og:url" content="http://www.jfox.info/2018/458aead/" />
 <meta property="og:site_name" content="Java面试" />
 <meta property="og:type" content="article" />
-<meta property="article:published_time" content="2018-10-10T06:46:54+00:00" />
+<meta property="article:published_time" content="2018-10-10T14:46:54+08:00" />
 <script type="application/ld+json">
-{"description":"问题背景 由于在启动项目时会出现 uncaught exception: Error: listen EADDRINUSR 155.145.111.11:45621 … … 解决方法 所以想捕获 listen 的异常。但在网上查了之后都是用的 process.on(‘uncaughtexception’,function)此方法。 有没有直接捕获 listen 的异常的方法呀，求助。 1、process.on(‘uncaughtexception’, callback) 是进程级别的异常捕获； 2、app.listen(port, callback); 这里的 callback 可以理解为，整个框架都是通过一个回调函数来处理 HTTP 请求，里面进程 MVC 等各种设计； 来看看 app.listen 到底做了什么：https://github.com/expressjs/express/blob/master/lib/application.js#L617。 ====== 正义分割线 通过 app.listen 我们其实得到一个 server 对象，通过监听 server 对象的错误事件可以获取到错误信息； server.on(&quot;error&quot;, e =&gt; { if (e.code === &quot;EADDRINUSE&quot;) { console.log(&quot;Address in use, retrying...&quot;); setTimeout(() =&gt; { server.close(); server.listen(PORT, HOST); }, 1000); } }); 通过 server.listening 方法可以提前判断端口是否被占用； listen 时指定端口为 0 ，会随机分配一个可用的端口","@type":"BlogPosting","url":"http://www.jfox.info/2018/458aead/","headline":"如何捕获express框架app.listen的异常？","dateModified":"2018-10-10T06:46:54+00:00","datePublished":"2018-10-10T06:46:54+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2018/458aead/"},"@context":"http://schema.org"}</script>
+{"@type":"BlogPosting","headline":"如何捕获express框架app.listen的异常？","dateModified":"2018-10-10T14:46:54+08:00","datePublished":"2018-10-10T14:46:54+08:00","url":"http://www.jfox.info/2018/458aead/","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2018/458aead/"},"@context":"http://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
   <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
@@ -37,7 +35,7 @@
   <header class="post-header">
     <h1 class="post-title p-name" itemprop="name headline">如何捕获express框架app.listen的异常？</h1>
     <p class="post-meta">
-      <time class="dt-published" datetime="2018-10-10T06:46:54+00:00" itemprop="datePublished">Oct 10, 2018
+      <time class="dt-published" datetime="2018-10-10T14:46:54+08:00" itemprop="datePublished">Oct 10, 2018
       </time></p>
   </header>
 
@@ -101,6 +99,8 @@
   
   <a class="prev" href="/2018/8c91b1e/index.html">&laquo; Oracle Audit AUD$ 增长过大异常处理</a>
   
+  
+  <a class="next" href="/2018/6438d34/index.html">Java Spring面试问题与解答 &raquo;</a>
   
 </div>
 <div class="sfix"><!-- 240x600 -->

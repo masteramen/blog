@@ -4,18 +4,18 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
 <title>where子句的顺序在SQL中是否重要 | Java面试</title>
-<meta name="generator" content="Jekyll v3.8.4" />
+<meta name="generator" content="Jekyll v3.8.3" />
 <meta property="og:title" content="where子句的顺序在SQL中是否重要" />
 <meta property="og:locale" content="en" />
-<meta name="description" content="不，这个顺序无关紧要（或至少：无所谓）。 任何体面的查询优化器都会查看所有部分WHERE 子句并找出满足该查询的最有效方法。 我知道 SQL Server 查询优化器会选择一个合适的索引 - 无论你有两个条件的顺序。我假设其他 RDBMS 将有类似的策略。 重要的是你是否有适合的指数！ 对于 SQL Server，如果您有以下情况，它可能会使用索引： 一个索引(LastName, FirstName) 一个索引(FirstName, LastName) 关于公正的指数(LastName), 要不就(FirstName) (或两者） 另一方面 - 再次为 SQL Server - 如果您使用SELECT * 从表中获取所有列，并且表格相当小，然后查询优化器很可能只执行表（或聚簇索引）扫描而不是使用索引（因为查找到完整数据页面得到所有其他列只是很快就太贵了）。" />
-<meta property="og:description" content="不，这个顺序无关紧要（或至少：无所谓）。 任何体面的查询优化器都会查看所有部分WHERE 子句并找出满足该查询的最有效方法。 我知道 SQL Server 查询优化器会选择一个合适的索引 - 无论你有两个条件的顺序。我假设其他 RDBMS 将有类似的策略。 重要的是你是否有适合的指数！ 对于 SQL Server，如果您有以下情况，它可能会使用索引： 一个索引(LastName, FirstName) 一个索引(FirstName, LastName) 关于公正的指数(LastName), 要不就(FirstName) (或两者） 另一方面 - 再次为 SQL Server - 如果您使用SELECT * 从表中获取所有列，并且表格相当小，然后查询优化器很可能只执行表（或聚簇索引）扫描而不是使用索引（因为查找到完整数据页面得到所有其他列只是很快就太贵了）。" />
+<meta name="description" content="不，这个顺序无关紧要（或至少：无所谓）。" />
+<meta property="og:description" content="不，这个顺序无关紧要（或至少：无所谓）。" />
 <link rel="canonical" href="http://www.jfox.info/2018/4ef2675/" />
 <meta property="og:url" content="http://www.jfox.info/2018/4ef2675/" />
 <meta property="og:site_name" content="Java面试" />
 <meta property="og:type" content="article" />
-<meta property="article:published_time" content="2018-09-05T00:53:57+00:00" />
+<meta property="article:published_time" content="2018-09-05T08:53:57+08:00" />
 <script type="application/ld+json">
-{"description":"不，这个顺序无关紧要（或至少：无所谓）。 任何体面的查询优化器都会查看所有部分WHERE 子句并找出满足该查询的最有效方法。 我知道 SQL Server 查询优化器会选择一个合适的索引 - 无论你有两个条件的顺序。我假设其他 RDBMS 将有类似的策略。 重要的是你是否有适合的指数！ 对于 SQL Server，如果您有以下情况，它可能会使用索引： 一个索引(LastName, FirstName) 一个索引(FirstName, LastName) 关于公正的指数(LastName), 要不就(FirstName) (或两者） 另一方面 - 再次为 SQL Server - 如果您使用SELECT * 从表中获取所有列，并且表格相当小，然后查询优化器很可能只执行表（或聚簇索引）扫描而不是使用索引（因为查找到完整数据页面得到所有其他列只是很快就太贵了）。","@type":"BlogPosting","url":"http://www.jfox.info/2018/4ef2675/","headline":"where子句的顺序在SQL中是否重要","dateModified":"2018-09-05T00:53:57+00:00","datePublished":"2018-09-05T00:53:57+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2018/4ef2675/"},"@context":"http://schema.org"}</script>
+{"@type":"BlogPosting","headline":"where子句的顺序在SQL中是否重要","dateModified":"2018-09-05T08:53:57+08:00","datePublished":"2018-09-05T08:53:57+08:00","url":"http://www.jfox.info/2018/4ef2675/","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.jfox.info/2018/4ef2675/"},"description":"不，这个顺序无关紧要（或至少：无所谓）。","@context":"http://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://www.jfox.info/feed.xml" title="Java面试" /></head><body><header class="site-header" role="banner">
   <div class="wrapper"><a class="site-title" rel="author" href="/">Java面试</a><nav class="site-nav">
@@ -37,7 +37,7 @@
   <header class="post-header">
     <h1 class="post-title p-name" itemprop="name headline">where子句的顺序在SQL中是否重要</h1>
     <p class="post-meta">
-      <time class="dt-published" datetime="2018-09-05T00:53:57+00:00" itemprop="datePublished">Sep 5, 2018
+      <time class="dt-published" datetime="2018-09-05T08:53:57+08:00" itemprop="datePublished">Sep 5, 2018
       </time></p>
   </header>
 
