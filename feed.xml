@@ -1,4 +1,74 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.8.3">Jekyll</generator><link href="http://www.jfox.info/feed.xml" rel="self" type="application/atom+xml" /><link href="http://www.jfox.info/" rel="alternate" type="text/html" /><updated>2018-10-17T21:45:01+08:00</updated><id>http://www.jfox.info/feed.xml</id><title type="html">Java面试</title><entry xml:lang="en"><title type="html">Java Spring面试问题与解答</title><link href="http://www.jfox.info/2018/6438d34/index.html" rel="alternate" type="text/html" title="Java Spring面试问题与解答" /><published>2018-10-16T08:42:36+08:00</published><updated>2018-10-16T08:42:36+08:00</updated><id>http://www.jfox.info/2018/6438d34/6438d34</id><content type="html" xml:base="http://www.jfox.info/2018/6438d34/index.html">&lt;p&gt;This post will help you get through &lt;strong&gt;Spring interview Questions&lt;/strong&gt; explaining the core concepts in detail.
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.8.3">Jekyll</generator><link href="http://www.jfox.info/feed.xml" rel="self" type="application/atom+xml" /><link href="http://www.jfox.info/" rel="alternate" type="text/html" /><updated>2018-10-21T22:11:16+08:00</updated><id>http://www.jfox.info/feed.xml</id><title type="html">Java面试</title><entry xml:lang="zh_CN"><title type="html">Java Spring框架面试总结</title><link href="http://www.jfox.info/2018/18092034/index.html" rel="alternate" type="text/html" title="Java Spring框架面试总结" /><published>2018-10-20T10:21:20+08:00</published><updated>2018-10-20T10:21:20+08:00</updated><id>http://www.jfox.info/2018/18092034/18092034</id><content type="html" xml:base="http://www.jfox.info/2018/18092034/index.html">&lt;h1 id=&quot;spring-ioc-和-di-的理解&quot;&gt;Spring IoC 和 DI 的理解&lt;/h1&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Ioc(Inverse of Control)反转控制的概念，就是将原本在程序中手动创建对象的控制权，交由 Spring 框架来管理，简单点说，就是创建对象的控制权被反转到 Spring 框架了。&lt;/li&gt;
+  &lt;li&gt;DI（Dependency Injection,依赖注入),在 Spring 框架负责创建 Bean 对象时，动态的将其依赖对象注入到该 Bean 对象组件中。&lt;/li&gt;
+  &lt;li&gt;两者的区别：Ioc 控制反转，指将对象的创建权反转到 Spring 容器；DI 依赖注入，指 Spring 创建对象时，将对象的依赖属性通过配置进行注入。&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h1 id=&quot;spring-bean-的作用域scope&quot;&gt;Spring Bean 的作用域(Scope)&lt;/h1&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;singleton （默认的作用域）, 当一个 Bean 的作用域为 singleton,那么 Spring Ioc 容器只会存在一个共享的 bean 实例&lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;prototype, 每次获取该 bean 时，都会创建一个新的 bean 实例。&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;request, 在一次 HTTP 请求中，只会创建一个 Bean 实例。&lt;/li&gt;
+  &lt;li&gt;session, 在一个 HTTP Session 中， 只会创建一个 bean 实例。&lt;/li&gt;
+  &lt;li&gt;global session&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h1 id=&quot;spring-bean-属性注入方式&quot;&gt;Spring Bean 属性注入方式&lt;/h1&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;基于构造方法注入依赖&lt;/li&gt;
+  &lt;li&gt;基于 setter 方法注入依赖&lt;/li&gt;
+  &lt;li&gt;基于字段注入依赖(通过反射直接注入到字段属性)&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt; 构造方法和 set 方法可以组合用于同一个 Bean 对象，Spring 文档推荐对强制依赖项使用构造函数注入，对可选依赖项使用 setter 方法注入。&lt;/p&gt;
+
+&lt;p&gt;基于字段注入的方法，虽然看起来更简单清晰，但不推荐使用，有以下缺点：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;不能跟构造函数注入一样，创建不可变的对象。&lt;/li&gt;
+  &lt;li&gt;只能靠 DI 容器反射注入属性，不能在外部注入使用&lt;/li&gt;
+  &lt;li&gt;真实的依赖关系隐藏在内部&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Field 注入应该尽可能地去避免使用。作为替代，你应该使用构构造器注入或 Setter 注入。他们都有利有弊，需要视情况而定。当然你可以在同一个类中使用这两种方法。构造器注入更适合强制性的注入旨在不变性，Setter 注入更适合可变性的注入。&lt;/p&gt;
+
+&lt;h1 id=&quot;beanfactory-接口与-applicationcontext-接口的区别&quot;&gt;BeanFactory 接口与 ApplicationContext 接口的区别&lt;/h1&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;ApplicationContext 接口 继承 BeanFactory 接口，Spring 的核心工厂是 BeanFactory，BeanFactory 采取延迟加载，第一次 getBean 时才会初始化 Bean，ApplicationContext 是在加载配置文件时初始化 Bean.&lt;/li&gt;
+  &lt;li&gt;ApplicationContext 是对 BeanFactory 扩展，添加了国际化处理，事件传递和 bean 自动装配以及各种不同应用层的 Context 实现，现实开发中基本使用的都是 ApplicationContext,web 项目使用 WebApplicationContext,很少使用 BeanFactory.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h1 id=&quot;spring-实例化-bean-的方法&quot;&gt;Spring 实例化 bean 的方法&lt;/h1&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;使用类构造器（默认是无参数）&lt;/li&gt;
+  &lt;li&gt;使用静态工厂方法（简单工厂模式）&lt;/li&gt;
+  &lt;li&gt;使用实例工厂方法（工厂方法模式）&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h1 id=&quot;spring-mvc-流程原理&quot;&gt;Spring MVC 流程原理&lt;/h1&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;Springmvc 将所有的请求都交给 DispatcherServlet（前端控制器,他会委托应用系统的其他模块负责对请求进行真正的处理工作）。&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;DispatcherServlet 根据请求的 URL 格式， 查询一个或多个 HandlerMapping（处理器映射器）,找到处理请求的 Controller.&lt;/li&gt;
+  &lt;li&gt;DispatcherServlet 将请求转交给目标 Controller.&lt;/li&gt;
+  &lt;li&gt;Controller 进行业务逻辑处理后，返回一个 ModelAndView（模型和视图） 对象。&lt;/li&gt;
+  &lt;li&gt;DispatcherServlet 查询一个或多个 ViewResolver(视图解析器)，找到 ModelAndView 对象指定的视图对象&lt;/li&gt;
+  &lt;li&gt;视图对象负责将渲染结果显示返回给客户端。&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h1 id=&quot;-什么是-spring-boot&quot;&gt; 什么是 Spring Boot？&lt;/h1&gt;
+
+&lt;p&gt;Spring Boot 是构建在 Spring 框架之上， 是设计用来简化 Spring 应用初始搭建及开发过程一个解决方案。它使用了特定的方式进行配置，从而是开发人员不再需要定义样本化的配置。&lt;/p&gt;</content><author><name></name></author><summary type="html"></summary></entry><entry xml:lang="en"><title type="html">Java Spring面试问题与解答</title><link href="http://www.jfox.info/2018/6438d34/index.html" rel="alternate" type="text/html" title="Java Spring面试问题与解答" /><published>2018-10-16T08:42:36+08:00</published><updated>2018-10-16T08:42:36+08:00</updated><id>http://www.jfox.info/2018/6438d34/6438d34</id><content type="html" xml:base="http://www.jfox.info/2018/6438d34/index.html">&lt;p&gt;This post will help you get through &lt;strong&gt;Spring interview Questions&lt;/strong&gt; explaining the core concepts in detail.
 这篇文章将帮助你通过 &lt;strong&gt;Spring 面试问题&lt;/strong&gt; 解释详细的核心概念。(zh_CN)&lt;/p&gt;
 
 &lt;p&gt;&lt;strong&gt;Spring Framework&lt;/strong&gt; is one of the most popular Java EE framework for web applications. &lt;strong&gt;Dependency Injection&lt;/strong&gt; and &lt;strong&gt;Aspect Oriented Programming&lt;/strong&gt; are at the heart of Spring framework. If you are good in Spring Framework, chances of getting selected gets high.
@@ -3063,201 +3133,4 @@ List&amp;lt;Object&amp;gt; chain = this.advised.getInterceptorsAndDynamicInterce
 
 &lt;h3 id=&quot;编后语&quot;&gt;编后语&lt;/h3&gt;
 
-&lt;p&gt;由于spring里面代码层次划分很细,导致贴出来的代码特别多,可能会影响你们阅读,不过Spring里面的很多东西封装的都是很完善的,几乎全部都是组件化,导致很多方法很深,不过我们只要了解它大概的原理就行了,至少能够在我们遇到问题时能够推断出从哪个步骤进行下手.可能这篇文章代码和图片比较凌乱,最好是大家有spring的一些基本原理基础,比如bean的实例化啊等等,不然有的地方会看不懂,好了就说这么多了… 希望对大家有帮助.. 也非常欢迎大家提意见!!! 谢谢&lt;/p&gt;</content><author><name></name></author><summary type="html">H2M_LI_HEADER Spring的事物是通过哪些原理实现的? H2M_LI_HEADER Spring的事物机制是如何提交和回滚的?</summary></entry><entry xml:lang="zh_CN"><title type="html">Spring+SpringMVC+MyBatis+easyUI集成进阶篇(二)RESTful API实战笔记(接口设计及Java后端实现)</title><link href="http://www.jfox.info/2017/springspringmvcmybatiseasyui%E9%9B%86%E6%88%90%E8%BF%9B%E9%98%B6%E7%AF%87%E4%BA%8Crestfulapi%E5%AE%9E%E6%88%98%E7%AC%94%E8%AE%B0%E6%8E%A5%E5%8F%A3%E8%AE%BE%E8%AE%A1%E5%8F%8Ajava%E5%90%8E%E7%AB%AF.html" rel="alternate" type="text/html" title="Spring+SpringMVC+MyBatis+easyUI集成进阶篇(二)RESTful API实战笔记(接口设计及Java后端实现)" /><published>2017-01-01T23:59:58+08:00</published><updated>2017-01-01T23:59:58+08:00</updated><id>http://www.jfox.info/2017/20170101498</id><content type="html" xml:base="http://www.jfox.info/2017/springspringmvcmybatiseasyui%E9%9B%86%E6%88%90%E8%BF%9B%E9%98%B6%E7%AF%87%E4%BA%8Crestfulapi%E5%AE%9E%E6%88%98%E7%AC%94%E8%AE%B0%E6%8E%A5%E5%8F%A3%E8%AE%BE%E8%AE%A1%E5%8F%8Ajava%E5%90%8E%E7%AB%AF.html">&lt;p&gt;原计划这部分代码的更新也是上传到ssm-demo仓库中，因为如下原因并没有这么做：&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;
-    &lt;p&gt;有些使用了该项目的朋友建议重新创建一个仓库，因为原来仓库中的项目太多，结构多少有些乱糟糟的。&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;而且这次的代码改动较大，与原来的目录结构及代码风格相比都有很大的差别。&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;同时也考虑到不同的人所处的学习阶段不同，担心有人不习惯也不适应这种风格及后面的更新，有的朋友甚至可能是初学者，更适合学习ssm-demo这个基础项目。&lt;/p&gt;
-  &lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;基于以上几点，最终并没有选择把几个项目都放在一个代码仓库中，而是另外花了些时间改动并且重新创建了一个仓库，&lt;a href=&quot;https://www.jfox.info/go.php?url=https://github.com/ZHENFENG13/perfect-ssm&quot;&gt;perfect-ssm&lt;/a&gt;另起炉灶，项目也在新的服务器和域名下部署。&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;d8800da.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;h2 id=&quot;接口设计&quot;&gt;接口设计&lt;/h2&gt;
-
-&lt;p&gt;项目共有三个模块:&lt;/p&gt;
-
-&lt;p&gt;针对以上三个模块，并结合前文&lt;a href=&quot;https://www.jfox.info/go.php?url=http://www.cnblogs.com/han-1034683568/p/7196345.html&quot;&gt;《设计一套好的RESTful API》&lt;/a&gt;中所总结的RESTful API设计原则，对api进行改造，目标接口如下：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;图片上传：
-原接口 []      http://ssm-demo.hanshuai.xin/loadimage/upload.do
-现接口 [POST]  http://perfect-ssm.hanshuai.xin/images
-
-文章添加：
-原接口 []      http://ssm-demo.hanshuai.xin/article/save.do
-现接口 [POST]  http://perfect-ssm.hanshuai.xin/articles 
-
-文章修改：
-原接口 []      http://ssm-demo.hanshuai.xin/article/save.do
-现接口 [PUT]  http://perfect-ssm.hanshuai.xin/articles 
-
-文章列表：
-原接口 []      http://ssm-demo.hanshuai.xin/article/list.do
-现接口 [GET]   http://perfect-ssm.hanshuai.xin/articles
-
-文章删除：
-原接口 []      http://ssm-demo.hanshuai.xin/article/delete.do
-现接口 [DELETE]http://perfect-ssm.hanshuai.xin/articles
-
-图片添加：
-原接口 []      http://ssm-demo.hanshuai.xin/picture/save.do
-现接口 [POST]  http://perfect-ssm.hanshuai.xin/pictures
-
-图片修改：
-原接口 []      http://ssm-demo.hanshuai.xin/picture/save.do
-现接口 [PUT]  http://perfect-ssm.hanshuai.xin/pictures
-
-图片列表：
-原接口 []      http://ssm-demo.hanshuai.xin/picture/list.do
-现接口 [GET]   http://perfect-ssm.hanshuai.xin/pictures
-
-图片删除：
-原接口 []      http://ssm-demo.hanshuai.xin/picture/delete.do
-现接口 [DELETE]http://perfect-ssm.hanshuai.xin/pictures
-
-用户登录：
-原接口 []      http://ssm-demo.hanshuai.xin/user/login.do
-现接口 [POST]  http://perfect-ssm.hanshuai.xin/users/cookie 
-
-用户列表：
-原接口 []      http://ssm-demo.hanshuai.xin/user/list.do
-现接口 [GET]   http://perfect-ssm.hanshuai.xin/users 
-
-用户删除：
-原接口 []      http://ssm-demo.hanshuai.xin/user/delete.do
-现接口 [DELETE]http://perfect-ssm.hanshuai.xin/users
-
-用户添加：
-原接口 []      http://ssm-demo.hanshuai.xin/user/save.do
-现接口 [POST]  http://perfect-ssm.hanshuai.xin/users
-
-修改密码：
-原接口 []      http://ssm-demo.hanshuai.xin/user/modifyPassword.do
-现接口 [PUT]   http://perfect-ssm.hanshuai.xin/users
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;根据不同资源映射成不同的uri，对于资源的具体操作类型，由HTTP动词来表示。&lt;/p&gt;
-
-&lt;h2 id=&quot;java后端实现&quot;&gt;java后端实现&lt;/h2&gt;
-
-&lt;p&gt;前文中提到了一些设计原则，这一篇就是将这些原则运用到项目中，但是理论性的知识看看就忘了，我写博客的目的不是为了写理论概念，没有实际项目配合我是不会写的，我觉得通过代码实现出来，配合实战才能让理论知识吸收的更好。&lt;/p&gt;
-
-&lt;p&gt;由于是ssm项目，因此主要是通过SpringMVC实现，更多的是使用了SpringMVC的注解来进行简化开发。&lt;/p&gt;
-
-&lt;h4 id=&quot;整合过程&quot;&gt;整合过程：&lt;/h4&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;
-    &lt;p&gt;首先是修改web.xml配置文件，使得URI可以符合RESTful风格。&lt;/p&gt;
-
-    &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;  &amp;lt;servlet&amp;gt;
-      &amp;lt;servlet-name&amp;gt;springMVC&amp;lt;/servlet-name&amp;gt;
-      &amp;lt;servlet-class&amp;gt;org.springframework.web.servlet.DispatcherServlet&amp;lt;/servlet-class&amp;gt;
-      &amp;lt;init-param&amp;gt;
-          &amp;lt;param-name&amp;gt;contextConfigLocation&amp;lt;/param-name&amp;gt;
-          &amp;lt;param-value&amp;gt;classpath:spring-context-mvc.xml&amp;lt;/param-value&amp;gt;
-      &amp;lt;/init-param&amp;gt;
-      &amp;lt;!--加载顺序为1 --&amp;gt;
-      &amp;lt;load-on-startup&amp;gt;1&amp;lt;/load-on-startup&amp;gt;
-  &amp;lt;/servlet&amp;gt;
-
-  &amp;lt;servlet-mapping&amp;gt;
-      &amp;lt;servlet-name&amp;gt;springMVC&amp;lt;/servlet-name&amp;gt;
-      &amp;lt;url-pattern&amp;gt;/&amp;lt;/url-pattern&amp;gt;
-  &amp;lt;/servlet-mapping&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;修改spring-context-mvc.xml配置文件，配置json消息转换器及动态资源过滤。&lt;/p&gt;
-
-    &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;  &amp;lt;!-- Start: 配置json消息转换器 &amp;amp; 参数解析--&amp;gt;
-  &amp;lt;bean id=&quot;objectMapper&quot; class=&quot;com.fasterxml.jackson.databind.ObjectMapper&quot;&amp;gt;
-      &amp;lt;property name=&quot;dateFormat&quot;&amp;gt;
-          &amp;lt;bean class=&quot;java.text.SimpleDateFormat&quot;&amp;gt;
-              &amp;lt;constructor-arg index=&quot;0&quot; type=&quot;java.lang.String&quot; value=&quot;yyyy-MM-dd HH:mm:ss&quot;/&amp;gt;
-          &amp;lt;/bean&amp;gt;
-      &amp;lt;/property&amp;gt;
-  &amp;lt;/bean&amp;gt;
-  &amp;lt;mvc:annotation-driven&amp;gt;
-      &amp;lt;mvc:message-converters register-defaults=&quot;true&quot;&amp;gt;
-          &amp;lt;bean class=&quot;org.springframework.http.converter.json.MappingJackson2HttpMessageConverter&quot;&amp;gt;
-              &amp;lt;property name=&quot;supportedMediaTypes&quot;&amp;gt;
-                  &amp;lt;list&amp;gt;
-                      &amp;lt;value&amp;gt;application/json; charset=UTF-8&amp;lt;/value&amp;gt;
-                  &amp;lt;/list&amp;gt;
-              &amp;lt;/property&amp;gt;
-              &amp;lt;property name=&quot;prettyPrint&quot; value=&quot;true&quot;/&amp;gt;
-              &amp;lt;property name=&quot;objectMapper&quot; ref=&quot;objectMapper&quot;/&amp;gt;
-          &amp;lt;/bean&amp;gt;
-      &amp;lt;/mvc:message-converters&amp;gt;
-  &amp;lt;/mvc:annotation-driven&amp;gt;
-  &amp;lt;!-- End: 配置json消息转换器 &amp;amp; 参数解析 --&amp;gt;
-
-  &amp;lt;!-- 使用了&amp;lt;url-pattern&amp;gt;/&amp;lt;/url-pattern&amp;gt;,所以要对静态资源进行处理 --&amp;gt;
-  &amp;lt;mvc:default-servlet-handler/&amp;gt;
-
-  &amp;lt;!-- 默认的视图解析器 在上边的解析错误时使用 (默认使用html)- --&amp;gt;
-  &amp;lt;bean id=&quot;defaultViewResolver&quot; class=&quot;org.springframework.web.servlet.view.InternalResourceViewResolver&quot;
-        p:order=&quot;1&quot;&amp;gt;
-      &amp;lt;property name=&quot;viewClass&quot; value=&quot;org.springframework.web.servlet.view.JstlView&quot;/&amp;gt;
-      &amp;lt;property name=&quot;contentType&quot; value=&quot;text/html&quot;/&amp;gt;
-      &amp;lt;property name=&quot;prefix&quot; value=&quot;/WEB-INF/&quot;/&amp;gt;
-      &amp;lt;property name=&quot;suffix&quot; value=&quot;.jsp&quot;/&amp;gt;
-  &amp;lt;/bean&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;@RequestMapping注解，规范和限制Http请求的请求方法。&lt;/p&gt;
-
-    &lt;p&gt;@RequestMapping(value = “”, method = RequestMethod.PUT)&lt;/p&gt;
-
-    &lt;p&gt;@RequestMapping(value = “/{ids}”, method = RequestMethod.DELETE)&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;@ResponseBody注解，将返回结果转换为JSON格式。&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;增加common包，其中的工具类规定了返回状态码及返回数据的基本格式。
-&lt;img src=&quot;2ec87f1.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-    &lt;p&gt;public class Constants {&lt;/p&gt;
-
-    &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public static final int RESULT_CODE_SUCCESS = 200;  // 成功处理请求
-public static final int RESULT_CODE_BAD_REQUEST = 412;  // bad request
-public static final int RESULT_CODE_SERVER_ERROR = 500;  // 没有对应结果
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
-
-    &lt;p&gt;}&lt;/p&gt;
-
-    &lt;p&gt;public class Result&lt;T&gt; implements Serializable {
-    private static final long serialVersionUID = 1L;
-    private int resultCode;
-    private String message;
-    private T data;&lt;/T&gt;&lt;/p&gt;
-
-    &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public Result() {
-} }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
-  &lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h2 id=&quot;注意事项&quot;&gt;注意事项&lt;/h2&gt;
-
-&lt;p&gt;几个需要注意的注解：&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;@RequestMapping&lt;/li&gt;
-  &lt;li&gt;@PathVariable&lt;/li&gt;
-  &lt;li&gt;@ResponseBody&lt;/li&gt;
-  &lt;li&gt;@RequestParam&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;代码中大量的出现，本文中也一再强调，因此，给正在看本篇文章的你一个建议就是如果你不熟悉这几个注解，花点时间去认真学习和实践一下，知道这几个注解的用法和注意事项，网上针对这些注解的文章有很多，可以针对性的学习一下，这篇文章就不再占用篇幅去赘述了，需要代码的话，直接去我的GitHub仓库中去下载就好。&lt;/p&gt;</content><author><name></name></author><summary type="html">原计划这部分代码的更新也是上传到ssm-demo仓库中，因为如下原因并没有这么做：</summary></entry></feed>
+&lt;p&gt;由于spring里面代码层次划分很细,导致贴出来的代码特别多,可能会影响你们阅读,不过Spring里面的很多东西封装的都是很完善的,几乎全部都是组件化,导致很多方法很深,不过我们只要了解它大概的原理就行了,至少能够在我们遇到问题时能够推断出从哪个步骤进行下手.可能这篇文章代码和图片比较凌乱,最好是大家有spring的一些基本原理基础,比如bean的实例化啊等等,不然有的地方会看不懂,好了就说这么多了… 希望对大家有帮助.. 也非常欢迎大家提意见!!! 谢谢&lt;/p&gt;</content><author><name></name></author><summary type="html">H2M_LI_HEADER Spring的事物是通过哪些原理实现的? H2M_LI_HEADER Spring的事物机制是如何提交和回滚的?</summary></entry></feed>
