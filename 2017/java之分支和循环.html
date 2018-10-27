@@ -1,0 +1,147 @@
+<!-- build time:Sat Oct 27 2018 21:00:18 GMT+0800 (CST) --><!DOCTYPE html><html class="theme-next muse use-motion"><head><meta name="generator" content="Hexo 3.8.0"><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"><meta name="theme-color" content="#222"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"><link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css"><link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css"><link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4"><link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222"><meta name="description" content="Java之分支和循环Java中的分支语句：if语句：if语句的四种写法：　　（1）  　　if(表达式_布尔值) { 　　... 　　}  　　（2）  　　if(表达式_布尔值) { 　　... 　　} else { 　　... 　　}  　　（3）  　　if(表达式_布尔值) { 　　... 　　} elseif(表达式_布尔值) { 　　... 　　} 　　（4） 　　if(表达式_布尔值"><meta name="keywords" content="JAVA,面试"><meta property="og:type" content="article"><meta property="og:title" content="Java之分支和循环 » java面试题"><meta property="og:url" content="http://www.jfox.info/2017/java之分支和循环.html"><meta property="og:site_name" content="java面试"><meta property="og:description" content="Java之分支和循环Java中的分支语句：if语句：if语句的四种写法：　　（1）  　　if(表达式_布尔值) { 　　... 　　}  　　（2）  　　if(表达式_布尔值) { 　　... 　　} else { 　　... 　　}  　　（3）  　　if(表达式_布尔值) { 　　... 　　} elseif(表达式_布尔值) { 　　... 　　} 　　（4） 　　if(表达式_布尔值"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="http://www.jfox.info/2017/1322/1232956.png"><meta property="og:updated_time" content="2018-10-27T12:29:39.317Z"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="Java之分支和循环 » java面试题"><meta name="twitter:description" content="Java之分支和循环Java中的分支语句：if语句：if语句的四种写法：　　（1）  　　if(表达式_布尔值) { 　　... 　　}  　　（2）  　　if(表达式_布尔值) { 　　... 　　} else { 　　... 　　}  　　（3）  　　if(表达式_布尔值) { 　　... 　　} elseif(表达式_布尔值) { 　　... 　　} 　　（4） 　　if(表达式_布尔值"><meta name="twitter:image" content="http://www.jfox.info/2017/1322/1232956.png"><script type="text/javascript" id="hexo.configurations">var NexT=window.NexT||{},CONFIG={root:"/",scheme:"Muse",version:"5.1.4",sidebar:{position:"left",display:"post",offset:12,b2t:!1,scrollpercent:!1,onmobile:!1},fancybox:!0,tabs:!0,motion:{enable:!0,async:!1,transition:{post_block:"fadeIn",post_header:"slideDownIn",post_body:"slideDownIn",coll_header:"slideLeftIn",sidebar:"slideUpIn"}},duoshuo:{userId:"0",author:"Author"},algolia:{applicationID:"",apiKey:"",indexName:"",hits:{per_page:10},labels:{input_placeholder:"Search for Posts",hits_empty:"We didn't find any results for the search: ${query}",hits_stats:"${hits} results found in ${time} ms"}}}</script><link rel="canonical" href="http://www.jfox.info/2017/java之分支和循环.html"><title>Java之分支和循环 » java面试题 | java面试</title></head><body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN"><div class="container sidebar-position-left page-post-detail"><div class="headband"></div><header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="header-inner"><div class="site-brand-wrapper"><div class="site-meta"><div class="custom-logo-site-title"><a href="/" class="brand" rel="start"><span class="logo-line-before"><i></i></span> <span class="site-title">java面试</span> <span class="logo-line-after"><i></i></span></a></div><p class="site-subtitle"></p></div><div class="site-nav-toggle"><button><span class="btn-bar"></span> <span class="btn-bar"></span> <span class="btn-bar"></span></button></div></div><nav class="site-nav"><ul id="menu" class="menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i><br>Home</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i><br>Archives</a></li></ul></nav></div></header><main id="main" class="main"><div class="main-inner"><div class="content-wrap"><div id="content" class="content"><div id="posts" class="posts-expand"><article class="post post-type-normal" itemscope itemtype="http://schema.org/Article"><div class="post-block"><link itemprop="mainEntityOfPage" href="http://www.jfox.info/2017/java之分支和循环.html"><span hidden itemprop="author" itemscope itemtype="http://schema.org/Person"><meta itemprop="name" content="Hello"><meta itemprop="description" content=""><meta itemprop="image" content="/images/avatar.gif"></span><span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><meta itemprop="name" content="java面试"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">Java之分支和循环 » java面试题</h1><div class="post-meta"><span class="post-time"><span class="post-meta-item-icon"><i class="fa fa-calendar-o"></i> </span><span class="post-meta-item-text">Posted on</span> <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-01-01T23:57:02+08:00">2017-01-01</time></span></div></header><div class="post-body" itemprop="articleBody"><h1 id="Java之分支和循环"><a href="#Java之分支和循环" class="headerlink" title="Java之分支和循环"></a>Java之分支和循环</h1><h1 id="Java中的分支语句："><a href="#Java中的分支语句：" class="headerlink" title="Java中的分支语句："></a>Java中的分支语句：</h1><h2 id="if语句："><a href="#if语句：" class="headerlink" title="if语句："></a>if语句：</h2><p>if语句的四种写法：</p><pre><code>　　（1）
+
+　　if(表达式_布尔值) {
+　　...
+　　}
+
+　　（2）
+
+　　if(表达式_布尔值) {
+　　...
+　　} else {
+　　...
+　　}
+
+　　（3）
+
+　　if(表达式_布尔值) {
+　　...
+　　} elseif(表达式_布尔值) {
+　　...
+　　}
+　　（4）
+　　if(表达式_布尔值) {
+　　...
+　　} elseif(表达式_布尔值) {
+　　...
+　　} else {
+　　...
+　　}
+</code></pre><p>if条件语句是一个重要的编程语句，它用于告诉程序在某个条件成立的情况下执行某段程序，而在另一种情况下执行另外的语句。<br>使用if条件语句，可选择是否要执行紧跟在条件之后的那个语句。关键字if之后是作为条件的“布尔表达式”，如果该表达式返回的结果为true，则执行其后的语句；若为false，则不执行if条件之后的语句。if条件语句可分为简单的if条件语句、if…else语句和if…else if多分支语句。</p><p>if语句例子：</p><pre><code>publicclass GetTerm { // 创建主类publicstaticvoid main(String args[]) { // 主方法int x = 20; // 声明int型局部变量if (x &gt; 30) { // 判断变量x是否大于30
+            System.out.println(&quot;a的值大于30&quot;); // 条件成立的输出信息
+        } elseif (x &gt; 10) { // 判断变量x是否大于10
+            System.out.println(&quot;a的值大于10，但小于30&quot;); // 条件成立的输出信息
+        } elseif (x &gt; 0) { // 判断变量x是否大于0
+            System.out.println(&quot;a的值大于0，但小于10&quot;); // 条件成立的输出信息
+        } else { // 当以上条件都不成立时，执行的语句块
+            System.out.println(&quot;a的值小于0&quot;); // 输出信息        }
+    }
+}
+</code></pre><h2 id="switch语句："><a href="#switch语句：" class="headerlink" title="switch语句："></a>switch语句：</h2><pre><code>int a = 2;
+switch(a)　{
+    case 1
+    ...
+    break;
+    case 3
+    ...
+    break;
+    case 5
+    ...
+    break;
+
+    default
+    ...
+}
+</code></pre><p>switch语句中表达式的值必须是整型或字符型，常量值1~常量值n必须也是整型或字符型。switch语句首先计算表达式的值，如果表达式的值和某个case后面的变量值相同，则执行该case语句后的若干个语句直到遇到break语句为止。此时如果该case语句中没有break语句，将继续执行后面case里的若干个语句，直到遇到break语句为止。若没有一个常量的值与表达式的值相同，则执行default后面的语句。default语句为可选的，如果它不存在，而且switch语句中表达式的值不与任何case的常量值相同，switch则不做任何处理。</p><p>switch语句例子：</p><pre><code>publicclass GetSwitch { // 创建类publicstaticvoid main(String args[]) { // 主方法int week = 2; // 定义int型变量weekswitch (week) { // 指定switch语句的表达式为变量weekcase 1: // 定义case语句中的常量为1
+                System.out.println(&quot;Monday&quot;); // 输出信息break;
+            case 2: // 定义case语句中的常量为2
+                System.out.println(&quot;Tuesday&quot;);
+                break;
+            case 3: // 定义case语句中的常量为3
+                System.out.println(&quot;Wednesday&quot;);
+                break;
+            default: // default语句
+                System.out.println(&quot;Sorry,I don&apos;t Know&quot;);
+        }
+    }
+}
+</code></pre><h2 id="if-switch的区别："><a href="#if-switch的区别：" class="headerlink" title="if   switch的区别："></a>if switch的区别：</h2><p>if语句使用场景：<br>针对结果是boolean类型的判断<br>针对一个范围的判断<br>针对几个常量值的判断<br>switch语句使用场景：<br>针对几个常量值的判断</p><p>switch建议判断固定值的时候用</p><p>if建议判断区间或范围的时候用</p><p>*用switch能做的，用if都能做，反过来则不行</p><h1 id="Java中的循环语句："><a href="#Java中的循环语句：" class="headerlink" title="Java中的循环语句："></a>Java中的循环语句：</h1><p>（1）</p><p>for(int i=0;i&lt;10;i++) {<br>…<br>}</p><p>（2）</p><p>while(表达式_布尔值) {<br>}</p><p>（3）</p><p>do {<br>} while(表达式_布尔值);</p><p>三种循环语句简单实例：</p><pre><code>publicclass Test2 {
+    publicstaticvoid main(String[] args){
+        int i=0;
+        for(;i&lt;3;i++){
+            System.out.println(&quot;for:&quot;+i);
+        }    
+        while(i&lt;6){
+            System.out.println(&quot;while:&quot;+i);
+            i++;
+        }
+
+        do{
+            System.out.println(&quot;do:&quot;+i);
+            i++;
+        }while(i&lt;9);
+    }
+}
+</code></pre><p><img src="/2017/1322/1232956.png" alt=""></p><p>综合例子1：</p><p>如何输入成绩，得出评分：</p><pre><code>import java.util.Scanner;
+publicclass Lianxi
+{
+    publicstaticvoid main(String[] args){
+        int i=1;
+//使用死循环不断判断
+        for(;i&lt;10;i--){
+            Scanner scanner=new Scanner(System.in);
+            String str=scanner.nextLine();
+
+            int a =Integer.parseInt(str);
+
+            if(str==&quot;55&quot;){
+                i=11;
+                System.out.println(&quot;结束了&quot;);
+            }
+
+            if(a&lt;=100&amp;&amp;a&gt;80){
+                System.out.println(&quot;优秀&quot;);
+            }elseif(a&lt;=80&amp;&amp;a&gt;60){
+                System.out.println(&quot;良好&quot;);
+            }elseif(a&lt;=60&amp;&amp;a&gt;50){
+                System.out.println(&quot;尚可&quot;);
+            }elseif(a&lt;=50&amp;&amp;a&gt;=0){
+                System.out.println(&quot;不可&quot;);
+            }else {
+                System.out.println(&quot;输入有错误！！！&quot;);
+            }
+
+        }
+    }
+}
+</code></pre><p>综合例子2：</p><p>输出菱形</p><pre><code>publicclass Var_02 {
+    publicstaticvoid main(String args[]) {
+        int lineCount = 17;// 输出的菱形有多少行，请赋值成奇数int maxLineNum = (lineCount + 1) / 2;// 菱形最多一行for (int i = 1; i &lt;= maxLineNum; i++) {// 循环菱形数量越来越多的几行for (int space = 1; space &lt;= maxLineNum - i; space++) {// 输出空格，数量=最后一行-当前行数
+                System.out.print(&quot;  &quot;);
+            }
+            for (int star = 1; star &lt;= (i * 2) - 1; star++) {// 输出星号，数量=行数*2-1
+                System.out.print(&quot;* &quot;);
+            }
+            System.out.println();// 换行        }
+
+        int declineCount = lineCount - maxLineNum;// 计算剩下的几行，这几行星号的数量是递减的for (int i = 1; i &lt;= declineCount; i++) {// 循环菱形数量越来越少的行数for (int space = 1; space &lt;= i; space++) {// 输出空格，数量等于当前的行数
+                System.out.print(&quot;  &quot;);
+            }
+            for (int star = 1; star &lt;= (declineCount - i + 1) * 2 - 1; star++) {// 输出星号，数量等于（总数-当前行数）*2-1
+                System.out.print(&quot;* &quot;);
+            }
+            System.out.println();
+        }
+
+    }
+}
+</code></pre><p>补充：</p><p>foreach语句：</p><p>是for语句的特殊简化版本，但是foreach语句并不能完全取代for语句，然而任何foreach语句都可以改写为for语句版本。foreach并不是一个关键字，习惯上将这种特殊的for语句格式称之为foreach语句。foreach语句在遍历数组等方面为程序员提供了很大的方便（本书将在第6章对数组进行详细的介绍），语法如下所示：</p><pre><code>for(元素变量x : 遍历对象obj) {
+    引用了x的java语句;
+}
+</code></pre><p>例子：</p><pre><code>publicclass Repetition { // 创建类Repetitionpublicstaticvoid main(String args[]) { // 主方法int arr[] = { 7, 10, 1 }; // 声明一维数组
+        System.out.println(&quot;一维数组中的元素分别为：&quot;); // 输出信息for (int x : arr) {
+        //foreach语句，int x引用的变量，arr指定要循环遍历的数组，最后将x输出            System.out.println(x);
+        }
+    }
+}
+</code></pre></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="4142158067"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="5618891265"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><footer class="post-footer"><div class="post-nav"><div class="post-nav-next post-nav-item"><a href="/2017/java对象与json互转.html" rel="next" title="java 对象与json互转"><i class="fa fa-chevron-left"></i> java 对象与json互转</a></div><span class="post-nav-divider"></span><div class="post-nav-prev post-nav-item"><a href="/2017/java生产环境debug.html" rel="prev" title="Java 生产环境 debug">Java 生产环境 debug <i class="fa fa-chevron-right"></i></a></div></div></footer></div></article><div class="post-spread"></div></div></div></div><div class="sidebar-toggle"><div class="sidebar-toggle-line-wrap"><span class="sidebar-toggle-line sidebar-toggle-line-first"></span> <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span> <span class="sidebar-toggle-line sidebar-toggle-line-last"></span></div></div><aside id="sidebar" class="sidebar"><div class="sidebar-inner"><ul class="sidebar-nav motion-element"><li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">Table of Contents</li><li class="sidebar-nav-overview" data-target="site-overview-wrap">Overview</li></ul><section class="site-overview-wrap sidebar-panel"><div class="site-overview"><div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person"><p class="site-author-name" itemprop="name">Hello</p><p class="site-description motion-element" itemprop="description"></p></div><nav class="site-state motion-element"><div class="site-state-item site-state-posts"><a href="/archives/"><span class="site-state-item-count">1358</span> <span class="site-state-item-name">posts</span></a></div></nav></div></section><section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active"><div class="post-toc"><div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Java之分支和循环"><span class="nav-number">1.</span> <span class="nav-text">Java之分支和循环</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Java中的分支语句："><span class="nav-number">2.</span> <span class="nav-text">Java中的分支语句：</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#if语句："><span class="nav-number">2.1.</span> <span class="nav-text">if语句：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#switch语句："><span class="nav-number">2.2.</span> <span class="nav-text">switch语句：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#if-switch的区别："><span class="nav-number">2.3.</span> <span class="nav-text">if switch的区别：</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Java中的循环语句："><span class="nav-number">3.</span> <span class="nav-text">Java中的循环语句：</span></a></li></ol></div></div></section></div></aside><div class="sfix"><div class="fixedme"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460" data-ad-format="auto"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script></div></div></main><footer id="footer" class="footer"><div class="footer-inner"><div class="copyright">&copy; <span itemprop="copyrightYear">2018</span> <span class="with-love"><i class="fa fa-user"></i> </span><span class="author" itemprop="copyrightHolder">Hello</span></div><div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div><span class="post-meta-divider">|</span><div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div></div></footer><div class="back-to-top"><i class="fa fa-arrow-up"></i></div></div><script type="text/javascript">"[object Function]"!==Object.prototype.toString.call(window.Promise)&&(window.Promise=null)</script><script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script><script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script><script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script><script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script><script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script></body></html><!-- rebuild by neat -->

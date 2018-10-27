@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="下面的SQL题目都是比较基础，比较常见的数据库SQL面试题，在技术面试环节虽然碰到相同题目的机会比较少，但解题的基本思路都是差不多的。下面是SQL面试题描述： Student(S#,Sname,Sage,Ssex) 学生表       S#：学号；Sname：学生姓名；Sage：学生年龄；Ssex：学生性别Course(C#,Cname,T#) 课程表                    C#,">
+<meta name="keywords" content="JAVA,面试">
+<meta property="og:type" content="article">
+<meta property="og:title" content="比较常见的数据库SQL面试题以及答案">
+<meta property="og:url" content="http://www.jfox.info/2017/bi-jiao-chang-jian-de-shu-ju-ku-sql-mian-shi-ti-yi-ji-da-an.html">
+<meta property="og:site_name" content="java面试">
+<meta property="og:description" content="下面的SQL题目都是比较基础，比较常见的数据库SQL面试题，在技术面试环节虽然碰到相同题目的机会比较少，但解题的基本思路都是差不多的。下面是SQL面试题描述： Student(S#,Sname,Sage,Ssex) 学生表       S#：学号；Sname：学生姓名；Sage：学生年龄；Ssex：学生性别Course(C#,Cname,T#) 课程表                    C#,">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:updated_time" content="2018-10-27T12:29:40.321Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="比较常见的数据库SQL面试题以及答案">
+<meta name="twitter:description" content="下面的SQL题目都是比较基础，比较常见的数据库SQL面试题，在技术面试环节虽然碰到相同题目的机会比较少，但解题的基本思路都是差不多的。下面是SQL面试题描述： Student(S#,Sname,Sage,Ssex) 学生表       S#：学号；Sname：学生姓名；Sage：学生年龄；Ssex：学生性别Course(C#,Cname,T#) 课程表                    C#,">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://www.jfox.info/2017/bi-jiao-chang-jian-de-shu-ju-ku-sql-mian-shi-ti-yi-ji-da-an.html">
+
+
+
+
+
+  <title>比较常见的数据库SQL面试题以及答案 | java面试</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh_CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">java面试</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.jfox.info/2017/bi-jiao-chang-jian-de-shu-ju-ku-sql-mian-shi-ti-yi-ji-da-an.html">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hello">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="java面试">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">比较常见的数据库SQL面试题以及答案</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-01-01T23:47:44+08:00">
+                2017-01-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>下面的SQL题目都是比较基础，比较常见的数据库SQL面试题，在技术面试环节虽然碰到相同题目的机会比较少，但解题的基本思路都是差不多的。下面是SQL面试题描述：</p>
+<p>Student(S#,Sname,Sage,Ssex) 学生表      <em> S#：学号；Sname：学生姓名；Sage：学生年龄；Ssex：学生性别</em><br>Course(C#,Cname,T#) 课程表                    <em>C#,课程编号；Cname：课程名字；T#：教师编号</em><br>SC(S#,C#,score) 成绩表                            <em> S#：学号；C#,课程编号；score：成绩</em><br>Teacher(T#,Tname) 教师表                        <em>T#：教师编号； Tname：教师名字</em></p>
+<p>问题及答案：<br>1、查询“001”课程比“002”课程成绩高的所有学生的学号；<br>select a.S# from (select s#,score from SC where C#=’001′) a,(select s#,score<br>from SC where C#=’002′) b<br>where a.score&gt;b.score and a.s#=b.s#;</p>
+<p>2、查询平均成绩大于60分的同学的学号和平均成绩；<br>select S#,avg(score)<br>from sc<br>group by S# having avg(score) &gt;60;</p>
+<p>3、查询所有同学的学号、姓名、选课数、总成绩；<br>select Student.S#,Student.Sname,count(SC.C#),sum(score)<br>from Student left Outer join SC on Student.S#=SC.S#<br>group by Student.S#,Sname</p>
+<p>4、查询姓“李”的老师的个数；<br>select count(distinct(Tname))<br>from Teacher<br>where Tname like ‘李%’;</p>
+<p>5、查询没学过“叶平”老师课的同学的学号、姓名；<br>select Student.S#,Student.Sname<br>from Student<br>where S# not in (select distinct( SC.S#) from SC,Course,Teacher where  SC.C#=Course.C# and Teacher.T#=Course.T# and Teacher.Tname=’叶平’);</p>
+<p>6、查询学过“001”并且也学过编号“002”课程的同学的学号、姓名；<br>select Student.S#,Student.Sname from Student,SC where Student.S#=SC.S# and SC.C#=’001’and exists( Select * from SC as SC_2 where SC_2.S#=SC.S# and SC_2.C#=’002′);</p>
+<p>7、查询学过“叶平”老师所教的所有课的同学的学号、姓名；<br>select S#,Sname<br>from Student<br>where S# in (select S# from SC ,Course ,Teacher where SC.C#=Course.C# and Teacher.T#=Course.T# and Teacher.Tname=’叶平’ group by S# having count(SC.C#)=(select count(C#) from Course,Teacher  where Teacher.T#=Course.T# and Tname=’叶平’));</p>
+<p>8、查询课程编号“002”的成绩比课程编号“001”课程低的所有同学的学号、姓名；<br>Select S#,Sname from (select Student.S#,Student.Sname,score ,(select score from SC SC_2 where SC_2.S#=Student.S# and SC_2.C#=’002′) score2<br>from Student,SC where Student.S#=SC.S# and C#=’001′) S_2 where score2 &lt;score;</p>
+<p>9、查询所有课程成绩小于60分的同学的学号、姓名；<br>select S#,Sname<br>from Student<br>where S# not in (select Student.S# from Student,SC where S.S#=SC.S# and score&gt;60);</p>
+<p>10、查询没有学全所有课的同学的学号、姓名；<br>select Student.S#,Student.Sname<br>from Student,SC<br>where Student.S#=SC.S# group by  Student.S#,Student.Sname having count(C#) &lt;(select count(C#) from Course);</p>
+<p>11、查询至少有一门课与学号为“1001”的同学所学相同的同学的学号和姓名；<br>select S#,Sname from Student,SC where Student.S#=SC.S# and C# in select C# from SC where S#=’1001′;</p>
+<p>12、查询至少学过学号为“001”同学所有一门课的其他同学学号和姓名；<br>select distinct SC.S#,Sname<br>from Student,SC<br>where Student.S#=SC.S# and C# in (select C# from SC where S#=’001′);</p>
+<p>13、把“SC”表中“叶平”老师教的课的成绩都更改为此课程的平均成绩；<br>update SC set score=(select avg(SC_2.score)<br>from SC SC_2<br>where SC_2.C#=SC.C# ) from Course,Teacher where Course.C#=SC.C# and Course.T#=Teacher.T# and Teacher.Tname=’叶平’);</p>
+<p>14、查询和“1002”号的同学学习的课程完全相同的其他同学学号和姓名；<br>select S# from SC where C# in (select C# from SC where S#=’1002′)<br>group by S# having count(<em>)=(select count(</em>) from SC where S#=’1002′);</p>
+<p>15、删除学习“叶平”老师课的SC表记录；<br>Delect SC<br>from course ,Teacher<br>where Course.C#=SC.C# and Course.T#= Teacher.T# and Tname=’叶平’;</p>
+<p>16、向SC表中插入一些记录，这些记录要求符合以下条件：没有上过编号“003”课程的同学学号、2、<br>号课的平均成绩；<br>Insert SC select S#,’002′,(Select avg(score)<br>from SC where C#=’002′) from Student where S# not in (Select S# from SC where C#=’002′);</p>
+<p>17、按平均成绩从高到低显示所有学生的“数据库”、“企业管理”、“英语”三门的课程成绩，按如下形式显示： 学生ID,,数据库,企业管理,英语,有效课程数,有效平均分<br>SELECT S# as 学生ID<br>,(SELECT score FROM SC WHERE SC.S#=t.S# AND C#=’004′) AS 数据库<br>,(SELECT score FROM SC WHERE SC.S#=t.S# AND C#=’001′) AS 企业管理<br>,(SELECT score FROM SC WHERE SC.S#=t.S# AND C#=’006′) AS 英语<br>,COUNT(*) AS 有效课程数, AVG(t.score) AS 平均成绩<br>FROM SC AS t<br>GROUP BY S#<br>ORDER BY avg(t.score) </p>
+<p>18、查询各科成绩最高和最低的分：以如下形式显示：课程ID，最高分，最低分<br>SELECT L.C# As 课程ID,L.score AS 最高分,R.score AS 最低分<br>FROM SC L ,SC AS R<br>WHERE L.C# = R.C# and<br>L.score = (SELECT MAX(IL.score)<br>FROM SC AS IL,Student AS IM<br>WHERE L.C# = IL.C# and IM.S#=IL.S#<br>GROUP BY IL.C#)<br>AND<br>R.Score = (SELECT MIN(IR.score)<br>FROM SC AS IR<br>WHERE R.C# = IR.C#<br>GROUP BY IR.C#<br>);<br>19、按各科平均成绩从低到高和及格率的百分数从高到低顺序<br>SELECT t.C# AS 课程号,max(course.Cname)AS 课程名,isnull(AVG(score),0) AS 平均成绩<br>,100 <em> SUM(CASE WHEN  isnull(score,0)&gt;=60 THEN 1 ELSE 0 END)/COUNT(</em>) AS 及格百分数<br>FROM SC T,Course<br>where t.C#=course.C#<br>GROUP BY t.C#<br>ORDER BY 100 <em> SUM(CASE WHEN  isnull(score,0)&gt;=60 THEN 1 ELSE 0 END)/COUNT(</em>) DESC</p>
+<p>20、查询如下课程平均成绩和及格率的百分数(用”1行”显示): 企业管理（001），马克思（002），OO&amp;UML （003），数据库（004）<br>SELECT SUM(CASE WHEN C# =’001′ THEN score ELSE 0 END)/SUM(CASE C# WHEN ‘001’ THEN 1 ELSE 0 END) AS 企业管理平均分<br>,100 <em> SUM(CASE WHEN C# = ‘001’ AND score &gt;= 60 THEN 1 ELSE 0 END)/SUM(CASE WHEN C# = ‘001’ THEN 1 ELSE 0 END) AS 企业管理及格百分数<br>,SUM(CASE WHEN C# = ‘002’ THEN score ELSE 0 END)/SUM(CASE C# WHEN ‘002’ THEN 1 ELSE 0 END) AS 马克思平均分<br>,100 </em> SUM(CASE WHEN C# = ‘002’ AND score &gt;= 60 THEN 1 ELSE 0 END)/SUM(CASE WHEN C# = ‘002’ THEN 1 ELSE 0 END) AS 马克思及格百分数<br>,SUM(CASE WHEN C# = ‘003’ THEN score ELSE 0 END)/SUM(CASE C# WHEN ‘003’ THEN 1 ELSE 0 END) AS UML平均分<br>,100 <em> SUM(CASE WHEN C# = ‘003’ AND score &gt;= 60 THEN 1 ELSE 0 END)/SUM(CASE WHEN C# = ‘003’ THEN 1 ELSE 0 END) AS UML及格百分数<br>,SUM(CASE WHEN C# = ‘004’ THEN score ELSE 0 END)/SUM(CASE C# WHEN ‘004’ THEN 1 ELSE 0 END) AS 数据库平均分<br>,100 </em> SUM(CASE WHEN C# = ‘004’ AND score &gt;= 60 THEN 1 ELSE 0 END)/SUM(CASE WHEN C# = ‘004’ THEN 1 ELSE 0 END) AS 数据库及格百分数<br>FROM SC</p>
+<p>21、查询不同老师所教不同课程平均分从高到低显示<br>SELECT max(Z.T#) AS 教师ID,MAX(Z.Tname) AS 教师姓名,C.C# AS 课程ＩＤ,MAX(C.Cname) AS 课程名称,AVG(Score) AS 平均成绩<br>FROM SC AS T,Course AS C ,Teacher AS Z<br>where T.C#=C.C# and C.T#=Z.T#<br>GROUP BY C.C#<br>ORDER BY AVG(Score) DESC</p>
+<p>22、查询如下课程成绩第 3 名到第 6 名的学生成绩单：企业管理（001），马克思（002），UML （003），数据库（004）<br>[学生ID],[学生姓名],企业管理,马克思,UML,数据库,平均成绩<br>SELECT  DISTINCT top 3<br>SC.S# As 学生学号,<br>Student.Sname AS 学生姓名 ,<br>T1.score AS 企业管理,<br>T2.score AS 马克思,<br>T3.score AS UML,<br>T4.score AS 数据库,<br>ISNULL(T1.score,0) + ISNULL(T2.score,0) + ISNULL(T3.score,0) + ISNULL(T4.score,0) as 总分<br>FROM Student,SC  LEFT JOIN SC AS T1<br>ON SC.S# = T1.S# AND T1.C# = ‘001’<br>LEFT JOIN SC AS T2<br>ON SC.S# = T2.S# AND T2.C# = ‘002’<br>LEFT JOIN SC AS T3<br>ON SC.S# = T3.S# AND T3.C# = ‘003’<br>LEFT JOIN SC AS T4<br>ON SC.S# = T4.S# AND T4.C# = ‘004’<br>WHERE student.S#=SC.S# and<br>ISNULL(T1.score,0) + ISNULL(T2.score,0) + ISNULL(T3.score,0) + ISNULL(T4.score,0)<br>NOT IN<br>(SELECT<br>DISTINCT<br>TOP 15 WITH TIES<br>ISNULL(T1.score,0) + ISNULL(T2.score,0) + ISNULL(T3.score,0) + ISNULL(T4.score,0)<br>FROM sc<br>LEFT JOIN sc AS T1<br>ON sc.S# = T1.S# AND T1.C# = ‘k1’<br>LEFT JOIN sc AS T2<br>ON sc.S# = T2.S# AND T2.C# = ‘k2’<br>LEFT JOIN sc AS T3<br>ON sc.S# = T3.S# AND T3.C# = ‘k3’<br>LEFT JOIN sc AS T4<br>ON sc.S# = T4.S# AND T4.C# = ‘k4’<br>ORDER BY ISNULL(T1.score,0) + ISNULL(T2.score,0) + ISNULL(T3.score,0) + ISNULL(T4.score,0) DESC);</p>
+<p>23、统计列印各科成绩,各分数段人数:课程ID,课程名称,[100-85],[85-70],[70-60],[ &lt;60]<br>SELECT SC.C# as 课程ID, Cname as 课程名称<br>,SUM(CASE WHEN score BETWEEN 85 AND 100 THEN 1 ELSE 0 END) AS [100 – 85]<br>,SUM(CASE WHEN score BETWEEN 70 AND 85 THEN 1 ELSE 0 END) AS [85 – 70]<br>,SUM(CASE WHEN score BETWEEN 60 AND 70 THEN 1 ELSE 0 END) AS [70 – 60]<br>,SUM(CASE WHEN score &lt; 60 THEN 1 ELSE 0 END) AS [60 -]<br>FROM SC,Course<br>where SC.C#=Course.C#<br>GROUP BY SC.C#,Cname;</p>
+<p>24、查询学生平均成绩及其名次<br>SELECT 1+(SELECT COUNT( distinct 平均成绩)<br>FROM (SELECT S#,AVG(score) AS 平均成绩<br>FROM SC<br>GROUP BY S#<br>) AS T1<br>WHERE 平均成绩 &gt; T2.平均成绩) as 名次,<br>S# as 学生学号,平均成绩<br>FROM (SELECT S#,AVG(score) 平均成绩<br>FROM SC<br>GROUP BY S#<br>) AS T2<br>ORDER BY 平均成绩 desc;<br>25、查询各科成绩前三名的记录:(不考虑成绩并列情况)<br>SELECT t1.S# as 学生ID,t1.C# as 课程ID,Score as 分数<br>FROM SC t1<br>WHERE score IN (SELECT TOP 3 score<br>FROM SC<br>WHERE t1.C#= C#<br>ORDER BY score DESC<br>)<br>ORDER BY t1.C#;<br>26、查询每门课程被选修的学生数<br>select c#,count(S#) from sc group by C#;</p>
+<p>27、查询出只选修了一门课程的全部学生的学号和姓名<br>select SC.S#,Student.Sname,count(C#) AS 选课数<br>from SC ,Student<br>where SC.S#=Student.S# group by SC.S# ,Student.Sname having count(C#)=1;</p>
+<p>28、查询男生、女生人数<br>Select count(Ssex) as 男生人数 from Student group by Ssex having Ssex=’男’;<br>Select count(Ssex) as 女生人数 from Student group by Ssex having Ssex=’女’；</p>
+<p>29、查询姓“张”的学生名单<br>SELECT Sname FROM Student WHERE Sname like ‘张%’;</p>
+<p>30、查询同名同性学生名单，并统计同名人数<br>select Sname,count(<em>) from Student group by Sname having  count(</em>)&gt;1;;</p>
+<p>31、1981年出生的学生名单(注：Student表中Sage列的类型是datetime)<br>select Sname,  CONVERT(char (11),DATEPART(year,Sage)) as age<br>from student<br>where  CONVERT(char(11),DATEPART(year,Sage))=’1981′;</p>
+<p>32、查询每门课程的平均成绩，结果按平均成绩升序排列，平均成绩相同时，按课程号降序排列<br>Select C#,Avg(score) from SC group by C# order by Avg(score),C# DESC ;</p>
+<p>33、查询平均成绩大于85的所有学生的学号、姓名和平均成绩<br>select Sname,SC.S# ,avg(score)<br>from Student,SC<br>where Student.S#=SC.S# group by SC.S#,Sname having    avg(score)&gt;85;</p>
+<p>34、查询课程名称为“数据库”，且分数低于60的学生姓名和分数<br>Select Sname,isnull(score,0)<br>from Student,SC,Course<br>where SC.S#=Student.S# and SC.C#=Course.C# and  Course.Cname=’数据库’and score &lt;60;<br>35、查询所有学生的选课情况；</p>
+<p>SELECT SC.S#,SC.C#,Sname,Cname<br>FROM SC,Student,Course<br>where SC.S#=Student.S# and SC.C#=Course.C# ;</p>
+<p>36、查询任何一门课程成绩在70分以上的姓名、课程名称和分数；<br>SELECT  distinct student.S#,student.Sname,SC.C#,SC.score</p>
+<p>FROM student,Sc<br>WHERE SC.score&gt;=70 AND SC.S#=student.S#;</p>
+<p>37、查询不及格的课程，并按课程号从大到小排列<br>select c# from sc where scor e &lt;60 order by C# ;</p>
+<p>38、查询课程编号为003且课程成绩在80分以上的学生的学号和姓名；<br>select SC.S#,Student.Sname from SC,Student where SC.S#=Student.S# and Score&gt;80 and C#=’003′;</p>
+<p>39、求选了课程的学生人数<br>select count(*) from sc;</p>
+<p>40、查询选修“叶平”老师所授课程的学生中，成绩最高的学生姓名及其成绩<br>select Student.Sname,score<br>from Student,SC,Course C,Teacher<br>where Student.S#=SC.S# and SC.C#=C.C# and C.T#=Teacher.T# and Teacher.Tname=’叶平’ and SC.score=(select max(score)from SC where C#=C.C# );</p>
+<p>41、查询各个课程及相应的选修人数<br>select count(*) from sc group by C#;</p>
+<p>42、查询不同课程成绩相同的学生的学号、课程号、学生成绩<br>select distinct  A.S#,B.score from SC A  ,SC B where A.Score=B.Score and A.C# &lt;&gt;B.C# ;</p>
+<p>43、查询每门功成绩最好的前两名<br>SELECT t1.S# as 学生ID,t1.C# as 课程ID,Score as 分数<br>FROM SC t1<br>WHERE score IN (SELECT TOP 2 score<br>FROM SC<br>WHERE t1.C#= C#<br>ORDER BY score DESC<br>)<br>ORDER BY t1.C#;</p>
+<p>44、统计每门课程的学生选修人数（超过10人的课程才统计）。要求输出课程号和选修人数，查询结果按人数降序排列，查询结果按人数降序排列，若人数相同，按课程号升序排列<br>select  C# as 课程号,count(<em>) as 人数<br>from  sc<br>group  by  C#<br>order  by  count(</em>) desc,c# </p>
+<p>45、检索至少选修两门课程的学生学号<br>select  S#<br>from  sc<br>group  by  s#<br>having  count(*)  &gt;  =  2</p>
+<p>46、查询全部学生都选修的课程的课程号和课程名<br>select  C#,Cname<br>from  Course<br>where  C#  in  (select  c#  from  sc group  by  c#) </p>
+<p>47、查询没学过“叶平”老师讲授的任一门课程的学生姓名<br>select Sname from Student where S# not in (select S# from Course,Teacher,SC where Course.T#=Teacher.T# and SC.C#=course.C# and Tname=’叶平’);</p>
+<p>48、查询两门以上不及格课程的同学的学号及其平均成绩<br>select S#,avg(isnull(score,0)) from SC where S# in (select S# from SC where score <60 group="" by="" s#="" having="" count(*)="">2)group by S#;<br>49、检索“004”课程分数小于60，按分数降序排列的同学学号<br>select S# from SC where C#=’004’and score &lt;60 order by score desc;</60></p>
+<p>50、删除“002”同学的“001”课程的成绩<br>delete from Sc where S#=’002’and C#=’001′;</p>
+
+      
+    </div>
+    
+    
+    
+    
+    
+    <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/40-ge-java-ji-he-lei-mian-shi-ti-he-da-an.html" rel="next" title="40个Java集合类面试题和答案">
+                <i class="fa fa-chevron-left"></i> 40个Java集合类面试题和答案
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/kai-fa-ruan-jian-cheng-ben-dao-di-you-duo-gui.html" rel="prev" title="开发软件成本到底有多贵？">
+                开发软件成本到底有多贵？ <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Hello</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">1358</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+
+      
+
+    </div>
+  </aside>
+
+      <div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460" data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+</div>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Hello</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

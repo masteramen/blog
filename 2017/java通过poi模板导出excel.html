@@ -1,0 +1,569 @@
+<!-- build time:Sat Oct 27 2018 21:00:20 GMT+0800 (CST) --><!DOCTYPE html><html class="theme-next muse use-motion"><head><meta name="generator" content="Hexo 3.8.0"><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"><meta name="theme-color" content="#222"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"><link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css"><link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css"><link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4"><link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222"><meta name="description" content="java通过poi来读写excel目前很方便，支持xls和xlsx格式，目前代码支持按照sheet模板导出,并且支持sheet页级的模板复制功能。附上poi的maven配置：&amp;lt;dependency&amp;gt;      &amp;lt;groupId&amp;gt;org.apache.poi&amp;lt;/groupId&amp;gt;      &amp;lt;artifactId&amp;gt;poi-ooxml&amp;lt;/artifa"><meta name="keywords" content="JAVA,面试"><meta property="og:type" content="article"><meta property="og:title" content="java通过poi模板导出excel"><meta property="og:url" content="http://www.jfox.info/2017/java通过poi模板导出excel.html"><meta property="og:site_name" content="java面试"><meta property="og:description" content="java通过poi来读写excel目前很方便，支持xls和xlsx格式，目前代码支持按照sheet模板导出,并且支持sheet页级的模板复制功能。附上poi的maven配置：&amp;lt;dependency&amp;gt;      &amp;lt;groupId&amp;gt;org.apache.poi&amp;lt;/groupId&amp;gt;      &amp;lt;artifactId&amp;gt;poi-ooxml&amp;lt;/artifa"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="http://www.jfox.info/2017/1182/c561b40.png"><meta property="og:image" content="http://www.jfox.info/2017/1182/c034124.png"><meta property="og:image" content="http://www.jfox.info/2017/1182/6c9386f.png"><meta property="og:updated_time" content="2018-10-27T12:29:37.383Z"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="java通过poi模板导出excel"><meta name="twitter:description" content="java通过poi来读写excel目前很方便，支持xls和xlsx格式，目前代码支持按照sheet模板导出,并且支持sheet页级的模板复制功能。附上poi的maven配置：&amp;lt;dependency&amp;gt;      &amp;lt;groupId&amp;gt;org.apache.poi&amp;lt;/groupId&amp;gt;      &amp;lt;artifactId&amp;gt;poi-ooxml&amp;lt;/artifa"><meta name="twitter:image" content="http://www.jfox.info/2017/1182/c561b40.png"><script type="text/javascript" id="hexo.configurations">var NexT=window.NexT||{},CONFIG={root:"/",scheme:"Muse",version:"5.1.4",sidebar:{position:"left",display:"post",offset:12,b2t:!1,scrollpercent:!1,onmobile:!1},fancybox:!0,tabs:!0,motion:{enable:!0,async:!1,transition:{post_block:"fadeIn",post_header:"slideDownIn",post_body:"slideDownIn",coll_header:"slideLeftIn",sidebar:"slideUpIn"}},duoshuo:{userId:"0",author:"Author"},algolia:{applicationID:"",apiKey:"",indexName:"",hits:{per_page:10},labels:{input_placeholder:"Search for Posts",hits_empty:"We didn't find any results for the search: ${query}",hits_stats:"${hits} results found in ${time} ms"}}}</script><link rel="canonical" href="http://www.jfox.info/2017/java通过poi模板导出excel.html"><title>java通过poi模板导出excel | java面试</title></head><body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN"><div class="container sidebar-position-left page-post-detail"><div class="headband"></div><header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="header-inner"><div class="site-brand-wrapper"><div class="site-meta"><div class="custom-logo-site-title"><a href="/" class="brand" rel="start"><span class="logo-line-before"><i></i></span> <span class="site-title">java面试</span> <span class="logo-line-after"><i></i></span></a></div><p class="site-subtitle"></p></div><div class="site-nav-toggle"><button><span class="btn-bar"></span> <span class="btn-bar"></span> <span class="btn-bar"></span></button></div></div><nav class="site-nav"><ul id="menu" class="menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i><br>Home</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i><br>Archives</a></li></ul></nav></div></header><main id="main" class="main"><div class="main-inner"><div class="content-wrap"><div id="content" class="content"><div id="posts" class="posts-expand"><article class="post post-type-normal" itemscope itemtype="http://schema.org/Article"><div class="post-block"><link itemprop="mainEntityOfPage" href="http://www.jfox.info/2017/java通过poi模板导出excel.html"><span hidden itemprop="author" itemscope itemtype="http://schema.org/Person"><meta itemprop="name" content="Hello"><meta itemprop="description" content=""><meta itemprop="image" content="/images/avatar.gif"></span><span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><meta itemprop="name" content="java面试"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">java通过poi模板导出excel</h1><div class="post-meta"><span class="post-time"><span class="post-meta-item-icon"><i class="fa fa-calendar-o"></i> </span><span class="post-meta-item-text">Posted on</span> <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-01-01T23:54:42+08:00">2017-01-01</time></span></div></header><div class="post-body" itemprop="articleBody"><p>java通过poi来读写excel目前很方便，支持xls和xlsx格式，目前代码支持按照sheet模板导出,并且支持sheet页级的模板复制功能。</p><p>附上poi的maven配置：</p><pre><code>&lt;dependency&gt;
+     &lt;groupId&gt;org.apache.poi&lt;/groupId&gt;
+     &lt;artifactId&gt;poi-ooxml&lt;/artifactId&gt;
+     &lt;version&gt;3.16&lt;/version&gt;
+ &lt;/dependency&gt;
+</code></pre><p>我使用了最新的版本。</p><p>先贴一下sheet页模板数据的封装：</p><pre><code>/**
+ * sheet页数据定制
+ * @author lyf
+ *
+ */
+public class SheetData  {
+
+    /**
+     * sheet页中存储 #{key} 的数据
+     */
+    private Map&lt;String, Object&gt; map = new HashMap&lt;String, Object&gt;();
+
+    /**
+     * 列表数据存储 sheet页中替换${key} 并以列为单位向下赋值
+     */
+    private List&lt;Object&gt;  datas = new LinkedList&lt;Object&gt; ();
+
+    private String name ;
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+
+
+    public SheetData(String name) {
+        super();
+        this.name = name;
+    }
+
+    public void put(String key , Object value) {
+        map.put(key, value);
+    }
+
+    public void remove(String key) {
+        map.remove(key);
+    }
+
+    public Object get(String key) {
+        return map.get(key);
+    }
+
+    /**
+     * 清理map存储和数据存储
+     */
+    public void clear() {
+        map.clear();
+        datas.clear();
+    }
+
+    public void addData(Object t){
+        datas.add(t);
+    }
+
+    public void addDatas(List&lt;? extends Object&gt; list) {
+        datas.addAll(list);
+    }
+
+
+    public List&lt;Object&gt;  getDatas() {
+        return datas;
+    }
+
+}
+</code></pre><p>以下是针对sheet模板的封装类：</p><pre><code>/**
+ * excel操作公共类-提供excel按照模板输出
+ * @author lyf
+ *
+ */
+public class ExcelUtils {
+
+
+
+    /**
+     * Sheet复制
+     * @param fromSheet
+     * @param toSheet
+     * @param copyValueFlag
+     */
+    public static void copySheet(Workbook wb,Sheet fromSheet, Sheet toSheet,
+            boolean copyValueFlag) {
+        //合并区域处理
+
+        mergerRegion(fromSheet, toSheet);
+        int index = 0;
+        for (Iterator&lt;Row&gt; rowIt = fromSheet.rowIterator(); rowIt.hasNext();) {
+            Row tmpRow =  rowIt.next();
+            Row newRow = toSheet.createRow(tmpRow.getRowNum());
+
+            CellStyle style = tmpRow.getRowStyle();
+            if(style != null)
+                newRow.setRowStyle(tmpRow.getRowStyle());
+
+            newRow.setHeight(tmpRow.getHeight());
+
+            //针对第一行设置行宽
+            if(index == 0) {
+                int first = tmpRow.getFirstCellNum();
+                int last = tmpRow.getLastCellNum();
+                for(int i = first ; i &lt; last ; i++) {
+                    int w = fromSheet.getColumnWidth(i);
+                    toSheet.setColumnWidth(i, w + 1);
+                }
+                toSheet.setDefaultColumnWidth(fromSheet.getDefaultColumnWidth());
+            }
+
+            //行复制
+            copyRow(wb,tmpRow,newRow,copyValueFlag);
+
+            index++ ;
+        }
+    }
+    /**
+     * 行复制功能
+     * @param fromRow
+     * @param toRow
+     */
+     static void copyRow(Workbook wb,Row fromRow,Row toRow,boolean copyValueFlag){
+        for (Iterator&lt;Cell&gt; cellIt = fromRow.cellIterator(); cellIt.hasNext();) {
+            Cell tmpCell = cellIt.next();
+            Cell newCell = toRow.createCell(tmpCell.getColumnIndex());
+            copyCell(wb,tmpCell, newCell, copyValueFlag);
+        }
+    }
+    /**
+    * 复制原有sheet的合并单元格到新创建的sheet
+    * 
+    * @param sheetCreat 新创建sheet
+    * @param sheet      原有的sheet
+    */
+     static void mergerRegion(Sheet fromSheet, Sheet toSheet) {
+       int sheetMergerCount = fromSheet.getNumMergedRegions();
+       for (int i = 0; i &lt; sheetMergerCount; i++) {
+
+           CellRangeAddress cra = fromSheet.getMergedRegion(i);
+
+           toSheet.addMergedRegion(cra);
+       }
+    }
+    /**
+     * 复制单元格
+     * 
+     * @param srcCell
+     * @param distCell
+     * @param copyValueFlag
+     *            true则连同cell的内容一起复制
+     */
+    public static void copyCell(Workbook wb,Cell srcCell, Cell distCell,
+            boolean copyValueFlag) {
+
+
+
+        CellStyle newstyle=wb.createCellStyle();
+        //copyCellStyle(srcCell.getCellStyle(), newstyle);
+        //distCell.setEncoding(srcCell.);
+        newstyle.cloneStyleFrom(srcCell.getCellStyle());
+        //样式
+        distCell.setCellStyle(newstyle);
+        //评论
+        if (srcCell.getCellComment() != null) {
+            distCell.setCellComment(srcCell.getCellComment());
+        }
+        // 不同数据类型处理
+        CellType srcCellType = srcCell.getCellTypeEnum();
+        distCell.setCellType(srcCellType);
+
+
+        if (copyValueFlag) {
+            if (srcCellType == CellType.NUMERIC) {
+                if (DateUtil.isCellDateFormatted(srcCell)) {
+                    distCell.setCellValue(srcCell.getDateCellValue());
+                } else {
+                    distCell.setCellValue(srcCell.getNumericCellValue());
+                }
+            } else if (srcCellType == CellType.STRING ) {
+                distCell.setCellValue(srcCell.getRichStringCellValue());
+            } else if (srcCellType == CellType.BLANK ) {
+                // nothing21
+            } else if (srcCellType == CellType.BOOLEAN  ) {
+                distCell.setCellValue(srcCell.getBooleanCellValue());
+            } else if (srcCellType == CellType.ERROR ) {
+                distCell.setCellErrorValue(srcCell.getErrorCellValue());
+
+            } else if (srcCellType == CellType.FORMULA  ) {
+                distCell.setCellFormula(srcCell.getCellFormula());
+            } else { // nothing29
+            }
+        }
+    }
+
+
+    /**
+     * 写入excel数据
+     * @param model 采用的模板 位置在 src/model/下 模板第一个sheet页必须是模板sheet
+     * @param sheetDatas 模板数据
+     */
+
+    public static void writeData(String model , OutputStream out,SheetData... sheetDatas ) {
+
+        Workbook wb = null;
+        try {
+
+            InputStream input = ExcelUtils.class.getResourceAsStream(&quot;/model/&quot; + model);
+
+            if(input == null) {
+                throw new RuntimeException(&quot;model excel file load error :/model/&quot; + model + &quot; , check model file is exists !&quot;);
+            }
+
+            if(model.endsWith(&quot;.xlsx&quot;))
+                wb = new XSSFWorkbook(input);
+            else if(model.endsWith(&quot;.xls&quot;))
+                wb = new HSSFWorkbook(input);
+            else
+                throw new RuntimeException(&quot;model file format is not valid , this : &quot; + model + &quot; , eg:.xlsx or xls&quot;);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            //e.printStackTrace();
+
+            throw new RuntimeException(&quot;model excel file load error :/model/&quot; + model);
+        }
+
+        Sheet source =  wb.getSheetAt(0);
+
+        //就一个的话 直接用模板
+        int size = sheetDatas.length ;
+        for(int i = 0 ; i &lt; size  ; i++) {
+
+            if(i == 0) {
+                wb.setSheetName(0, sheetDatas[0].getName());
+
+            } else {
+                Sheet toSheet = wb.createSheet(sheetDatas[i].getName());
+                //复制格式
+                copySheet(wb, source, toSheet, true);
+            }
+
+
+        }
+
+        for(int i = 0 ; i &lt; size  ; i++) {
+            //写数据
+            writeData(sheetDatas[i], wb.getSheetAt(i));
+        }
+
+        try {
+            wb.write(out);
+            out.flush();
+            wb.close();
+            out.close();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+
+    }
+
+    /**
+     * 向sheet页中写入数据
+     * @param values 数据Map
+     * @param sheet sheet
+     */
+      public static void writeData(SheetData sheetData , Sheet sheet) {
+
+        //从sheet中找到匹配符 #{}表示单个 , ${}表示集合,从该单元格开始向下追加
+
+        for(Iterator&lt;Row&gt; rowIt = sheet.rowIterator(); rowIt.hasNext();) {
+            Row row = rowIt.next();
+            //取cell
+            for(int j = row.getFirstCellNum() ; j &lt; row.getLastCellNum() ; j++) {
+
+                Cell cell = row.getCell(j);
+
+                //判断cell的内容是否包含 $ 或者#
+                if(cell != null &amp;&amp; cell.getCellTypeEnum() == CellType.STRING &amp;&amp; cell.getStringCellValue() != null 
+                            &amp;&amp; (cell.getStringCellValue().contains(&quot;$&quot;) || cell.getStringCellValue().contains(&quot;#&quot;) )) {
+                    //剥离# $
+                    String[] winds = CommonUtils.getWildcard(cell.getStringCellValue().trim());
+
+                    for(String wind : winds) {
+
+                        writeData(sheetData, wind , cell , sheet);
+                    }
+
+
+                }
+
+            }
+
+        }
+    }
+
+    /**
+     * 填充数据
+     * @param values
+     * @param keyWind #{name}只替换当前 or ${names} 从当前行开始向下替换
+     */
+    static void writeData(SheetData sheetData , String keyWind , Cell cell , Sheet sheet) {
+        String key = keyWind.substring(2 , keyWind.length() - 1);
+
+        if(keyWind.startsWith(&quot;#&quot;)) {
+
+            //简单替换
+
+            Object value = sheetData.get(key);
+            //为空则替换为空字符串
+            if(value == null) 
+                value = &quot;&quot; ;
+
+            String cellValue = cell.getStringCellValue();
+            cellValue = cellValue.replace(keyWind, value.toString());
+
+            cell.setCellValue(cellValue);
+
+        } else  if(keyWind.startsWith(&quot;$&quot;)) {
+
+            //从list中每个实体开始解,行数从当前开始
+            int rowindex = cell.getRowIndex();
+            int columnindex = cell.getColumnIndex();
+
+            List&lt;? extends Object&gt; listdata = sheetData.getDatas();
+
+            //不为空的时候开始填充
+            if(listdata != null &amp;&amp; !listdata.isEmpty()){
+                for(Object o : listdata) {
+                    Object cellValue = CommonUtils.getValue(o, key);
+
+                    Row row = sheet.getRow(rowindex);
+                    if(row == null) {
+                        row = sheet.createRow(rowindex);
+                    }
+
+
+                    //取出cell
+                    Cell c = row.getCell(columnindex);
+                    if(c == null) 
+                        c = row.createCell(columnindex);
+                    if(cell.getCellStyle() != null){ 
+                        c.setCellStyle(cell.getCellStyle());
+
+                    }
+
+                    if(cell.getCellTypeEnum() != null) {
+                        c.setCellType(cell.getCellTypeEnum());
+
+                    }
+
+                    if(cellValue != null) {
+                        if(cellValue instanceof Number || CommonUtils.isNumber(cellValue) )
+                            c.setCellValue( Double.valueOf(cellValue.toString()));
+                        else if(cellValue instanceof Boolean)
+                            c.setCellValue((Boolean)cellValue);
+                        else if(cellValue instanceof Date)
+                            c.setCellValue((Date)cellValue);
+                        else
+                            c.setCellValue(cellValue.toString());
+                    } else {
+
+                        //数据为空 如果当前单元格已经有数据则重置为空
+                        if(c.getStringCellValue() != null) {
+                            c.setCellValue(&quot;&quot;);
+                        }
+
+                    }
+
+
+
+                    rowindex++ ;
+                }
+            } else {
+                //list数据为空则将$全部替换空字符串
+                String cellValue = &quot;&quot; ;
+
+                cell.setCellValue(cellValue);
+
+            }
+
+
+
+        }
+
+    }
+
+}
+</code></pre><p>其中注意我的 模板文件全部放在 source/model/ 目录下，大家用的时候改成自己实际的位置。</p><p>其中用到了CommonUtils公共类中封装的几个静态方法：</p><pre><code>/**
+      * 从实体中解析出字段数据
+      * @param data 可能为pojo或者map 从field中解析
+      * @param field 字段名称
+      * @return
+      */
+
+     @SuppressWarnings(&quot;rawtypes&quot;)
+   public static Object getValue(Object data , String field) {
+
+         if(data instanceof Map) {
+
+             Map map = (Map) data;
+             return map.get(field);
+         }
+         try {
+
+             String method = &quot;get&quot; + field.substring(0 , 1).toUpperCase() + field.substring(1);
+
+             Method m = data.getClass().getMethod(method, null);
+
+             if(m != null) {
+                 return m.invoke(data, null);
+             }
+
+         } catch (Exception e) {
+             // TODO Auto-generated catch block
+            // e.printStackTrace();
+             logger.error(&quot;data invoke error , data:&quot; + data + &quot; , key:&quot; + field);
+             return null;
+         } 
+
+
+         return null ;
+
+     }
+
+     /**
+      * 判断是否为数字
+      * @param v
+      * @return
+      */
+     public static boolean isNumber(Object v) {
+
+         if(v == null) return false; 
+
+         if(v instanceof Number) {
+             return true ;
+         } else if(v.toString().matches(&quot;^d+$&quot;)) {
+             return true ;
+         } else if(v.toString().matches(&quot;^-?d+.?d+$&quot;)) {
+             return true ;
+         } else {
+             try{
+                 Double.parseDouble(v.toString());
+                 return true ;
+             }catch(Exception e) {
+                 return false;
+             }
+
+
+         }
+
+     }
+
+/**
+      * 返回 #{} 或者 ${} 中包含的值
+      * @param str
+      * @param type
+      * @return eg:#{name} ${ages} 
+      */
+     public static String[] getWildcard(String str ) {
+
+        List&lt;String&gt; list = new ArrayList&lt;String&gt;();
+
+        int start = 0;
+        while(start &lt; str.length() &amp;&amp; start &gt;= 0) {
+
+            start = str.indexOf(&quot;{&quot;, start);
+
+            int end = str.indexOf(&quot;}&quot;, start);
+            if(start &gt; 0) {
+                String wc = str.substring(start - 1 , end + 1);
+
+                list.add(wc);
+            }
+
+            if(start &lt; 0) break ;
+
+            start = end + 1;
+
+        }
+
+        return list.toArray(new String[0]);
+
+     }
+</code></pre><p>下面开始写测试，编辑一个excel模板：</p><p><img src="/2017/1182/c561b40.png" alt=""></p><p>编写一个测试数据实体（实际使用Map效率会更好一些）：</p><pre><code>public class TestData {
+    private int id ;
+    private int p_id ;
+    private String name ;
+    public int getId() {
+        return id;
+    }
+    public void setId(int id) {
+        this.id = id;
+    }
+    public int getP_id() {
+        return p_id;
+    }
+    public void setP_id(int p_id) {
+        this.p_id = p_id;
+    }
+    public String getName() {
+        return name;
+    }
+    public void setName(String name) {
+        this.name = name;
+    }
+    public TestData(int id, int p_id, String name) {
+        super();
+        this.id = id;
+        this.p_id = p_id;
+        this.name = name;
+    }
+
+
+}
+</code></pre><p>编写测试类，注意模型test.xlsx 已经放入src/model/ 目录下：</p><pre><code>import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+
+import com.xahl.data.common.ExcelUtils;
+import com.xahl.data.pojo.SheetData;
+
+public class TestExcel2 {
+
+
+
+    public static void main(String[] args) {
+
+        //获取模板 
+        String model = &quot;test.xlsx&quot; ; 
+        File f = new File(&quot;e:/test.xlsx&quot;);
+
+        SheetData[] sds = new SheetData[5];
+
+        //创建5个数据sheet
+        for( int i = 0 ; i &lt; 5 ; i++) {
+            SheetData sd = new SheetData(&quot;测试&quot; + i);
+            sd.put(&quot;name&quot;, &quot;张三&quot; + i);
+            sd.put(&quot;age&quot;, 13);
+
+            //每个sheet页加入100条测试数据
+            //注意这里可以加入pojo也可以直接使用map,理论上map在这里效率更高一些
+            for(int j = 0 ; j &lt; 100 ; j++) {
+                TestData td = new TestData(j, j * -1, &quot;t&quot; + j);
+                sd.addData(td);;
+            }
+
+            sds[i] = sd ;
+        }
+
+
+        try {
+            ExcelUtils.writeData(model, new FileOutputStream(f) ,sds);
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+
+
+    }
+
+}
+</code></pre><p>输出文件如下：</p><p><img src="/2017/1182/c034124.png" alt=""></p><p><img src="/2017/1182/6c9386f.png" alt=""></p><p>模板中单元格的样式会延续复制，包含颜色，宽度等等。有兴趣大家可以一起扩展一下。</p></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="4142158067"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="5618891265"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><footer class="post-footer"><div class="post-nav"><div class="post-nav-next post-nav-item"><a href="/2017/浅入深出之java集合框架中.html" rel="next" title="浅入深出之Java集合框架（中）"><i class="fa fa-chevron-left"></i> 浅入深出之Java集合框架（中）</a></div><span class="post-nav-divider"></span><div class="post-nav-prev post-nav-item"><a href="/2017/s动态分析.html" rel="prev" title="S 动态分析 » java面试题">S 动态分析 » java面试题 <i class="fa fa-chevron-right"></i></a></div></div></footer></div></article><div class="post-spread"></div></div></div></div><div class="sidebar-toggle"><div class="sidebar-toggle-line-wrap"><span class="sidebar-toggle-line sidebar-toggle-line-first"></span> <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span> <span class="sidebar-toggle-line sidebar-toggle-line-last"></span></div></div><aside id="sidebar" class="sidebar"><div class="sidebar-inner"><section class="site-overview-wrap sidebar-panel sidebar-panel-active"><div class="site-overview"><div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person"><p class="site-author-name" itemprop="name">Hello</p><p class="site-description motion-element" itemprop="description"></p></div><nav class="site-state motion-element"><div class="site-state-item site-state-posts"><a href="/archives/"><span class="site-state-item-count">1358</span> <span class="site-state-item-name">posts</span></a></div></nav></div></section></div></aside><div class="sfix"><div class="fixedme"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460" data-ad-format="auto"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script></div></div></main><footer id="footer" class="footer"><div class="footer-inner"><div class="copyright">&copy; <span itemprop="copyrightYear">2018</span> <span class="with-love"><i class="fa fa-user"></i> </span><span class="author" itemprop="copyrightHolder">Hello</span></div><div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div><span class="post-meta-divider">|</span><div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div></div></footer><div class="back-to-top"><i class="fa fa-arrow-up"></i></div></div><script type="text/javascript">"[object Function]"!==Object.prototype.toString.call(window.Promise)&&(window.Promise=null)</script><script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script><script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script><script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script><script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script><script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script></body></html><!-- rebuild by neat -->

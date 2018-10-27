@@ -1,0 +1,156 @@
+<!-- build time:Sat Oct 27 2018 21:00:17 GMT+0800 (CST) --><!DOCTYPE html><html class="theme-next muse use-motion"><head><meta name="generator" content="Hexo 3.8.0"><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"><meta name="theme-color" content="#222"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"><link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css"><link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css"><link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4"><link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222"><meta name="description" content="主要过程分为三部分：1、storm从kafka消费日志消息。2、对日志消息按照系统标识进行过滤分组。3、把不同的分组的日志消息，批量写入hbase。初识**Storm**在讲述这个三个过程之前，先简单了解下storm：storm是一个分布式的实时计算框架，相对其他实时计算框架，具备高容错、低延时等特点，实际上storm可以做到近实时。相对于spark steaming，storm更应该叫做流式计算"><meta name="keywords" content="JAVA,面试"><meta property="og:type" content="article"><meta property="og:title" content="一种基于kafka+storm实现的日志记录方法(三)"><meta property="og:url" content="http://www.jfox.info/2017/一种基于kafkastorm实现的日志记录方法三.html"><meta property="og:site_name" content="java面试"><meta property="og:description" content="主要过程分为三部分：1、storm从kafka消费日志消息。2、对日志消息按照系统标识进行过滤分组。3、把不同的分组的日志消息，批量写入hbase。初识**Storm**在讲述这个三个过程之前，先简单了解下storm：storm是一个分布式的实时计算框架，相对其他实时计算框架，具备高容错、低延时等特点，实际上storm可以做到近实时。相对于spark steaming，storm更应该叫做流式计算"><meta property="og:locale" content="zh_CN"><meta property="og:updated_time" content="2018-10-27T12:29:40.332Z"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="一种基于kafka+storm实现的日志记录方法(三)"><meta name="twitter:description" content="主要过程分为三部分：1、storm从kafka消费日志消息。2、对日志消息按照系统标识进行过滤分组。3、把不同的分组的日志消息，批量写入hbase。初识**Storm**在讲述这个三个过程之前，先简单了解下storm：storm是一个分布式的实时计算框架，相对其他实时计算框架，具备高容错、低延时等特点，实际上storm可以做到近实时。相对于spark steaming，storm更应该叫做流式计算"><script type="text/javascript" id="hexo.configurations">var NexT=window.NexT||{},CONFIG={root:"/",scheme:"Muse",version:"5.1.4",sidebar:{position:"left",display:"post",offset:12,b2t:!1,scrollpercent:!1,onmobile:!1},fancybox:!0,tabs:!0,motion:{enable:!0,async:!1,transition:{post_block:"fadeIn",post_header:"slideDownIn",post_body:"slideDownIn",coll_header:"slideLeftIn",sidebar:"slideUpIn"}},duoshuo:{userId:"0",author:"Author"},algolia:{applicationID:"",apiKey:"",indexName:"",hits:{per_page:10},labels:{input_placeholder:"Search for Posts",hits_empty:"We didn't find any results for the search: ${query}",hits_stats:"${hits} results found in ${time} ms"}}}</script><link rel="canonical" href="http://www.jfox.info/2017/一种基于kafkastorm实现的日志记录方法三.html"><title>一种基于kafka+storm实现的日志记录方法(三) | java面试</title></head><body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN"><div class="container sidebar-position-left page-post-detail"><div class="headband"></div><header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="header-inner"><div class="site-brand-wrapper"><div class="site-meta"><div class="custom-logo-site-title"><a href="/" class="brand" rel="start"><span class="logo-line-before"><i></i></span> <span class="site-title">java面试</span> <span class="logo-line-after"><i></i></span></a></div><p class="site-subtitle"></p></div><div class="site-nav-toggle"><button><span class="btn-bar"></span> <span class="btn-bar"></span> <span class="btn-bar"></span></button></div></div><nav class="site-nav"><ul id="menu" class="menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i><br>Home</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i><br>Archives</a></li></ul></nav></div></header><main id="main" class="main"><div class="main-inner"><div class="content-wrap"><div id="content" class="content"><div id="posts" class="posts-expand"><article class="post post-type-normal" itemscope itemtype="http://schema.org/Article"><div class="post-block"><link itemprop="mainEntityOfPage" href="http://www.jfox.info/2017/一种基于kafkastorm实现的日志记录方法三.html"><span hidden itemprop="author" itemscope itemtype="http://schema.org/Person"><meta itemprop="name" content="Hello"><meta itemprop="description" content=""><meta itemprop="image" content="/images/avatar.gif"></span><span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><meta itemprop="name" content="java面试"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">一种基于kafka+storm实现的日志记录方法(三)</h1><div class="post-meta"><span class="post-time"><span class="post-meta-item-icon"><i class="fa fa-calendar-o"></i> </span><span class="post-meta-item-text">Posted on</span> <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-01-01T23:58:34+08:00">2017-01-01</time></span></div></header><div class="post-body" itemprop="articleBody"><p>主要过程分为三部分：</p><p>1、storm从kafka消费日志消息。</p><p>2、对日志消息按照系统标识进行过滤分组。</p><p>3、把不同的分组的日志消息，批量写入hbase。</p><p><strong>初识**</strong>Storm**</p><p>在讲述这个三个过程之前，先简单了解下storm：storm是一个分布式的实时计算框架，相对其他实时计算框架，具备高容错、低延时等特点，实际上storm可以做到近实时。相对于spark steaming，storm更应该叫做流式计算框架，storm处理的最小单位是每次传入的一条消息（或者说数据），而spark steaming处理的是某个时间段内的一批消息（比如 1秒、3秒，5秒），在低延时方面storm表现更优异。</p><p>但spark steaming 也有自己的优势，spark steaming可以更好的融入hadoop体系，直接以hdfs作为数据源，并结合spark ML算法包进行计算，最后把计算结果以文件的方式存储到hdfs。</p><p>在本场景中，是以kafka为数据源，最终把日志消息存储到hbase。选择spark steaming和storm都可以，只是我们最终选择了storm。下面来看下storm的相关术语，以及它们之间的关系：</p><p><strong>Topology**</strong>：**提交到storm集群里执行的一段程序，实际是一个开发好的jar包，包括一个spout，多个bolt，消息数据以tuple的形式在spout、bolt之间传递。</p><p><strong>Spout**</strong>：**是Topology程序入口，可以从不同的“数据源”获取消息，以tuple为单位发射到一个或者多个bolt中。Storm支持从多种不同的“数据源”获取消息，比如：kafka、hbase、hive、redis、mq、mysql等。本场景中的“数据源”为kafka，对应的Spout为KafkaSpout。</p><p><strong>Bolt：</strong>Bolt的输入为tuple（消息），并可以过一定的计算后，生成一个新的tuple，发射到下一个bolt（调用emit方法），或者把消息存储到数据库（比如 hbase、redis等）。每个消息处理成功后，一定要记得调用ack方法–告诉数据源该条消息已经处理完成。</p><p><strong>Tuple**</strong>：**消息对象，也可以称为一条消息。Storm中处理的最小单位。</p><p>上述内容其实就是我们开发的一段java程序（包含一个main方法），最终会编译打包为一个jar吧。我们需要把这个jar包上传到storm集群，指定执行这个main方法即可。</p><p><strong>Nimbus、Supervisor**</strong>：**分别相对于hadoop的name节点和data节点，Nimbus负责分发任务，Supervisor负责接收任务，并执行任务，Nimbus只有1个，Supervisor有多个。上述上传的jar包会首先被上传到Nimbus，然后被分发到各个Supervisor节点，Supervisor真正执行任务。每个Supervisor相当于一台机器，对应多个worker（多个jvm），每个worker里有多个Executor（线程），每个线程只会运行一个task实例（spout或者bolt）。</p><p><strong>Zookeeper、ZeroMQ、Netty：</strong>Nimbus和Supervisor之间的不会直接交互，而是通过Zookeeper来协调并维持心跳信息，Zookeeper是storm实现分布式的核心组成。在Storm 0.8之前数据传递是通过ZeroMQ实现，即上述流程中spout发射消息到bolt，bolt发射消息到下一个bolt，这些都是通过ZeroMQ。从 storm 0.9开始改用netty实现，（这也是我个人比较喜欢netty的原因）。</p><p>关于storm就总结这么多吧，更多信息可以浏览storm官网：<a href="https://www.jfox.info/go.php?url=http://storm.apache.org/">http://storm.apache.org/</a> 在Documentation菜单下可以了解各个版本相关信息。下面进入正题，讲述文章开头记录日志的“三个阶段”核心代码实现。</p><p><strong>1、storm从kafka消费日志消息</strong></p><p>这个过程其实就是创建spout的过程，我们在提交Topology的main方法中实现，代码如下：</p><pre><code>/**
+ * Created by gantianxing on 2017/7/29.
+ */
+public class LogTopology {
+    public static void main(String[] args) throws Exception {
+
+        //step1 配置zk
+        String zks = &quot;localhost:2181&quot;;
+        BrokerHosts brokerHosts = new ZkHosts(zks);
+
+
+        //step2 配置kafka spout
+        String topic = &quot;self_log&quot;; //指定kafka topic
+        String zkRoot = &quot;/storm/log&quot;; // default zookeeper root configuration for storm
+        String id = &quot;LogTopology&quot;;
+        SpoutConfig spoutConf = new SpoutConfig(brokerHosts, topic, zkRoot, id);
+        spoutConf.scheme = new SchemeAsMultiScheme(new StringScheme());//指定消息格式为String
+
+        //step3 创建Topology，绑定spout、bolt。
+        int spoutNum = 5;//并行度 建议小于等于topic分区数
+        TopologyBuilder builder = new TopologyBuilder();
+        builder.setSpout(&quot;kafka-reader&quot;, new KafkaSpout(spoutConf), spoutNum);
+        builder.setBolt(&quot;log-save&quot;, new LogMsgBolt(), 2).shuffleGrouping(&quot;kafka-reader&quot;);//shuffleGrouping随机发射
+
+        //step4 提交Topology
+        Config conf = new Config();
+        String name = LogTopology.class.getSimpleName();
+        config.setNumWorkers(10);//指定worker个数
+        StormSubmitter.submitTopologyWithProgressBar(name, config, builder.createTopology());
+    }
+}
+</code></pre><p>创建Topology大致分为4步：</p><p>Step1：配置zookeeper，文章前部分已经讲过storm的分布式是基于zookeeper实现。</p><p>Step2：配置kafka spout，通过new KafkaSpout(spoutConf), spoutNum)创建KafkaSpout实例。</p><p>Step3：创建Topology，主要是绑定spout，以及多个bolt，实现数据在spout、bolt之间传递。</p><p>Step4：提交Topology作业，可以指定一些运行参数，比如通过config.setNumWorkers(10);//指定需要多少个worker执行这个Topology作业（worker个数对应jvm个数）。</p><p><strong>2、对日志消息按照系统标识进行过滤分组。</strong></p><p>这步主要是通过Bolt实现，主要过程为：解析日志并把日志内容放入一个map中；再通过strom自带的定时器功能，每隔2分钟把map中的日志内容推送到hbase，并清空hbase。代码实现逻辑如下（删除部分公司业务代码）：</p><pre><code>public class LogMsgBolt extends BaseRichBolt{
+
+    private Logger LOG = LoggerFactory.getLogger(LogMsgBolt.class);
+    private OutputCollector collector;
+    private Map&lt;String,String&gt; dataInfo = new HashMap&lt;&gt;();
+
+    public void prepare(Map map, TopologyContext context, OutputCollector collector){
+        this.collector = collector;
+    }
+
+    public void execute(Tuple input){
+
+        //定时向hbase 批量写日志
+        if(input.getSourceComponent().equals(Constants.SYSTEM_COMPONENT_ID)) {
+
+            //批量执行hbase put方法
+            HBaseUtil.bacthPut(dataInfo);
+            dataInfo.clear();//清空map
+        }
+        else //解析日志消息 放到map
+        {
+            String line = input.getString(0);
+
+            //转化为json格式
+            JSONObject json = JSONObject.toJson(line);
+
+            //省略代码：数据格式检查、数据转化为三部分 key、type、loginfo三部分
+            String key = &quot;xxxx&quot;;//业务key
+            String type = &quot;xxxx&quot;;//系统id 每个系统对应不同的日志表
+            String loginfo = &quot;xxxxx&quot;;//日志内容
+
+            //构造hbase rowkey；
+            String logTime=&quot;xxxx&quot;;//日志时间
+            String rowKey = key+logTime+ UUID.randomUUID();//hbase rowkey
+
+            //把日志内容放到map
+            dataInfo.put(&quot;xxx&quot;,&quot;xxx&quot;);
+
+            // 确认：tuple成功处理
+            collector.ack(input);
+        }
+    }
+
+    /**
+     * 局部定时任务
+     * @return
+     */
+    @Override
+    public Map&lt;String, Object&gt; getComponentConfiguration() {
+        HashMap&lt;String, Object&gt; hashMap = new HashMap&lt;String, Object&gt;();
+        hashMap.put(Config.TOPOLOGY_TICK_TUPLE_FREQ_SECS, 5);//每隔两分钟 写一次hbase
+        return hashMap;
+    }
+
+}
+</code></pre><p>3、把不同的分组的日志消息，批量写入hbase。</p><p>第三步比较简单，写一个批量put到hbase的方法即可：</p><pre><code>public class HBaseUtil {
+
+    private static final Logger logger = LoggerFactory.getLogger(HBaseUtil.class);
+
+    private static Configuration conf;
+    private static Connection conn;
+
+    static {
+      try {
+          if (conf == null) {
+              conf = HBaseConfiguration.create();
+//                conf.set(&quot;hbase.zookeeper.property.clientPort&quot;, ConfigUtil.getInstance().getConfigVal(&quot;zkport&quot;, ConstantProperties.COMMON_PROP));
+                conf.set(&quot;hbase.zookeeper.quorum&quot;, ConfigUtil.getInstance().getConfigVal(&quot;zkhost&quot;, ConstantProperties.COMMON_PROP));
+                conf.set(&quot;zookeeper.znode.parent&quot;, &quot;/hbase&quot;);
+          }
+      } catch (Exception e) {
+          logger.error(&quot;HBase Configuration Initialization failure !&quot;);
+          throw new RuntimeException(e) ;
+      }
+  }
+
+    /**
+     * 获得链接
+     * @return
+     */
+    public static synchronized Connection getConnection() {
+        try {
+            if(conn == null || conn.isClosed()){
+                conn = ConnectionFactory.createConnection(conf);
+            }
+//         System.out.println(&quot;---------- &quot; + conn.hashCode());
+        } catch (IOException e) {
+            logger.error(&quot;HBase 建立链接失败 &quot;, e);
+        }
+        return conn;
+
+    }
+
+     /**
+     * 异步往指定表添加数据
+     */
+    public void long put(String tablename, Map logInfo) throws Exception {
+
+        List&lt;SocPut&gt; puts = xxxx;//省略把map转换为一个List业务代码       
+        Connection conn = getConnection();
+        final BufferedMutator.ExceptionListener listener = new BufferedMutator.ExceptionListener() {
+            @Override
+            public void onException(RetriesExhaustedWithDetailsException e, BufferedMutator mutator) {
+                for (int i = 0; i &lt; e.getNumExceptions(); i++) {
+                    System.out.println(&quot;Failed to sent put &quot; + e.getRow(i) + &quot;.&quot;);
+                    logger.error(&quot;Failed to sent put &quot; + e.getRow(i) + &quot;.&quot;);
+                }
+            }
+        };
+        BufferedMutatorParams params = new BufferedMutatorParams(TableName.valueOf(tablename))
+                .listener(listener);
+        params.writeBufferSize(5 * 1024 * 1024);
+
+        final BufferedMutator mutator = conn.getBufferedMutator(params);
+        try {
+            mutator.mutate(puts);
+            mutator.flush();
+        } finally {
+            mutator.close();
+            closeConnect(conn);
+        }
+    }
+
+}
+</code></pre><p>最后，通过拼装rowkey到指定bhase日志表提取日志即可。</p><p>至此整个通过java+kafka+strom+hbase，上报流水日志（敏感日志）流程讲解完毕。</p></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="4142158067"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="5618891265"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><footer class="post-footer"><div class="post-nav"><div class="post-nav-next post-nav-item"><a href="/2017/java开发系统内核防范缓冲区溢出和强杀死循环程序.html" rel="next" title="java开发系统内核：防范缓冲区溢出和强杀死循环程序"><i class="fa fa-chevron-left"></i> java开发系统内核：防范缓冲区溢出和强杀死循环程序</a></div><span class="post-nav-divider"></span><div class="post-nav-prev post-nav-item"><a href="/2017/注解库之butterknife.html" rel="prev" title="注解库之ButterKnife">注解库之ButterKnife <i class="fa fa-chevron-right"></i></a></div></div></footer></div></article><div class="post-spread"></div></div></div></div><div class="sidebar-toggle"><div class="sidebar-toggle-line-wrap"><span class="sidebar-toggle-line sidebar-toggle-line-first"></span> <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span> <span class="sidebar-toggle-line sidebar-toggle-line-last"></span></div></div><aside id="sidebar" class="sidebar"><div class="sidebar-inner"><section class="site-overview-wrap sidebar-panel sidebar-panel-active"><div class="site-overview"><div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person"><p class="site-author-name" itemprop="name">Hello</p><p class="site-description motion-element" itemprop="description"></p></div><nav class="site-state motion-element"><div class="site-state-item site-state-posts"><a href="/archives/"><span class="site-state-item-count">1358</span> <span class="site-state-item-name">posts</span></a></div></nav></div></section></div></aside><div class="sfix"><div class="fixedme"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460" data-ad-format="auto"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script></div></div></main><footer id="footer" class="footer"><div class="footer-inner"><div class="copyright">&copy; <span itemprop="copyrightYear">2018</span> <span class="with-love"><i class="fa fa-user"></i> </span><span class="author" itemprop="copyrightHolder">Hello</span></div><div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div><span class="post-meta-divider">|</span><div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div></div></footer><div class="back-to-top"><i class="fa fa-arrow-up"></i></div></div><script type="text/javascript">"[object Function]"!==Object.prototype.toString.call(window.Promise)&&(window.Promise=null)</script><script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script><script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script><script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script><script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script><script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script></body></html><!-- rebuild by neat -->

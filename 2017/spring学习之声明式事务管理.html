@@ -1,0 +1,134 @@
+<!-- build time:Sat Oct 27 2018 21:00:18 GMT+0800 (CST) --><!DOCTYPE html><html class="theme-next muse use-motion"><head><meta name="generator" content="Hexo 3.8.0"><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"><meta name="theme-color" content="#222"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"><link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css"><link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css"><link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4"><link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222"><meta name="description" content="Spring学习之声明式事务管理作者颜洛滨2017.07.15 18:26字数 816Spring学习之声明式事务管理前言在前面的小节中，我们学习了关于事务的概念以及事务管理的重要性，并且通过编程使用Spring的编程序事务管理进行操作，加深对事务管理的重要性的学习，不过，由于编程序的事务管理使用起来不是很方便，所以在日常的开发中基本不怎么使用，接下来的内容我们将学习使用Spring的声明式事务管"><meta name="keywords" content="JAVA,面试"><meta property="og:type" content="article"><meta property="og:title" content="Spring学习之声明式事务管理"><meta property="og:url" content="http://www.jfox.info/2017/spring学习之声明式事务管理.html"><meta property="og:site_name" content="java面试"><meta property="og:description" content="Spring学习之声明式事务管理作者颜洛滨2017.07.15 18:26字数 816Spring学习之声明式事务管理前言在前面的小节中，我们学习了关于事务的概念以及事务管理的重要性，并且通过编程使用Spring的编程序事务管理进行操作，加深对事务管理的重要性的学习，不过，由于编程序的事务管理使用起来不是很方便，所以在日常的开发中基本不怎么使用，接下来的内容我们将学习使用Spring的声明式事务管"><meta property="og:locale" content="zh_CN"><meta property="og:updated_time" content="2018-10-27T12:29:39.318Z"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="Spring学习之声明式事务管理"><meta name="twitter:description" content="Spring学习之声明式事务管理作者颜洛滨2017.07.15 18:26字数 816Spring学习之声明式事务管理前言在前面的小节中，我们学习了关于事务的概念以及事务管理的重要性，并且通过编程使用Spring的编程序事务管理进行操作，加深对事务管理的重要性的学习，不过，由于编程序的事务管理使用起来不是很方便，所以在日常的开发中基本不怎么使用，接下来的内容我们将学习使用Spring的声明式事务管"><script type="text/javascript" id="hexo.configurations">var NexT=window.NexT||{},CONFIG={root:"/",scheme:"Muse",version:"5.1.4",sidebar:{position:"left",display:"post",offset:12,b2t:!1,scrollpercent:!1,onmobile:!1},fancybox:!0,tabs:!0,motion:{enable:!0,async:!1,transition:{post_block:"fadeIn",post_header:"slideDownIn",post_body:"slideDownIn",coll_header:"slideLeftIn",sidebar:"slideUpIn"}},duoshuo:{userId:"0",author:"Author"},algolia:{applicationID:"",apiKey:"",indexName:"",hits:{per_page:10},labels:{input_placeholder:"Search for Posts",hits_empty:"We didn't find any results for the search: ${query}",hits_stats:"${hits} results found in ${time} ms"}}}</script><link rel="canonical" href="http://www.jfox.info/2017/spring学习之声明式事务管理.html"><title>Spring学习之声明式事务管理 | java面试</title></head><body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN"><div class="container sidebar-position-left page-post-detail"><div class="headband"></div><header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="header-inner"><div class="site-brand-wrapper"><div class="site-meta"><div class="custom-logo-site-title"><a href="/" class="brand" rel="start"><span class="logo-line-before"><i></i></span> <span class="site-title">java面试</span> <span class="logo-line-after"><i></i></span></a></div><p class="site-subtitle"></p></div><div class="site-nav-toggle"><button><span class="btn-bar"></span> <span class="btn-bar"></span> <span class="btn-bar"></span></button></div></div><nav class="site-nav"><ul id="menu" class="menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i><br>Home</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i><br>Archives</a></li></ul></nav></div></header><main id="main" class="main"><div class="main-inner"><div class="content-wrap"><div id="content" class="content"><div id="posts" class="posts-expand"><article class="post post-type-normal" itemscope itemtype="http://schema.org/Article"><div class="post-block"><link itemprop="mainEntityOfPage" href="http://www.jfox.info/2017/spring学习之声明式事务管理.html"><span hidden itemprop="author" itemscope itemtype="http://schema.org/Person"><meta itemprop="name" content="Hello"><meta itemprop="description" content=""><meta itemprop="image" content="/images/avatar.gif"></span><span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><meta itemprop="name" content="java面试"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">Spring学习之声明式事务管理</h1><div class="post-meta"><span class="post-time"><span class="post-meta-item-icon"><i class="fa fa-calendar-o"></i> </span><span class="post-meta-item-text">Posted on</span> <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-01-01T23:57:29+08:00">2017-01-01</time></span></div></header><div class="post-body" itemprop="articleBody"><h1 id="Spring学习之声明式事务管理"><a href="#Spring学习之声明式事务管理" class="headerlink" title="Spring学习之声明式事务管理"></a>Spring学习之声明式事务管理</h1><p>作者<a href="/u/b1a604b2eaed">颜洛滨</a>2017.07.15 18:26字数 816</p><h1 id="Spring学习之声明式事务管理-1"><a href="#Spring学习之声明式事务管理-1" class="headerlink" title="Spring学习之声明式事务管理"></a>Spring学习之声明式事务管理</h1><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在前面的小节中，我们学习了关于事务的概念以及事务管理的重要性，并且通过编程使用Spring的编程序事务管理进行操作，加深对事务管理的重要性的学习，不过，由于编程序的事务管理使用起来不是很方便，所以在日常的开发中基本不怎么使用，接下来的内容我们将学习使用Spring的声明式事务管理，这里有一个地方需要明白的是，Spring的声明式事务管理的实现方式其实是通过AOP的方式来实现的，也就是为原始的事务管理对象创建代理对象，从而实现事务管理增强的</p><h2 id="基于TransactionProxyFactoryBean的事务管理配置"><a href="#基于TransactionProxyFactoryBean的事务管理配置" class="headerlink" title="基于TransactionProxyFactoryBean的事务管理配置"></a>基于TransactionProxyFactoryBean的事务管理配置</h2><p>经过前面的学习，可以知道，Spring中配置AOP有三种方式，分别是通过ProxyFactoryBean创建代理，通过XML的方式以及通过注解的方式，既然Spring事务管理是通过AOP来实现的，那么对应的就有三种不同的方式，首先来看下基于TransactionProxyFactoryBean的管理方式</p><p>首先是Spring的配置文件</p><pre><code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
+       xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+       xmlns:context=&quot;http://www.springframework.org/schema/context&quot;
+       xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd 
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd&quot;&gt;
+
+    &lt;!--开启自动扫描--&gt;
+    &lt;context:component-scan base-package=&quot;cn.xuhuanfeng.transaction&quot;/&gt;
+
+    &lt;!--配置数据源，这里采用dbcp--&gt;
+    &lt;bean id=&quot;dataSource&quot; class=&quot;org.apache.commons.dbcp.BasicDataSource&quot;&gt;
+        &lt;property name=&quot;url&quot; value=&quot;jdbc:mysql://localhost:3306/spring&quot;/&gt;
+        &lt;property name=&quot;driverClassName&quot; value=&quot;com.mysql.jdbc.Driver&quot;/&gt;
+        &lt;property name=&quot;username&quot; value=&quot;root&quot;/&gt;
+        &lt;property name=&quot;password&quot; value=&quot;huanfeng&quot;/&gt;
+    &lt;/bean&gt;
+
+    &lt;!--配置JdbcTemplate--&gt;
+    &lt;bean id=&quot;jdbcTemplate&quot; class=&quot;org.springframework.jdbc.core.JdbcTemplate&quot;&gt;
+        &lt;!--注入数据源--&gt;
+        &lt;property name=&quot;dataSource&quot; ref=&quot;dataSource&quot;/&gt;
+    &lt;/bean&gt;
+
+    &lt;!--配置事务管理--&gt;
+    &lt;bean id=&quot;transactionManager&quot; class=&quot;org.springframework.jdbc.datasource.DataSourceTransactionManager&quot;&gt;
+        &lt;!--注入数据源--&gt;
+        &lt;property name=&quot;dataSource&quot; ref=&quot;dataSource&quot;/&gt;
+    &lt;/bean&gt;
+    &lt;!--为AccountService创建代理类--&gt;
+    &lt;bean id=&quot;accountServiceProxy&quot; class=&quot;org.springframework.transaction.interceptor.TransactionProxyFactoryBean&quot;&gt;
+        &lt;!--注入事务管理--&gt;
+        &lt;property name=&quot;transactionManager&quot; ref=&quot;transactionManager&quot;/&gt;
+        &lt;!--注入目标类，也就是所要增强的类--&gt;
+        &lt;property name=&quot;target&quot; ref=&quot;accountService&quot;/&gt;
+        &lt;!--配置相应的事务属性--&gt;
+        &lt;property name=&quot;transactionAttributes&quot;&gt;
+            &lt;props&gt;
+                &lt;!--指定不同的事务的处理方式
+                    配置格式：事务传播方式，隔离级别，readOnly，-Exception，+Exception
+                    传播行为是唯一必须配置的，其他的如果不配置则使用默认
+                    -Exception表示如果发生对应的异常，则回滚事务
+                    +Exception表示即使发生对应的异常，也依旧提交事务
+                --&gt;
+                &lt;prop key=&quot;transfer&quot;&gt;PROPAGATION_REQUIRED,ISOLATION_DEFAULT&lt;/prop&gt;
+            &lt;/props&gt;
+        &lt;/property&gt;
+    &lt;/bean&gt;
+&lt;/beans&gt;
+</code></pre><p>对应的持久层代码</p><pre><code>@Repository
+public class AccountDao {
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
+    public void transferIn(String name, double money){
+        String sql = &quot;update account set money = money + ? where name = ?&quot;;
+
+        jdbcTemplate.update(sql, money, name);
+    }
+
+    public void transferOut(String name, double money){
+        String sql = &quot;update account set money = money - ? where name = ?&quot;;
+
+        jdbcTemplate.update(sql, money, name);
+    }
+}
+</code></pre><p>业务层代码</p><p>@Service<br>public class AccountService {</p><pre><code>@Autowired
+private AccountDao accountDao;
+
+public void transfer(final String fromName,final String toName,final double money){
+
+    accountDao.transferOut(fromName, money);
+    int d = 1/0; // 除0异常
+    accountDao.transferIn(toName, money);
+}
+</code></pre><p>}</p><p>通过上面的配置之后，当我们在使用AccountService的时候，由于获取的对象的代理后的对象，所以Spring会自动进行事务的监管，而我们需要做的就是配置对应的事务传播类型以及事务管理级别等的信息，这种方式明显对代码以及没有什么侵入了，但是使用这种方式意味着没有都需要为不同的服务对象创建对应的代理对象，这其实是不太方便的，接下来我们来看下使用aop/tx命名空间来进行配置的方式。</p><h2 id="基于aop-tx命名空间的事务管理配置"><a href="#基于aop-tx命名空间的事务管理配置" class="headerlink" title="基于aop/tx命名空间的事务管理配置"></a>基于aop/tx命名空间的事务管理配置</h2><p>由于是对上面的业务操作进行事务管理，而且经过上一小节的学习，我们也基本熟悉了该业务，所以这里直接演示配置的代码</p><pre><code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
+       xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+       xmlns:context=&quot;http://www.springframework.org/schema/context&quot;
+       xmlns:tx=&quot;http://www.springframework.org/schema/tx&quot; xmlns:aop=&quot;http://www.springframework.org/schema/aop&quot;
+       xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/tx
+       http://www.springframework.org/schema/tx/spring-tx.xsd 
+       http://www.springframework.org/schema/aop 
+       http://www.springframework.org/schema/aop/spring-aop.xsd&quot;&gt;
+
+    &lt;!--
+        这里配置同前，故省略
+    --&gt;
+
+    &lt;!--aop配置--&gt;
+    &lt;aop:config&gt;
+        &lt;!--配置切点--&gt;
+        &lt;aop:pointcut id=&quot;serviceMethod&quot; expression=&quot;execution(* cn.xuhuanfeng.transaction.AccountService.*(..))&quot;/&gt;
+        &lt;!--对应的切面--&gt;
+        &lt;aop:advisor advice-ref=&quot;txAdvice&quot; pointcut-ref=&quot;serviceMethod&quot;/&gt;
+    &lt;/aop:config&gt;
+
+    &lt;!--配置事务增强--&gt;
+    &lt;tx:advice id=&quot;txAdvice&quot; transaction-manager=&quot;transactionManager&quot;&gt;
+        &lt;tx:attributes&gt;
+            &lt;!--配置对应的事务管理，其中name为与事务相关的方法名，可以使用通配符--&gt;
+            &lt;tx:method name=&quot;transfer*&quot; isolation=&quot;DEFAULT&quot; propagation=&quot;REQUIRED&quot;/&gt;
+        &lt;/tx:attributes&gt;
+    &lt;/tx:advice&gt;
+
+&lt;/beans&gt;
+</code></pre><p>可以看到，通过XML配置的方式，可以更加灵活地进行事务管理</p><h2 id="基于注解的事务管理配置"><a href="#基于注解的事务管理配置" class="headerlink" title="基于注解的事务管理配置"></a>基于注解的事务管理配置</h2><p>基于注解的配置方式提供了更加简单的配置方式，只需要使用@Transactional注解进行标注，并且开启对应的扫描即可。</p><pre><code>// 配置相应的隔离级别、事务传播等
+@Transactional(isolation = Isolation.DEFAULT, propagation = Propagation.REQUIRED)
+@Service
+public class AccountService {
+    // 省略其他内容
+}
+</code></pre><p>Spring配置文件也相对比较简单了</p><pre><code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
+       xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+       xmlns:context=&quot;http://www.springframework.org/schema/context&quot;
+       xmlns:tx=&quot;http://www.springframework.org/schema/tx&quot;
+       xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/tx
+       http://www.springframework.org/schema/tx/spring-tx.xsd&quot;&gt;
+
+    &lt;!--数据源配置等同上--&gt;
+    &lt;!--通过tx命名空间，开启主机自动扫描，并且注入事务管理器--&gt;
+    &lt;tx:annotation-driven transaction-manager=&quot;transactionManager&quot;/&gt;
+&lt;/beans&gt;
+</code></pre><p>可以看到，通过注解配置的方式是最简单的配置方式，在日常的开发中，这种方式的使用的频率也比较高</p><h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>本小节主要学习了Spring声明式事务管理的配置，包括了使用TransactionProxyFactoryBean、通过aop/tx命名空间的XML配置以及基于注解的配置方式，其中，基于注解的配置方式是比较简单的，也是使用频率比较高的一种</p></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="4142158067"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="5618891265"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><footer class="post-footer"><div class="post-nav"><div class="post-nav-next post-nav-item"><a href="/2017/tomcat学习笔记15connector.html" rel="next" title="【Tomcat学习笔记】15-Connector"><i class="fa fa-chevron-left"></i> 【Tomcat学习笔记】15-Connector</a></div><span class="post-nav-divider"></span><div class="post-nav-prev post-nav-item"><a href="/2017/spring学习之编程序事务管理.html" rel="prev" title="Spring学习之编程序事务管理">Spring学习之编程序事务管理 <i class="fa fa-chevron-right"></i></a></div></div></footer></div></article><div class="post-spread"></div></div></div></div><div class="sidebar-toggle"><div class="sidebar-toggle-line-wrap"><span class="sidebar-toggle-line sidebar-toggle-line-first"></span> <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span> <span class="sidebar-toggle-line sidebar-toggle-line-last"></span></div></div><aside id="sidebar" class="sidebar"><div class="sidebar-inner"><ul class="sidebar-nav motion-element"><li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">Table of Contents</li><li class="sidebar-nav-overview" data-target="site-overview-wrap">Overview</li></ul><section class="site-overview-wrap sidebar-panel"><div class="site-overview"><div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person"><p class="site-author-name" itemprop="name">Hello</p><p class="site-description motion-element" itemprop="description"></p></div><nav class="site-state motion-element"><div class="site-state-item site-state-posts"><a href="/archives/"><span class="site-state-item-count">1358</span> <span class="site-state-item-name">posts</span></a></div></nav></div></section><section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active"><div class="post-toc"><div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Spring学习之声明式事务管理"><span class="nav-number">1.</span> <span class="nav-text">Spring学习之声明式事务管理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Spring学习之声明式事务管理-1"><span class="nav-number">2.</span> <span class="nav-text">Spring学习之声明式事务管理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">2.1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#基于TransactionProxyFactoryBean的事务管理配置"><span class="nav-number">2.2.</span> <span class="nav-text">基于TransactionProxyFactoryBean的事务管理配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#基于aop-tx命名空间的事务管理配置"><span class="nav-number">2.3.</span> <span class="nav-text">基于aop/tx命名空间的事务管理配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#基于注解的事务管理配置"><span class="nav-number">2.4.</span> <span class="nav-text">基于注解的事务管理配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">2.5.</span> <span class="nav-text">总结</span></a></li></ol></li></ol></div></div></section></div></aside><div class="sfix"><div class="fixedme"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460" data-ad-format="auto"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script></div></div></main><footer id="footer" class="footer"><div class="footer-inner"><div class="copyright">&copy; <span itemprop="copyrightYear">2018</span> <span class="with-love"><i class="fa fa-user"></i> </span><span class="author" itemprop="copyrightHolder">Hello</span></div><div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div><span class="post-meta-divider">|</span><div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div></div></footer><div class="back-to-top"><i class="fa fa-arrow-up"></i></div></div><script type="text/javascript">"[object Function]"!==Object.prototype.toString.call(window.Promise)&&(window.Promise=null)</script><script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script><script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script><script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script><script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script><script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script></body></html><!-- rebuild by neat -->

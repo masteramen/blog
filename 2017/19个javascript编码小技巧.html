@@ -1,0 +1,193 @@
+<!-- build time:Sat Oct 27 2018 21:00:22 GMT+0800 (CST) --><!DOCTYPE html><html class="theme-next muse use-motion"><head><meta name="generator" content="Hexo 3.8.0"><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"><meta name="theme-color" content="#222"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"><link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css"><link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css"><link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4"><link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222"><meta name="description" content="这篇文章适合任何一位基于JavaScript开发的开发者。我写这篇文章主要涉及JavaScript中一些简写的代码，帮助大家更好理解一些JavaScript的基础。希望这些代码能从不同的角度帮助你更好的理解JavaScript。三元操作符如果使用 if...else 语句，那么这是一个很好节省代码的方式。Longhand:const x = 20; let big; if (x &amp;gt; 10)"><meta name="keywords" content="JAVA,面试"><meta property="og:type" content="article"><meta property="og:title" content="19个JavaScript编码小技巧"><meta property="og:url" content="http://www.jfox.info/2017/19个javascript编码小技巧.html"><meta property="og:site_name" content="java面试"><meta property="og:description" content="这篇文章适合任何一位基于JavaScript开发的开发者。我写这篇文章主要涉及JavaScript中一些简写的代码，帮助大家更好理解一些JavaScript的基础。希望这些代码能从不同的角度帮助你更好的理解JavaScript。三元操作符如果使用 if...else 语句，那么这是一个很好节省代码的方式。Longhand:const x = 20; let big; if (x &amp;gt; 10)"><meta property="og:locale" content="zh_CN"><meta property="og:updated_time" content="2018-10-27T12:29:37.380Z"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="19个JavaScript编码小技巧"><meta name="twitter:description" content="这篇文章适合任何一位基于JavaScript开发的开发者。我写这篇文章主要涉及JavaScript中一些简写的代码，帮助大家更好理解一些JavaScript的基础。希望这些代码能从不同的角度帮助你更好的理解JavaScript。三元操作符如果使用 if...else 语句，那么这是一个很好节省代码的方式。Longhand:const x = 20; let big; if (x &amp;gt; 10)"><script type="text/javascript" id="hexo.configurations">var NexT=window.NexT||{},CONFIG={root:"/",scheme:"Muse",version:"5.1.4",sidebar:{position:"left",display:"post",offset:12,b2t:!1,scrollpercent:!1,onmobile:!1},fancybox:!0,tabs:!0,motion:{enable:!0,async:!1,transition:{post_block:"fadeIn",post_header:"slideDownIn",post_body:"slideDownIn",coll_header:"slideLeftIn",sidebar:"slideUpIn"}},duoshuo:{userId:"0",author:"Author"},algolia:{applicationID:"",apiKey:"",indexName:"",hits:{per_page:10},labels:{input_placeholder:"Search for Posts",hits_empty:"We didn't find any results for the search: ${query}",hits_stats:"${hits} results found in ${time} ms"}}}</script><link rel="canonical" href="http://www.jfox.info/2017/19个javascript编码小技巧.html"><title>19个JavaScript编码小技巧 | java面试</title></head><body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN"><div class="container sidebar-position-left page-post-detail"><div class="headband"></div><header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="header-inner"><div class="site-brand-wrapper"><div class="site-meta"><div class="custom-logo-site-title"><a href="/" class="brand" rel="start"><span class="logo-line-before"><i></i></span> <span class="site-title">java面试</span> <span class="logo-line-after"><i></i></span></a></div><p class="site-subtitle"></p></div><div class="site-nav-toggle"><button><span class="btn-bar"></span> <span class="btn-bar"></span> <span class="btn-bar"></span></button></div></div><nav class="site-nav"><ul id="menu" class="menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i><br>Home</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i><br>Archives</a></li></ul></nav></div></header><main id="main" class="main"><div class="main-inner"><div class="content-wrap"><div id="content" class="content"><div id="posts" class="posts-expand"><article class="post post-type-normal" itemscope itemtype="http://schema.org/Article"><div class="post-block"><link itemprop="mainEntityOfPage" href="http://www.jfox.info/2017/19个javascript编码小技巧.html"><span hidden itemprop="author" itemscope itemtype="http://schema.org/Person"><meta itemprop="name" content="Hello"><meta itemprop="description" content=""><meta itemprop="image" content="/images/avatar.gif"></span><span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><meta itemprop="name" content="java面试"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">19个JavaScript编码小技巧</h1><div class="post-meta"><span class="post-time"><span class="post-meta-item-icon"><i class="fa fa-calendar-o"></i> </span><span class="post-meta-item-text">Posted on</span> <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-01-01T23:51:26+08:00">2017-01-01</time></span></div></header><div class="post-body" itemprop="articleBody"><p>这篇文章适合任何一位基于JavaScript开发的开发者。我写这篇文章主要涉及JavaScript中一些简写的代码，帮助大家更好理解一些JavaScript的基础。希望这些代码能从不同的角度帮助你更好的理解JavaScript。</p><h2 id="三元操作符"><a href="#三元操作符" class="headerlink" title="三元操作符"></a>三元操作符</h2><p>如果使用 <code>if...else</code> 语句，那么这是一个很好节省代码的方式。</p><p><strong>Longhand:</strong></p><pre><code>const x = 20;
+let big;
+if (x &gt; 10) {
+    big = true;
+} else {
+    big = false;
+}
+</code></pre><p><strong>Shorthand:</strong></p><pre><code>const big = x &gt; 10 ? true : false;
+</code></pre><p>你还可以像下面这样嵌套 <code>if</code> 语句：</p><pre><code>const big = x &gt; 10 ? &apos;greater 10&apos; : x &lt; 5 ? &apos;less 5&apos; : &apos;between 5 and 10&apos;;
+</code></pre><h2 id="Short-circuit-Evaluation"><a href="#Short-circuit-Evaluation" class="headerlink" title="Short-circuit Evaluation"></a>Short-circuit Evaluation</h2><p>分配一个变量值到另一个变量的时候，你可能想要确保变量不是 <code>null</code> 、 <code>undefined</code> 或空。你可以写一个有多个 <code>if</code> 的条件语句或者Short-circuit Evaluation。</p><p><strong>Longhand:</strong></p><pre><code>if (variable1 !== null || variable1 !== undefined || variable1 !== &apos;&apos;) {
+    let variable2 = variable1;
+}
+</code></pre><p><strong>Shorthand:</strong></p><pre><code>const variable2 = variable1 || &apos;new&apos;;
+</code></pre><p>不要相信我，请先相信自己的测试（可以把下面的代码粘贴在 <a href="https://www.jfox.info/go.php?url=http://es6console.com/">es6console </a>）</p><pre><code>let variable1;
+let variable2 = variable1 || &apos;&apos;;
+console.log(variable2 === &apos;&apos;); // true
+variable1 = &apos;foo&apos;;
+variable2 = variable1 || &apos;&apos;;
+console.log(variable2); // foo
+</code></pre><h2 id="声明变量"><a href="#声明变量" class="headerlink" title="声明变量"></a>声明变量</h2><p>在函数中声明变量时，像下面这样同时声明多个变量可以节省你大量的时间和空间：</p><p><strong>Longhand:</strong></p><pre><code>let x;
+let y;
+let x = 3;
+</code></pre><p><strong>Shorthand:</strong></p><pre><code>let x, y, z = 3;
+</code></pre><h2 id="如果存在"><a href="#如果存在" class="headerlink" title="如果存在"></a>如果存在</h2><p>这可能是微不足道的，但值得提及。做“如果检查”时，赋值操作符有时可以省略。</p><p><strong>Longhand:</strong></p><pre><code>if (likeJavaScript === true)
+</code></pre><p><strong>Shorthand:</strong></p><pre><code>if (likeJavaScript)
+</code></pre><p><strong>注： </strong>这两种方法并不完全相同，简写检查只要 <code>likeJavaScript</code> 是 <a href="https://www.jfox.info/go.php?url=http://developer.mozilla.org/en-US/docs/Glossary/Truthy"><code>true</code> 都将通过 </a>。</p><p>这有另一个示例。如果 <code>a</code> 不是 <code>true</code> ，然后做什么。</p><p><strong>Longhand:</strong></p><pre><code>let a;
+if (a !== true) {
+    // do something ...
+}
+</code></pre><p><strong>Shorthand:</strong></p><pre><code>let a;
+if (!a) {
+    // do something ...
+}
+</code></pre><h2 id="JavaScript的for循环"><a href="#JavaScript的for循环" class="headerlink" title="JavaScript的for循环"></a>JavaScript的for循环</h2><p>如果你只想要原生的JavaScript，而不想依赖于jQuery或Lodash这样的外部库，那这个小技巧是非常有用的。</p><p><strong>Longhand:</strong></p><pre><code>for (let i = 0; i &lt; allImgs.length; i++)
+</code></pre><p><strong>Shorthand:</strong></p><pre><code>for (let index in allImgs)
+</code></pre><p><code>Array.forEach</code> 简写：</p><pre><code>function logArrayElements(element, index, array) {
+    console.log(&apos;a[&apos; + index + &apos;]=&apos; + element);
+}
+[2, 5, 9].forEach(logArrayElements);
+// logs:
+// a[0] = 2
+// a[1] = 5
+// a[2] = 9
+</code></pre><h2 id="Short-circuit-Evaluation-1"><a href="#Short-circuit-Evaluation-1" class="headerlink" title="Short-circuit Evaluation"></a>Short-circuit Evaluation</h2><p>如果参数是 <code>null</code> 或者是 <code>undefined</code> ，我们可以简单的使用一个Short-circuit逻辑运算，实现一行代码替代六行代码的写法。</p><p><strong>Longhand:</strong></p><pre><code>let dbHost;
+if (process.env.DB_HOST) {
+    dbHost = process.env.DB_HOST;
+} else {
+    dbHost = &apos;localhost&apos;;
+}
+</code></pre><p><strong>Shorthand:</strong></p><pre><code>const dbHost = process.env.DB_HOST || &apos;localhost&apos;;
+</code></pre><h2 id="十进制指数"><a href="#十进制指数" class="headerlink" title="十进制指数"></a>十进制指数</h2><p>你可能看过这个。它本质上是一个写数字的奇特写法，就是一个数字后面有很多个 <code>0</code> 。例如 <code>1e7</code> 本质相当于 <code>10000000</code> （ <code>1</code> 的后面有 <code>7</code> 个 <code>0</code> ）。它代表了十进制计数等于 <code>10000000</code> 。</p><p><strong>Longhand:</strong></p><pre><code>for (let i = 0; i &lt; 10000; i++) {}
+</code></pre><p><strong>Shorthand:</strong></p><pre><code>for (let i = 0; i &lt; 1e7; i++) {}
+// All the below will evaluate to true
+e0 === 1;
+e1 === 10;
+e2 === 100;
+e3 === 1000;
+e4 === 10000;
+e5 === 100000;
+</code></pre><h2 id="对象属性"><a href="#对象属性" class="headerlink" title="对象属性"></a>对象属性</h2><p>定义对象文字（Object literals）让JavaScript变得更有趣。ES6提供了一个更简单的办法来分配对象的属性。如果属性名和值一样，你可以使用下面简写的方式。</p><p><strong>Longhand:</strong></p><pre><code>const obj = {x: x, y: y};
+</code></pre><p><strong>Shorthand:</strong></p><pre><code>const obj = {x, y};
+</code></pre><h2 id="箭头函数"><a href="#箭头函数" class="headerlink" title="箭头函数"></a>箭头函数</h2><p>经典函数很容易读和写，但它们确实会变得有点冗长，特别是嵌套函数中调用其他函数时还会让你感到困惑。</p><p><strong>Longhand:</strong></p><pre><code>function sayHello(name) {
+    console.log(&apos;Hello&apos;, name);
+}
+setTimeout(function() {
+    console.log(&apos;Loaded&apos;)
+}, 2000);
+list.forEach(function(item){
+    console.log(item)
+})
+</code></pre><p><strong>Shorthand:</strong></p><pre><code>sayHello = name =&gt; console.log(&apos;Hello&apos;, name);
+setTimeout(() =&gt; console.log(&apos;Loaded&apos;), 2000);
+list.forEach(item =&gt; console.log(item));
+</code></pre><h2 id="隐式返回"><a href="#隐式返回" class="headerlink" title="隐式返回"></a>隐式返回</h2><p><code>return</code> 在函数中经常使用到的一个关键词，将返回函数的最终结果。箭头函数用一个语句将隐式的返回结果（函数必须省略 <code>{}</code> ，为了省略 <code>return</code> 关键词）。</p><p>如果返回一个多行语句（比如对象），有必要在函数体内使用 <code>()</code> 替代 <code>{}</code> 。这样可以确保代码是否作为一个单独的语句返回。</p><p><strong>Longhand:</strong></p><pre><code>function calcCircumference(diameter) {
+    return Math.PI * diameter
+}
+</code></pre><p><strong>Shorthand:</strong></p><pre><code>calcCircumference = diameter =&gt; (
+    Math.PI * diameter;
+)
+</code></pre><h2 id="默认参数值"><a href="#默认参数值" class="headerlink" title="默认参数值"></a>默认参数值</h2><p>你可以使用 <code>if</code> 语句来定义函数参数的默认值。在ES6中，可以在函数声明中定义默认值。</p><p><strong>Longhand:</strong></p><pre><code>function volume(l, w, h) {
+    if (w === undefined)
+        w = 3;
+    if (h === undefined)
+        h = 4;
+    return l * w * h;
+}
+</code></pre><p><strong>Shorthand:</strong></p><pre><code>volume = (l, w = 3, h = 4) =&gt; (l * w * h);
+volume(2); // 24
+</code></pre><h2 id="Template-Literals"><a href="#Template-Literals" class="headerlink" title="Template Literals"></a>Template Literals</h2><p>是不是厌倦了使用 <code>+</code> 来连接多个变量变成一个字符串？难道就没有一个更容易的方法吗？如果你能使用ES6，那么你是幸运的。在ES6中，你要做的是使用撇号和 <code>${}</code> ，并且把你的变量放在大括号内。</p><p><strong>Longhand:</strong></p><pre><code>const welcome = &apos;You have logged in as&apos; + first + &apos; &apos; + last + &apos;.&apos;;
+const db = &apos;http://&apos; + host + &apos;:&apos; + port + &apos;/&apos; + database;
+</code></pre><p><strong>Shorthand:</strong></p><pre><code>const welcome = `You have logged in as ${first} ${last}`;
+const db = `http://${host}:${port}/${database}`;
+</code></pre><h2 id="Destructuring-Assignment"><a href="#Destructuring-Assignment" class="headerlink" title="Destructuring Assignment"></a>Destructuring Assignment</h2><p>如果你正在使用任何一个流行的Web框架时，就有很多机会使用数组的形式或数据对象的形式与API之间传递信息。一旦数据对象达到一个对个组件时，你需要将其展开。</p><p><strong>Longhand:</strong></p><pre><code>const observable = require(&apos;mobx/observable&apos;);
+const action = require(&apos;mobx/action&apos;);
+const runInAction = require(&apos;mobx/runInAction&apos;);
+const store = this.props.store;
+const form = this.props.form;
+const loading = this.props.loading;
+const errors = this.props.errors;
+const entity = this.props.entity;
+</code></pre><p><strong>Shorthand:</strong></p><pre><code>import {observable, action, runInAction} from &apos;mobx&apos;;
+const {store, form, loading, errors, entity} = this.props;
+</code></pre><p>你甚至可以自己指定变量名：</p><pre><code>const {store, form, loading, errors, entity:contact} = this.props;
+</code></pre><h2 id="多行字符串"><a href="#多行字符串" class="headerlink" title="多行字符串"></a>多行字符串</h2><p>你会发现以前自己写多行字符串的代码会像下面这样：</p><p><strong>Longhand:</strong></p><pre><code>const lorem = &apos;Lorem ipsum dolor sit amet, consecteturnt&apos;
+    + &apos;adipisicing elit, sed do eiusmod tempor incididuntnt&apos;
+    + &apos;ut labore et dolore magna aliqua. Ut enim ad minimnt&apos;
+    + &apos;veniam, quis nostrud exercitation ullamco laborisnt&apos;
+    + &apos;nisi ut aliquip ex ea commodo consequat. Duis autent&apos;
+    + &apos;irure dolor in reprehenderit in voluptate velit esse.nt&apos;
+</code></pre><p>但还有一个更简单的方法。使用撇号。</p><p><strong>Shorthand:</strong></p><pre><code>const lorem = `Lorem ipsum dolor sit amet, consectetur
+    adipisicing elit, sed do eiusmod tempor incididunt
+    ut labore et dolore magna aliqua. Ut enim ad minim
+    veniam, quis nostrud exercitation ullamco laboris
+    nisi ut aliquip ex ea commodo consequat. Duis aute
+    irure dolor in reprehenderit in voluptate velit esse.`
+</code></pre><h2 id="Spread-Operator"><a href="#Spread-Operator" class="headerlink" title="Spread Operator"></a>Spread Operator</h2><p><strong>Spread Operator </strong>是ES6中引入的，使JavaScript代码更高效和有趣。它可以用来代替某些数组的功能。Spread Operator只是一个系列的三个点( <code>...</code> )。</p><p><strong>Longhand:</strong></p><pre><code>// Joining arrays
+const odd = [1, 3, 5];
+const nums = [2, 4, 6].concat(odd);
+// cloning arrays
+const arr = [1, 2, 3, 4];
+const arr2 = arr.slice();
+</code></pre><p><strong>Shorthand:</strong></p><pre><code>// Joining arrays
+const odd = [1, 3, 5];
+const nums = [2, 4, 6, ...odd];
+console.log(nums); // [2, 4, 6, 1, 3, 5]
+// cloning arrays
+const arr = [1, 2, 3, 4];
+const arr2 = [...arr];
+</code></pre><p>不像 <code>concat()</code> 函数，使用Spread Operator你可以将一个数组插入到另一个数组的任何地方。</p><pre><code>const odd = [1, 3, 5];
+const nums = [2, ...odd, 4, 6];
+</code></pre><p>另外还可以当作解构符：</p><pre><code>const {a, b, ...z} = {a: 1, b: 2, c: 3, d: 4};
+console.log(a); // 1
+console.log(b); // 2
+console.log(z); // {c: 3, d: 4}
+</code></pre><h2 id="强制参数"><a href="#强制参数" class="headerlink" title="强制参数"></a>强制参数</h2><p>默认情况下，JavaScript如果不给函数参数传一个值的话，将会是一个 <code>undefined</code> 。有些语言也将抛出一个警告或错误。在执行参数赋值时，你可以使用 <code>if</code> 语句，如果未定义将会抛出一个错误，或者你可以使用强制参数（Mandatory parameter）。</p><p><strong>Longhand:</strong></p><pre><code>function foo(bar) {
+    if (bar === undefined) {
+        throw new Error(&apos;Missing parameter!&apos;);
+    }
+    return bar;
+}
+</code></pre><p><strong>Shorthand:</strong></p><pre><code>mandatory = () =&gt; {
+    throw new Error(&apos;Missing parameter!&apos;);
+}
+foo = (bar = mandatory()) =&gt; {
+    return bar;
+}
+</code></pre><h2 id="Array-find"><a href="#Array-find" class="headerlink" title="Array.find"></a>Array.find</h2><p>如果你以前写过一个查找函数，你可能会使用一个 <code>for</code> 循环。在ES6中，你可以使用数组的一个新功能 <code>find()</code> 。</p><p><strong>Longhand:</strong></p><pre><code>const pets = [
+    {type: &apos;Dog&apos;, name: &apos;Max&apos;},
+    {type: &apos;Cat&apos;, name: &apos;Karl&apos;},
+    {type: &apos;Dog&apos;, name: &apos;Tommy&apos;}
+]
+function findDog(name) {
+    for (let i = 0; i &lt; pets.length; ++i) {
+        if (pets[i].type === &apos;Dog&apos; &amp;&amp; pets[i].name === name) {
+            return pets[i];
+        }
+    }
+}
+</code></pre><p><strong>Shorthand:</strong></p><pre><code>pet = pets.find(pet =&gt; pet.type === &apos;Dog&apos; &amp;&amp; pet.name === &apos;Tommy&apos;);
+console.log(pet); // {type: &apos;Dog&apos;, name: &apos;Tommy&apos;}
+</code></pre><h2 id="Object-key"><a href="#Object-key" class="headerlink" title="Object[key]"></a>Object[key]</h2><p>你知道 <code>Foo.bar</code> 也可以写成 <code>Foo[bar]</code> 吧。起初，似乎没有理由应该这样写。然而，这个符号可以让你编写可重用代码块。</p><p>下面是一段简化后的函数的例子：</p><pre><code>function validate(values) {
+    if (!values.first)
+        return false;
+    if (!values.last)
+        return false;
+    return true;
+}
+console.log(validate({first: &apos;Bruce&apos;, last: &apos;Wayne&apos;})); //  true
+</code></pre><p>这个函数可以正常工作。然而，需要考虑一个这样的场景：有很多种形式需要应用验证，而且不同领域有不同规则。在运行时很难创建一个通用的验证功能。</p><p><strong>Shorthand:</strong></p><pre><code>// object validation rules
+const schema = {
+    first: {
+        required: true
+    },
+    last: {
+        required: true
+    }
+}
+// universal validation function
+const validate = (schema, values) =&gt; {
+    for(field in schema) {
+        if (schema[field].required) {
+            if(!values[field]) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+console.log(validate(schema, {first: &apos;Bruce&apos;})); // false
+console.log(validate(schema, {first: &apos;Bruce&apos;, last: &apos;Wayne&apos;})); // true
+</code></pre><p>现在我们有一个验证函数，可以各种形式的重用，而不需要为每个不同的功能定制一个验证函数。</p><h2 id="Double-Bitwise-NOT"><a href="#Double-Bitwise-NOT" class="headerlink" title="Double Bitwise NOT"></a>Double Bitwise NOT</h2><p>如果你是一位JavaScript新手的话，对于逐位运算符（Bitwise Operator）你应该永远不会在任何地方使用。此外，如果你不处理二进制 <code>0</code> 和 <code>1</code> ，那就更不会想使用。</p><p>然而，一个非常实用的用例，那就是双位操作符。你可以用它替代 <code>Math.floor()</code> 。Double Bitwise NOT运算符有很大的优势，它执行相同的操作要快得多。你可以在 <a href="https://www.jfox.info/go.php?url=http://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Operators/Bitwise_Operators">这里阅读 </a>更多关于位运算符相关的知识。</p><p><strong>Longhand:</strong></p><pre><code>Math.floor(4.9) === 4; // true
+</code></pre><p><strong>Shorthand:</strong></p><pre><code>~~4.9 === 4; //true
+</code></pre><h2 id="推荐一个吗？"><a href="#推荐一个吗？" class="headerlink" title="推荐一个吗？"></a>推荐一个吗？</h2><p>我真的喜欢这些小技巧，希望能有更多关于这方面的JavaScript小技巧。如果你有这方面的，欢迎在下面的评论中与我们一起分享。</p></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="4142158067"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="5618891265"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><footer class="post-footer"><div class="post-nav"><div class="post-nav-next post-nav-item"><a href="/2017/java-queue方法.html" rel="next" title="java-Queue方法"><i class="fa fa-chevron-left"></i> java-Queue方法</a></div><span class="post-nav-divider"></span><div class="post-nav-prev post-nav-item"><a href="/2017/无坑畅玩minikube-利用阿里云镜像编译minikube.html" rel="prev" title="无坑畅玩minikube(利用阿里云镜像编译minikube)">无坑畅玩minikube(利用阿里云镜像编译minikube) <i class="fa fa-chevron-right"></i></a></div></div></footer></div></article><div class="post-spread"></div></div></div></div><div class="sidebar-toggle"><div class="sidebar-toggle-line-wrap"><span class="sidebar-toggle-line sidebar-toggle-line-first"></span> <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span> <span class="sidebar-toggle-line sidebar-toggle-line-last"></span></div></div><aside id="sidebar" class="sidebar"><div class="sidebar-inner"><ul class="sidebar-nav motion-element"><li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">Table of Contents</li><li class="sidebar-nav-overview" data-target="site-overview-wrap">Overview</li></ul><section class="site-overview-wrap sidebar-panel"><div class="site-overview"><div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person"><p class="site-author-name" itemprop="name">Hello</p><p class="site-description motion-element" itemprop="description"></p></div><nav class="site-state motion-element"><div class="site-state-item site-state-posts"><a href="/archives/"><span class="site-state-item-count">1358</span> <span class="site-state-item-name">posts</span></a></div></nav></div></section><section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active"><div class="post-toc"><div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#三元操作符"><span class="nav-number">1.</span> <span class="nav-text">三元操作符</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Short-circuit-Evaluation"><span class="nav-number">2.</span> <span class="nav-text">Short-circuit Evaluation</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#声明变量"><span class="nav-number">3.</span> <span class="nav-text">声明变量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#如果存在"><span class="nav-number">4.</span> <span class="nav-text">如果存在</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#JavaScript的for循环"><span class="nav-number">5.</span> <span class="nav-text">JavaScript的for循环</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Short-circuit-Evaluation-1"><span class="nav-number">6.</span> <span class="nav-text">Short-circuit Evaluation</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#十进制指数"><span class="nav-number">7.</span> <span class="nav-text">十进制指数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#对象属性"><span class="nav-number">8.</span> <span class="nav-text">对象属性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#箭头函数"><span class="nav-number">9.</span> <span class="nav-text">箭头函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#隐式返回"><span class="nav-number">10.</span> <span class="nav-text">隐式返回</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#默认参数值"><span class="nav-number">11.</span> <span class="nav-text">默认参数值</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Template-Literals"><span class="nav-number">12.</span> <span class="nav-text">Template Literals</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Destructuring-Assignment"><span class="nav-number">13.</span> <span class="nav-text">Destructuring Assignment</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#多行字符串"><span class="nav-number">14.</span> <span class="nav-text">多行字符串</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Spread-Operator"><span class="nav-number">15.</span> <span class="nav-text">Spread Operator</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#强制参数"><span class="nav-number">16.</span> <span class="nav-text">强制参数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Array-find"><span class="nav-number">17.</span> <span class="nav-text">Array.find</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Object-key"><span class="nav-number">18.</span> <span class="nav-text">Object[key]</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Double-Bitwise-NOT"><span class="nav-number">19.</span> <span class="nav-text">Double Bitwise NOT</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#推荐一个吗？"><span class="nav-number">20.</span> <span class="nav-text">推荐一个吗？</span></a></li></ol></div></div></section></div></aside><div class="sfix"><div class="fixedme"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460" data-ad-format="auto"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script></div></div></main><footer id="footer" class="footer"><div class="footer-inner"><div class="copyright">&copy; <span itemprop="copyrightYear">2018</span> <span class="with-love"><i class="fa fa-user"></i> </span><span class="author" itemprop="copyrightHolder">Hello</span></div><div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div><span class="post-meta-divider">|</span><div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div></div></footer><div class="back-to-top"><i class="fa fa-arrow-up"></i></div></div><script type="text/javascript">"[object Function]"!==Object.prototype.toString.call(window.Promise)&&(window.Promise=null)</script><script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script><script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script><script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script><script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script><script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script></body></html><!-- rebuild by neat -->

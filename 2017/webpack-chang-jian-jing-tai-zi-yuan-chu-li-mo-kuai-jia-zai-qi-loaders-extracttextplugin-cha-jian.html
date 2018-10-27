@@ -1,0 +1,176 @@
+<!-- build time:Sat Oct 27 2018 21:00:24 GMT+0800 (CST) --><!DOCTYPE html><html class="theme-next muse use-motion"><head><meta name="generator" content="Hexo 3.8.0"><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"><meta name="theme-color" content="#222"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"><link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css"><link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css"><link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4"><link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222"><meta name="description" content="Webpack 常见静态资源处理 – 模块加载器（Loaders）+ExtractTextPlugin插件webpack系列目录webpack 系列 一：模块系统的演进webpack 系列 二：webpack 介绍&amp;amp;安装webpack 系列 三：webpack 如何集成第三方js库webpack 系列 四：webpack 多页面支持 &amp;amp; 公共组件单独打包webpack 系列 五：w"><meta name="keywords" content="JAVA,面试"><meta property="og:type" content="article"><meta property="og:title" content="Webpack 常见静态资源处理 – 模块加载器（Loaders）+ExtractTextPlugin插件"><meta property="og:url" content="http://www.jfox.info/2017/webpack-chang-jian-jing-tai-zi-yuan-chu-li-mo-kuai-jia-zai-qi-loaders-extracttextplugin-cha-jian.html"><meta property="og:site_name" content="java面试"><meta property="og:description" content="Webpack 常见静态资源处理 – 模块加载器（Loaders）+ExtractTextPlugin插件webpack系列目录webpack 系列 一：模块系统的演进webpack 系列 二：webpack 介绍&amp;amp;安装webpack 系列 三：webpack 如何集成第三方js库webpack 系列 四：webpack 多页面支持 &amp;amp; 公共组件单独打包webpack 系列 五：w"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="http://www.jfox.info/2017/0818/27374c8.png"><meta property="og:image" content="http://www.jfox.info/2017/0818/ede39c3.png"><meta property="og:image" content="http://www.jfox.info/2017/0818/b1ffc44.png"><meta property="og:image" content="http://www.jfox.info/2017/0818/7864518.png"><meta property="og:image" content="http://www.jfox.info/2017/0818/686f15b.png"><meta property="og:image" content="http://www.jfox.info/2017/0818/89158ce.png"><meta property="og:updated_time" content="2018-10-27T12:51:09.623Z"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="Webpack 常见静态资源处理 – 模块加载器（Loaders）+ExtractTextPlugin插件"><meta name="twitter:description" content="Webpack 常见静态资源处理 – 模块加载器（Loaders）+ExtractTextPlugin插件webpack系列目录webpack 系列 一：模块系统的演进webpack 系列 二：webpack 介绍&amp;amp;安装webpack 系列 三：webpack 如何集成第三方js库webpack 系列 四：webpack 多页面支持 &amp;amp; 公共组件单独打包webpack 系列 五：w"><meta name="twitter:image" content="http://www.jfox.info/2017/0818/27374c8.png"><script type="text/javascript" id="hexo.configurations">var NexT=window.NexT||{},CONFIG={root:"/",scheme:"Muse",version:"5.1.4",sidebar:{position:"left",display:"post",offset:12,b2t:!1,scrollpercent:!1,onmobile:!1},fancybox:!0,tabs:!0,motion:{enable:!0,async:!1,transition:{post_block:"fadeIn",post_header:"slideDownIn",post_body:"slideDownIn",coll_header:"slideLeftIn",sidebar:"slideUpIn"}},duoshuo:{userId:"0",author:"Author"},algolia:{applicationID:"",apiKey:"",indexName:"",hits:{per_page:10},labels:{input_placeholder:"Search for Posts",hits_empty:"We didn't find any results for the search: ${query}",hits_stats:"${hits} results found in ${time} ms"}}}</script><link rel="canonical" href="http://www.jfox.info/2017/webpack-chang-jian-jing-tai-zi-yuan-chu-li-mo-kuai-jia-zai-qi-loaders-extracttextplugin-cha-jian.html"><title>Webpack 常见静态资源处理 – 模块加载器（Loaders）+ExtractTextPlugin插件 | java面试</title></head><body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN"><div class="container sidebar-position-left page-post-detail"><div class="headband"></div><header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="header-inner"><div class="site-brand-wrapper"><div class="site-meta"><div class="custom-logo-site-title"><a href="/" class="brand" rel="start"><span class="logo-line-before"><i></i></span> <span class="site-title">java面试</span> <span class="logo-line-after"><i></i></span></a></div><p class="site-subtitle"></p></div><div class="site-nav-toggle"><button><span class="btn-bar"></span> <span class="btn-bar"></span> <span class="btn-bar"></span></button></div></div><nav class="site-nav"><ul id="menu" class="menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i><br>Home</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i><br>Archives</a></li></ul></nav></div></header><main id="main" class="main"><div class="main-inner"><div class="content-wrap"><div id="content" class="content"><div id="posts" class="posts-expand"><article class="post post-type-normal" itemscope itemtype="http://schema.org/Article"><div class="post-block"><link itemprop="mainEntityOfPage" href="http://www.jfox.info/2017/webpack-chang-jian-jing-tai-zi-yuan-chu-li-mo-kuai-jia-zai-qi-loaders-extracttextplugin-cha-jian.html"><span hidden itemprop="author" itemscope itemtype="http://schema.org/Person"><meta itemprop="name" content="Hello"><meta itemprop="description" content=""><meta itemprop="image" content="/images/avatar.gif"></span><span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><meta itemprop="name" content="java面试"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">Webpack 常见静态资源处理 – 模块加载器（Loaders）+ExtractTextPlugin插件</h1><div class="post-meta"><span class="post-time"><span class="post-meta-item-icon"><i class="fa fa-calendar-o"></i> </span><span class="post-meta-item-text">Posted on</span> <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-01-01T23:48:38+08:00">2017-01-01</time></span></div></header><div class="post-body" itemprop="articleBody"><p>Webpack 常见静态资源处理 – 模块加载器（Loaders）+ExtractTextPlugin插件</p><p>webpack系列目录</p><p><a href="https://www.jfox.info/go.php?url=http://www.cnblogs.com/sloong/p/5570774.html">webpack 系列 一：模块系统的演进</a><a href="https://www.jfox.info/go.php?url=http://www.cnblogs.com/sloong/p/5584684.html">webpack 系列 二：webpack 介绍&amp;安装</a><a href="https://www.jfox.info/go.php?url=http://www.cnblogs.com/sloong/p/5689135.html">webpack 系列 三：webpack 如何集成第三方js库</a><a href="https://www.jfox.info/go.php?url=http://www.cnblogs.com/sloong/p/5689162.html">webpack 系列 四：webpack 多页面支持 &amp; 公共组件单独打包</a><a href="https://www.jfox.info/go.php?url=http://www.cnblogs.com/sloong/p/5826818.html">webpack 系列 五：webpack Loaders 模块加载器</a><a href="https://www.jfox.info/go.php?url=http://www.cnblogs.com/sloong/p/5826859.html">webpack 系列 六：前端项目模板-webpack+gulp实现自动构建部署</a></p><p>基于webpack搭建纯静态页面型前端工程解决方案模板， 最终形态源码见github: <a href="https://www.jfox.info/go.php?url=https://github.com/ifengkou/webpack-template">https://github.com/ifengkou/webpack-template</a></p><p>正文</p><p>Webpack将所有静态资源都认为是模块，比如JavaScript，CSS，LESS，TypeScript，JSX，CoffeeScript，图片等等，从而可以对其进行统一管理。为此Webpack引入了加载器的概念，除了纯JavaScript之外，每一种资源都可以通过对应的加载器处理成模块。和大多数包管理器不一样的是，Webpack的加载器之间可以进行串联，一个加载器的输出可以成为另一个加载器的输入。比如LESS文件先通过less-load处理成css，然后再通过css-loader加载成css模块，最后由style-loader加载器对其做最后的处理，从而运行时可以通过style标签将其应用到最终的浏览器环境。</p><p>一 常用loader</p><p>安装css/sass/less loader加载器</p><pre><code>cnpm install file-loader css-loader style-loader sass-loader ejs-loader html-loader jsx-loader image-webpack-loader --save-dev
+</code></pre><p>webpack.config.js配置：</p><pre><code>module: {
+ loaders: [
+ {
+ test: /.((woff2?|svg)(?v=[0-9].[0-9].[0-9]))|(woff2?|svg|jpe?g|png|gif|ico)$/,
+ loaders: [
+ // 小于10KB的图片会自动转成dataUrl
+ &apos;url?limit=10240&amp;name=img/[hash:8].[name].[ext]&apos;,
+ &apos;image?{bypassOnDebug:true, progressive:true,optimizationLevel:3,pngquant:{quality:&quot;65-80&quot;,speed:4{% raw%}}}{% endraw%}&apos;
+ ]
+ },
+ {
+ test: /.((ttf|eot)(?v=[0-9].[0-9].[0-9]))|(ttf|eot)$/,
+ loader: &apos;url?limit=10000&amp;name=fonts/[hash:8].[name].[ext]&apos;
+ },
+ {test: /.(tpl|ejs)$/, loader: &apos;ejs&apos;},
+ {test: /.css$/, loader: &apos;style-loader!css-loader&apos;},
+ { test: /.scss$/, loader: &apos;style!css!sass&apos;}
+ ]
+},
+</code></pre><p>index.html 新增两个div</p><pre><code>&lt;div class=&quot;small-webpack&quot;&gt;&lt;/div&gt;
+&lt;div class=&quot;webpack&quot;&gt;&lt;/div&gt;
+</code></pre><p>index.css 增加两个图片，同时将webpack.png（53kb) 和 small-webpack.png(9.8k)</p><pre><code>.webpack {
+ background: url(../img/webpack.png) no-repeat center;
+ height:500px;
+}
+.small-webpack {
+ background: url(../img/small-webpack.png) no-repeat center;
+ height:250px;
+}
+</code></pre><p>index.js 引入css</p><pre><code>require(&apos;../css/index.css&apos;);
+</code></pre><p>执行webpack指令</p><pre><code>$ webpack
+</code></pre><p>查看生成的目录结构</p><p><img src="/2017/0818/27374c8.png" alt=""></p><p>其中并没有css文件，css被写入到了index.js中，index.js 部分截图<br><img src="/2017/0818/ede39c3.png" alt=""></p><p>总结：</p><p>图片采用了url-loader加载，如果小于10kb，图片则被转化成 base64 格式的 dataUrl css文件被打包进了js文件中</p><p>css被打包进了js文件，如果接受不了，可以强制把css从js文件中独立出来。官方文档是以插件形式实现：<a href="https://www.jfox.info/go.php?url=http://webpack.github.io/docs/stylesheets.html#separate-css-bundle">文档docs点这</a>，<a href="https://www.jfox.info/go.php?url=https://github.com/webpack/extract-text-webpack-plugin">插件的github点这</a></p><p>二：extract-text-webpack-plugin 插件介绍</p><p>Extract text from bundle into a file.从bundle中提取出特定的text到一个文件中。使用 extract-text-webpack-plugin就可以把css从js中独立抽离出来</p><p>安装</p><pre><code>$ npm install extract-text-webpack-plugin --save-dev
+</code></pre><p>使用（css为例）</p><pre><code>var ExtractTextPlugin = require(&quot;extract-text-webpack-plugin&quot;);
+module.exports = {
+ module: {
+ loaders: [
+ { test: /.css$/, loader: ExtractTextPlugin.extract(&quot;style-loader&quot;, &quot;css-loader&quot;) }
+ ]
+ },
+ plugins: [
+ new ExtractTextPlugin(&quot;styles.css&quot;)
+ ]
+}
+</code></pre><p>它将从每一个用到了require(“style.css”)的entry chunks文件中抽离出css到单独的output文件</p><p>API</p><pre><code>new ExtractTextPlugin([id: string], filename: string, [options])
+</code></pre><p><code>id</code> Unique ident for this plugin instance. (For advanded usage only, by default automatic generated) <code>filename</code> the filename of the result file. May contain [name], [id] and [contenthash]. <code>[name]</code> the name of the chunk <code>[id]</code> the number of the chunk <code>[contenthash]</code> a hash of the content of the extracted file <code>options`</code>allChunks<code>extract from all additional chunks too (by default it extracts only from the initial chunk(s))</code>disable` disables the plugin ExtractTextPlugin.extract([notExtractLoader], loader, [options])</p><p>根据已有的loader，创建一个提取器（loader的再封装）</p><p><code>notExtractLoader</code> （可选）当css没有被抽离时，加载器不应该使用（例如：当allChunks:false时，在一个additional 的chunk中） <code>loader</code> 数组，用来转换css资源的加载器s <code>options`</code>publicPath<code>重写该加载器(loader)的</code>publicPath` 的设置</p><p>多入口文件的extract的使用示例：</p><pre><code>let ExtractTextPlugin = require(&apos;extract-text-webpack-plugin&apos;);
+
+// multiple extract instances
+let extractCSS = new ExtractTextPlugin(&apos;stylesheets/[name].css&apos;);
+let extractLESS = new ExtractTextPlugin(&apos;stylesheets/[name].less&apos;);
+
+module.exports = {
+ ...
+ module: {
+ loaders: [
+ {test: /.scss$/i, loader: extractCSS.extract([&apos;css&apos;,&apos;sass&apos;])},
+ {test: /.less$/i, loader: extractLESS.extract([&apos;css&apos;,&apos;less&apos;])},
+ ...
+ ]
+ },
+ plugins: [
+ extractCSS,
+ extractLESS
+ ]
+};
+</code></pre><p>三：改造项目-抽离css</p><p>安装插件到项目</p><pre><code>npm install extract-text-webpack-plugin --save-dev
+</code></pre><p>配置webpack.config.js，加入ExtractTextPlugin和相关处理：</p><pre><code>var webpack = require(&quot;webpack&quot;);
+var path = require(&quot;path&quot;);
+var srcDir = path.resolve(process.cwd(), &apos;src&apos;);
+var nodeModPath = path.resolve(__dirname, &apos;./node_modules&apos;);
+var pathMap = require(&apos;./src/pathmap.json&apos;);
+var glob = require(&apos;glob&apos;)
+var CommonsChunkPlugin = webpack.optimize.CommonsChunkPlugin;
+var HtmlWebpackPlugin = require(&apos;html-webpack-plugin&apos;);
+var ExtractTextPlugin = require(&apos;extract-text-webpack-plugin&apos;);
+var entries = function () {
+ var jsDir = path.resolve(srcDir, &apos;js&apos;)
+ var entryFiles = glob.sync(jsDir + &apos;/*.{js,jsx}&apos;)
+ var map = {};
+
+ for (var i = 0; i &lt; entryFiles.length; i++) {
+ var filePath = entryFiles[i];
+ var filename = filePath.substring(filePath.lastIndexOf(&apos;/&apos;) + 1, filePath.lastIndexOf(&apos;.&apos;));
+ map[filename] = filePath;
+ }
+ return map;
+}
+
+var html_plugins = function () {
+ var entryHtml = glob.sync(srcDir + &apos;/*.html&apos;)
+ var r = []
+ var entriesFiles = entries()
+ for (var i = 0; i &lt; entryHtml.length; i++) {
+ var filePath = entryHtml[i];
+ var filename = filePath.substring(filePath.lastIndexOf(&apos;/&apos;) + 1, filePath.lastIndexOf(&apos;.&apos;));
+ var conf = {
+ template: &apos;html!&apos; + filePath,
+ filename: filename + &apos;.html&apos;
+ }
+ //如果和入口js文件同名
+ if (filename in entriesFiles) {
+ conf.inject = &apos;body&apos;
+ conf.chunks = [&apos;vendor&apos;, filename]
+ }
+ //跨页面引用，如pageA,pageB 共同引用了common-a-b.js，那么可以在这单独处理
+ //if(pageA|pageB.test(filename)) conf.chunks.splice(1,0,&apos;common-a-b&apos;)
+ r.push(new HtmlWebpackPlugin(conf))
+ }
+ return r
+}
+var plugins = [];
+var extractCSS = new ExtractTextPlugin(&apos;css/[name].css?[contenthash]&apos;)
+var cssLoader = extractCSS.extract([&apos;css&apos;])
+var sassLoader = extractCSS.extract([&apos;css&apos;, &apos;sass&apos;])
+
+plugins.push(extractCSS);
+
+plugins.push(new CommonsChunkPlugin({
+ name: &apos;vendor&apos;,
+ minChunks: Infinity
+}));
+
+module.exports = {
+ entry: Object.assign(entries(), {
+ // 用到什么公共lib（例如jquery.js），就把它加进vendor去，目的是将公用库单独提取打包
+ &apos;vendor&apos;: [&apos;jquery&apos;, &apos;avalon&apos;]
+ }),
+ output: {
+ path: path.join(__dirname, &quot;dist&quot;),
+ filename: &quot;[name].js&quot;,
+ chunkFilename: &apos;[chunkhash:8].chunk.js&apos;,
+ publicPath: &quot;/&quot;
+ },
+ module: {
+ loaders: [
+ {
+ test: /.((woff2?|svg)(?v=[0-9].[0-9].[0-9]))|(woff2?|svg|jpe?g|png|gif|ico)$/,
+ loaders: [
+ //小于10KB的图片会自动转成dataUrl，
+ &apos;url?limit=10000&amp;name=img/[hash:8].[name].[ext]&apos;,
+ &apos;image?{bypassOnDebug:true, progressive:true,optimizationLevel:3,pngquant:{quality:&quot;65-80&quot;,speed:4{% raw%}}}{% endraw%}&apos;
+ ]
+ },
+ {
+ test: /.((ttf|eot)(?v=[0-9].[0-9].[0-9]))|(ttf|eot)$/,
+ loader: &apos;url?limit=10000&amp;name=fonts/[hash:8].[name].[ext]&apos;
+ },
+ {test: /.(tpl|ejs)$/, loader: &apos;ejs&apos;},
+ {test: /.css$/, loader: cssLoader},
+ {test: /.scss$/, loader: sassLoader}
+ ]
+ },
+ resolve: {
+ extensions: [&apos;&apos;, &apos;.js&apos;, &apos;.css&apos;, &apos;.scss&apos;, &apos;.tpl&apos;, &apos;.png&apos;, &apos;.jpg&apos;],
+ root: [srcDir, nodeModPath],
+ alias: pathMap,
+ publicPath: &apos;/&apos;
+ },
+ plugins: plugins.concat(html_plugins())
+}
+</code></pre><p>其中，用ExtractTextPlugin 来抽离css</p><pre><code>var ExtractTextPlugin = require(&apos;extract-text-webpack-plugin&apos;);
+var extractCSS = new ExtractTextPlugin(&apos;css/[name].css?[contenthash]&apos;)
+var cssLoader = extractCSS.extract([&apos;css&apos;])
+var sassLoader = extractCSS.extract([&apos;css&apos;, &apos;sass&apos;])
+
+plugins.push(extractCSS);
+......
+//conf - module - loaders
+{test: /.css$/, loader: cssLoader},
+{test: /.scss$/, loader: sassLoader}
+</code></pre><p>注意事项：</p><p>css中img的路径会出现问题，通过设置publicPath 解决，采用绝对路径</p><pre><code>output: {
+ ......
+ publicPath: &quot;/&quot;
+},
+</code></pre><p>运行：</p><pre><code>$ webpack
+</code></pre><p>期望</p><p>css单独抽离，打包成单独的css文件 html自动引用css文件 小于10k的图片，转成base64 格式的 dataUrl webpack.png 会被压缩，减少文件大小</p><p>运行webpack后的项目的目录结构：</p><p><img src="/2017/0818/b1ffc44.png" alt=""></p><p>生成的 dist/index.html 自动引用了 index.css 和相关的js，由于设置了publicPath 所以相应的链接都采用了绝对路径</p><p><img src="/2017/0818/7864518.png" alt=""></p><p>生成的 dist/index.css 小图片被转成了data:image形式：</p><p><img src="/2017/0818/686f15b.png" alt=""></p><p>结果：</p><p>css单独打包到css目录 html自动注入了<code>link</code> 标签 small-webpack.png 小于10k，被打包进了index.css webpack.png 由原来的50+k 被压缩成 10- k</p><p>最后，运行 <code>webpack-dev-server</code> 看一下运行结果：</p><p><img src="/2017/0818/89158ce.png" alt=""></p><p>总结</p><p>Webpack将所有静态资源都认为是模块，而通过loader，几乎可以处理所有的静态资源，图片、css、sass之类的。并且通过一些插件如extract-text-webpack-plugin，可以将共用的css抽离出来</p><p>下篇介绍改进webpack.config.js：</p><p>区分开发环境和生产环境 集成 gulp 实现自动构建打包部署 github 发布 前端自动化构建的项目模板</p></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="4142158067"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="5618891265"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><footer class="post-footer"><div class="post-nav"><div class="post-nav-next post-nav-item"><a href="/2017/webpack-da-bao-hou-shi-yong-jquery-de-wen-ti.html" rel="next" title="webpack打包后使用jQuery的问题"><i class="fa fa-chevron-left"></i> webpack打包后使用jQuery的问题</a></div><span class="post-nav-divider"></span><div class="post-nav-prev post-nav-item"><a href="/2017/jquery-scrollfix-gun-dong-ding-wei-cha-jian.html" rel="prev" title="jQuery scrollFix滚动定位插件">jQuery scrollFix滚动定位插件 <i class="fa fa-chevron-right"></i></a></div></div></footer></div></article><div class="post-spread"></div></div></div></div><div class="sidebar-toggle"><div class="sidebar-toggle-line-wrap"><span class="sidebar-toggle-line sidebar-toggle-line-first"></span> <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span> <span class="sidebar-toggle-line sidebar-toggle-line-last"></span></div></div><aside id="sidebar" class="sidebar"><div class="sidebar-inner"><section class="site-overview-wrap sidebar-panel sidebar-panel-active"><div class="site-overview"><div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person"><p class="site-author-name" itemprop="name">Hello</p><p class="site-description motion-element" itemprop="description"></p></div><nav class="site-state motion-element"><div class="site-state-item site-state-posts"><a href="/archives/"><span class="site-state-item-count">1358</span> <span class="site-state-item-name">posts</span></a></div></nav></div></section></div></aside><div class="sfix"><div class="fixedme"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460" data-ad-format="auto"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script></div></div></main><footer id="footer" class="footer"><div class="footer-inner"><div class="copyright">&copy; <span itemprop="copyrightYear">2018</span> <span class="with-love"><i class="fa fa-user"></i> </span><span class="author" itemprop="copyrightHolder">Hello</span></div><div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div><span class="post-meta-divider">|</span><div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div></div></footer><div class="back-to-top"><i class="fa fa-arrow-up"></i></div></div><script type="text/javascript">"[object Function]"!==Object.prototype.toString.call(window.Promise)&&(window.Promise=null)</script><script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script><script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script><script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script><script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script><script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script></body></html><!-- rebuild by neat -->

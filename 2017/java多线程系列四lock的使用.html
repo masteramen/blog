@@ -1,0 +1,109 @@
+<!-- build time:Sat Oct 27 2018 21:00:17 GMT+0800 (CST) --><!DOCTYPE html><html class="theme-next muse use-motion"><head><meta name="generator" content="Hexo 3.8.0"><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"><meta name="theme-color" content="#222"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"><link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css"><link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css"><link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4"><link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222"><meta name="description" content="前言：本系列将从零开始讲解java多线程相关的技术，内容参考于《java多线程核心技术》与《java并发编程实战》等相关资料，希望站在巨人的肩膀上,再通过我的理解能让知识更加简单易懂。目录ReentrantLock(重入锁)public class MyService {      private Lock lock = new ReentrantLock();      public void"><meta name="keywords" content="JAVA,面试"><meta property="og:type" content="article"><meta property="og:title" content="java多线程系列(四)—Lock的使用"><meta property="og:url" content="http://www.jfox.info/2017/java多线程系列四lock的使用.html"><meta property="og:site_name" content="java面试"><meta property="og:description" content="前言：本系列将从零开始讲解java多线程相关的技术，内容参考于《java多线程核心技术》与《java并发编程实战》等相关资料，希望站在巨人的肩膀上,再通过我的理解能让知识更加简单易懂。目录ReentrantLock(重入锁)public class MyService {      private Lock lock = new ReentrantLock();      public void"><meta property="og:locale" content="zh_CN"><meta property="og:updated_time" content="2018-10-27T12:29:37.419Z"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="java多线程系列(四)—Lock的使用"><meta name="twitter:description" content="前言：本系列将从零开始讲解java多线程相关的技术，内容参考于《java多线程核心技术》与《java并发编程实战》等相关资料，希望站在巨人的肩膀上,再通过我的理解能让知识更加简单易懂。目录ReentrantLock(重入锁)public class MyService {      private Lock lock = new ReentrantLock();      public void"><script type="text/javascript" id="hexo.configurations">var NexT=window.NexT||{},CONFIG={root:"/",scheme:"Muse",version:"5.1.4",sidebar:{position:"left",display:"post",offset:12,b2t:!1,scrollpercent:!1,onmobile:!1},fancybox:!0,tabs:!0,motion:{enable:!0,async:!1,transition:{post_block:"fadeIn",post_header:"slideDownIn",post_body:"slideDownIn",coll_header:"slideLeftIn",sidebar:"slideUpIn"}},duoshuo:{userId:"0",author:"Author"},algolia:{applicationID:"",apiKey:"",indexName:"",hits:{per_page:10},labels:{input_placeholder:"Search for Posts",hits_empty:"We didn't find any results for the search: ${query}",hits_stats:"${hits} results found in ${time} ms"}}}</script><link rel="canonical" href="http://www.jfox.info/2017/java多线程系列四lock的使用.html"><title>java多线程系列(四)—Lock的使用 | java面试</title></head><body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN"><div class="container sidebar-position-left page-post-detail"><div class="headband"></div><header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="header-inner"><div class="site-brand-wrapper"><div class="site-meta"><div class="custom-logo-site-title"><a href="/" class="brand" rel="start"><span class="logo-line-before"><i></i></span> <span class="site-title">java面试</span> <span class="logo-line-after"><i></i></span></a></div><p class="site-subtitle"></p></div><div class="site-nav-toggle"><button><span class="btn-bar"></span> <span class="btn-bar"></span> <span class="btn-bar"></span></button></div></div><nav class="site-nav"><ul id="menu" class="menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i><br>Home</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i><br>Archives</a></li></ul></nav></div></header><main id="main" class="main"><div class="main-inner"><div class="content-wrap"><div id="content" class="content"><div id="posts" class="posts-expand"><article class="post post-type-normal" itemscope itemtype="http://schema.org/Article"><div class="post-block"><link itemprop="mainEntityOfPage" href="http://www.jfox.info/2017/java多线程系列四lock的使用.html"><span hidden itemprop="author" itemscope itemtype="http://schema.org/Person"><meta itemprop="name" content="Hello"><meta itemprop="description" content=""><meta itemprop="image" content="/images/avatar.gif"></span><span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><meta itemprop="name" content="java面试"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">java多线程系列(四)—Lock的使用</h1><div class="post-meta"><span class="post-time"><span class="post-meta-item-icon"><i class="fa fa-calendar-o"></i> </span><span class="post-meta-item-text">Posted on</span> <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-01-01T23:58:37+08:00">2017-01-01</time></span></div></header><div class="post-body" itemprop="articleBody"><p>前言：本系列将从零开始讲解java多线程相关的技术，内容参考于《java多线程核心技术》与《java并发编程实战》等相关资料，希望站在巨人的肩膀上,再通过我的理解能让知识更加简单易懂。</p><h2 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h2><h2 id="ReentrantLock-重入锁"><a href="#ReentrantLock-重入锁" class="headerlink" title="ReentrantLock(重入锁)"></a>ReentrantLock(重入锁)</h2><pre><code>public class MyService {
+
+    private Lock lock = new ReentrantLock();
+
+    public void testMethod() {
+        lock.lock();
+        for (int i = 0; i &lt; 5; i++) {
+            System.out.println(&quot;ThreadName=&quot; + Thread.currentThread().getName()
+                    + (&quot; &quot; + (i + 1)));
+        }
+        lock.unlock();
+    }
+
+}
+</code></pre><p>效果和synchronized一样，都可以同步执行，lock方法获得锁，unlock方法释放锁</p><h2 id="await方法"><a href="#await方法" class="headerlink" title="await方法"></a>await方法</h2><pre><code>public class MyService {
+
+    private Lock lock = new ReentrantLock();
+    private Condition condition=lock.newCondition();
+    public void testMethod() {
+
+        try {
+            lock.lock();
+            System.out.println(&quot;开始wait&quot;);
+            condition.await();
+            for (int i = 0; i &lt; 5; i++) {
+                System.out.println(&quot;ThreadName=&quot; + Thread.currentThread().getName()
+                        + (&quot; &quot; + (i + 1)));
+            }
+        } catch (InterruptedException e) {
+            // TODO 自动生成的 catch 块
+            e.printStackTrace();
+        }
+        finally
+        {
+            lock.unlock();
+        }
+    }
+
+}
+</code></pre><ul><li>通过创建Condition对象来使线程wait，必须先执行lock.lock方法获得锁</li></ul><h2 id="signal方法"><a href="#signal方法" class="headerlink" title="signal方法"></a>signal方法</h2><pre><code>public void signal()
+    {
+        try
+        {
+            lock.lock();
+            condition.signal();
+        }
+        finally
+        {
+            lock.unlock();
+        }
+    }
+</code></pre><ul><li>condition对象的signal方法可以唤醒wait线程</li></ul><h2 id="创建多个condition对象"><a href="#创建多个condition对象" class="headerlink" title="创建多个condition对象"></a>创建多个condition对象</h2><ul><li>一个condition对象的signal（signalAll）方法和该对象的await方法是一一对应的，也就是一个condition对象的signal（signalAll）方法不能唤醒其他condition对象的await方法</li><li>ReentrantLock类可以唤醒指定条件的线程，而object的唤醒是随机的</li></ul><h2 id="Condition类和Object类"><a href="#Condition类和Object类" class="headerlink" title="Condition类和Object类"></a>Condition类和Object类</h2><ul><li>Condition类的awiat方法和Object类的wait方法等效</li><li>Condition类的signal方法和Object类的notify方法等效</li><li>Condition类的signalAll方法和Object类的notifyAll方法等效</li></ul><h2 id="Lock的公平锁和非公平锁"><a href="#Lock的公平锁和非公平锁" class="headerlink" title="Lock的公平锁和非公平锁"></a>Lock的公平锁和非公平锁</h2><pre><code>Lock lock=new ReentrantLock(true);//公平锁
+Lock lock=new ReentrantLock(false);//非公平锁
+</code></pre><ul><li>公平锁指的是线程获取锁的顺序是按照加锁顺序来的，而非公平锁指的是抢锁机制，先lock的线程不一定先获得锁。</li></ul><h2 id="ReentrantLock类的方法"><a href="#ReentrantLock类的方法" class="headerlink" title="ReentrantLock类的方法"></a>ReentrantLock类的方法</h2><ul><li>getHoldCount() 查询当前线程保持此锁的次数，也就是执行此线程执行lock方法的次数</li><li>getQueueLength（）返回正等待获取此锁的线程估计数，比如启动10个线程，1个线程获得锁，此时返回的是9</li><li>getWaitQueueLength（Condition condition）返回等待与此锁相关的给定条件的线程估计数。比如10个线程，用同一个condition对象，并且此时这10个线程都执行了condition对象的await方法，那么此时执行此方法返回10</li><li>hasWaiters(Condition condition)查询是否有线程等待与此锁有关的给定条件(condition)，对于指定contidion对象，有多少线程执行了condition.await方法</li><li>hasQueuedThread(Thread thread)查询给定线程是否等待获取此锁</li><li>hasQueuedThreads()是否有线程等待此锁</li><li>isFair()该锁是否公平锁</li><li>isHeldByCurrentThread() 当前线程是否保持锁锁定，线程的执行lock方法的前后分别是false和true</li><li>isLock()此锁是否有任意线程占用</li><li>lockInterruptibly（）如果当前线程未被中断，获取锁</li><li>tryLock（）尝试获得锁，仅在调用时锁未被线程占用，获得锁</li><li>tryLock(long timeout TimeUnit unit)如果锁在给定等待时间内没有被另一个线程保持，则获取该锁</li></ul><h2 id="tryLock和lock和lockInterruptibly的区别"><a href="#tryLock和lock和lockInterruptibly的区别" class="headerlink" title="tryLock和lock和lockInterruptibly的区别"></a>tryLock和lock和lockInterruptibly的区别</h2><ul><li>tryLock能获得锁就返回true，不能就立即返回false，tryLock(long timeout,TimeUnit unit)，可以增加时间限制，如果超过该时间段还没获得锁，返回false</li><li>lock能获得锁就返回true，不能的话一直等待获得锁</li><li>lock和lockInterruptibly，如果两个线程分别执行这两个方法，但此时中断这两个线程，前者不会抛出异常，而后者会抛出异常</li></ul><h2 id="读写锁"><a href="#读写锁" class="headerlink" title="读写锁"></a>读写锁</h2><ul><li><p>ReentrantLock是完全互斥排他的，这样其实效率是不高的。</p><p>public void read() {</p><pre><code>    try {
+        try {
+            lock.readLock().lock();
+            System.out.println(&quot;获得读锁&quot; + Thread.currentThread().getName()
+                    + &quot; &quot; + System.currentTimeMillis());
+            Thread.sleep(10000);
+        } finally {
+            lock.readLock().unlock();
+        }
+    } catch (InterruptedException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+    }
+}
+</code></pre><p>public void write() {</p><pre><code>    try {
+        try {
+            lock.writeLock().lock();
+            System.out.println(&quot;获得写锁&quot; + Thread.currentThread().getName()
+                    + &quot; &quot; + System.currentTimeMillis());
+            Thread.sleep(10000);
+        } finally {
+            lock.writeLock().unlock();
+        }
+    } catch (InterruptedException e) {
+        e.printStackTrace();
+    }
+}
+</code></pre><p>public void read() {</p><pre><code>    try {
+        try {
+            lock.readLock().lock();
+            System.out.println(&quot;获得读锁&quot; + Thread.currentThread().getName()
+                    + &quot; &quot; + System.currentTimeMillis());
+            Thread.sleep(10000);
+        } finally {
+            lock.readLock().unlock();
+        }
+    } catch (InterruptedException e) {
+        e.printStackTrace();
+    }
+}
+
+public void write() {
+    try {
+        try {
+            lock.writeLock().lock();
+            System.out.println(&quot;获得写锁&quot; + Thread.currentThread().getName()
+                    + &quot; &quot; + System.currentTimeMillis());
+            Thread.sleep(10000);
+        } finally {
+            lock.writeLock().unlock();
+        }
+    } catch (InterruptedException e) {
+        e.printStackTrace();
+    }
+}
+</code></pre></li><li><p>结果是读锁释放后才执行写锁的方法，说明读锁和写锁是互斥的</p></li></ul><h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul><li>Lock类也可以实现线程同步，而Lock获得锁需要执行lock方法，释放锁需要执行unLock方法</li><li>Lock类可以创建Condition对象，Condition对象用来是线程等待和唤醒线程，需要注意的是Condition对象的唤醒的是用同一个Condition执行await方法的线程，所以也就可以实现唤醒指定类的线程</li><li>Lock类分公平锁和不公平锁，公平锁是按照加锁顺序来的，非公平锁是不按顺序的，也就是说先执行lock方法的锁不一定先获得锁</li><li>Lock类有读锁和写锁，读读共享，写写互斥，读写互斥</li></ul><h3 id="我觉得分享是一种精神，分享是我的乐趣所在，不是说我觉得我讲得一定是对的，我讲得可能很多是不对的，但是我希望我讲的东西是我人生的体验和思考，是给很多人反思，也许给你一秒钟、半秒钟，哪怕说一句话有点道理，引发自己内心的感触，这就是我最大的价值。（这是我喜欢的一句话，也是我写博客的初衷）"><a href="#我觉得分享是一种精神，分享是我的乐趣所在，不是说我觉得我讲得一定是对的，我讲得可能很多是不对的，但是我希望我讲的东西是我人生的体验和思考，是给很多人反思，也许给你一秒钟、半秒钟，哪怕说一句话有点道理，引发自己内心的感触，这就是我最大的价值。（这是我喜欢的一句话，也是我写博客的初衷）" class="headerlink" title="我觉得分享是一种精神，分享是我的乐趣所在，不是说我觉得我讲得一定是对的，我讲得可能很多是不对的，但是我希望我讲的东西是我人生的体验和思考，是给很多人反思，也许给你一秒钟、半秒钟，哪怕说一句话有点道理，引发自己内心的感触，这就是我最大的价值。（这是我喜欢的一句话，也是我写博客的初衷）"></a>我觉得分享是一种精神，分享是我的乐趣所在，不是说我觉得我讲得一定是对的，我讲得可能很多是不对的，但是我希望我讲的东西是我人生的体验和思考，是给很多人反思，也许给你一秒钟、半秒钟，哪怕说一句话有点道理，引发自己内心的感触，这就是我最大的价值。（这是我喜欢的一句话，也是我写博客的初衷）</h3></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="4142158067"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="5618891265"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><footer class="post-footer"><div class="post-nav"><div class="post-nav-next post-nav-item"><a href="/2017/mybatis的简单使用调用mapper接口.html" rel="next" title="mybatis的简单使用调用mapper接口"><i class="fa fa-chevron-left"></i> mybatis的简单使用调用mapper接口</a></div><span class="post-nav-divider"></span><div class="post-nav-prev post-nav-item"><a href="/2017/微信开发准备工作简版.html" rel="prev" title="微信开发（准备工作简版）">微信开发（准备工作简版） <i class="fa fa-chevron-right"></i></a></div></div></footer></div></article><div class="post-spread"></div></div></div></div><div class="sidebar-toggle"><div class="sidebar-toggle-line-wrap"><span class="sidebar-toggle-line sidebar-toggle-line-first"></span> <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span> <span class="sidebar-toggle-line sidebar-toggle-line-last"></span></div></div><aside id="sidebar" class="sidebar"><div class="sidebar-inner"><ul class="sidebar-nav motion-element"><li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">Table of Contents</li><li class="sidebar-nav-overview" data-target="site-overview-wrap">Overview</li></ul><section class="site-overview-wrap sidebar-panel"><div class="site-overview"><div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person"><p class="site-author-name" itemprop="name">Hello</p><p class="site-description motion-element" itemprop="description"></p></div><nav class="site-state motion-element"><div class="site-state-item site-state-posts"><a href="/archives/"><span class="site-state-item-count">1358</span> <span class="site-state-item-name">posts</span></a></div></nav></div></section><section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active"><div class="post-toc"><div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#目录"><span class="nav-number">1.</span> <span class="nav-text">目录</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ReentrantLock-重入锁"><span class="nav-number">2.</span> <span class="nav-text">ReentrantLock(重入锁)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#await方法"><span class="nav-number">3.</span> <span class="nav-text">await方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#signal方法"><span class="nav-number">4.</span> <span class="nav-text">signal方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#创建多个condition对象"><span class="nav-number">5.</span> <span class="nav-text">创建多个condition对象</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Condition类和Object类"><span class="nav-number">6.</span> <span class="nav-text">Condition类和Object类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Lock的公平锁和非公平锁"><span class="nav-number">7.</span> <span class="nav-text">Lock的公平锁和非公平锁</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ReentrantLock类的方法"><span class="nav-number">8.</span> <span class="nav-text">ReentrantLock类的方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#tryLock和lock和lockInterruptibly的区别"><span class="nav-number">9.</span> <span class="nav-text">tryLock和lock和lockInterruptibly的区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#读写锁"><span class="nav-number">10.</span> <span class="nav-text">读写锁</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">11.</span> <span class="nav-text">总结</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#我觉得分享是一种精神，分享是我的乐趣所在，不是说我觉得我讲得一定是对的，我讲得可能很多是不对的，但是我希望我讲的东西是我人生的体验和思考，是给很多人反思，也许给你一秒钟、半秒钟，哪怕说一句话有点道理，引发自己内心的感触，这就是我最大的价值。（这是我喜欢的一句话，也是我写博客的初衷）"><span class="nav-number">11.1.</span> <span class="nav-text">我觉得分享是一种精神，分享是我的乐趣所在，不是说我觉得我讲得一定是对的，我讲得可能很多是不对的，但是我希望我讲的东西是我人生的体验和思考，是给很多人反思，也许给你一秒钟、半秒钟，哪怕说一句话有点道理，引发自己内心的感触，这就是我最大的价值。（这是我喜欢的一句话，也是我写博客的初衷）</span></a></li></ol></li></ol></div></div></section></div></aside><div class="sfix"><div class="fixedme"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460" data-ad-format="auto"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script></div></div></main><footer id="footer" class="footer"><div class="footer-inner"><div class="copyright">&copy; <span itemprop="copyrightYear">2018</span> <span class="with-love"><i class="fa fa-user"></i> </span><span class="author" itemprop="copyrightHolder">Hello</span></div><div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div><span class="post-meta-divider">|</span><div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div></div></footer><div class="back-to-top"><i class="fa fa-arrow-up"></i></div></div><script type="text/javascript">"[object Function]"!==Object.prototype.toString.call(window.Promise)&&(window.Promise=null)</script><script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script><script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script><script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script><script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script><script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script></body></html><!-- rebuild by neat -->

@@ -1,0 +1,202 @@
+<!-- build time:Sat Oct 27 2018 21:00:21 GMT+0800 (CST) --><!DOCTYPE html><html class="theme-next muse use-motion"><head><meta name="generator" content="Hexo 3.8.0"><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"><meta name="theme-color" content="#222"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"><link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css"><link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css"><link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4"><link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222"><meta name="description" content="是指一个内存中运行的应用程序，每个进程都有自己独立的一块内存空间，一个进程中可以启动多个线程。比如在Windows系统中，一个运行的exe就是一个进程。二、线程是指进程中的一个执行流程，一个进程中可以运行多个线程。比如java.exe进程中可以运行很多线程。线程总是属于某个进程，进程中的多个线程共享进程的内存。“同时”执行是人的感觉，在线程之间实际上轮换执行。现在的操作系统是多任务操作系统。多线程"><meta name="keywords" content="JAVA,面试"><meta property="og:type" content="article"><meta property="og:title" content="Java基础——线程 » java面试题"><meta property="og:url" content="http://www.jfox.info/2017/java基础线程.html"><meta property="og:site_name" content="java面试"><meta property="og:description" content="是指一个内存中运行的应用程序，每个进程都有自己独立的一块内存空间，一个进程中可以启动多个线程。比如在Windows系统中，一个运行的exe就是一个进程。二、线程是指进程中的一个执行流程，一个进程中可以运行多个线程。比如java.exe进程中可以运行很多线程。线程总是属于某个进程，进程中的多个线程共享进程的内存。“同时”执行是人的感觉，在线程之间实际上轮换执行。现在的操作系统是多任务操作系统。多线程"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="http://www.jfox.info/2017/1081/d216646.png"><meta property="og:image" content="http://www.jfox.info/2017/1081/21cfcc2.png"><meta property="og:image" content="http://www.jfox.info/2017/1081/15b624e.png"><meta property="og:image" content="http://www.jfox.info/2017/1081/a6af212.png"><meta property="og:updated_time" content="2018-10-27T12:29:37.411Z"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="Java基础——线程 » java面试题"><meta name="twitter:description" content="是指一个内存中运行的应用程序，每个进程都有自己独立的一块内存空间，一个进程中可以启动多个线程。比如在Windows系统中，一个运行的exe就是一个进程。二、线程是指进程中的一个执行流程，一个进程中可以运行多个线程。比如java.exe进程中可以运行很多线程。线程总是属于某个进程，进程中的多个线程共享进程的内存。“同时”执行是人的感觉，在线程之间实际上轮换执行。现在的操作系统是多任务操作系统。多线程"><meta name="twitter:image" content="http://www.jfox.info/2017/1081/d216646.png"><script type="text/javascript" id="hexo.configurations">var NexT=window.NexT||{},CONFIG={root:"/",scheme:"Muse",version:"5.1.4",sidebar:{position:"left",display:"post",offset:12,b2t:!1,scrollpercent:!1,onmobile:!1},fancybox:!0,tabs:!0,motion:{enable:!0,async:!1,transition:{post_block:"fadeIn",post_header:"slideDownIn",post_body:"slideDownIn",coll_header:"slideLeftIn",sidebar:"slideUpIn"}},duoshuo:{userId:"0",author:"Author"},algolia:{applicationID:"",apiKey:"",indexName:"",hits:{per_page:10},labels:{input_placeholder:"Search for Posts",hits_empty:"We didn't find any results for the search: ${query}",hits_stats:"${hits} results found in ${time} ms"}}}</script><link rel="canonical" href="http://www.jfox.info/2017/java基础线程.html"><title>Java基础——线程 » java面试题 | java面试</title></head><body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN"><div class="container sidebar-position-left page-post-detail"><div class="headband"></div><header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="header-inner"><div class="site-brand-wrapper"><div class="site-meta"><div class="custom-logo-site-title"><a href="/" class="brand" rel="start"><span class="logo-line-before"><i></i></span> <span class="site-title">java面试</span> <span class="logo-line-after"><i></i></span></a></div><p class="site-subtitle"></p></div><div class="site-nav-toggle"><button><span class="btn-bar"></span> <span class="btn-bar"></span> <span class="btn-bar"></span></button></div></div><nav class="site-nav"><ul id="menu" class="menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i><br>Home</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i><br>Archives</a></li></ul></nav></div></header><main id="main" class="main"><div class="main-inner"><div class="content-wrap"><div id="content" class="content"><div id="posts" class="posts-expand"><article class="post post-type-normal" itemscope itemtype="http://schema.org/Article"><div class="post-block"><link itemprop="mainEntityOfPage" href="http://www.jfox.info/2017/java基础线程.html"><span hidden itemprop="author" itemscope itemtype="http://schema.org/Person"><meta itemprop="name" content="Hello"><meta itemprop="description" content=""><meta itemprop="image" content="/images/avatar.gif"></span><span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><meta itemprop="name" content="java面试"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">Java基础——线程 » java面试题</h1><div class="post-meta"><span class="post-time"><span class="post-meta-item-icon"><i class="fa fa-calendar-o"></i> </span><span class="post-meta-item-text">Posted on</span> <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-01-01T23:53:01+08:00">2017-01-01</time></span></div></header><div class="post-body" itemprop="articleBody"><p>是指一个内存中运行的应用程序，每个进程都有自己独立的一块内存空间，一个进程中可以启动多个线程。</p><p>比如在Windows系统中，一个运行的exe就是一个进程。</p><p><strong>二、线程</strong></p><p>是指进程中的一个执行流程，一个进程中可以运行多个线程。比如java.exe进程中可以运行很多线程。</p><p>线程总是属于某个进程，进程中的多个线程共享进程的内存。“同时”执行是人的感觉，在线程之间实际上轮换执行。</p><p>现在的操作系统是多任务操作系统。多线程是实现多任务的一种方式。</p><p><strong>创建多线程程序的方法及步骤：</strong></p><p><strong>方法一：</strong>用 Thread 类创建线程</p><p>1) 一写个类,继承自 Thread 类</p><p>2) 重写run方法 //这个方法里放的变是要执行的内容</p><p>3) new 这个自定义的Thread 类</p><p>4) 调用start方法,启动这个线程 (start 方法有两个作用 ,一个是开启线程,一个是调用run方法)</p><pre><code>publicclass Test12 {
+    publicstaticvoid main(String[] args) {
+        ThreadDemo t = new ThreadDemo();
+        t.start();// 启动
+        ThreadDemo t2 = new ThreadDemo();
+        t2.start();
+
+        ThreadDemo t3 = new ThreadDemo();
+        t3.start();
+
+        for (int i = 0; i &lt; 20; i++) {
+            System.out.println(&quot;线程&quot; + Thread.currentThread().getName() + &quot;正在运行&quot;);
+        }
+    }
+}
+
+class ThreadDemo extends Thread {
+    @Override
+    publicvoid run() {
+        for (int i = 0; i &lt; 200; i++) {
+            System.out.println(&quot;线程&quot; + Thread.currentThread().getName() + &quot;正在运行&quot;);
+        }
+    }
+
+}
+</code></pre><p>打印结果：</p><pre><code>线程Thread-0正在运行
+线程Thread-0正在运行
+线程Thread-0正在运行
+线程Thread-2正在运行
+线程main正在运行
+线程Thread-1正在运行
+线程Thread-1正在运行
+线程Thread-1正在运行
+线程main正在运行
+线程Thread-2正在运行
+线程Thread-0正在运行
+线程Thread-2正在运行
+
+。。。。。。。。。。。
+下面还有输出省略了
+</code></pre><p><strong>要点总结：</strong></p><p>要将一段代码放在一个新的线程上运行,这段代码应该放在一个类的 run 函数中, 并且,ran函数所在的类是Thread类的子类</p><p>倒过来说,我们要实现多线程,必须编写一个继承了Threa类的的子类,并重写其run方法</p><p>启动一个线程,我们不是调用Thread子类对象的run方法,而是调用Thread子类对象的start 方法( 从Thread类继承到的),该方法将</p><p>产生一个新的线程 并在该线程上运行子类对象中的run方法</p><p>由于线程的代码段放在run 方法中,那么该方法执行完后,线程就结束了</p><pre><code>publicclass Test {
+                publicstaticvoid main(String[] args) throws InterruptedException {
+                    ThreadDemo t=new ThreadDemo();
+                    t.start();
+
+                    while(true){
+                        System.out.println(&quot;这是线程一输出的内容&quot;);
+                        Thread.sleep(10);
+                    }
+                }
+            }
+
+
+            class ThreadDemo extends Thread{
+                publicvoid run() {
+                    for (int i = 0; i &lt; 50; i++) {
+                        System.out.println(&quot;这是线程二输出的内容&quot;);
+                    }
+                }
+            }
+
+//例子,创建三个线程,和主线程同时运行publicclass Test2 {
+            publicstaticvoid main(String[] args) {
+                MyThread t1=new MyThread();
+                t1.start();
+
+                MyThread t2=new MyThread();
+                t2.start();
+
+                MyThread t3=new MyThread();
+                t3.start();
+
+                for (int i = 0; i &lt; 200; i++) {
+                    System.out.println(&quot;主线程&quot;+Thread.currentThread().getName()+&quot;正在运行&quot;);
+                }    
+            }    
+        }
+</code></pre><p><strong>方法二：</strong>使用Runnable接口实现多线程</p><p>1)自定义一个类，implements Runnable接口</p><p>2）重写run方法</p><p>3）new出来这个自定的类//该类对象会作为Thread类构造函数的参数</p><p>4)new出Thread类</p><p>5）调用start方法</p><p>代码演示：</p><pre><code>//使用Runnable实现多线程
+//注意：在调用的时候与Thread的不同。。。publicclass Test13 {
+    publicstaticvoid main(String[] arg) {
+
+        /*
+         * 注意：
+*1.下面用到的是Runnable接口
+*2.并没有继承Thread，就不能直接用.start()方法
+         * 
+         * 解决办法：
+*1.MyThread对象依然要被创建；
+*2.创建Thread对象；
+*3.将MyThread创建的对象作为Thread构造函数的参数，传入
+         * 4.即可调用.start();方法了
+         */
+        MyThread m = new MyThread();// 此时，m好像没参与，把它传入下一行Thread（）；中
+        Thread t = new Thread(m);
+        t.start();
+
+        for (int i = 0; i &lt; 10; i++) {
+            System.out.println(&quot;--------》&quot;);
+        }
+    }
+}
+
+// 实现Runnable接口class MyThread implements Runnable {
+
+    @Override
+    publicvoid run() {
+        for (int i = 0; i &lt; 14; i++) {
+            System.out.println(&quot;(--------&quot;);
+        }
+
+    }
+
+}
+</code></pre><p><strong>继承Thread类创建线程和实现Runnable接口创建线程的区别</strong></p><p>使用 Runnable 接口创建多线程</p><p>1.适合多个相同的程序代码去处理同一资源的情况 把虚拟CPU (线程)同程序的代码 数据有效分离,较好的体现了面象对象</p><p>2.可以避免java单继承带来的局限</p><p>例如:当我们将已经继承了某类的一个类的子类放入多线程中,由于不能同时继承两个类,所以这什么情况下，不能采用继承Thread的方式,只好通过实现Ruanable。.当线程被构造时,需要的代码和数据通过一个对象作为构造函数实参传递进去,这个对象就是一个实现了Runnable接口类的实例.事实上,几乎所有的多线程都可以用Runnable接口方式</p><p><strong>代码演示：(这个代码有有误，在出票处有重复票）</strong></p><pre><code>//用Runnable的好处,模拟买票系统publicclass Test14 {
+    publicstaticvoid main(String[] args) {
+        // 好处在这里，可以资源t共享
+        // 模拟四个买票窗口
+        SaleThread t = new SaleThread();
+        new Thread(t).start();// 窗口1new Thread(t).start();// 窗口2new Thread(t).start();// 窗口3new Thread(t).start();// 窗口4
+    }
+}
+
+class SaleThread implements Runnable {
+    // 卖20张票staticint ticket = 20;
+
+    @Override
+    publicvoid run() {
+        // TODO Auto-generated method stubwhile(true){
+            try {
+                // 貌似我电脑的虚拟机有问题，它总跑同一个Thread，所以我设置一下，让它交替运行
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                // TODO Auto-generated catch block                e.printStackTrace();
+            }
+            if (ticket &gt; 0) {
+                System.out.println(&quot;线程&quot; + Thread.currentThread().getName()+ &quot;正在卖第&quot; + ticket + &quot;张票&quot;);
+            } else {
+                break;
+            }    
+            ticket--;
+        }
+
+    }
+
+}
+</code></pre><p><img src="/2017/1081/d216646.png" alt=""></p><p>上面的二代在出票处有重复，我的ticket递减理解错位置了。我理解是，没有写在if里面会导致，if多次执行，再执行递减。他俩有不相交的地方。下面该了这个bug。</p><pre><code>if (ticket&gt;0) {
+                System.out.println(&quot;线程&quot; + Thread.currentThread().getName()+ &quot;正在卖第&quot; + ticket--+ &quot;张票&quot;);
+            } else {
+                break;
+            }    
+            //ticket--;不是写在这里的，会有重复票（自己写的时候，写在这里了。）ticket--在上面if中。
+</code></pre><p>更改之后，正常了：</p><p><img src="/2017/1081/21cfcc2.png" alt=""></p><p><strong>还没结束！！！</strong></p><p><strong>还没结束！！！</strong></p><p><strong>还没结束！！！</strong></p><p><strong>上面的代码似乎是设置好了，可是在我多次点击运行之后，依然出现了少量的重票。</strong></p><p><strong><img src="/2017/1081/15b624e.png" alt=""></strong></p><p>这就引出了线程同步问题。</p><p><strong>三、线程同步 synchronized</strong></p><p>原理讲解：任何对象都有一个标志位.是0或1 程序执行到这里.会检查这个对象的标志位,如果是1,那么向下执行,同时将标志位为0</p><p>如果标志位为0,则线程发生阻塞.一直等到标志位为1 标志位又叫锁旗标</p><p>synchronized 又叫锁定了监视器 一个线程可以再进入线程锁定临视器.就象蓝球运动员再拿到球一样。</p><pre><code>class SaleThread2  implements Runnable{
+            //static int ticket=1000;privateint ticket;
+            public SaleThread2(int ticket){
+                this.ticket=ticket;
+            }
+
+            String lockStr=&quot;&quot;;
+            //Object obj=new Object();publicvoid run() {
+                while(true){
+                    synchronized (lockStr) {  //锁 ,锁旗标if(ticket&gt;0){
+                            try{
+                                    Thread.sleep(10);    
+                            }
+                            catch(Exception ex){
+                                ex.printStackTrace();
+                            }
+
+                            System.out.println(&quot;线程&quot;+Thread.currentThread().getName() +&quot;正在卖第&quot;+ticket--+&quot;张票&quot;);
+                        }
+                        else{
+                            break;
+                        }
+                    }
+                }    
+            }
+        }
+</code></pre><p><strong>四、自定义线程</strong></p><p>1) 线程的名字，一个运行中的线程总是有名字的，名字有两个来源，一个是虚拟机自己给的名字，</p><p>一个是你自己的定的名字。在没有指定线程名字的情况下，虚拟机总会为线程指定名字，并且主线程的名字总是mian，非主线程的名字不确定。</p><p>//Thread(String name) 可以在构造线程的时候,直接传入名字</p><p>//getName () 可以得到线程的名字</p><p>2) 获取当前线程的对象的方法是：Thread.currentThread();</p><p>3) 在上面的代码中，只能保证：每个线程都将启动，每个线程都将运行直到完成。一系列线程以某种顺序启动并不意味着将按该顺序执行。</p><p>对于任何一组启动的线程来说，调度程序不能保证其执行次序，持续时间也无法保证。</p><p>4) 当线程目标run()方法结束时该线程完成</p><p>5) 一旦线程启动，它就永远不能再重新启动。只有一个新的线程可以被启动，并且只能一次。一个可运行的线程或死线程可以被重新启动。</p><p>//t1.start(); 即这个操作只能一次,如果多次,将引发 java.lang.IllegalThreadStateException</p><pre><code>class MyThread extends Thread{
+            publicvoid run() {
+                for (int i = 0; i &lt; 20000; i++) {
+                    System.out.println(&quot;线程&quot;+Thread.currentThread().getName()+&quot;正在运行&quot;);
+                }
+            }
+}
+</code></pre><p><strong>五、线程的状态</strong></p><p>新建 (Born) : 新建的线程处于新建状态</p><p>就绪 (Ready) : 在创建线程后，start() 方法被调用它将处于就绪状态</p><p>运行 (Running) : 线程在开始执行时(run)进入运行状态</p><p>睡眠 (Sleeping) : 线程的执行可通过使用 sleep() 方法来暂时中止。在睡眠结束后，线程将进入就绪状态</p><p>等待 (Waiting) : 如果调用了 wait() 方法，线程将处于等待状态。用于在两个或多个线程并发运行时。</p><p>挂起 (Suspended) : 在临时停止或中断线程的执行时，线程就处于挂起状态。 //suspend() 已过时,有固定的死锁倾向</p><p>恢复 (Resume) : 在挂起的线程被恢复执行时，可以说它已被恢复。</p><p>阻塞 (Blocked) – 在线程等待一个事件时（例如输入/输出操作），就称其处于阻塞状态。</p><p>死亡 (Dead) – 在 run() 方法已完成执行或其 stop() 方法被调用之后，线程就处于死亡状态。 //stop 方法有两个重载,均已过时,有固定的不安全性</p><p><img src="/2017/1081/a6af212.png" alt=""></p><hr><p>Java 中的线程优先级是在 Thread 类中定义的常量</p><p>NORM_PRIORITY : 值为 5</p><p>MAX_PRIORITY : 值为 10</p><p>MIN_PRIORITY : 值为 1</p><p>缺省优先级为 NORM_PRIORITY</p><hr><p>有关优先级的方法有两个：</p><p>final void setPriority(int newp) : 修改线程的当前优先级</p><p>final int getPriority() : 返回线程的优先级</p><p><strong>补充面试题：</strong></p><p><strong>sleep 和 yield 的区别</strong></p><p>1) sleep是Thread类的一个静态方法，该方法会让当前正在 执行的线程暂停执行，从而将执行机会让给其他线程执行。</p><p>sleep(long mills)参数指定当前线程暂停执行的时间，经过这段阻塞时间后，该线程会进入就绪状态，等候线程调度器的调度</p><p>sleep方法声明抛出了InterruptedException异常，所以调用sleep方法时要么在方法开始处抛出异常要么使用try{}..catch{}块进行捕获。</p><p>2) yield 方法只会给优先级相同或更高优先级的线程执行机会。yield不会将线程转入阻塞状态，只是强制当前线程进入就绪状态。</p><p>因此完全有可能某个线程调用yield方法暂停后，立即又获得处理器资源被执行。yield方法没有声明抛出任何异常。</p><p>// 通俗地说 yield()方法只是把线程的状态 由执行状态打回准备就绪状态</p><pre><code>publicvoid run() {
+    for (int i = 0; i &lt; 50; i++) {
+        System.out.println(getName() + &quot;---&gt;&quot; + i);
+        if (i == 20) {
+            Thread.yield();
+            }
+            }
+            }
+            publicstaticvoid main(String[] args) {
+                YieldThread t1 = new YieldThread(&quot;高级&quot;);
+                t1.start();
+                // 若当前线程优先级最高，那么即使调用了yield()方法，线程调度器又会将这个线程调度出来重新执行
+                // t1.setPriority(Thread.MAX_PRIPORITY);
+                YieldThread t2 = new YieldThread(&quot;低级&quot;);
+                t2.start();
+                t2.setPriority(Thread.MIN_PRIORITY);
+                }
+</code></pre></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="4142158067"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="5618891265"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><footer class="post-footer"><div class="post-nav"><div class="post-nav-next post-nav-item"><a href="/2017/spring极速集成注解redis实录.html" rel="next" title="Spring 极速集成注解 redis 实录"><i class="fa fa-chevron-left"></i> Spring 极速集成注解 redis 实录</a></div><span class="post-nav-divider"></span><div class="post-nav-prev post-nav-item"><a href="/2017/springmvc配置bootstrap.html" rel="prev" title="spring mvc 配置bootstrap">spring mvc 配置bootstrap <i class="fa fa-chevron-right"></i></a></div></div></footer></div></article><div class="post-spread"></div></div></div></div><div class="sidebar-toggle"><div class="sidebar-toggle-line-wrap"><span class="sidebar-toggle-line sidebar-toggle-line-first"></span> <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span> <span class="sidebar-toggle-line sidebar-toggle-line-last"></span></div></div><aside id="sidebar" class="sidebar"><div class="sidebar-inner"><section class="site-overview-wrap sidebar-panel sidebar-panel-active"><div class="site-overview"><div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person"><p class="site-author-name" itemprop="name">Hello</p><p class="site-description motion-element" itemprop="description"></p></div><nav class="site-state motion-element"><div class="site-state-item site-state-posts"><a href="/archives/"><span class="site-state-item-count">1358</span> <span class="site-state-item-name">posts</span></a></div></nav></div></section></div></aside><div class="sfix"><div class="fixedme"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460" data-ad-format="auto"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script></div></div></main><footer id="footer" class="footer"><div class="footer-inner"><div class="copyright">&copy; <span itemprop="copyrightYear">2018</span> <span class="with-love"><i class="fa fa-user"></i> </span><span class="author" itemprop="copyrightHolder">Hello</span></div><div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div><span class="post-meta-divider">|</span><div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div></div></footer><div class="back-to-top"><i class="fa fa-arrow-up"></i></div></div><script type="text/javascript">"[object Function]"!==Object.prototype.toString.call(window.Promise)&&(window.Promise=null)</script><script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script><script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script><script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script><script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script><script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script></body></html><!-- rebuild by neat -->

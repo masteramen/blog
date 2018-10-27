@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="前阵子我们因为B机房故障，将所有的流量切到了A机房，在经历了推送+自然高峰之后，A机房所有服务器都出现java线程数接近1000的情况（1000是设置的max值），在晚上7点多观察，java线程数略有下降，但还是有900+的样子，而此时，单台服务器的TPS维持在400/s，并不是一个特别大的量。然后将A机房一台机器下线，继续观察，到了晚上9点多，那台下线的机器，jetty进程的java线程数还是7">
+<meta name="keywords" content="JAVA,面试">
+<meta property="og:type" content="article">
+<meta property="og:title" content="java线程数过高原因分析">
+<meta property="og:url" content="http://www.jfox.info/2017/java线程数过高原因分析.html">
+<meta property="og:site_name" content="java面试">
+<meta property="og:description" content="前阵子我们因为B机房故障，将所有的流量切到了A机房，在经历了推送+自然高峰之后，A机房所有服务器都出现java线程数接近1000的情况（1000是设置的max值），在晚上7点多观察，java线程数略有下降，但还是有900+的样子，而此时，单台服务器的TPS维持在400/s，并不是一个特别大的量。然后将A机房一台机器下线，继续观察，到了晚上9点多，那台下线的机器，jetty进程的java线程数还是7">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://www.jfox.info/2017/1400/bcb41c3.png">
+<meta property="og:image" content="http://www.jfox.info/2017/1400/c9ae677.png">
+<meta property="og:image" content="http://www.jfox.info/2017/1400/2453b8e.png">
+<meta property="og:image" content="http://www.jfox.info/wp-content/uploads/2017/07/1501313602.png">
+<meta property="og:image" content="http://www.jfox.info/wp-content/uploads/2017/07/1501313603.png">
+<meta property="og:image" content="http://www.jfox.info/2017/1400/49fc768.png">
+<meta property="og:image" content="http://www.jfox.info/2017/1400/b58e2b2.png">
+<meta property="og:image" content="http://www.jfox.info/2017/1400/5fd9f9f.png">
+<meta property="og:updated_time" content="2018-10-27T12:29:39.027Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="java线程数过高原因分析">
+<meta name="twitter:description" content="前阵子我们因为B机房故障，将所有的流量切到了A机房，在经历了推送+自然高峰之后，A机房所有服务器都出现java线程数接近1000的情况（1000是设置的max值），在晚上7点多观察，java线程数略有下降，但还是有900+的样子，而此时，单台服务器的TPS维持在400/s，并不是一个特别大的量。然后将A机房一台机器下线，继续观察，到了晚上9点多，那台下线的机器，jetty进程的java线程数还是7">
+<meta name="twitter:image" content="http://www.jfox.info/2017/1400/bcb41c3.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://www.jfox.info/2017/java线程数过高原因分析.html">
+
+
+
+
+
+  <title>java线程数过高原因分析 | java面试</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh_CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">java面试</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.jfox.info/2017/java线程数过高原因分析.html">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hello">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="java面试">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">java线程数过高原因分析</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-01-01T23:58:20+08:00">
+                2017-01-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>前阵子我们因为B机房故障，将所有的流量切到了A机房，在经历了推送+自然高峰之后，A机房所有服务器都出现java线程数接近1000的情况（1000是设置的max值），在晚上7点多观察，java线程数略有下降，但还是有900+的样子，而此时，单台服务器的TPS维持在400/s，并不是一个特别大的量。然后将A机房一台机器下线，继续观察，到了晚上9点多，那台下线的机器，jetty进程的java线程数还是7、800的样子。同时，同一机房的另外一台还在线的机器在重启jetty之后，在同样tps400+的情况，线程数一直保持在只有300多。这就很奇怪了，下线的机器都没有请求了，java线程数怎么还是这么多？会不会是多线程竞争资源，导致阻塞？开始研究这个问题。</p>
+<h3 id="二、保存现场"><a href="#二、保存现场" class="headerlink" title="二、保存现场"></a>二、保存现场</h3><h3 id="保存哪些现场"><a href="#保存哪些现场" class="headerlink" title="保存哪些现场"></a>保存哪些现场</h3><p>  我先查看并记录了当时的jetty进程的线程数、db连接数、cpu负载、内存使用情况、tps、nginx连接数、jetty错误日志、GC情况、tcp连接状态等，都是正常。 </p>
+<p>  然后我用jstack命令导出当前jvm的所有线程快照，用jmap命令将当前java堆转储快照导出，结果发现，除了java线程数之外，其他指标也都是正常。 </p>
+<p>  这里先说下jstack和jmap使用的常用参数举例和注意事项： </p>
+<h3 id="找到jetty进程pid"><a href="#找到jetty进程pid" class="headerlink" title="找到jetty进程pid"></a>找到jetty进程pid</h3><p>  对于这两个命令，首先都需要找出jetty进程对应的pid，当然可以使用jps命令来查找对应的pid。 </p>
+<p>  但是，我当前linux用户是自己的用户名用户，而公司外网服务器我并没有jetty的权限，也就是说jps命令只有jetty用户可以查看。 </p>
+<p>  在网上找了下资料，这里我采用的是这种方式，用ps aux|grep jetty.xml找到了jetty进程对应的pid。 </p>
+<h3 id="jstack保存线程快照"><a href="#jstack保存线程快照" class="headerlink" title="jstack保存线程快照"></a>jstack保存线程快照</h3><p>  我使用jstack完整命令是：“sudo -u jetty /data/java/bin/jstack -l pid &gt;&gt; ~/jstack.txt”。-l 参数是将锁的信息也打印出来。 </p>
+<p>  这里，有个比较隐蔽的坑，我们的jetty进程是jetty用户的。如果在linux上是root用户或者其他用户直接执行jstack -l pid，会出现报错。所以，需要在命令前加上sudo -u jetty，用jetty账户来执行这个命令。 </p>
+<p>  而jetty账户又不一定将/data/java/bin加入环境变量，所以需要执行jstack的完整路径。 </p>
+<p>  执行完毕的结果存放在home目录下的jstack.txt文件中。（这里是找运维同事协助完成的） </p>
+<h3 id="jmap保存堆转储快照"><a href="#jmap保存堆转储快照" class="headerlink" title="jmap保存堆转储快照"></a>jmap保存堆转储快照</h3><p>  同样，jmap命令也需要注意命令执行的用户。我使用的完整命令是：“sudo -u jetty /data/java/bin/jmap -dump:format=b,file=~/jmap.hprof   pid”。 </p>
+<p>  导出来的hprof文件非常大，保存了当时堆中对象的快照。hprof不能直接阅读，需要用专门的工具来分析。最常用的是mat和jhat。mat是图形界面的工具，有windows版的，比较方便。但是mat有个死穴，当分析的hprof文件过大时，会出现内存溢出的错误而导致无法得到结果。我曾经尝试解决这个问题，但是一直没有找到有效的方法。所以这里我用的是jhat。 </p>
+<h3 id="jhat分析堆转储快照"><a href="#jhat分析堆转储快照" class="headerlink" title="jhat分析堆转储快照"></a>jhat分析堆转储快照</h3><p>  jhat是java自带的命令行工具，比较简朴。但是对于特别大的文件，好像是唯一的选择。将hprof文件压缩，下载到开发环境的虚拟机上，就可以开始用jhat分析了。 </p>
+<p>  我使用的完整命令是：“jhat -J-d64 -J-mx9g -port 5000 jmap.hprof”。来解释一下参数。-J-d64：因为jetty进程是在64位的系统上运行，所以需要指定64位。-J-mx9g：表示jhat进程最多可以分配9G的堆内存，这就是为什么jhat可以分析超大文件的原因了，因为可以指定堆内存大小。-port 5000：jhat分析完毕之后，会启动一个web服务，可以通过指定端口来访问，这就是指定的端口。 </p>
+<p>  参数就介绍完了，但是这样的命令会有一个问题。上面的命令执行完，jhat进程是在前台的。换句话说，如果你ctrl+c（或者xshell连接超时）结束了这个前台进程，那么jhat提供的web服务就结束了，你刚才分析了那么久的文件得重新再来。解决这个问题，用到linux上的nohup和&amp;组合。通过命令“nohup jhat -J-d64 -J-mx9g -port 5000 jmap.hprof &amp;<br> ”，就可以将进程放到后台执行。有兴趣可以研究一下nohup，在这里不做赘述。 jhat分析需要一定时间。可以用top命令看，当jhat进程没有疯狂的吃cpu的时候，说明分析已经结束了。此时，可以通过ip:port来访问刚才分析出的结果了。<img src="/2017/1400/bcb41c3.png" alt=""></p>
+<h3 id="三、定位问题"><a href="#三、定位问题" class="headerlink" title="三、定位问题"></a>三、定位问题</h3><p>  首先，来看刚才的jstack.txt。 </p>
+<p>  <img src="/2017/1400/c9ae677.png" alt=""> </p>
+<p>  在近900个线程里面，有600+个线程都是wait在同一个对象<0x0000000734afba50>上，而且这600+个线程的调用栈都是一模一样的。去查了一下，这个org.eclipse.jetty.util.thread.QueuedThreadPool的作用，就是jetty的worker线程池。每当一个请求来临的时候，jetty就从这个QueuedThreadPool中新建一个线程或者取一个空闲线程来处理这个请求。 </0x0000000734afba50></p>
+<p>  看到调用栈里面的“at org.eclipse.jetty.util.thread.QueuedThreadPool.idleJobPoll(QueuedThreadPool.java:526)”，感觉好像这些线程都在等待任务来处理。当然，这是猜的。 </p>
+<p>  为了验证这个猜想，找到刚才jhat已经分析好的堆的快照结果。首先，我找到“class org.eclipse.jetty.util.thread.QueuedThreadPool<br> ”这个类，然后依次点击，进入到QueuedThreadPool的唯一的实例中。<img src="/2017/1400/2453b8e.png" alt=""><img src="/wp-content/uploads/2017/07/1501313602.png" alt=""><img src="/wp-content/uploads/2017/07/1501313603.png" alt=""><br>到这里，就可以看到QueuedThreadPool这个对象中所有成员变量了：<br><img src="/2017/1400/49fc768.png" alt=""> 其中，有两个AtomicInteger型变量在这里需要关心：_threadsStarted和_threadsIdle。_threadsStarted表示QueuedThreadPool当前拥有的线程数，而_threadsIdle表示QueuedThreadPool中空闲的线程数。点击进去，就看到这两个成员变量的值，value分别是707和613。这表示，QueuedThreadPool当前开启了707个用于处理用户请求的线程，而其中有613个处于闲置状态。 到这里，我们上面的猜想基本得到验证。那些大量的time_wait的线程，真的是处在等待请求到来的状态。那么问题是，既然是闲置的线程，为什么jetty没有进行回收，time_wait有这么长时间吗？</p>
+<h3 id="四、分析jetty源码，确定原因"><a href="#四、分析jetty源码，确定原因" class="headerlink" title="四、分析jetty源码，确定原因"></a>四、分析jetty源码，确定原因</h3><p>要继续确定为什么空闲线程没有被回收原因，分析jetty源码是一种思路。我只找到和线上jetty大版本一样，小版本接近的jetty源码。但是不妨碍理清这部分的逻辑。继续回到刚才的jstack的结果中：<img src="/2017/1400/b58e2b2.png" alt=""> </p>
+<pre><code>熟悉阻塞队列的人都知道，栈中的“org.eclipse.jetty.util.BlockingArrayQueue.poll(BlockingArrayQueue.java:342) 
+</code></pre><p>   ”，就是从一个指定的阻塞队列中去获取任务。如果此时阻塞队列中没有任务可取，线程就会被阻塞住，直到队列中有任务可取或者超时。如果超时，poll方法将返回null值。进入到idleJobPoll()方法中，也很容易就发现，poll的超时时间也是用了刚才的_maxIdleTimeMs变量，也就是60s。所以才会发生600+个线程同时wait一个条件的情况。这些线程都在等待BlockingArrayQueue中任务来临这个Condition。那么，是谁让线程调用poll的？为什么poll设置了超时时间，在超时之后，线程没有结束呢？为什么这些空闲线程没有被及时回收呢？ </p>
+<pre><code>带着这些问题，我们来看QueuedThreadPool的源码。我们直接找到调用了idelJobPoll()方法的这块代码，如下： 
+
+
+ ![](/2017/1400/4c9acae.png) 
+
+
+
+ 这里有几个变量和方法需要先说明一下。_maxIdelTimeMs是QueuedThreadPool中的一个成员变量，表示超时的毫秒数，默认值是60000（表示60秒），可以在刚才jhat分析的结果中查询到这个值。_lastShrink也是QueuedThreadPool的一个成员变量，是线程安全的AtomicLong类型，表示上一次线程退出时的时间戳，被所有线程池中的线程共享。campareAndSet方法，就是著名的CAS（比较后赋值）。例如：_lastShrink.compareAndSet(last,now)的意思是，先将_lastShrink和last比较看是否相同，相同则将_lastShrink的值等于now并返回true，否则不进行赋值并返回false。 
+
+
+ 当一个空闲线程从idelJobPool()方法中超时后获取到null值，会再次进入while循环。此时的线程数size（700+）是要大于_minThreads（设置的为200），所以会进入框中的if代码块。if代码块中主要经历了以下步骤： 
+</code></pre><p>1.将last赋值为上一个线程池中的线程退出时的时间戳，将当前时间赋值给now。</p>
+<p>2.然后“if (last==0 || (now-last)&gt;_maxIdleTimeMs)”这一句判断，now距离上一个线程退出是否超过了maxIdleTimeMs（60000，60秒）。</p>
+<p>3.如果2步骤中条件成立，会对_lastShrink重新赋值为当前时间，并将QueuedThreadPool中的线程计数减一。</p>
+<p><strong>campareAndSet保证了，每一次只会有一个线程能够赋值成功。</strong></p>
+<p>赋值成功后，就会return，让线程跳出while循环，这个线程就结束了。</p>
+<p>对于赋值不成功的线程，会继续执行到idleJobPoll()，和步骤4相似。</p>
+<p>4.如果2步骤中条件不成立，会重新回到idleJobPoll()，阻塞住线程，又会尝试从阻塞队列中获取任务。<br><strong>也就是说，每当一个空闲线程执行到框中的代码时，都要判断现在距离上次有线程退出是否超过60s。如果没有超过60s，这个线程会继续回到idelJobPool方法中去等待任务。换句话说，1分钟之内，QueuedThreadPool最多只能允许一个线程退出。那么，我们600+个空闲线程如果要全部退出，那就要600分钟，也就是10个小时！！</strong> </p>
+<pre><code>难怪，会有那么多空闲线程在那里啊，虽然这些空闲线程可以被重复利用并不影响业务，但也是占用了线程资源。不知道这个算不算是个bug，但是真的很坑。由其影响通过java线程数去判断业务的繁忙情况，容易受到误导。 
+</code></pre><h3 id="五、实验验证"><a href="#五、实验验证" class="headerlink" title="五、实验验证"></a>五、实验验证</h3><p>为了进一步验证这个结论，我在开发环境部署了一样的业务，纯净且没有其他人访问。用ab以1000并发量发起30000个请求，迅速将java线程数提升至1000（最大值）。然后用watch命令，每5分钟观察一次java线程数，下面是部分结果：<br><img src="/2017/1400/5fd9f9f.png" alt=""> </p>
+<pre><code>可以看到，每5分钟，线程数都下降了5。确实是1分钟退出一个线程啊！ 
+</code></pre><h3 id="六、结论"><a href="#六、结论" class="headerlink" title="六、结论"></a>六、结论</h3><pre><code>这整个过程最重要的结论就是，当发现java线程数非常高的时候，不必太担心。有可能只是jetty没有及时回收空闲线程而已。更重要的是，要掌握分析的工具和方法，查找出现象背后的原因。
+</code></pre>
+      
+    </div>
+    
+    
+    
+    
+    
+    <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/springboot系列一入门ormtransactionlog4j2等.html" rel="next" title="SpringBoot系列一（入门，ORM，Transaction,log4j2等）">
+                <i class="fa fa-chevron-left"></i> SpringBoot系列一（入门，ORM，Transaction,log4j2等）
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/窗口管理器xmonad教程.html" rel="prev" title="窗口管理器 xmonad 教程">
+                窗口管理器 xmonad 教程 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Hello</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">1358</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#二、保存现场"><span class="nav-number">1.</span> <span class="nav-text">二、保存现场</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#保存哪些现场"><span class="nav-number">2.</span> <span class="nav-text">保存哪些现场</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#找到jetty进程pid"><span class="nav-number">3.</span> <span class="nav-text">找到jetty进程pid</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#jstack保存线程快照"><span class="nav-number">4.</span> <span class="nav-text">jstack保存线程快照</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#jmap保存堆转储快照"><span class="nav-number">5.</span> <span class="nav-text">jmap保存堆转储快照</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#jhat分析堆转储快照"><span class="nav-number">6.</span> <span class="nav-text">jhat分析堆转储快照</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#三、定位问题"><span class="nav-number">7.</span> <span class="nav-text">三、定位问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#四、分析jetty源码，确定原因"><span class="nav-number">8.</span> <span class="nav-text">四、分析jetty源码，确定原因</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#五、实验验证"><span class="nav-number">9.</span> <span class="nav-text">五、实验验证</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#六、结论"><span class="nav-number">10.</span> <span class="nav-text">六、结论</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+      <div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460" data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+</div>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Hello</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

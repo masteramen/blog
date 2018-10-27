@@ -1,0 +1,181 @@
+<!-- build time:Sat Oct 27 2018 21:00:17 GMT+0800 (CST) --><!DOCTYPE html><html class="theme-next muse use-motion"><head><meta name="generator" content="Hexo 3.8.0"><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"><meta name="theme-color" content="#222"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"><link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css"><link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css"><link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4"><link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222"><meta name="description" content="作者冯丰枫2017.07.30 13:16字数 1678Scheduler(线程调度器)赋予RxJava简洁明了的异步操作,可以说是RxJava中最值得称道的地方。在之前的代码中，Observable发射数据流，Observer接收响应数据流，以及Operators加工数据流均是在同一个线程中，实现出来的是一个同步的函数响应式。但是函数响应式的实际应用却不是这样的，大部分都是后台处理，前台响应的一"><meta name="keywords" content="JAVA,面试"><meta property="og:type" content="article"><meta property="og:title" content="Rxjava2入门教程四：Scheduler线程调度器"><meta property="og:url" content="http://www.jfox.info/2017/rxjava2入门教程四scheduler线程调度器.html"><meta property="og:site_name" content="java面试"><meta property="og:description" content="作者冯丰枫2017.07.30 13:16字数 1678Scheduler(线程调度器)赋予RxJava简洁明了的异步操作,可以说是RxJava中最值得称道的地方。在之前的代码中，Observable发射数据流，Observer接收响应数据流，以及Operators加工数据流均是在同一个线程中，实现出来的是一个同步的函数响应式。但是函数响应式的实际应用却不是这样的，大部分都是后台处理，前台响应的一"><meta property="og:locale" content="zh_CN"><meta property="og:updated_time" content="2018-10-27T12:29:37.417Z"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="Rxjava2入门教程四：Scheduler线程调度器"><meta name="twitter:description" content="作者冯丰枫2017.07.30 13:16字数 1678Scheduler(线程调度器)赋予RxJava简洁明了的异步操作,可以说是RxJava中最值得称道的地方。在之前的代码中，Observable发射数据流，Observer接收响应数据流，以及Operators加工数据流均是在同一个线程中，实现出来的是一个同步的函数响应式。但是函数响应式的实际应用却不是这样的，大部分都是后台处理，前台响应的一"><script type="text/javascript" id="hexo.configurations">var NexT=window.NexT||{},CONFIG={root:"/",scheme:"Muse",version:"5.1.4",sidebar:{position:"left",display:"post",offset:12,b2t:!1,scrollpercent:!1,onmobile:!1},fancybox:!0,tabs:!0,motion:{enable:!0,async:!1,transition:{post_block:"fadeIn",post_header:"slideDownIn",post_body:"slideDownIn",coll_header:"slideLeftIn",sidebar:"slideUpIn"}},duoshuo:{userId:"0",author:"Author"},algolia:{applicationID:"",apiKey:"",indexName:"",hits:{per_page:10},labels:{input_placeholder:"Search for Posts",hits_empty:"We didn't find any results for the search: ${query}",hits_stats:"${hits} results found in ${time} ms"}}}</script><link rel="canonical" href="http://www.jfox.info/2017/rxjava2入门教程四scheduler线程调度器.html"><title>Rxjava2入门教程四：Scheduler线程调度器 | java面试</title></head><body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN"><div class="container sidebar-position-left page-post-detail"><div class="headband"></div><header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="header-inner"><div class="site-brand-wrapper"><div class="site-meta"><div class="custom-logo-site-title"><a href="/" class="brand" rel="start"><span class="logo-line-before"><i></i></span> <span class="site-title">java面试</span> <span class="logo-line-after"><i></i></span></a></div><p class="site-subtitle"></p></div><div class="site-nav-toggle"><button><span class="btn-bar"></span> <span class="btn-bar"></span> <span class="btn-bar"></span></button></div></div><nav class="site-nav"><ul id="menu" class="menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i><br>Home</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i><br>Archives</a></li></ul></nav></div></header><main id="main" class="main"><div class="main-inner"><div class="content-wrap"><div id="content" class="content"><div id="posts" class="posts-expand"><article class="post post-type-normal" itemscope itemtype="http://schema.org/Article"><div class="post-block"><link itemprop="mainEntityOfPage" href="http://www.jfox.info/2017/rxjava2入门教程四scheduler线程调度器.html"><span hidden itemprop="author" itemscope itemtype="http://schema.org/Person"><meta itemprop="name" content="Hello"><meta itemprop="description" content=""><meta itemprop="image" content="/images/avatar.gif"></span><span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><meta itemprop="name" content="java面试"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">Rxjava2入门教程四：Scheduler线程调度器</h1><div class="post-meta"><span class="post-time"><span class="post-meta-item-icon"><i class="fa fa-calendar-o"></i> </span><span class="post-meta-item-text">Posted on</span> <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-01-01T23:58:46+08:00">2017-01-01</time></span></div></header><div class="post-body" itemprop="articleBody"><p>作者<a href="/u/f7176d6d53d2">冯丰枫</a>2017.07.30 13:16字数 1678<br>Scheduler(线程调度器)赋予RxJava简洁明了的异步操作,可以说是RxJava中最值得称道的地方。<br>在之前的代码中，Observable发射数据流，Observer接收响应数据流，以及Operators加工数据流均是在同一个线程中，实现出来的是一个同步的函数响应式。但是函数响应式的实际应用却不是这样的，大部分都是后台处理，前台响应的一个过程。Observable生成发射数据流，以及Operators加工数据流都是在后台线程中进行，而Observable在前台线程中接受并相应数据。<br>Scheduler(线程调度器)可以让RxJava的线程切换变得简单明了，即使程序逻辑变得十分复杂，他依然能够保持简单明了。</p><h3 id="subscribeOn"><a href="#subscribeOn" class="headerlink" title="subscribeOn"></a>subscribeOn</h3><pre><code>Observable&lt;T&gt; subscribeOn(Scheduler scheduler) 
+</code></pre><p>subscribeOn通过接收一个Scheduler参数，来指定对数据的处理运行在特定的线程调度器Scheduler上。<br>若多次设定，则只有一次起作用。</p><h3 id="observeOn"><a href="#observeOn" class="headerlink" title="observeOn"></a>observeOn</h3><pre><code>Observable&lt;T&gt; observeOn(Scheduler scheduler)
+</code></pre><p>observeOn同样接收一个Scheduler参数，来指定下游操作运行在特定的线程调度器Scheduler上。<br>若多次设定，每次均起作用。</p><p>Schedulers.io( )：</p><p>用于IO密集型的操作，例如读写SD卡文件，查询数据库，访问网络等，具有线程缓存机制，在此调度器接收到任务后，先检查线程缓存池中，是否有空闲的线程，如果有，则复用，如果没有则创建新的线程，并加入到线程池中，如果每次都没有空闲线程使用，可以无上限的创建新线程。</p><p>Schedulers.newThread( )：</p><p>在每执行一个任务时创建一个新的线程，不具有线程缓存机制，因为创建一个新的线程比复用一个线程更耗时耗力，虽然使用Schedulers.io( )的地方，都可以使用Schedulers.newThread( )，但是，Schedulers.newThread( )的效率没有Schedulers.io( )高。</p><p>Schedulers.computation()：</p><p>用于CPU 密集型计算任务，即不会被 I/O 等操作限制性能的耗时操作，例如xml,json文件的解析，Bitmap图片的压缩取样等，具有固定的线程池，大小为CPU的核数。不可以用于I/O操作，因为I/O操作的等待时间会浪费CPU。</p><p>Schedulers.trampoline()：</p><p>在当前线程立即执行任务，如果当前线程有任务在执行，则会将其暂停，等插入进来的任务执行完之后，再将未完成的任务接着执行。</p><p>Schedulers.single()：</p><p>拥有一个线程单例，所有的任务都在这一个线程中执行，当此线程中有任务执行时，其他任务将会按照先进先出的顺序依次执行。</p><p>Scheduler.from(@NonNull Executor executor)：</p><p>指定一个线程调度器，由此调度器来控制任务的执行策略。</p><p>AndroidSchedulers.mainThread()：</p><p>在Android UI线程中执行任务，为Android开发定制。</p><p>注：</p><p>在RxJava2中，废弃了RxJava1中的Schedulers.immediate( )<br>在RxJava1中，Schedulers.immediate( )的作用为在当前线程立即执行任务，功能等同于RxJava2中的Schedulers.trampoline( )。<br>而Schedulers.trampoline( )在RxJava1中的作用是当其它排队的任务完成后，在当前线程排队开始执行接到的任务，有点像RxJava2中的Schedulers.single()，但也不完全相同，因为Schedulers.single()不是在当前线程而是在一个线程单例中排队执行任务。</p><h4 id="示例一：使用一次subscribeOn和一次observeOn"><a href="#示例一：使用一次subscribeOn和一次observeOn" class="headerlink" title="示例一：使用一次subscribeOn和一次observeOn"></a>示例一：使用一次subscribeOn和一次observeOn</h4><pre><code>public void schedulerDemo1() {
+    Observable
+            .create(new ObservableOnSubscribe&lt;Integer&gt;() {
+                @Override
+                public void subscribe(ObservableEmitter&lt;Integer&gt; e) throws Exception {
+                    for (int i = 0; i &lt; 5; i++) {
+                        System.out.println(&quot;发射线程:&quot;  + Thread.currentThread().getName()+ &quot;----&gt;&quot; + &quot;发射:&quot; + i);
+                        Thread.sleep(1000);
+                        e.onNext(i);
+                    }
+                    e.onComplete();
+                }
+            })
+            .subscribeOn(Schedulers.io())   //设置可观察对象在Schedulers.io()的线程中发射数据
+            .observeOn(AndroidSchedulers.mainThread())//设置观察者在AndroidSchedulers.mainThread()的线程中处理数据
+            .subscribe(new Consumer&lt;Integer&gt;() {
+                @Override
+                public void accept(@NonNull Integer i) throws Exception {
+                    System.out.println(&quot;接收线程:&quot;  + Thread.currentThread().getName()+ &quot;----&gt;&quot; + &quot;接收:&quot; + i);
+                }
+            });
+}
+</code></pre><p>运行代码后，控制台打印如下：</p><pre><code>System.out: 发射线程:RxCachedThreadScheduler-1----&gt;发射:0
+System.out: 发射线程:RxCachedThreadScheduler-1----&gt;发射:1
+System.out: 接收线程:main----&gt;接收:0
+System.out: 发射线程:RxCachedThreadScheduler-1----&gt;发射:2
+System.out: 接收线程:main----&gt;接收:1
+System.out: 发射线程:RxCachedThreadScheduler-1----&gt;发射:3
+System.out: 接收线程:main----&gt;接收:2
+System.out: 发射线程:RxCachedThreadScheduler-1----&gt;发射:4
+System.out: 接收线程:main----&gt;接收:3
+System.out: 接收线程:main----&gt;接收:4
+</code></pre><p>通过subscribeOn(Schedulers.io())指定Observable在Schedulers.io( )调度器的线程中，每隔1秒发射一次数据，通过observeOn(AndroidSchedulers.mainThread())指定Observer在Android UI线程中接收数据。</p><h4 id="示例二：使用两次subscribeOn和一次observeOn"><a href="#示例二：使用两次subscribeOn和一次observeOn" class="headerlink" title="示例二：使用两次subscribeOn和一次observeOn"></a>示例二：使用两次subscribeOn和一次observeOn</h4><pre><code>public void schedulerDemo2() {
+    Observable
+            .create(new ObservableOnSubscribe&lt;Integer&gt;() {
+                @Override
+                public void subscribe(ObservableEmitter&lt;Integer&gt; e) throws Exception {
+                    for (int i = 0; i &lt; 5; i++) {
+                        System.out.println(&quot;发射线程:&quot; + Thread.currentThread().getName() + &quot;----&gt;&quot; + &quot;发射:&quot; + i);
+                        Thread.sleep(1000);
+                        e.onNext(i);
+                    }
+                    e.onComplete();
+                }
+            })
+            .subscribeOn(Schedulers.io())//设置可观察对象在Schedulers.io()的线程中发射数据
+            .map(new Function&lt;Integer, Integer&gt;() {
+                @Override
+                public Integer apply(@NonNull Integer i) throws Exception {
+                    System.out.println(&quot;处理线程:&quot; + Thread.currentThread().getName() + &quot;----&gt;&quot; + &quot;处理:&quot; + i);
+                    return i;
+                }
+            })
+            .subscribeOn(Schedulers.newThread())//指定map操作符在Schedulers.newThread()的线程中处理数据
+            .observeOn(AndroidSchedulers.mainThread())//设置观察者在AndroidSchedulers.mainThread()的线程中处理数据
+            .subscribe(new Consumer&lt;Integer&gt;() {
+                @Override
+                public void accept(@NonNull Integer i) throws Exception {
+                    System.out.println(&quot;接收线程:&quot; + Thread.currentThread().getName() + &quot;----&gt;&quot; + &quot;接收:&quot; + i);
+                }
+            });
+}
+</code></pre><p>通过subscribeOn(Schedulers.io())指定Observable在Schedulers.io( )调度器的线程中，每隔1秒发射一次数据，通过subscribeOn(Schedulers.newThread())指定map操作符在Schedulers.newThread()的调度器线程中处理数据，通过observeOn(AndroidSchedulers.mainThread())指定Observer在Android UI线程中接收数据。<br>运行结果如下：</p><pre><code>System.out: 发射线程:RxCachedThreadScheduler-1----&gt;发射:0
+System.out: 处理线程:RxCachedThreadScheduler-1----&gt;处理:0
+System.out: 发射线程:RxCachedThreadScheduler-1----&gt;发射:1
+System.out: 接收线程:main----&gt;接收:0
+System.out: 处理线程:RxCachedThreadScheduler-1----&gt;处理:1
+System.out: 接收线程:main----&gt;接收:1
+</code></pre><p>我们发现发射和处理数据均是在RxCachedThreadScheduler线程中，第二次通过subscribeOn指定的线程不起作用。</p><h4 id="示例三：使用一次subscribeOn和两次observeOn"><a href="#示例三：使用一次subscribeOn和两次observeOn" class="headerlink" title="示例三：使用一次subscribeOn和两次observeOn"></a>示例三：使用一次subscribeOn和两次observeOn</h4><pre><code>public void schedulerDemo3() {
+    Observable
+            .create(new ObservableOnSubscribe&lt;Integer&gt;() {
+                @Override
+                public void subscribe(ObservableEmitter&lt;Integer&gt; e) throws Exception {
+                    for (int i = 0; i &lt; 2; i++) {
+                        System.out.println(&quot;发射线程:&quot; + Thread.currentThread().getName() + &quot;----&gt;&quot; + &quot;发射:&quot; + i);
+                        Thread.sleep(1000);
+                        e.onNext(i);
+                    }
+                    e.onComplete();
+                }
+            })
+            .subscribeOn(Schedulers.io())//设置可观察对象在Schedulers.io()的线程中发射数据
+            .observeOn(Schedulers.newThread())//指定map操作符在Schedulers.newThread()的线程中处理数据
+            .map(new Function&lt;Integer, Integer&gt;() {
+                @Override
+                public Integer apply(@NonNull Integer i) throws Exception {
+                    System.out.println(&quot;处理线程:&quot; + Thread.currentThread().getName() + &quot;----&gt;&quot; + &quot;处理:&quot; + i);
+                    return i;
+                }
+            })
+            .observeOn(AndroidSchedulers.mainThread())//设置观察者在AndroidSchedulers.mainThread()的线程中处理数据
+            .subscribe(new Consumer&lt;Integer&gt;() {
+                @Override
+                public void accept(@NonNull Integer i) throws Exception {
+                    System.out.println(&quot;接收线程:&quot; + Thread.currentThread().getName() + &quot;----&gt;&quot; + &quot;接收:&quot; + i);
+                }
+            });
+}
+</code></pre><p>通过subscribeOn(Schedulers.io())指定Observable在Schedulers.io( )调度器的线程中，每隔1秒发射一次数据，通过observeOn(Schedulers.newThread())指定map操作符在Schedulers.newThread()的调度器线程中处理数据，通过observeOn(AndroidSchedulers.mainThread())指定Observer在Android UI线程中接收数据。<br>运行结果如下：</p><pre><code>System.out: 发射线程:RxCachedThreadScheduler-1----&gt;发射:0
+System.out: 发射线程:RxCachedThreadScheduler-1----&gt;发射:1
+System.out: 处理线程:RxNewThreadScheduler-1----&gt;处理:0
+System.out: 接收线程:main----&gt;接收:0
+System.out: 处理线程:RxNewThreadScheduler-1----&gt;处理:1
+System.out: 接收线程:main----&gt;接收:1
+</code></pre><p>与我们的预期结果一致</p><p>通过示例一二三，我们可以总结subscribeOn和observeOn的用法如下:</p><p>subscribeOn来指定对数据的处理运行在特定的线程调度器Scheduler上，直到遇到observeOn改变线程调度器若多次设定，则只有一次起作用。observeOn指定下游操作运行在特定的线程调度器Scheduler上。若多次设定，每次均起作用。</p><h4 id="示例四：Schedulers-trampoline"><a href="#示例四：Schedulers-trampoline" class="headerlink" title="示例四：Schedulers.trampoline()"></a>示例四：Schedulers.trampoline()</h4><p>通过示例一二三我们可以发现，Observer处理数据相比于Observable发射的数据存在滞后的现象，Observable发射了两个数据，Observer才处理了一个，并不是Observable没发射一个，Observer就处理一个。<br>运行：</p><pre><code>public void schedulerDemo4() {
+    Observable
+            .create(new ObservableOnSubscribe&lt;Integer&gt;() {
+                @Override
+                public void subscribe(ObservableEmitter&lt;Integer&gt; e) throws Exception {
+                    for (int i = 0; i &lt; 5; i++) {
+                        System.out.println(&quot;发射线程:&quot; + Thread.currentThread().getName() + &quot;----&gt;&quot; + &quot;发射:&quot; + i);
+                        Thread.sleep(1000);
+                        e.onNext(i);
+                    }
+                    e.onComplete();
+                }
+            })
+            .subscribeOn(Schedulers.io())//设置可观察对象在Schedulers.io()的线程中发射数据
+            .observeOn(Schedulers.trampoline())//设置观察者在当前线程中j接收数据
+            .subscribe(new Consumer&lt;Integer&gt;() {
+                @Override
+                public void accept(@NonNull Integer i) throws Exception {
+                    Thread.sleep(2000);//休息2s后再处理数据
+                    System.out.println(&quot;接收线程:&quot; + Thread.currentThread().getName() + &quot;----&gt;&quot; + &quot;接收:&quot; + i);
+                }
+            });
+}
+</code></pre><p>通过Schedulers.trampoline()/设置观察者在当前线程中处理数据，并且故意延迟两秒后在处理<br>控制台打印如下：</p><pre><code>System.out: 发射线程:RxCachedThreadScheduler-1----&gt;发射:0
+System.out: 接收线程:RxCachedThreadScheduler-1----&gt;接收:0
+System.out: 发射线程:RxCachedThreadScheduler-1----&gt;发射:1
+System.out: 接收线程:RxCachedThreadScheduler-1----&gt;接收:1
+System.out: 发射线程:RxCachedThreadScheduler-1----&gt;发射:2
+System.out: 接收线程:RxCachedThreadScheduler-1----&gt;接收:2
+System.out: 发射线程:RxCachedThreadScheduler-1----&gt;发射:3
+System.out: 接收线程:RxCachedThreadScheduler-1----&gt;接收:3
+System.out: 发射线程:RxCachedThreadScheduler-1----&gt;发射:4
+System.out: 接收线程:RxCachedThreadScheduler-1----&gt;接收:4
+</code></pre><p>我们可以发现虽然Observer在接收到数据后，延迟了两秒才处理，但是Observable依然在Observer将数据处理完之后才开始发射下一条。Schedulers.trampoline()的作用在当前线程立即执行任务，如果当前线程有任务在执行，则会将其暂停，等插入进来的任务执行完之后，再将未完成的任务接着执行。</p><h4 id="示例五：Schedulers-single"><a href="#示例五：Schedulers-single" class="headerlink" title="示例五：Schedulers.single()"></a>示例五：Schedulers.single()</h4><pre><code>public void schedulerDemo5() {
+    Observable
+            .create(new ObservableOnSubscribe&lt;Integer&gt;() {
+                @Override
+                public void subscribe(ObservableEmitter&lt;Integer&gt; e) throws Exception {
+                    for (int i = 0; i &lt; 3; i++) {
+                        System.out.println(&quot;发射线程:&quot; + Thread.currentThread().getName() + &quot;----&gt;&quot; + &quot;发射:&quot; + i);
+                        Thread.sleep(1000);
+                        e.onNext(i);
+                    }
+                    e.onComplete();
+                }
+            })
+            .subscribeOn(Schedulers.single())//设置可观察对象在Schedulers.single()的线程中发射数据
+            .observeOn(Schedulers.single())//指定map操作符在Schedulers.single()的线程中处理数据
+            .map(new Function&lt;Integer, Integer&gt;() {
+                @Override
+                public Integer apply(@NonNull Integer i) throws Exception {
+                    System.out.println(&quot;处理线程:&quot; + Thread.currentThread().getName() + &quot;----&gt;&quot; + &quot;处理:&quot; + i);
+                    return i;
+                }
+            })
+            .observeOn(Schedulers.single())//设置观察者在Schedulers.single()的线程中j接收数据
+            .subscribe(new Consumer&lt;Integer&gt;() {
+                @Override
+                public void accept(@NonNull Integer i) throws Exception {
+                    System.out.println(&quot;接收线程:&quot; + Thread.currentThread().getName() + &quot;----&gt;&quot; + &quot;接收:&quot; + i);
+                }
+            });
+}
+</code></pre><p>运行结果如下：</p><pre><code>System.out: 发射线程:RxSingleScheduler-1----&gt;发射:0
+System.out: 发射线程:RxSingleScheduler-1----&gt;发射:1
+System.out: 发射线程:RxSingleScheduler-1----&gt;发射:2
+
+System.out: 处理线程:RxSingleScheduler-1----&gt;处理:0
+System.out: 处理线程:RxSingleScheduler-1----&gt;处理:1
+System.out: 处理线程:RxSingleScheduler-1----&gt;处理:2
+
+System.out: 接收线程:RxSingleScheduler-1----&gt;接收:0
+System.out: 接收线程:RxSingleScheduler-1----&gt;接收:1
+System.out: 接收线程:RxSingleScheduler-1----&gt;接收:2
+</code></pre><p>通过Schedulers.single()将数据的发射，处理，接收在Schedulers.single()的线程单例中排队执行，当此线程中有任务执行时，其他任务将会按照先进先出的顺序依次执行。</p></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="4142158067"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="5618891265"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><footer class="post-footer"><div class="post-nav"><div class="post-nav-next post-nav-item"><a href="/2017/reentrantlock实现原理及源码分析.html" rel="next" title="ReentrantLock实现原理及源码分析"><i class="fa fa-chevron-left"></i> ReentrantLock实现原理及源码分析</a></div><span class="post-nav-divider"></span><div class="post-nav-prev post-nav-item"><a href="/2017/来一手aop注解方式进行日志记录.html" rel="prev" title="来一手 AOP 注解方式进行日志记录">来一手 AOP 注解方式进行日志记录 <i class="fa fa-chevron-right"></i></a></div></div></footer></div></article><div class="post-spread"></div></div></div></div><div class="sidebar-toggle"><div class="sidebar-toggle-line-wrap"><span class="sidebar-toggle-line sidebar-toggle-line-first"></span> <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span> <span class="sidebar-toggle-line sidebar-toggle-line-last"></span></div></div><aside id="sidebar" class="sidebar"><div class="sidebar-inner"><ul class="sidebar-nav motion-element"><li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">Table of Contents</li><li class="sidebar-nav-overview" data-target="site-overview-wrap">Overview</li></ul><section class="site-overview-wrap sidebar-panel"><div class="site-overview"><div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person"><p class="site-author-name" itemprop="name">Hello</p><p class="site-description motion-element" itemprop="description"></p></div><nav class="site-state motion-element"><div class="site-state-item site-state-posts"><a href="/archives/"><span class="site-state-item-count">1358</span> <span class="site-state-item-name">posts</span></a></div></nav></div></section><section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active"><div class="post-toc"><div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#subscribeOn"><span class="nav-number">1.</span> <span class="nav-text">subscribeOn</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#observeOn"><span class="nav-number">2.</span> <span class="nav-text">observeOn</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#示例一：使用一次subscribeOn和一次observeOn"><span class="nav-number">2.1.</span> <span class="nav-text">示例一：使用一次subscribeOn和一次observeOn</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#示例二：使用两次subscribeOn和一次observeOn"><span class="nav-number">2.2.</span> <span class="nav-text">示例二：使用两次subscribeOn和一次observeOn</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#示例三：使用一次subscribeOn和两次observeOn"><span class="nav-number">2.3.</span> <span class="nav-text">示例三：使用一次subscribeOn和两次observeOn</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#示例四：Schedulers-trampoline"><span class="nav-number">2.4.</span> <span class="nav-text">示例四：Schedulers.trampoline()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#示例五：Schedulers-single"><span class="nav-number">2.5.</span> <span class="nav-text">示例五：Schedulers.single()</span></a></li></ol></li></ol></div></div></section></div></aside><div class="sfix"><div class="fixedme"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460" data-ad-format="auto"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script></div></div></main><footer id="footer" class="footer"><div class="footer-inner"><div class="copyright">&copy; <span itemprop="copyrightYear">2018</span> <span class="with-love"><i class="fa fa-user"></i> </span><span class="author" itemprop="copyrightHolder">Hello</span></div><div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div><span class="post-meta-divider">|</span><div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div></div></footer><div class="back-to-top"><i class="fa fa-arrow-up"></i></div></div><script type="text/javascript">"[object Function]"!==Object.prototype.toString.call(window.Promise)&&(window.Promise=null)</script><script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script><script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script><script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script><script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script><script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script></body></html><!-- rebuild by neat -->

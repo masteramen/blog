@@ -1,0 +1,151 @@
+<!-- build time:Sat Oct 27 2018 21:00:17 GMT+0800 (CST) --><!DOCTYPE html><html class="theme-next muse use-motion"><head><meta name="generator" content="Hexo 3.8.0"><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"><meta name="theme-color" content="#222"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"><link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css"><link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css"><link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4"><link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222"><meta name="description" content="问题1 为什么是while 而不是if大多数人都知道常见的使用synchronized代码:synchronized (obj) {      while (check pass) {         wait();     }     // do your business } 那么问题是为啥这里是while而不是if呢?这个问题 我最开始也想了很久, 按理来说 已经在synchronized块"><meta name="keywords" content="JAVA,面试"><meta property="og:type" content="article"><meta property="og:title" content="Java synchronized 中的 while 和 notifyAll"><meta property="og:url" content="http://www.jfox.info/2017/javasynchronized中的while和notifyall.html"><meta property="og:site_name" content="java面试"><meta property="og:description" content="问题1 为什么是while 而不是if大多数人都知道常见的使用synchronized代码:synchronized (obj) {      while (check pass) {         wait();     }     // do your business } 那么问题是为啥这里是while而不是if呢?这个问题 我最开始也想了很久, 按理来说 已经在synchronized块"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="http://www.jfox.info/2017/1396/67bf1b8.png"><meta property="og:updated_time" content="2018-10-27T12:29:39.380Z"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="Java synchronized 中的 while 和 notifyAll"><meta name="twitter:description" content="问题1 为什么是while 而不是if大多数人都知道常见的使用synchronized代码:synchronized (obj) {      while (check pass) {         wait();     }     // do your business } 那么问题是为啥这里是while而不是if呢?这个问题 我最开始也想了很久, 按理来说 已经在synchronized块"><meta name="twitter:image" content="http://www.jfox.info/2017/1396/67bf1b8.png"><script type="text/javascript" id="hexo.configurations">var NexT=window.NexT||{},CONFIG={root:"/",scheme:"Muse",version:"5.1.4",sidebar:{position:"left",display:"post",offset:12,b2t:!1,scrollpercent:!1,onmobile:!1},fancybox:!0,tabs:!0,motion:{enable:!0,async:!1,transition:{post_block:"fadeIn",post_header:"slideDownIn",post_body:"slideDownIn",coll_header:"slideLeftIn",sidebar:"slideUpIn"}},duoshuo:{userId:"0",author:"Author"},algolia:{applicationID:"",apiKey:"",indexName:"",hits:{per_page:10},labels:{input_placeholder:"Search for Posts",hits_empty:"We didn't find any results for the search: ${query}",hits_stats:"${hits} results found in ${time} ms"}}}</script><link rel="canonical" href="http://www.jfox.info/2017/javasynchronized中的while和notifyall.html"><title>Java synchronized 中的 while 和 notifyAll | java面试</title></head><body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN"><div class="container sidebar-position-left page-post-detail"><div class="headband"></div><header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="header-inner"><div class="site-brand-wrapper"><div class="site-meta"><div class="custom-logo-site-title"><a href="/" class="brand" rel="start"><span class="logo-line-before"><i></i></span> <span class="site-title">java面试</span> <span class="logo-line-after"><i></i></span></a></div><p class="site-subtitle"></p></div><div class="site-nav-toggle"><button><span class="btn-bar"></span> <span class="btn-bar"></span> <span class="btn-bar"></span></button></div></div><nav class="site-nav"><ul id="menu" class="menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i><br>Home</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i><br>Archives</a></li></ul></nav></div></header><main id="main" class="main"><div class="main-inner"><div class="content-wrap"><div id="content" class="content"><div id="posts" class="posts-expand"><article class="post post-type-normal" itemscope itemtype="http://schema.org/Article"><div class="post-block"><link itemprop="mainEntityOfPage" href="http://www.jfox.info/2017/javasynchronized中的while和notifyall.html"><span hidden itemprop="author" itemscope itemtype="http://schema.org/Person"><meta itemprop="name" content="Hello"><meta itemprop="description" content=""><meta itemprop="image" content="/images/avatar.gif"></span><span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><meta itemprop="name" content="java面试"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">Java synchronized 中的 while 和 notifyAll</h1><div class="post-meta"><span class="post-time"><span class="post-meta-item-icon"><i class="fa fa-calendar-o"></i> </span><span class="post-meta-item-text">Posted on</span> <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-01-01T23:58:16+08:00">2017-01-01</time></span></div></header><div class="post-body" itemprop="articleBody"><h2 id="问题1-为什么是while-而不是if"><a href="#问题1-为什么是while-而不是if" class="headerlink" title="问题1 为什么是while 而不是if"></a>问题1 为什么是while 而不是if</h2><p>大多数人都知道常见的使用synchronized代码:</p><pre><code>synchronized (obj) {
+     while (check pass) {
+        wait();
+    }
+    // do your business
+}
+</code></pre><p>那么问题是为啥这里是while而不是if呢?</p><p>这个问题 我最开始也想了很久, 按理来说 已经在synchronized块里面了嘛 就不需要了. 这个也是我前面一直是这么认为的, 直到最近看了一个Stackoverflow上的问题, 才对这个问题有了比较深入的理解.</p><h2 id="实现一个有界队列"><a href="#实现一个有界队列" class="headerlink" title="实现一个有界队列"></a>实现一个有界队列</h2><p>试想我们要试想一个有界的队列. 那么常见的代码可以是这样:</p><pre><code>static class Buf {
+    private final int MAX = 5;
+    private final ArrayList&lt;Integer&gt; list = new ArrayList&lt;&gt;();
+    synchronized void put(int v) throws InterruptedException {
+        if (list.size() == MAX) {
+            wait();
+        }
+        list.add(v);
+        notifyAll();
+    }
+
+    synchronized int get() throws InterruptedException {
+        // line 0 
+        if (list.size() == 0) {  // line 1
+            wait();  // line2
+            // line 3
+        }
+        int v = list.remove(0);  // line 4
+        notifyAll(); // line 5
+        return v;
+    }
+
+    synchronized int size() {
+        return list.size();
+    }
+}
+</code></pre><p>注意到这里用的if, 那么我们来看看它会报什么错呢?<br>下面的代码用了1个线程来put ; 10个线程来get:</p><pre><code>final Buf buf = new Buf();
+ExecutorService es = Executors.newFixedThreadPool(11);
+for (int i = 0; i &lt; 1; i++)
+es.execute(new Runnable() {
+
+    @Override
+    public void run() {
+        while (true ) {
+            try {
+                buf.put(1);
+                Thread.sleep(20);
+            }
+            catch (InterruptedException e) {
+                e.printStackTrace();
+                break;
+            }
+        }
+    }
+});
+for (int i = 0; i &lt; 10; i++) {
+    es.execute(new Runnable() {
+
+        @Override
+        public void run() {
+            while (true ) {
+                try {
+                    buf.get();
+                    Thread.sleep(10);
+                }
+                catch (InterruptedException e) {
+                    e.printStackTrace();
+                    break;
+                }
+            }
+        }
+    });
+}
+
+es.shutdown();
+es.awaitTermination(1, TimeUnit.DAYS);
+</code></pre><p>这段代码很快或者说一开始就会报错</p><pre><code>Java.lang.IndexOutOfBoundsException: Index: 0, Size: 0 
+at java.util.ArrayList.rangeCheck(ArrayList.java:653) 
+at java.util.ArrayList.remove(ArrayList.java:492) 
+at TestWhileWaitBuf.get(TestWhileWait.java:80)atTestWhileWait2.run(TestWhileWait.java:47) 
+at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142) 
+at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617) 
+at java.lang.Thread.run(Thread.java:745)
+</code></pre><p>很明显,在remove’的时候报错了.<br>那么我们来分析下:<br>假设现在有A, B两个线程来执行get 操作, 我们假设如下的步骤发生了:</p><ol><li>A 拿到了锁 line 0</li><li>A 发现size==0, (line 1), 然后进入等待,并释放锁 (line 2)</li><li>此时B拿到了锁, line0, 发现size==0, (line 1), 然后进入等待,并释放锁 (line 2)</li><li>这个时候有个线程C往里面加了个数据1, 那么 notifyAll 所有的等待的线程都被唤醒了.</li><li>AB 重新获取锁, 假设 又是A拿到了. 然后 他就走到line 3, 移除了一个数据, (line4) 没有问题.</li><li>A 移除数据后 想通知别人, 此时list的大小有了变化, 于是调用了notifyAll (line5), 这个时候就把B给唤醒了, 那么B接着往下走.</li><li>这时候B就出问题了, 因为 其实 此时的竞态条件已经不满足了 (size==0). B以为还可以删除就尝试去删除, 结果就跑了异常了.</li></ol><p>那么fix很简单, 在get的时候加上while就好了:</p><pre><code>synchronized int get() throws InterruptedException {
+      while (list.size() == 0) {
+          wait();
+      }
+      int v = list.remove(0);
+      notifyAll();
+      return v;
+  }
+</code></pre><p>同样的, 我们可以尝试修改put的线程数 和 get的线程数来 发现如果put里面不是while的话 也是不行的:<br>我们可以用一个外部周期性任务来打印当前list的大小, 你会发现大小并不是固定的最大5:</p><pre><code>final Buf buf = new Buf();
+ExecutorService es = Executors.newFixedThreadPool(11);
+ScheduledExecutorService printer = Executors.newScheduledThreadPool(1);
+printer.scheduleAtFixedRate(new Runnable() {
+    @Override
+    public void run() {
+        System.out.println(buf.size());
+    }
+}, 0, 1, TimeUnit.SECONDS);
+for (int i = 0; i &lt; 10; i++)
+es.execute(new Runnable() {
+
+    @Override
+    public void run() {
+        while (true ) {
+            try {
+                buf.put(1);
+                Thread.sleep(200);
+            }
+            catch (InterruptedException e) {
+                 e.printStackTrace();
+                break;
+            }
+        }
+    }
+});
+for (int i = 0; i &lt; 1; i++) {
+    es.execute(new Runnable() {
+
+        @Override
+        public void run() {
+            while (true ) {
+                try {
+                    buf.get();
+                    Thread.sleep(100);
+                }
+                catch (InterruptedException e) {
+                    e.printStackTrace();
+                    break;
+                }
+            }
+        }
+    });
+}
+
+es.shutdown();
+es.awaitTermination(1, TimeUnit.DAYS);
+</code></pre><p><img src="/2017/1396/67bf1b8.png" alt=""></p><p>这里 我想应该说清楚了为啥必须是while 还是if了</p><h2 id="问题2-什么时候用notifyAll或者notify"><a href="#问题2-什么时候用notifyAll或者notify" class="headerlink" title="问题2:什么时候用notifyAll或者notify"></a>问题2:什么时候用notifyAll或者notify</h2><p>大多数人都会这么告诉你:</p><p>当你想要通知所有人的时候就用notifyAll, 当你只想通知一个人的时候就用notify.<br>但是我们都知道notify实际上我们是没法决定到底通知谁的(都是从等待集合里面选一个). 那这个还有什么存在的意义呢?</p><p>在上面的例子中,我们用到了notifyAll, 那么下面我们来看下用notify是否可以工作呢?<br>那么代码变成下面的样子:</p><pre><code>synchronized void put(int v) throws InterruptedException {
+       if (list.size() == MAX) {
+           wait();
+       }
+       list.add(v);
+       notify();
+   }
+
+   synchronized int get() throws InterruptedException {
+       while (list.size() == 0) {
+           wait();
+       }
+       int v = list.remove(0);
+       notify();
+       return v;
+   }
+</code></pre><p>下面的几点是jvm告诉我们的:</p><ol><li>任何时候,被唤醒的来执行的线程是不可预知. 比如有5个线程都在一个对象上, 实际上我不知道 下一个哪个线程会被执行.</li><li>synchronized语义实现了有且只有一个线程可以执行同步块里面的代码.</li></ol><p>那么我们假设下面的场景就会导致死锁:</p><ul><li>P – 生产者 调用put</li><li>C – 消费者 调用get</li></ul><ol><li>P1 放了一个数字1</li><li>P2 想来放,发现满了,在wait里面等了</li><li>P3 想来放,发现满了,在wait里面等了</li><li>C1想来拿, C2, C3 就在get里面等着</li><li>C1开始执行, 获取1, 然后调用notify 然后退出</li><li>如果C1把C2唤醒了, 所以P2 (其他的都得等.)只能在put方法上等着. (等待获取synchoronized (this) 这个monitor)</li><li>C2 检查while循环 发现此时队列是空的, 所以就在wait里面等着</li><li>C3 也比P2先执行, 那么发现也是空的, 只能等着了.</li><li>这时候我们发现P2 , C2, C3 都在等着锁. 最终P2 拿到了锁, 放一个1, notify,然后退出.</li><li>P2 这个时候唤醒了P3, P3发现队列是满的,没办法,只能等它变为空.</li><li>这时候, 没有别的调用了, 那么现在这三个线程(P3, C2,C3)就全部变成suspend了.也就是死锁了.</li></ol><h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference:"></a>Reference:</h2><ul><li><a href="http://stackoverflow.com/questions/37026/java-notify-vs-notifyall-all-over-again" target="_blank" rel="noopener">http://stackoverflow.com/questions/37026/java-notify-vs-notifyall-all-over-again</a></li></ul></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="4142158067"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="5618891265"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><footer class="post-footer"><div class="post-nav"><div class="post-nav-next post-nav-item"><a href="/2017/rbac权限模型的初步理解.html" rel="next" title="RBAC：权限模型的初步理解"><i class="fa fa-chevron-left"></i> RBAC：权限模型的初步理解</a></div><span class="post-nav-divider"></span><div class="post-nav-prev post-nav-item"><a href="/2017/开发团队面临的3大安全挑战.html" rel="prev" title="开发团队面临的 3 大安全挑战">开发团队面临的 3 大安全挑战 <i class="fa fa-chevron-right"></i></a></div></div></footer></div></article><div class="post-spread"></div></div></div></div><div class="sidebar-toggle"><div class="sidebar-toggle-line-wrap"><span class="sidebar-toggle-line sidebar-toggle-line-first"></span> <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span> <span class="sidebar-toggle-line sidebar-toggle-line-last"></span></div></div><aside id="sidebar" class="sidebar"><div class="sidebar-inner"><ul class="sidebar-nav motion-element"><li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">Table of Contents</li><li class="sidebar-nav-overview" data-target="site-overview-wrap">Overview</li></ul><section class="site-overview-wrap sidebar-panel"><div class="site-overview"><div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person"><p class="site-author-name" itemprop="name">Hello</p><p class="site-description motion-element" itemprop="description"></p></div><nav class="site-state motion-element"><div class="site-state-item site-state-posts"><a href="/archives/"><span class="site-state-item-count">1358</span> <span class="site-state-item-name">posts</span></a></div></nav></div></section><section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active"><div class="post-toc"><div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#问题1-为什么是while-而不是if"><span class="nav-number">1.</span> <span class="nav-text">问题1 为什么是while 而不是if</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实现一个有界队列"><span class="nav-number">2.</span> <span class="nav-text">实现一个有界队列</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#问题2-什么时候用notifyAll或者notify"><span class="nav-number">3.</span> <span class="nav-text">问题2:什么时候用notifyAll或者notify</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Reference"><span class="nav-number">4.</span> <span class="nav-text">Reference:</span></a></li></ol></div></div></section></div></aside><div class="sfix"><div class="fixedme"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460" data-ad-format="auto"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script></div></div></main><footer id="footer" class="footer"><div class="footer-inner"><div class="copyright">&copy; <span itemprop="copyrightYear">2018</span> <span class="with-love"><i class="fa fa-user"></i> </span><span class="author" itemprop="copyrightHolder">Hello</span></div><div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div><span class="post-meta-divider">|</span><div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div></div></footer><div class="back-to-top"><i class="fa fa-arrow-up"></i></div></div><script type="text/javascript">"[object Function]"!==Object.prototype.toString.call(window.Promise)&&(window.Promise=null)</script><script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script><script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script><script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script><script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script><script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script></body></html><!-- rebuild by neat -->

@@ -1,0 +1,162 @@
+<!-- build time:Sat Oct 27 2018 21:00:22 GMT+0800 (CST) --><!DOCTYPE html><html class="theme-next muse use-motion"><head><meta name="generator" content="Hexo 3.8.0"><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"><meta name="theme-color" content="#222"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"><link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css"><link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css"><link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4"><link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222"><meta name="description" content="springboot极大地提升了java应用的开发体验，感觉特别酸爽。服务化框架可谓是大型系统必用，比较古典的是阿里开源的dubbo，可惜很早就不更新了，研究其代码来看，感觉不够轻量，幸运的是去年微博开源了自己的轻量级服务化框架motan。本文阐述下如何在springboot下用motan。服务方：whatsmars-motan   |-src     |-main       |-java"><meta name="keywords" content="JAVA,面试"><meta property="og:type" content="article"><meta property="og:title" content="springboot结合服务化框架motan"><meta property="og:url" content="http://www.jfox.info/2017/springboot结合服务化框架motan.html"><meta property="og:site_name" content="java面试"><meta property="og:description" content="springboot极大地提升了java应用的开发体验，感觉特别酸爽。服务化框架可谓是大型系统必用，比较古典的是阿里开源的dubbo，可惜很早就不更新了，研究其代码来看，感觉不够轻量，幸运的是去年微博开源了自己的轻量级服务化框架motan。本文阐述下如何在springboot下用motan。服务方：whatsmars-motan   |-src     |-main       |-java"><meta property="og:locale" content="zh_CN"><meta property="og:updated_time" content="2018-10-27T12:29:37.413Z"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="springboot结合服务化框架motan"><meta name="twitter:description" content="springboot极大地提升了java应用的开发体验，感觉特别酸爽。服务化框架可谓是大型系统必用，比较古典的是阿里开源的dubbo，可惜很早就不更新了，研究其代码来看，感觉不够轻量，幸运的是去年微博开源了自己的轻量级服务化框架motan。本文阐述下如何在springboot下用motan。服务方：whatsmars-motan   |-src     |-main       |-java"><script type="text/javascript" id="hexo.configurations">var NexT=window.NexT||{},CONFIG={root:"/",scheme:"Muse",version:"5.1.4",sidebar:{position:"left",display:"post",offset:12,b2t:!1,scrollpercent:!1,onmobile:!1},fancybox:!0,tabs:!0,motion:{enable:!0,async:!1,transition:{post_block:"fadeIn",post_header:"slideDownIn",post_body:"slideDownIn",coll_header:"slideLeftIn",sidebar:"slideUpIn"}},duoshuo:{userId:"0",author:"Author"},algolia:{applicationID:"",apiKey:"",indexName:"",hits:{per_page:10},labels:{input_placeholder:"Search for Posts",hits_empty:"We didn't find any results for the search: ${query}",hits_stats:"${hits} results found in ${time} ms"}}}</script><link rel="canonical" href="http://www.jfox.info/2017/springboot结合服务化框架motan.html"><title>springboot结合服务化框架motan | java面试</title></head><body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN"><div class="container sidebar-position-left page-post-detail"><div class="headband"></div><header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="header-inner"><div class="site-brand-wrapper"><div class="site-meta"><div class="custom-logo-site-title"><a href="/" class="brand" rel="start"><span class="logo-line-before"><i></i></span> <span class="site-title">java面试</span> <span class="logo-line-after"><i></i></span></a></div><p class="site-subtitle"></p></div><div class="site-nav-toggle"><button><span class="btn-bar"></span> <span class="btn-bar"></span> <span class="btn-bar"></span></button></div></div><nav class="site-nav"><ul id="menu" class="menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i><br>Home</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i><br>Archives</a></li></ul></nav></div></header><main id="main" class="main"><div class="main-inner"><div class="content-wrap"><div id="content" class="content"><div id="posts" class="posts-expand"><article class="post post-type-normal" itemscope itemtype="http://schema.org/Article"><div class="post-block"><link itemprop="mainEntityOfPage" href="http://www.jfox.info/2017/springboot结合服务化框架motan.html"><span hidden itemprop="author" itemscope itemtype="http://schema.org/Person"><meta itemprop="name" content="Hello"><meta itemprop="description" content=""><meta itemprop="image" content="/images/avatar.gif"></span><span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><meta itemprop="name" content="java面试"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">springboot结合服务化框架motan</h1><div class="post-meta"><span class="post-time"><span class="post-meta-item-icon"><i class="fa fa-calendar-o"></i> </span><span class="post-meta-item-text">Posted on</span> <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-01-01T23:52:00+08:00">2017-01-01</time></span></div></header><div class="post-body" itemprop="articleBody"><p>springboot极大地提升了java应用的开发体验，感觉特别酸爽。服务化框架可谓是大型系统必用，比较古典的是阿里开源的dubbo，可惜很早就不更新了，研究其代码来看，感觉不够轻量，幸运的是去年微博开源了自己的轻量级服务化框架motan。本文阐述下如何在springboot下用motan。</p><p>服务方：</p><pre><code>whatsmars-motan
+  |-src
+    |-main
+      |-java
+        |-com.weibo.motan.demo.service
+      |-impl
+        MotanDemoServiceImpl.java
+      APP.java
+      MotanDemoService.java
+      |-resource
+        |-spring
+      motan_demo_server.xml
+    log4j.properties
+  pom.xml
+</code></pre><p>依赖：</p><pre><code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;project xmlns=&quot;http://maven.apache.org/POM/4.0.0&quot;
+         xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+         xsi:schemaLocation=&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd&quot;&gt;
+
+    &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
+
+    &lt;artifactId&gt;whatsmars-motan&lt;/artifactId&gt;
+
+    &lt;properties&gt;
+        &lt;!-- The main class to start by executing java -jar --&gt;
+        &lt;start-class&gt;com.weibo.motan.demo.service.App&lt;/start-class&gt;
+        &lt;motan.version&gt;0.1.1&lt;/motan.version&gt;
+    &lt;/properties&gt;
+
+    &lt;parent&gt;
+        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-boot-starter-parent&lt;/artifactId&gt;
+        &lt;version&gt;1.5.2.RELEASE&lt;/version&gt;
+    &lt;/parent&gt;
+
+    &lt;dependencies&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-boot-starter&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+        &lt;!--weibo motan--&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;com.weibo&lt;/groupId&gt;
+            &lt;artifactId&gt;motan-core&lt;/artifactId&gt;
+            &lt;version&gt;${motan.version}&lt;/version&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;com.weibo&lt;/groupId&gt;
+            &lt;artifactId&gt;motan-transport-netty&lt;/artifactId&gt;
+            &lt;version&gt;${motan.version}&lt;/version&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;com.weibo&lt;/groupId&gt;
+            &lt;artifactId&gt;motan-registry-consul&lt;/artifactId&gt;
+            &lt;version&gt;${motan.version}&lt;/version&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;com.weibo&lt;/groupId&gt;
+            &lt;artifactId&gt;motan-registry-zookeeper&lt;/artifactId&gt;
+            &lt;version&gt;${motan.version}&lt;/version&gt;
+        &lt;/dependency&gt;
+
+        &lt;!-- dependencies blow were only needed for spring-based features --&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;com.weibo&lt;/groupId&gt;
+            &lt;artifactId&gt;motan-springsupport&lt;/artifactId&gt;
+            &lt;version&gt;${motan.version}&lt;/version&gt;
+        &lt;/dependency&gt;
+    &lt;/dependencies&gt;
+
+    &lt;build&gt;
+        &lt;finalName&gt;${project.artifactId}&lt;/finalName&gt;
+        &lt;resources&gt;
+            &lt;resource&gt;
+                &lt;directory&gt;src/main/resources&lt;/directory&gt;
+                &lt;filtering&gt;true&lt;/filtering&gt;
+            &lt;/resource&gt;
+        &lt;/resources&gt;
+        &lt;plugins&gt;
+            &lt;plugin&gt;
+                &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+                &lt;artifactId&gt;spring-boot-maven-plugin&lt;/artifactId&gt;
+                &lt;dependencies&gt;
+                    &lt;dependency&gt;
+                        &lt;groupId&gt;org.springframework&lt;/groupId&gt;
+                        &lt;artifactId&gt;springloaded&lt;/artifactId&gt;
+                        &lt;version&gt;1.2.6.RELEASE&lt;/version&gt;
+                    &lt;/dependency&gt;
+                &lt;/dependencies&gt;
+            &lt;/plugin&gt;
+        &lt;/plugins&gt;
+    &lt;/build&gt;
+&lt;/project&gt;
+</code></pre><p>demo_motan_server.xml</p><pre><code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+
+&lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
+       xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+       xmlns:motan=&quot;http://api.weibo.com/schema/motan&quot;
+       xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+       http://api.weibo.com/schema/motan http://api.weibo.com/schema/motan.xsd&quot;&gt;
+
+    &lt;!-- 业务具体实现类 --&gt;
+    &lt;!-- &lt;bean id=&quot;motanDemoServiceImpl&quot; class=&quot;com.weibo.motan.demo.service.impl.MotanDemoServiceImpl&quot;/&gt; --&gt;
+
+    &lt;!-- 注册中心配置 使用不同注册中心需要依赖对应的jar包。如果不使用注册中心，可以把check属性改为false，忽略注册失败。--&gt;
+    &lt;!--&lt;motan:registry regProtocol=&quot;local&quot; name=&quot;registry&quot; /&gt;--&gt;
+    &lt;!--&lt;motan:registry regProtocol=&quot;consul&quot; name=&quot;registry&quot; address=&quot;127.0.0.1:8500&quot;/&gt;--&gt;
+    &lt;motan:registry regProtocol=&quot;zookeeper&quot; name=&quot;registry&quot; address=&quot;127.0.0.1:2181&quot;/&gt;
+
+    &lt;!-- 协议配置。为防止多个业务配置冲突，推荐使用id表示具体协议。--&gt;
+    &lt;motan:protocol id=&quot;demoMotan&quot; default=&quot;true&quot; name=&quot;motan&quot;
+                    maxServerConnection=&quot;80000&quot; maxContentLength=&quot;1048576&quot;
+                    maxWorkerThread=&quot;800&quot; minWorkerThread=&quot;20&quot;/&gt;
+
+    &lt;!-- 通用配置，多个rpc服务使用相同的基础配置. group和module定义具体的服务池。export格式为“protocol id:提供服务的端口”--&gt;
+    &lt;motan:basicService export=&quot;demoMotan:8002&quot;
+                        group=&quot;motan-demo-rpc&quot; accessLog=&quot;false&quot; shareChannel=&quot;true&quot; module=&quot;motan-demo-rpc&quot;
+                        application=&quot;myMotanDemo&quot; registry=&quot;registry&quot; id=&quot;serviceBasicConfig&quot;/&gt;
+
+    &lt;!-- 具体rpc服务配置，声明实现的接口类。--&gt;
+    &lt;motan:service interface=&quot;com.weibo.motan.demo.service.MotanDemoService&quot;
+                   ref=&quot;motanDemoService&quot; export=&quot;demoMotan:8001&quot; basicService=&quot;serviceBasicConfig&quot;&gt;
+    &lt;/motan:service&gt;
+    &lt;motan:service interface=&quot;com.weibo.motan.demo.service.MotanDemoService&quot;
+                   ref=&quot;motanDemoService&quot; export=&quot;demoMotan:8002&quot; basicService=&quot;serviceBasicConfig&quot;&gt;
+    &lt;/motan:service&gt;
+
+&lt;/beans&gt;
+</code></pre><p>启动类：</p><pre><code>@SpringBootApplication
+@EnableAutoConfiguration
+@ImportResource(locations={&quot;classpath*:spring/*server.xml&quot;})
+public class App {
+
+    public static void main(String[] args) {
+        SpringApplication.run(App.class, args);
+    }
+
+}
+</code></pre><p>下面这个很重要：</p><pre><code>@Component
+@Order(value = 1)
+public class MotanSwitcherRunner implements CommandLineRunner {
+    @Override
+    public void run(String... args) throws Exception {
+        // 在使用注册中心时要主动调用下面代码
+        MotanSwitcherUtil.setSwitcherValue(MotanConstants.REGISTRY_HEARTBEAT_SWITCHER, true);
+        System.out.println(&quot;server start...&quot;);
+    }
+}
+</code></pre><p>服务接口：</p><pre><code>public interface MotanDemoService {
+
+    String hello(String name);
+}
+</code></pre><p>服务实现：</p><pre><code>@Service(&quot;motanDemoService&quot;)
+public class MotanDemoServiceImpl implements MotanDemoService {
+
+    public String hello(String name) {
+        System.out.println(name);
+        return &quot;Hello &quot; + name + &quot;!&quot;;
+    }
+
+}
+</code></pre><p>就这么简单，先启动zookeeper，再启动App就可发布motan服务，当应用中既要发布服务，又要引用服务时，可以将注册中心配置单独放在一个配置文件里。另外，不管是dubbo，还是motan，对注解的支持都不是特别好用，所以还是建议采用xml配置。关于消费方怎么用，详细代码见<a href="https://github.com/javahongxi/whatsmars的whatsmars-motan-demo模块。" target="_blank" rel="noopener">https://github.com/javahongxi/whatsmars的whatsmars-motan-demo模块。</a></p></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="4142158067"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="5618891265"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><footer class="post-footer"><div class="post-nav"><div class="post-nav-next post-nav-item"><a href="/2017/oracle-wallet-实施的一次悲惨经历.html" rel="next" title="Oracle Wallet 实施的一次悲惨经历"><i class="fa fa-chevron-left"></i> Oracle Wallet 实施的一次悲惨经历</a></div><span class="post-nav-divider"></span><div class="post-nav-prev post-nav-item"><a href="/2017/分布式数据库cockroachdb.html" rel="prev" title="分布式数据库CockroachDB">分布式数据库CockroachDB <i class="fa fa-chevron-right"></i></a></div></div></footer></div></article><div class="post-spread"></div></div></div></div><div class="sidebar-toggle"><div class="sidebar-toggle-line-wrap"><span class="sidebar-toggle-line sidebar-toggle-line-first"></span> <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span> <span class="sidebar-toggle-line sidebar-toggle-line-last"></span></div></div><aside id="sidebar" class="sidebar"><div class="sidebar-inner"><section class="site-overview-wrap sidebar-panel sidebar-panel-active"><div class="site-overview"><div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person"><p class="site-author-name" itemprop="name">Hello</p><p class="site-description motion-element" itemprop="description"></p></div><nav class="site-state motion-element"><div class="site-state-item site-state-posts"><a href="/archives/"><span class="site-state-item-count">1358</span> <span class="site-state-item-name">posts</span></a></div></nav></div></section></div></aside><div class="sfix"><div class="fixedme"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460" data-ad-format="auto"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script></div></div></main><footer id="footer" class="footer"><div class="footer-inner"><div class="copyright">&copy; <span itemprop="copyrightYear">2018</span> <span class="with-love"><i class="fa fa-user"></i> </span><span class="author" itemprop="copyrightHolder">Hello</span></div><div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div><span class="post-meta-divider">|</span><div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div></div></footer><div class="back-to-top"><i class="fa fa-arrow-up"></i></div></div><script type="text/javascript">"[object Function]"!==Object.prototype.toString.call(window.Promise)&&(window.Promise=null)</script><script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script><script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script><script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script><script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script><script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script></body></html><!-- rebuild by neat -->

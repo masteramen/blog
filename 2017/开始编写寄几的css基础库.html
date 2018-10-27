@@ -1,0 +1,194 @@
+<!-- build time:Sat Oct 27 2018 21:00:17 GMT+0800 (CST) --><!DOCTYPE html><html class="theme-next muse use-motion"><head><meta name="generator" content="Hexo 3.8.0"><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"><meta name="theme-color" content="#222"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"><link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css"><link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css"><link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4"><link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222"><meta name="description" content="前言在现在的互联网业务中，前端开发人员往往需要支持比较多的项目数量。很多公司只有 1-2 名前端开发人员，这其中还不乏规模比较大的公司。这时前端同学就需要独挡一面支持整个公司上下的前端业务，项目如流水一般从手里流过，此时更需要前端开发人员将工作工程化、流水线化。本博文在发布之后有些争议，有人认为如此书写 css 并不规范。这点我认同，但不少框架也采用了这种方式，提升的开发效率也是明显的。希望大家对"><meta name="keywords" content="JAVA,面试"><meta property="og:type" content="article"><meta property="og:title" content="开始编写寄几的 CSS 基础库"><meta property="og:url" content="http://www.jfox.info/2017/开始编写寄几的css基础库.html"><meta property="og:site_name" content="java面试"><meta property="og:description" content="前言在现在的互联网业务中，前端开发人员往往需要支持比较多的项目数量。很多公司只有 1-2 名前端开发人员，这其中还不乏规模比较大的公司。这时前端同学就需要独挡一面支持整个公司上下的前端业务，项目如流水一般从手里流过，此时更需要前端开发人员将工作工程化、流水线化。本博文在发布之后有些争议，有人认为如此书写 css 并不规范。这点我认同，但不少框架也采用了这种方式，提升的开发效率也是明显的。希望大家对"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="http://www.jfox.info/2017/1388/0c2942e.png"><meta property="og:updated_time" content="2018-10-27T12:29:37.384Z"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="开始编写寄几的 CSS 基础库"><meta name="twitter:description" content="前言在现在的互联网业务中，前端开发人员往往需要支持比较多的项目数量。很多公司只有 1-2 名前端开发人员，这其中还不乏规模比较大的公司。这时前端同学就需要独挡一面支持整个公司上下的前端业务，项目如流水一般从手里流过，此时更需要前端开发人员将工作工程化、流水线化。本博文在发布之后有些争议，有人认为如此书写 css 并不规范。这点我认同，但不少框架也采用了这种方式，提升的开发效率也是明显的。希望大家对"><meta name="twitter:image" content="http://www.jfox.info/2017/1388/0c2942e.png"><script type="text/javascript" id="hexo.configurations">var NexT=window.NexT||{},CONFIG={root:"/",scheme:"Muse",version:"5.1.4",sidebar:{position:"left",display:"post",offset:12,b2t:!1,scrollpercent:!1,onmobile:!1},fancybox:!0,tabs:!0,motion:{enable:!0,async:!1,transition:{post_block:"fadeIn",post_header:"slideDownIn",post_body:"slideDownIn",coll_header:"slideLeftIn",sidebar:"slideUpIn"}},duoshuo:{userId:"0",author:"Author"},algolia:{applicationID:"",apiKey:"",indexName:"",hits:{per_page:10},labels:{input_placeholder:"Search for Posts",hits_empty:"We didn't find any results for the search: ${query}",hits_stats:"${hits} results found in ${time} ms"}}}</script><link rel="canonical" href="http://www.jfox.info/2017/开始编写寄几的css基础库.html"><title>开始编写寄几的 CSS 基础库 | java面试</title></head><body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN"><div class="container sidebar-position-left page-post-detail"><div class="headband"></div><header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="header-inner"><div class="site-brand-wrapper"><div class="site-meta"><div class="custom-logo-site-title"><a href="/" class="brand" rel="start"><span class="logo-line-before"><i></i></span> <span class="site-title">java面试</span> <span class="logo-line-after"><i></i></span></a></div><p class="site-subtitle"></p></div><div class="site-nav-toggle"><button><span class="btn-bar"></span> <span class="btn-bar"></span> <span class="btn-bar"></span></button></div></div><nav class="site-nav"><ul id="menu" class="menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i><br>Home</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i><br>Archives</a></li></ul></nav></div></header><main id="main" class="main"><div class="main-inner"><div class="content-wrap"><div id="content" class="content"><div id="posts" class="posts-expand"><article class="post post-type-normal" itemscope itemtype="http://schema.org/Article"><div class="post-block"><link itemprop="mainEntityOfPage" href="http://www.jfox.info/2017/开始编写寄几的css基础库.html"><span hidden itemprop="author" itemscope itemtype="http://schema.org/Person"><meta itemprop="name" content="Hello"><meta itemprop="description" content=""><meta itemprop="image" content="/images/avatar.gif"></span><span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><meta itemprop="name" content="java面试"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">开始编写寄几的 CSS 基础库</h1><div class="post-meta"><span class="post-time"><span class="post-meta-item-icon"><i class="fa fa-calendar-o"></i> </span><span class="post-meta-item-text">Posted on</span> <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-01-01T23:58:08+08:00">2017-01-01</time></span></div></header><div class="post-body" itemprop="articleBody"><p><strong>前言</strong></p><p>在现在的互联网业务中，前端开发人员往往需要支持比较多的项目数量。很多公司只有 1-2 名前端开发人员，这其中还不乏规模比较大的公司。这时前端同学就需要独挡一面支持整个公司上下的前端业务，项目如流水一般从手里流过，此时更需要前端开发人员将工作工程化、流水线化。</p><p>本博文在发布之后有些争议，有人认为如此书写 css 并不规范。这点我认同，但不少框架也采用了这种方式，提升的开发效率也是明显的。希望大家对这种思想去其糟粕，取其精华，过度使用必然导致可维护性下降，但绝对使用单一类名也不现实。最后祝大家工作顺利。</p><p><strong>一个栗子</strong></p><p>现在需要编写页面中的一个按钮，结构与样式如下：</p><pre><code>&lt;div class=&apos;button&apos;&gt;开始&lt;/div&gt;
+</code></pre><p><img src="/2017/1388/0c2942e.png" alt=""></p><p>有人说，这有什么难的，不到1分钟就能写好了：</p><pre><code>.button {
+    width: 100px;
+    height: 40px;
+    font-size: 16px;
+    text-align: center;
+    line-height: 40px;
+    color: #fff;
+    background-color: #337ab7;
+    border-radius: 6px;
+    cursor: pointer;
+}
+</code></pre><p>但如果这个项目中有50个大小不一的这样按钮怎么办？有人会说，那把 button 抽象成公共类名的不就好喽，就像下面这样：</p><pre><code>&lt;div class=&quot;button btn-begin&quot;&gt;&lt;/div&gt; 
+
+.button {
+    font-size: 16px;
+    text-align: center;
+    line-height: 40px;
+    color: #fff;
+    background-color: #337ab7;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.btn-begin {
+    width: 100px;
+    height: 40px;
+}
+</code></pre><p>没错，这种确实是比较普遍的方法。但问题是，下一个项目风格改变，我们用不到 button 的公共样式了。所以这种方式不适合流水线作业，也不在本篇的讨论范畴中。</p><p>现在我们编写了一个 base.css，它也就是标题所说的我们寄几的基础 css 库，也是真正意义上的公共样式。假设 base.css 中已经定义好了以下几个样式类：</p><pre><code>.f-16 {
+    font-size: 16px;
+}
+
+.c-white {
+    color: #fff;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.radius-6 {
+    border-radius: 6px;
+}
+
+.cursor {
+    cursor: pointer;
+}
+</code></pre><p>更改结构：</p><pre><code>&lt;div class=&quot;f-16 c-white text-center radius-6 cursor button&quot;&gt;开始&lt;/div&gt;
+</code></pre><p>这样我们只需写少许 css 就能完成 button 的样式。</p><pre><code>.button {
+    width: 100px;
+    height: 40px;
+    line-height: 40px;
+    background-color: #337ab7;
+}
+</code></pre><p><strong>·</strong> 如上，当公共的样式定义的足够多时，可以极大的增加我们的开发效率，尤其是官网以及 CMS 这样较大的项目，效果更加明显。甚至某些结构只需要通过已有的样式类名进行组合就能完整实现，而不需要另外起名并单独编写 css。</p><p><strong>·</strong> 在实际生产中，你还可以动态扩展 base.css，比如项目的设计刚到手上时，发现使用 #c9c9c9 颜色的字体比较多，就可以在 base.css 中加入 .c-c9 { color: #c9c9c9 }。</p><p>· 市面上的 css 库数都数不清，为什么还要大家寄几编写呢。主要有以下几点：1. 有人可能会这样想：“我 CSS 基础这么好，让我用别人写的？闹呢！”；2. 别人的库可能有很多冗余的、自己用不到的样式，白白增加项目体积；3. 别人的库需要学习成本，自己写的不仅符合自己的 css 书写习惯，起的类名也是自己最好记的。</p><p><strong>抛砖引玉</strong></p><p>上面说了那么多，下面列举下我个人在平常用的比较多的公共样式，先付上<a href="https://www.jfox.info/go.php?url=https://github.com/Darylxyx/css-collection/blob/master/base.css">源码</a>。</p><p><strong>内外边距初始化</strong></p><pre><code>html, body, div, h1, h2, h3, h4, h5, h6, p, span, img, input, textarea, ul, ol, li, hr {
+    margin: 0;
+    padding: 0;
+}
+</code></pre><p>用 * 的同学回炉重造哈，：）</p><p><strong>去除 list 默认样式</strong></p><pre><code>ul, ol {
+    list-style-type: none;
+}
+</code></pre><p><strong>去除 a 标签默认样式</strong></p><pre><code>a {
+    text-decoration: none;
+}
+</code></pre><p><strong>左右浮动</strong></p><pre><code>.l {
+    float: left;
+}
+
+.r {
+    float: right;
+}
+</code></pre><p><strong>两种常用背景图展示</strong></p><pre><code>.bg-img {
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.ic-img {
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+}
+</code></pre><p><strong>不同字号字体（实时扩展）</strong></p><pre><code>.f-13 {
+    font-size: 13px;
+}
+
+.f-14 {
+    font-size: 14px;
+}
+
+.f-16 {
+    font-size: 16px;
+}
+
+.f-18 {
+    font-size: 18px;
+}
+
+.f-20 {
+    font-size: 20px;
+}
+</code></pre><p><strong>字体粗细</strong></p><pre><code>.f-bold {
+    font-weight: bold;
+}
+
+.f-bolder {
+    font-weight: bolder;
+}
+</code></pre><p><strong>字体颜色（实时扩展）</strong></p><pre><code>.c-white {
+    color: #fff;
+}
+
+.c-black {
+    color: #000;
+}
+</code></pre><p><strong>行高（实时扩展）</strong></p><pre><code>.lh-100 {
+    line-height: 100%;
+}
+
+.lh-130 {
+    line-height: 130%;
+}
+
+.lh-150 {
+    line-height: 150%;
+}
+
+.lh-170 {
+    line-height: 170%;
+}
+
+.lh-200 {
+    line-height: 200%;
+}
+</code></pre><p><strong>元素类型</strong></p><pre><code>.inline {
+    display: inline;
+}
+
+.block {
+    display: block;
+}
+
+.inline-block {
+    display: inline-block;
+}
+</code></pre><p><strong>box-sizing</strong></p><pre><code>.border-box {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+</code></pre><p><strong>清除浮动</strong></p><pre><code>.clear {
+    clear: both;
+}
+</code></pre><p><strong>超出隐藏</strong></p><pre><code>.overflow {
+    overflow: hidden;
+}
+</code></pre><p><strong>字符居左/中/右</strong></p><pre><code>.text-left {
+    text-align: left;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.text-right {
+    text-align: right;
+}
+</code></pre><p><strong>字体超出隐藏，以省略号代替</strong></p><pre><code>.text-overflow {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+</code></pre><p><strong>首行缩进2字符</strong></p><pre><code>.text-indent {
+    text-indent: 2em;
+}
+</code></pre><p><strong>强制文字换行</strong></p><pre><code>.text-wrap {
+    word-wrap: break-word;
+    word-break: normal;
+}
+</code></pre><p><strong>常用的3种定位方式</strong></p><pre><code>.absolute {
+    position: absolute;
+}
+
+.relative {
+    position: relative;
+}
+
+.fixed {
+    position: fixed;
+}
+</code></pre><p><strong>浮动光标改变</strong></p><pre><code>.cusor {
+    cursor: pointer;
+}
+</code></pre><p>上面例举了一部分公共样式，希望能给大家一些启发。命名和抽象方式可以按照自己的喜好来，将平常工作中用到的样式慢慢积累，很快就会拥有自己专属的强大 css 基础库。祝大家都能做好自己业务的工程化，流水化，下一篇博文是跟大家分享寄几的公共 JS。</p><p><strong>感谢你的浏览，希望能有所帮助</strong></p></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="4142158067"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="5618891265"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><footer class="post-footer"><div class="post-nav"><div class="post-nav-next post-nav-item"><a href="/2017/四步准备android面试.html" rel="next" title="四步准备Android面试"><i class="fa fa-chevron-left"></i> 四步准备Android面试</a></div><span class="post-nav-divider"></span><div class="post-nav-prev post-nav-item"><a href="/2017/graysanatomy源码浅析.html" rel="prev" title="Grays Anatomy源码浅析">Grays Anatomy源码浅析 <i class="fa fa-chevron-right"></i></a></div></div></footer></div></article><div class="post-spread"></div></div></div></div><div class="sidebar-toggle"><div class="sidebar-toggle-line-wrap"><span class="sidebar-toggle-line sidebar-toggle-line-first"></span> <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span> <span class="sidebar-toggle-line sidebar-toggle-line-last"></span></div></div><aside id="sidebar" class="sidebar"><div class="sidebar-inner"><section class="site-overview-wrap sidebar-panel sidebar-panel-active"><div class="site-overview"><div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person"><p class="site-author-name" itemprop="name">Hello</p><p class="site-description motion-element" itemprop="description"></p></div><nav class="site-state motion-element"><div class="site-state-item site-state-posts"><a href="/archives/"><span class="site-state-item-count">1358</span> <span class="site-state-item-name">posts</span></a></div></nav></div></section></div></aside><div class="sfix"><div class="fixedme"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460" data-ad-format="auto"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script></div></div></main><footer id="footer" class="footer"><div class="footer-inner"><div class="copyright">&copy; <span itemprop="copyrightYear">2018</span> <span class="with-love"><i class="fa fa-user"></i> </span><span class="author" itemprop="copyrightHolder">Hello</span></div><div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div><span class="post-meta-divider">|</span><div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div></div></footer><div class="back-to-top"><i class="fa fa-arrow-up"></i></div></div><script type="text/javascript">"[object Function]"!==Object.prototype.toString.call(window.Promise)&&(window.Promise=null)</script><script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script><script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script><script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script><script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script><script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script></body></html><!-- rebuild by neat -->

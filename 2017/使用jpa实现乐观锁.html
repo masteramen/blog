@@ -1,0 +1,111 @@
+<!-- build time:Sat Oct 27 2018 21:00:16 GMT+0800 (CST) --><!DOCTYPE html><html class="theme-next muse use-motion"><head><meta name="generator" content="Hexo 3.8.0"><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"><meta name="theme-color" content="#222"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"><link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css"><link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css"><link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4"><link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222"><meta name="description" content="乐观锁的概念就不再赘述了，不了解的朋友请自行百度谷歌之，今天主要说的是在项目中如何使用乐观锁，做成一个小demo。持久层使用jpa时，默认提供了一个注解@Version先看看源码怎么描述这个注解的。/**  * Specifies the version field or property of an entity class that  * serves as its optimistic lo"><meta name="keywords" content="JAVA,面试"><meta property="og:type" content="article"><meta property="og:title" content="使用 JPA 实现乐观锁"><meta property="og:url" content="http://www.jfox.info/2017/使用jpa实现乐观锁.html"><meta property="og:site_name" content="java面试"><meta property="og:description" content="乐观锁的概念就不再赘述了，不了解的朋友请自行百度谷歌之，今天主要说的是在项目中如何使用乐观锁，做成一个小demo。持久层使用jpa时，默认提供了一个注解@Version先看看源码怎么描述这个注解的。/**  * Specifies the version field or property of an entity class that  * serves as its optimistic lo"><meta property="og:locale" content="zh_CN"><meta property="og:updated_time" content="2018-10-27T12:29:37.371Z"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="使用 JPA 实现乐观锁"><meta name="twitter:description" content="乐观锁的概念就不再赘述了，不了解的朋友请自行百度谷歌之，今天主要说的是在项目中如何使用乐观锁，做成一个小demo。持久层使用jpa时，默认提供了一个注解@Version先看看源码怎么描述这个注解的。/**  * Specifies the version field or property of an entity class that  * serves as its optimistic lo"><script type="text/javascript" id="hexo.configurations">var NexT=window.NexT||{},CONFIG={root:"/",scheme:"Muse",version:"5.1.4",sidebar:{position:"left",display:"post",offset:12,b2t:!1,scrollpercent:!1,onmobile:!1},fancybox:!0,tabs:!0,motion:{enable:!0,async:!1,transition:{post_block:"fadeIn",post_header:"slideDownIn",post_body:"slideDownIn",coll_header:"slideLeftIn",sidebar:"slideUpIn"}},duoshuo:{userId:"0",author:"Author"},algolia:{applicationID:"",apiKey:"",indexName:"",hits:{per_page:10},labels:{input_placeholder:"Search for Posts",hits_empty:"We didn't find any results for the search: ${query}",hits_stats:"${hits} results found in ${time} ms"}}}</script><link rel="canonical" href="http://www.jfox.info/2017/使用jpa实现乐观锁.html"><title>使用 JPA 实现乐观锁 | java面试</title></head><body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN"><div class="container sidebar-position-left page-post-detail"><div class="headband"></div><header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="header-inner"><div class="site-brand-wrapper"><div class="site-meta"><div class="custom-logo-site-title"><a href="/" class="brand" rel="start"><span class="logo-line-before"><i></i></span> <span class="site-title">java面试</span> <span class="logo-line-after"><i></i></span></a></div><p class="site-subtitle"></p></div><div class="site-nav-toggle"><button><span class="btn-bar"></span> <span class="btn-bar"></span> <span class="btn-bar"></span></button></div></div><nav class="site-nav"><ul id="menu" class="menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i><br>Home</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i><br>Archives</a></li></ul></nav></div></header><main id="main" class="main"><div class="main-inner"><div class="content-wrap"><div id="content" class="content"><div id="posts" class="posts-expand"><article class="post post-type-normal" itemscope itemtype="http://schema.org/Article"><div class="post-block"><link itemprop="mainEntityOfPage" href="http://www.jfox.info/2017/使用jpa实现乐观锁.html"><span hidden itemprop="author" itemscope itemtype="http://schema.org/Person"><meta itemprop="name" content="Hello"><meta itemprop="description" content=""><meta itemprop="image" content="/images/avatar.gif"></span><span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><meta itemprop="name" content="java面试"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">使用 JPA 实现乐观锁</h1><div class="post-meta"><span class="post-time"><span class="post-meta-item-icon"><i class="fa fa-calendar-o"></i> </span><span class="post-meta-item-text">Posted on</span> <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-01-01T23:59:26+08:00">2017-01-01</time></span></div></header><div class="post-body" itemprop="articleBody"><p>乐观锁的概念就不再赘述了，不了解的朋友请自行百度谷歌之，今天主要说的是在项目中如何使用乐观锁，做成一个小demo。</p><p>持久层使用jpa时，默认提供了一个注解@Version先看看源码怎么描述这个注解的。</p><pre><code>/**
+ * Specifies the version field or property of an entity class that
+ * serves as its optimistic lock value.  The version is used to ensure
+ * integrity when performing the merge operation and for optimistic
+ * concurrency control.
+ *
+ * &lt;p&gt; Only a single &lt;code&gt;Version&lt;/code&gt; property or field
+ * should be used per class; applications that use more than one
+ * &lt;code&gt;Version&lt;/code&gt; property or field will not be portable.
+ *
+ * &lt;p&gt; The &lt;code&gt;Version&lt;/code&gt; property should be mapped to
+ * the primary table for the entity class; applications that
+ * map the &lt;code&gt;Version&lt;/code&gt; property to a table other than
+ * the primary table will not be portable.
+ *
+ * &lt;p&gt; The following types are supported for version properties:
+ * &lt;code&gt;int&lt;/code&gt;, &lt;code&gt;Integer&lt;/code&gt;, &lt;code&gt;short&lt;/code&gt;,
+ * &lt;code&gt;Short&lt;/code&gt;, &lt;code&gt;long&lt;/code&gt;, &lt;code&gt;Long&lt;/code&gt;,
+ * &lt;code&gt;java.sql.Timestamp&lt;/code&gt;.
+ *
+ * &lt;pre&gt;
+ *    Example:
+ *
+ *    @Version
+ *    @Column(name=&quot;OPTLOCK&quot;)
+ *    protected int getVersionNum() { return versionNum; }
+ * &lt;/pre&gt;
+ *
+ * @since Java Persistence 1.0
+ */
+@Target({ METHOD, FIELD })
+@Retention(RUNTIME)
+public @interface Version {
+}
+</code></pre><p>简单来说就是用一个version字段来充当乐观锁的作用。<br>先来设计实体类</p><pre><code>/**
+ * Created by xujingfeng on 2017/1/30.
+ */
+@Entity
+@Table(name = &quot;t_student&quot;)
+public class Student {
+
+    @Id
+    @GenericGenerator(name = &quot;PKUUID&quot;, strategy = &quot;uuid2&quot;)
+    @GeneratedValue(generator = &quot;PKUUID&quot;)
+    @Column(length = 36)
+    private String id;
+
+    @Version
+    private int version;
+
+    private String name;
+
+    //getter()...
+    //setter()...
+}
+</code></pre><p>Dao层</p><pre><code>/**
+ * Created by xujingfeng on 2017/1/30.
+ */
+public interface StudentDao extends JpaRepository&lt;Student,String&gt;{
+
+    @Query(&quot;update Student set name=?1 where id=?2&quot;)
+    @Modifying
+    @Transactional
+    int updateNameById(String name,String id);
+}
+</code></pre><p>Controller层充当单元测试的作用，通过访问一个requestMapping来触发我们想要测试的方法。</p><pre><code>/**
+ * Created by xujingfeng on 2017/1/30.
+ */
+@Controller
+public class StudentController {
+
+    @Autowired
+    StudentDao studentDao;
+
+    @RequestMapping(&quot;student.html&quot;)
+    @ResponseBody
+    public String student(){
+        Student student = new Student();
+        student.setName(&quot;xujingfeng&quot;);
+        studentDao.save(student);
+        return &quot;student&quot;;
+    }
+
+    @RequestMapping(&quot;testVersion.html&quot;)
+    @ResponseBody
+    public String testVersion() throws InterruptedException {
+        Student student = studentDao.findOne(&quot;6ed16acc-61df-4a66-add9-d17c88b69755&quot;);
+        student.setName(&quot;xuxuan&quot;);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                studentDao.findOne(&quot;6ed16acc-61df-4a66-add9-d17c88b69755&quot;);
+                student.setName(&quot;xuxuanInThread&quot;);
+                studentDao.save(student);
+            }
+        }).start();
+        Thread.sleep(1000);
+        studentDao.save(student);
+        return &quot;testVersion&quot;;
+    }
+
+
+    @RequestMapping(&quot;updateNameById.html&quot;)
+    @ResponseBody
+    public String updateNameById(){
+        studentDao.updateNameById(&quot;xuxuan2&quot;,&quot;6ed16acc-61df-4a66-add9-d17c88b69755&quot;);
+        return &quot;updateNameById&quot;;
+    }
+}
+</code></pre><p>这里面三个方法，主要是我们想用来测试的三个注意点。<br>第一个方法student.html我们想看看springdata如何对version字段进行增长的。就不贴图了，直接给结论，对于添加了@Version的注解，我们不需要手动去控制，每一次save操作会在原来的基础上+1，如果初始为null，则springdata自动设置其为0。<br>第二个方法testVersion.html是乐观锁的核心，当多个线程并发访问同一行记录时，添加了@Version乐观锁之后，程序会进行怎么样的控制呢？</p><pre><code>org.hibernate.StaleObjectStateException: Row was updated or deleted by another transaction (or unsaved-value mapping was incorrect) : [com.example.jpa.Student#6ed16acc-61df-4a66-add9-d17c88b69755]
+</code></pre><p>异常信息如上，主线程和新线程获取了同一行记录，并且新线程优先提交了事务，版本号一致，修改成功。等到了主线程再想save提交事务时，便得到一个版本号不一致的异常，那么在项目开发中就应该自己捕获这个异常根据业务内容做对应处理，是重试还是放弃etc…</p><p>第三个方法，updateNameById.html是想强调一下，@Query中的update，delete操作是不会触发springdata的相关代理操作的，而是转化为原生sql的方式，所以在项目中使用时也要注意这点。</p><p>乐观锁，用在一些敏感业务数据上，而其本身的修饰：乐观，代表的含义便是相信大多数场景下version是一致的。但是从业务角度出发又要保证数据的严格一致性，避免脏读等问题，使用的场景需要斟酌。记得前面一片博文简单介绍了一下行级锁的概念，其实本质上和乐观锁都是想要再数据库层面加锁控制并发，那么什么时候该用乐观锁，行级锁，什么时候得在程序级别加同步锁，又要根据具体的业务场景去判断。找到能够满足自己项目需求的方案，找到性能和可靠性的平衡点，才是一个程序员的价值所在。</p></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="4142158067"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="5618891265"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><footer class="post-footer"><div class="post-nav"><div class="post-nav-next post-nav-item"><a href="/2017/jooq中文2jooq与spring和druid集成.html" rel="next" title="【jOOQ中文】2. jOOQ与Spring和Druid集成"><i class="fa fa-chevron-left"></i> 【jOOQ中文】2. jOOQ与Spring和Druid集成</a></div><span class="post-nav-divider"></span><div class="post-nav-prev post-nav-item"><a href="/2017/关于springmvc和struts2的区别.html" rel="prev" title="关于SpringMVC和Struts2的区别">关于SpringMVC和Struts2的区别 <i class="fa fa-chevron-right"></i></a></div></div></footer></div></article><div class="post-spread"></div></div></div></div><div class="sidebar-toggle"><div class="sidebar-toggle-line-wrap"><span class="sidebar-toggle-line sidebar-toggle-line-first"></span> <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span> <span class="sidebar-toggle-line sidebar-toggle-line-last"></span></div></div><aside id="sidebar" class="sidebar"><div class="sidebar-inner"><section class="site-overview-wrap sidebar-panel sidebar-panel-active"><div class="site-overview"><div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person"><p class="site-author-name" itemprop="name">Hello</p><p class="site-description motion-element" itemprop="description"></p></div><nav class="site-state motion-element"><div class="site-state-item site-state-posts"><a href="/archives/"><span class="site-state-item-count">1358</span> <span class="site-state-item-name">posts</span></a></div></nav></div></section></div></aside><div class="sfix"><div class="fixedme"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460" data-ad-format="auto"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script></div></div></main><footer id="footer" class="footer"><div class="footer-inner"><div class="copyright">&copy; <span itemprop="copyrightYear">2018</span> <span class="with-love"><i class="fa fa-user"></i> </span><span class="author" itemprop="copyrightHolder">Hello</span></div><div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div><span class="post-meta-divider">|</span><div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div></div></footer><div class="back-to-top"><i class="fa fa-arrow-up"></i></div></div><script type="text/javascript">"[object Function]"!==Object.prototype.toString.call(window.Promise)&&(window.Promise=null)</script><script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script><script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script><script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script><script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script><script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script></body></html><!-- rebuild by neat -->

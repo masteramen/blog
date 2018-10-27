@@ -1,0 +1,283 @@
+<!-- build time:Sat Oct 27 2018 21:00:16 GMT+0800 (CST) --><!DOCTYPE html><html class="theme-next muse use-motion"><head><meta name="generator" content="Hexo 3.8.0"><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"><meta name="theme-color" content="#222"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"><link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css"><link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css"><link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4"><link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222"><meta name="description" content="微服务架构中，根据业务划分成若干个服务，各单元应用间通过服务注册与订阅的方式互相依赖，依赖通过远程调用的方式执行，该方式难以避免因网络或自身原因而出现故障或者延迟，从而并不能保证服务的100%可用，此时若有大量的网络涌入，会形成任务累计，导致服务瘫痪，甚至导致服务“雪崩”。– Hystrix1.Netflix 已经为我们创建了 Hystrix 库来实现服务降级、服务熔断、线程隔离、请求缓存、请求合"><meta name="keywords" content="JAVA,面试"><meta property="og:type" content="article"><meta property="og:title" content="一起来学SpringCloud之 – 断路器Hystrix（Ribbon）"><meta property="og:url" content="http://www.jfox.info/2017/一起来学springcloud之断路器hystrixribbon.html"><meta property="og:site_name" content="java面试"><meta property="og:description" content="微服务架构中，根据业务划分成若干个服务，各单元应用间通过服务注册与订阅的方式互相依赖，依赖通过远程调用的方式执行，该方式难以避免因网络或自身原因而出现故障或者延迟，从而并不能保证服务的100%可用，此时若有大量的网络涌入，会形成任务累计，导致服务瘫痪，甚至导致服务“雪崩”。– Hystrix1.Netflix 已经为我们创建了 Hystrix 库来实现服务降级、服务熔断、线程隔离、请求缓存、请求合"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="http://www.jfox.info/2017/1495/d12d6e4.png"><meta property="og:image" content="http://www.jfox.info/2017/1495/f91622e.png"><meta property="og:image" content="http://www.jfox.info/2017/1495/20f835d.png"><meta property="og:image" content="http://www.jfox.info/2017/1495/0ea4f3b.png"><meta property="og:image" content="http://www.jfox.info/2017/1495/5845c69.png"><meta property="og:image" content="http://www.jfox.info/2017/1495/2115564.png"><meta property="og:image" content="http://www.jfox.info/2017/1495/dc28baf.png"><meta property="og:image" content="http://www.jfox.info/2017/1495/1eb7990.png"><meta property="og:updated_time" content="2018-10-27T12:29:37.369Z"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="一起来学SpringCloud之 – 断路器Hystrix（Ribbon）"><meta name="twitter:description" content="微服务架构中，根据业务划分成若干个服务，各单元应用间通过服务注册与订阅的方式互相依赖，依赖通过远程调用的方式执行，该方式难以避免因网络或自身原因而出现故障或者延迟，从而并不能保证服务的100%可用，此时若有大量的网络涌入，会形成任务累计，导致服务瘫痪，甚至导致服务“雪崩”。– Hystrix1.Netflix 已经为我们创建了 Hystrix 库来实现服务降级、服务熔断、线程隔离、请求缓存、请求合"><meta name="twitter:image" content="http://www.jfox.info/2017/1495/d12d6e4.png"><script type="text/javascript" id="hexo.configurations">var NexT=window.NexT||{},CONFIG={root:"/",scheme:"Muse",version:"5.1.4",sidebar:{position:"left",display:"post",offset:12,b2t:!1,scrollpercent:!1,onmobile:!1},fancybox:!0,tabs:!0,motion:{enable:!0,async:!1,transition:{post_block:"fadeIn",post_header:"slideDownIn",post_body:"slideDownIn",coll_header:"slideLeftIn",sidebar:"slideUpIn"}},duoshuo:{userId:"0",author:"Author"},algolia:{applicationID:"",apiKey:"",indexName:"",hits:{per_page:10},labels:{input_placeholder:"Search for Posts",hits_empty:"We didn't find any results for the search: ${query}",hits_stats:"${hits} results found in ${time} ms"}}}</script><link rel="canonical" href="http://www.jfox.info/2017/一起来学springcloud之断路器hystrixribbon.html"><title>一起来学SpringCloud之 – 断路器Hystrix（Ribbon） | java面试</title></head><body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN"><div class="container sidebar-position-left page-post-detail"><div class="headband"></div><header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="header-inner"><div class="site-brand-wrapper"><div class="site-meta"><div class="custom-logo-site-title"><a href="/" class="brand" rel="start"><span class="logo-line-before"><i></i></span> <span class="site-title">java面试</span> <span class="logo-line-after"><i></i></span></a></div><p class="site-subtitle"></p></div><div class="site-nav-toggle"><button><span class="btn-bar"></span> <span class="btn-bar"></span> <span class="btn-bar"></span></button></div></div><nav class="site-nav"><ul id="menu" class="menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i><br>Home</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i><br>Archives</a></li></ul></nav></div></header><main id="main" class="main"><div class="main-inner"><div class="content-wrap"><div id="content" class="content"><div id="posts" class="posts-expand"><article class="post post-type-normal" itemscope itemtype="http://schema.org/Article"><div class="post-block"><link itemprop="mainEntityOfPage" href="http://www.jfox.info/2017/一起来学springcloud之断路器hystrixribbon.html"><span hidden itemprop="author" itemscope itemtype="http://schema.org/Person"><meta itemprop="name" content="Hello"><meta itemprop="description" content=""><meta itemprop="image" content="/images/avatar.gif"></span><span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><meta itemprop="name" content="java面试"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">一起来学SpringCloud之 – 断路器Hystrix（Ribbon）</h1><div class="post-meta"><span class="post-time"><span class="post-meta-item-icon"><i class="fa fa-calendar-o"></i> </span><span class="post-meta-item-text">Posted on</span> <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-01-01T23:59:55+08:00">2017-01-01</time></span></div></header><div class="post-body" itemprop="articleBody"><p>微服务架构中，根据业务划分成若干个服务，各单元应用间通过服务注册与订阅的方式互相依赖，依赖通过远程调用的方式执行，该方式难以避免因网络或自身原因而出现故障或者延迟，从而并不能保证服务的100%可用，此时若有大量的网络涌入，会形成任务累计，导致服务瘫痪，甚至导致服务“雪崩”。</p><h2 id="–-Hystrix"><a href="#–-Hystrix" class="headerlink" title="– Hystrix"></a>– Hystrix</h2><p>1.Netflix 已经为我们创建了 Hystrix 库来实现服务降级、服务熔断、线程隔离、请求缓存、请求合并以及服务监控（Hystrix Dashboard）等强大功能，在微服务架构中，多层服务调用是非常常见的。</p><p><img src="/2017/1495/d12d6e4.png" alt=""></p><p>2.较底层的服务中的服务故障可能导致级联故障，当对特定的服务的调用达到一个阀值（Hystric 是5秒20次） 断路器将会被打开，故障百分比大于circuitBreaker.errorThresholdPercentage（默认值：&gt; 50％）时metrics.rollingStats.timeInMilliseconds（默认10秒），断路打开后，开发人员可以回退机制。</p><p><img src="/2017/1495/f91622e.png" alt=""></p><p>官方文档： <a href="https://www.jfox.info/go.php?url=http://cloud.spring.io/spring-cloud-static/Dalston.SR2/#_circuit_breaker_hystrix_clients">http://cloud.spring.io/spring-cloud-static/Dalston.SR2/#_circuit_breaker_hystrix_clients</a></p><h2 id="–-准备工作"><a href="#–-准备工作" class="headerlink" title="– 准备工作"></a>– 准备工作</h2><p>1.启动Consul</p><p>2.创建 <code>battcn-provider</code> 和 <code>battcn-consumer</code></p><h2 id="–-battcn-provider"><a href="#–-battcn-provider" class="headerlink" title="– battcn-provider"></a>– battcn-provider</h2><h3 id="–-pom-xml"><a href="#–-pom-xml" class="headerlink" title="– pom.xml"></a>– pom.xml</h3><pre><code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;project xmlns=&quot;http://maven.apache.org/POM/4.0.0&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+         xsi:schemaLocation=&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd&quot;&gt;
+    &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
+
+    &lt;groupId&gt;com.battcn&lt;/groupId&gt;
+    &lt;artifactId&gt;battcn-provider&lt;/artifactId&gt;
+    &lt;version&gt;1.0.0-SNAPSHOT&lt;/version&gt;
+    &lt;packaging&gt;jar&lt;/packaging&gt;
+    &lt;name&gt;battcn-provider&lt;/name&gt;
+    &lt;description&gt;Ribbon与Hystrix&lt;/description&gt;
+
+    &lt;parent&gt;
+        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-boot-starter-parent&lt;/artifactId&gt;
+        &lt;version&gt;1.5.4.RELEASE&lt;/version&gt;
+        &lt;relativePath/&gt; &lt;!-- lookup parent from repository --&gt;
+    &lt;/parent&gt;
+
+    &lt;properties&gt;
+        &lt;project.build.sourceEncoding&gt;UTF-8&lt;/project.build.sourceEncoding&gt;
+        &lt;project.reporting.outputEncoding&gt;UTF-8&lt;/project.reporting.outputEncoding&gt;
+        &lt;java.version&gt;1.8&lt;/java.version&gt;
+        &lt;spring-cloud.version&gt;Dalston.SR2&lt;/spring-cloud.version&gt;
+    &lt;/properties&gt;
+
+    &lt;dependencies&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-cloud-starter-consul-discovery&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-boot-starter-actuator&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-boot-starter-test&lt;/artifactId&gt;
+            &lt;scope&gt;test&lt;/scope&gt;
+        &lt;/dependency&gt;
+    &lt;/dependencies&gt;
+
+    &lt;dependencyManagement&gt;
+        &lt;dependencies&gt;
+            &lt;dependency&gt;
+                &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
+                &lt;artifactId&gt;spring-cloud-dependencies&lt;/artifactId&gt;
+                &lt;version&gt;${spring-cloud.version}&lt;/version&gt;
+                &lt;type&gt;pom&lt;/type&gt;
+                &lt;scope&gt;import&lt;/scope&gt;
+            &lt;/dependency&gt;
+        &lt;/dependencies&gt;
+    &lt;/dependencyManagement&gt;
+
+    &lt;build&gt;
+        &lt;plugins&gt;
+            &lt;plugin&gt;
+                &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+                &lt;artifactId&gt;spring-boot-maven-plugin&lt;/artifactId&gt;
+            &lt;/plugin&gt;
+        &lt;/plugins&gt;
+    &lt;/build&gt;
+
+
+&lt;/project&gt;
+</code></pre><h3 id="–-ProviderApplication-java"><a href="#–-ProviderApplication-java" class="headerlink" title="– ProviderApplication.java"></a>– ProviderApplication.java</h3><pre><code>package com.battcn;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@SpringBootApplication
+@EnableDiscoveryClient
+@RestController
+public class ProviderApplication {
+
+    @Value(&quot;${spring.application.name}&quot;)
+    String applicationName;
+
+
+    public static void main(String[] args) {
+        SpringApplication.run(ProviderApplication.class, args);
+    }
+
+    @GetMapping(&quot;/hello&quot;)
+    public String hello() {
+        return &quot;My Name&apos;s :&quot; + applicationName + &quot; Email:1837307557@qq.com&quot;;
+    }
+}
+</code></pre><h3 id="–-bootstrap-yml"><a href="#–-bootstrap-yml" class="headerlink" title="– bootstrap.yml"></a>– bootstrap.yml</h3><pre><code>server:
+  port: 8765
+
+spring:
+  application:
+    name: battcn-provider
+  cloud:
+    consul:
+      host: localhost
+      port: 8500
+      enabled: true
+      discovery:
+        enabled: true
+        prefer-ip-address: true
+</code></pre><h2 id="–-battcn-consumer"><a href="#–-battcn-consumer" class="headerlink" title="– battcn-consumer"></a>– battcn-consumer</h2><h3 id="–-pom-xml-1"><a href="#–-pom-xml-1" class="headerlink" title="– pom.xml"></a>– pom.xml</h3><pre><code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;project xmlns=&quot;http://maven.apache.org/POM/4.0.0&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+         xsi:schemaLocation=&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd&quot;&gt;
+    &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
+
+    &lt;groupId&gt;com.battcn&lt;/groupId&gt;
+    &lt;artifactId&gt;battcn-consumer&lt;/artifactId&gt;
+    &lt;version&gt;1.0.0-SNAPSHOT&lt;/version&gt;
+    &lt;packaging&gt;jar&lt;/packaging&gt;
+    &lt;name&gt;battcn-consumer&lt;/name&gt;
+    &lt;description&gt;Ribbon与Hystrix&lt;/description&gt;
+
+    &lt;parent&gt;
+        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-boot-starter-parent&lt;/artifactId&gt;
+        &lt;version&gt;1.5.4.RELEASE&lt;/version&gt;
+        &lt;relativePath/&gt; &lt;!-- lookup parent from repository --&gt;
+    &lt;/parent&gt;
+
+    &lt;properties&gt;
+        &lt;project.build.sourceEncoding&gt;UTF-8&lt;/project.build.sourceEncoding&gt;
+        &lt;project.reporting.outputEncoding&gt;UTF-8&lt;/project.reporting.outputEncoding&gt;
+        &lt;java.version&gt;1.8&lt;/java.version&gt;
+        &lt;spring-cloud.version&gt;Dalston.SR2&lt;/spring-cloud.version&gt;
+    &lt;/properties&gt;
+
+    &lt;dependencies&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-cloud-starter-hystrix&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-boot-starter-actuator&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-cloud-starter-consul-discovery&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-boot-starter-test&lt;/artifactId&gt;
+            &lt;scope&gt;test&lt;/scope&gt;
+        &lt;/dependency&gt;
+    &lt;/dependencies&gt;
+
+    &lt;dependencyManagement&gt;
+        &lt;dependencies&gt;
+            &lt;dependency&gt;
+                &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
+                &lt;artifactId&gt;spring-cloud-dependencies&lt;/artifactId&gt;
+                &lt;version&gt;${spring-cloud.version}&lt;/version&gt;
+                &lt;type&gt;pom&lt;/type&gt;
+                &lt;scope&gt;import&lt;/scope&gt;
+            &lt;/dependency&gt;
+        &lt;/dependencies&gt;
+    &lt;/dependencyManagement&gt;
+
+    &lt;build&gt;
+        &lt;plugins&gt;
+            &lt;plugin&gt;
+                &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+                &lt;artifactId&gt;spring-boot-maven-plugin&lt;/artifactId&gt;
+            &lt;/plugin&gt;
+        &lt;/plugins&gt;
+    &lt;/build&gt;
+
+
+&lt;/project&gt;
+</code></pre><h3 id="–-ConsumerApplication"><a href="#–-ConsumerApplication" class="headerlink" title="– ConsumerApplication"></a>– ConsumerApplication</h3><pre><code>package com.battcn;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.cloud.client.SpringCloudApplication;
+import org.springframework.cloud.client.loadbalancer.LoadBalanced;
+import org.springframework.context.annotation.Bean;
+import org.springframework.web.client.RestTemplate;
+
+//@EnableDiscoveryClient
+//@SpringBootApplication
+//@EnableCircuitBreaker
+
+/**
+ * SpringCloudApplication 一个注解顶上面三个,有兴趣的可以点进去看源码
+ */
+@SpringCloudApplication
+public class ConsumerApplication {
+
+    @Bean
+    @LoadBalanced
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
+    }
+
+    public static void main(String[] args) {
+        SpringApplication.run(ConsumerApplication.class, args);
+    }
+
+}
+</code></pre><h3 id="–-HiController"><a href="#–-HiController" class="headerlink" title="– HiController"></a>– HiController</h3><pre><code>package com.battcn.controller;
+
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
+
+/**
+ * 为了偷懒，就写一个文件了
+ */
+@RestController
+public class HiController {
+
+    static Logger LOGGER = LoggerFactory.getLogger(HiController.class);
+    @Autowired
+    HiService hiService;
+
+    @GetMapping(&quot;/hi&quot;)
+    public String hi() {
+        return hiService.hello();
+    }
+
+    @Service
+    class HiService {
+        @Autowired
+        RestTemplate restTemplate;
+
+        @HystrixCommand(fallbackMethod = &quot;ribbonFallback&quot;)
+        public String hello() {
+            return restTemplate.getForObject(&quot;http://battcn-provider/hello&quot;, String.class);
+        }
+
+        public String ribbonFallback() {
+            return &quot;My Name&apos;s :ribbonFallback Email:1837307557@qq.com&quot;;
+        }
+    }
+
+}
+</code></pre><h3 id="–-bootstrap-yml-1"><a href="#–-bootstrap-yml-1" class="headerlink" title="– bootstrap.yml"></a>– bootstrap.yml</h3><pre><code>server:
+  port: 8766
+
+spring:
+  application:
+    name: battcn-consumer
+  cloud:
+    consul:
+      host: localhost
+      port: 8500
+      enabled: true
+      discovery:
+        enabled: true
+        prefer-ip-address: true
+</code></pre><h2 id="–-测试"><a href="#–-测试" class="headerlink" title="– 测试"></a>– 测试</h2><p>启动：battcn-provider</p><p>启动：battcn-consumer</p><p>访问： <a href="https://www.jfox.info/go.php?url=http://localhost:8500/">http://localhost:8500/</a> 显示如下代表服务注册成功</p><p><img src="/2017/1495/20f835d.png" alt=""></p><p>访问： <a href="https://www.jfox.info/go.php?url=http://localhost:8766/hi">http://localhost:8766/hi</a></p><pre><code>My Name&apos;s :battcn-provider Email:1837307557@qq.com    #正确情况
+
+My Name&apos;s :ribbonFallback Email:1837307557@qq.com    #关闭battcn-provider后结果
+</code></pre><h3 id="–-源码"><a href="#–-源码" class="headerlink" title="– 源码"></a>– 源码</h3><p>1.当我们开启 <code>Hystrix</code> 的时候 Hystrix 会为我们注入 <code>HystrixCommandAspect</code> 切面，操作所有带 <code>HystrixCommand</code> 注解，随后就是通过反射与Cglib创建代理然后发送请求，不管服务是否健壮都会先进入AOP切面然后才会执行后续操作（打脸轻点…）</p><p><img src="/2017/1495/0ea4f3b.png" alt=""></p><h3 id="–-监控"><a href="#–-监控" class="headerlink" title="– 监控"></a>– 监控</h3><p>1.在 <code>ConsumerApplication</code> 中添加 <code>@EnableHystrixDashboard</code> 的注解</p><pre><code>@SpringCloudApplication
+@EnableHystrixDashboard    //多了个开启监控注解
+public class ConsumerApplication {
+
+    @Bean
+    @LoadBalanced
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
+    }
+
+    public static void main(String[] args) {
+        SpringApplication.run(ConsumerApplication.class, args);
+    }
+
+}
+</code></pre><p>2.在 <code>pom.xml</code> 中添加如下配置</p><pre><code>&lt;dependency&gt;
+    &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
+    &lt;artifactId&gt;spring-cloud-starter-hystrix-dashboard&lt;/artifactId&gt;
+&lt;/dependency&gt;
+</code></pre><p>3.访问： <a href="https://www.jfox.info/go.php?url=http://localhost:8766/hystrix">http://localhost:8766/hystrix</a></p><p><img src="/2017/1495/5845c69.png" alt=""></p><p>4.访问N次： <a href="https://www.jfox.info/go.php?url=http://localhost:8766/hi">http://localhost:8766/hi</a></p><p><img src="/2017/1495/2115564.png" alt=""></p><p>我们可以看到请求成功，失败，等信息</p><h2 id="–-说点什么"><a href="#–-说点什么" class="headerlink" title="– 说点什么"></a>– 说点什么</h2><p>本章代码（battcn-provider/consumer）： <a href="https://www.jfox.info/go.php?url=https://git.oschina.net/battcn/battcn-cloud/tree/master/battcn-cloud-hystrix-ribbon">https://git.oschina.net/battcn/battcn-cloud/tree/master/battcn-cloud-hystrix-ribbon</a></p><p>如有问题请及时与我联系</p><ol><li>个人QQ：1837307557</li><li>Spring Cloud中国社区①：415028731</li><li>Spring For All 社区⑤：157525002</li><li>好消息 Dubbo 进入维护阶段，欢迎一起讨论与交流 （猜测为了迎合阿里商用软件）</li></ol><p>转载标明出处，thanks<br>赏<br>谢谢你请我吃糖果</p><p><img src="/2017/1495/dc28baf.png" alt="">支付宝</p><p><img src="/2017/1495/1eb7990.png" alt="">微信</p></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="4142158067"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="5618891265"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><footer class="post-footer"><div class="post-nav"><div class="post-nav-next post-nav-item"><a href="/2017/tomcat停机过程分析及线程处理方法.html" rel="next" title="Tomcat停机过程分析及线程处理方法"><i class="fa fa-chevron-left"></i> Tomcat停机过程分析及线程处理方法</a></div><span class="post-nav-divider"></span><div class="post-nav-prev post-nav-item"><a href="/2017/云服务器ecs建站教程部署javaweb.html" rel="prev" title="云服务器 ECS 建站教程：部署Java Web">云服务器 ECS 建站教程：部署Java Web <i class="fa fa-chevron-right"></i></a></div></div></footer></div></article><div class="post-spread"></div></div></div></div><div class="sidebar-toggle"><div class="sidebar-toggle-line-wrap"><span class="sidebar-toggle-line sidebar-toggle-line-first"></span> <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span> <span class="sidebar-toggle-line sidebar-toggle-line-last"></span></div></div><aside id="sidebar" class="sidebar"><div class="sidebar-inner"><ul class="sidebar-nav motion-element"><li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">Table of Contents</li><li class="sidebar-nav-overview" data-target="site-overview-wrap">Overview</li></ul><section class="site-overview-wrap sidebar-panel"><div class="site-overview"><div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person"><p class="site-author-name" itemprop="name">Hello</p><p class="site-description motion-element" itemprop="description"></p></div><nav class="site-state motion-element"><div class="site-state-item site-state-posts"><a href="/archives/"><span class="site-state-item-count">1358</span> <span class="site-state-item-name">posts</span></a></div></nav></div></section><section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active"><div class="post-toc"><div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#–-Hystrix"><span class="nav-number">1.</span> <span class="nav-text">– Hystrix</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#–-准备工作"><span class="nav-number">2.</span> <span class="nav-text">– 准备工作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#–-battcn-provider"><span class="nav-number">3.</span> <span class="nav-text">– battcn-provider</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#–-pom-xml"><span class="nav-number">3.1.</span> <span class="nav-text">– pom.xml</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#–-ProviderApplication-java"><span class="nav-number">3.2.</span> <span class="nav-text">– ProviderApplication.java</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#–-bootstrap-yml"><span class="nav-number">3.3.</span> <span class="nav-text">– bootstrap.yml</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#–-battcn-consumer"><span class="nav-number">4.</span> <span class="nav-text">– battcn-consumer</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#–-pom-xml-1"><span class="nav-number">4.1.</span> <span class="nav-text">– pom.xml</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#–-ConsumerApplication"><span class="nav-number">4.2.</span> <span class="nav-text">– ConsumerApplication</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#–-HiController"><span class="nav-number">4.3.</span> <span class="nav-text">– HiController</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#–-bootstrap-yml-1"><span class="nav-number">4.4.</span> <span class="nav-text">– bootstrap.yml</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#–-测试"><span class="nav-number">5.</span> <span class="nav-text">– 测试</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#–-源码"><span class="nav-number">5.1.</span> <span class="nav-text">– 源码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#–-监控"><span class="nav-number">5.2.</span> <span class="nav-text">– 监控</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#–-说点什么"><span class="nav-number">6.</span> <span class="nav-text">– 说点什么</span></a></li></ol></div></div></section></div></aside><div class="sfix"><div class="fixedme"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460" data-ad-format="auto"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script></div></div></main><footer id="footer" class="footer"><div class="footer-inner"><div class="copyright">&copy; <span itemprop="copyrightYear">2018</span> <span class="with-love"><i class="fa fa-user"></i> </span><span class="author" itemprop="copyrightHolder">Hello</span></div><div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div><span class="post-meta-divider">|</span><div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div></div></footer><div class="back-to-top"><i class="fa fa-arrow-up"></i></div></div><script type="text/javascript">"[object Function]"!==Object.prototype.toString.call(window.Promise)&&(window.Promise=null)</script><script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script><script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script><script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script><script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script><script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script></body></html><!-- rebuild by neat -->

@@ -1,0 +1,130 @@
+<!-- build time:Sat Oct 27 2018 21:00:19 GMT+0800 (CST) --><!DOCTYPE html><html class="theme-next muse use-motion"><head><meta name="generator" content="Hexo 3.8.0"><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"><meta name="theme-color" content="#222"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"><link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css"><link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css"><link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4"><link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222"><meta name="description" content="之前有文章讲述在Spring MVC 中扩展 RequestMappingHandlerMapping 实现对版本的控制。但是在真正使用过程中不是很理想化，因为其需要替换掉WebMvcConfigurationSupport，替换后后，会将其提供的一系列默认组件全部移除。如我们注册拦截器使用的（RequestMappingHandlerAdapter）、全局异常拦截（ExceptionHandle"><meta name="keywords" content="JAVA,面试"><meta property="og:type" content="article"><meta property="og:title" content="Spring Boot API 版本权限控制"><meta property="og:url" content="http://www.jfox.info/2017/springbootapi版本权限控制.html"><meta property="og:site_name" content="java面试"><meta property="og:description" content="之前有文章讲述在Spring MVC 中扩展 RequestMappingHandlerMapping 实现对版本的控制。但是在真正使用过程中不是很理想化，因为其需要替换掉WebMvcConfigurationSupport，替换后后，会将其提供的一系列默认组件全部移除。如我们注册拦截器使用的（RequestMappingHandlerAdapter）、全局异常拦截（ExceptionHandle"><meta property="og:locale" content="zh_CN"><meta property="og:updated_time" content="2018-10-27T12:29:37.420Z"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="Spring Boot API 版本权限控制"><meta name="twitter:description" content="之前有文章讲述在Spring MVC 中扩展 RequestMappingHandlerMapping 实现对版本的控制。但是在真正使用过程中不是很理想化，因为其需要替换掉WebMvcConfigurationSupport，替换后后，会将其提供的一系列默认组件全部移除。如我们注册拦截器使用的（RequestMappingHandlerAdapter）、全局异常拦截（ExceptionHandle"><script type="text/javascript" id="hexo.configurations">var NexT=window.NexT||{},CONFIG={root:"/",scheme:"Muse",version:"5.1.4",sidebar:{position:"left",display:"post",offset:12,b2t:!1,scrollpercent:!1,onmobile:!1},fancybox:!0,tabs:!0,motion:{enable:!0,async:!1,transition:{post_block:"fadeIn",post_header:"slideDownIn",post_body:"slideDownIn",coll_header:"slideLeftIn",sidebar:"slideUpIn"}},duoshuo:{userId:"0",author:"Author"},algolia:{applicationID:"",apiKey:"",indexName:"",hits:{per_page:10},labels:{input_placeholder:"Search for Posts",hits_empty:"We didn't find any results for the search: ${query}",hits_stats:"${hits} results found in ${time} ms"}}}</script><link rel="canonical" href="http://www.jfox.info/2017/springbootapi版本权限控制.html"><title>Spring Boot API 版本权限控制 | java面试</title></head><body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN"><div class="container sidebar-position-left page-post-detail"><div class="headband"></div><header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="header-inner"><div class="site-brand-wrapper"><div class="site-meta"><div class="custom-logo-site-title"><a href="/" class="brand" rel="start"><span class="logo-line-before"><i></i></span> <span class="site-title">java面试</span> <span class="logo-line-after"><i></i></span></a></div><p class="site-subtitle"></p></div><div class="site-nav-toggle"><button><span class="btn-bar"></span> <span class="btn-bar"></span> <span class="btn-bar"></span></button></div></div><nav class="site-nav"><ul id="menu" class="menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i><br>Home</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i><br>Archives</a></li></ul></nav></div></header><main id="main" class="main"><div class="main-inner"><div class="content-wrap"><div id="content" class="content"><div id="posts" class="posts-expand"><article class="post post-type-normal" itemscope itemtype="http://schema.org/Article"><div class="post-block"><link itemprop="mainEntityOfPage" href="http://www.jfox.info/2017/springbootapi版本权限控制.html"><span hidden itemprop="author" itemscope itemtype="http://schema.org/Person"><meta itemprop="name" content="Hello"><meta itemprop="description" content=""><meta itemprop="image" content="/images/avatar.gif"></span><span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><meta itemprop="name" content="java面试"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">Spring Boot API 版本权限控制</h1><div class="post-meta"><span class="post-time"><span class="post-meta-item-icon"><i class="fa fa-calendar-o"></i> </span><span class="post-meta-item-text">Posted on</span> <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-01-01T23:55:48+08:00">2017-01-01</time></span></div></header><div class="post-body" itemprop="articleBody"><p>之前有文章讲述在Spring MVC 中扩展 RequestMappingHandlerMapping 实现对版本的控制。</p><p>但是在真正使用过程中不是很理想化，因为其需要替换掉WebMvcConfigurationSupport，替换后后，会将其提供的一系列默认组件全部移除。如我们注册拦截器使用的（RequestMappingHandlerAdapter）、全局异常拦截（ExceptionHandlerExceptionResolver）等。</p><p>本文以Spring Boot 为例，解决这个问题。</p><h3 id="自动配置时序图"><a href="#自动配置时序图" class="headerlink" title="自动配置时序图"></a>自动配置时序图</h3><p>由上图则可以清晰看到，关键点在于是否存在WebMvcRegistrations。</p><p>进入WebMvcRegistrations发现其接口下提供了WebMvcRegistrationsAdapter转换器，可以轻松扩展我们所需的RequestMappingHandlerMapping，实现版本控制。</p><h3 id="自动配置RequestMappingHandlerMapping源码分析"><a href="#自动配置RequestMappingHandlerMapping源码分析" class="headerlink" title="自动配置RequestMappingHandlerMapping源码分析"></a>自动配置RequestMappingHandlerMapping源码分析</h3><h4 id="判断是否存在WebMvcConfigurationSupport"><a href="#判断是否存在WebMvcConfigurationSupport" class="headerlink" title="判断是否存在WebMvcConfigurationSupport"></a>判断是否存在WebMvcConfigurationSupport</h4><p>Spring Boot 首先加载WebMvcAutoConfiguration</p><p>上图可以看到使用注解ConditionalOnMissingBean判断是否存在WebMvcConfigurationSupport，如果不存在，则该类不会注入，故如果我们直接继承WebMvcConfigurationSupport，则会导致整个全部配置失效。</p><p><strong>ps: SpringBoot的自动配置原理基本都是基于此类注解。</strong></p><h4 id="引入WebMvc配置"><a href="#引入WebMvc配置" class="headerlink" title="引入WebMvc配置"></a>引入WebMvc配置</h4><p>上图可看到通过@Import注解引入了EnableWebMvcConfiguration，点击进入该类可看到存在的构造方法中引入了WebMvcRegistrations。该类为WebMvcAutoConfiguration的内部类</p><h4 id="如何注入RequestMappingHandlerMapping"><a href="#如何注入RequestMappingHandlerMapping" class="headerlink" title="如何注入RequestMappingHandlerMapping"></a>如何注入RequestMappingHandlerMapping</h4><p>由上图可发现EnableWebMvcConfiguration类中注入了RequestMappingHandlerMapping。其调用父类requestMappingHandlerMapping方法生成RequestMappingHandlerMapping。跟踪父类可发现：</p><p>调用方法，创建了RequestMappingHandlerMapping，跟下去：</p><p>发现其有子类，点击左侧箭头查看：</p><p>发现回到了WebMvcAutoConfiguration中的EnableWebMvcConfiguration类。</p><p>其通过判断mvcRegistrations是否存在以及mvcRegistrations是否扩展RequestMappingHandlerMapping 来选择使用默认还是我们自定义的RequestMappingHandlerMapping 。</p><h4 id="如何扩展"><a href="#如何扩展" class="headerlink" title="如何扩展"></a>如何扩展</h4><p>创建一个类，继承WebMvcRegistrationsAdapter，重写getRequestMappingHandlerMapping，返回自定义RequestMappingHandlerMapping即可。</p><p>其类是WebMvcRegistrations方便对外扩展提供的转换器类，可以点进去看一下，默认全部返回null。</p><h3 id="附上版本控制全部代码"><a href="#附上版本控制全部代码" class="headerlink" title="附上版本控制全部代码"></a>附上版本控制全部代码</h3><h4 id="WebMvcRegistrationsConfig"><a href="#WebMvcRegistrationsConfig" class="headerlink" title="WebMvcRegistrationsConfig"></a>WebMvcRegistrationsConfig</h4><pre><code>import com.sample.core.common.config.version.ApiRequestMappingHandlerMapping;
+import org.springframework.boot.autoconfigure.web.WebMvcRegistrationsAdapter;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
+
+/**
+ * Created by zhangbowen on 2017/7/8.
+ */
+@Configuration
+public class WebMvcRegistrationsConfig extends WebMvcRegistrationsAdapter {
+    @Override
+    public RequestMappingHandlerMapping getRequestMappingHandlerMapping() {
+        return new ApiRequestMappingHandlerMapping();
+    }
+}
+</code></pre><h4 id="ApiRequestMappingHandlerMapping"><a href="#ApiRequestMappingHandlerMapping" class="headerlink" title="ApiRequestMappingHandlerMapping"></a>ApiRequestMappingHandlerMapping</h4><pre><code>import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.condition.RequestCondition;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
+
+import java.lang.reflect.Method;
+
+/**
+ * Created by zhangbowen on 2017/7/8.
+ */
+public class ApiRequestMappingHandlerMapping extends RequestMappingHandlerMapping {
+    @Override
+    protected RequestCondition&lt;?&gt; getCustomMethodCondition(Method method) {
+        return createCondition(method.getClass());
+    }
+
+    @Override
+    protected RequestCondition&lt;?&gt; getCustomTypeCondition(Class&lt;?&gt; handlerType) {
+        return createCondition(handlerType);
+    }
+    private static RequestCondition&lt;ApiVersionCondition&gt; createCondition(Class&lt;?&gt; clazz) {
+        RequestMapping classRequestMapping = AnnotationUtils.findAnnotation(clazz, RequestMapping.class);
+        if (classRequestMapping == null) {
+            return null;
+        }
+        StringBuilder mappingUrlBuilder = new StringBuilder();
+        if (classRequestMapping.value().length &gt; 0) {
+            mappingUrlBuilder.append(classRequestMapping.value()[0]);
+        }
+        String mappingUrl = mappingUrlBuilder.toString();
+        if (!mappingUrl.contains(&quot;${version}&quot;)) {
+            return null;
+        }
+        ApiVersion apiVersion = AnnotationUtils.findAnnotation(clazz, ApiVersion.class);
+        return apiVersion == null ? new ApiVersionCondition(1) : new ApiVersionCondition(apiVersion.value());
+    }
+}
+</code></pre><h4 id="ApiVersion"><a href="#ApiVersion" class="headerlink" title="@ApiVersion"></a>@ApiVersion</h4><pre><code>import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+/**
+ * Created by zhangbowen on 2017/4/15.
+ */
+@Target({ElementType.TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+public @interface ApiVersion {
+    /**
+     * 版本号
+     * @return
+     */
+    int value();
+}
+</code></pre><p>ApiVersionCondition</p><pre><code>import org.springframework.web.servlet.mvc.condition.RequestCondition;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+/**
+ * Created by zhangbowen on 2017/4/15.
+ */
+public class ApiVersionCondition implements RequestCondition&lt;ApiVersionCondition&gt; {
+    private final static Pattern VERSION_PREFIX_PATTERN = Pattern.compile(&quot;/v(d+).*&quot;);
+
+    private int apiVersion;
+
+    ApiVersionCondition(int apiVersion) {
+        this.apiVersion = apiVersion;
+    }
+
+    public int getApiVersion() {
+        return apiVersion;
+    }
+
+
+    @Override
+    public ApiVersionCondition combine(ApiVersionCondition apiVersionCondition) {
+        return new ApiVersionCondition(apiVersionCondition.getApiVersion());
+    }
+
+    @Override
+    public ApiVersionCondition getMatchingCondition(HttpServletRequest httpServletRequest) {
+        Matcher m = VERSION_PREFIX_PATTERN.matcher(httpServletRequest.getRequestURI());
+        if (m.find()) {
+            Integer version = Integer.valueOf(m.group(1));
+            if (version &gt;= this.apiVersion) {
+                return this;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public int compareTo(ApiVersionCondition apiVersionCondition, HttpServletRequest httpServletRequest) {
+        return apiVersionCondition.getApiVersion() - this.apiVersion;
+    }
+}
+</code></pre><h4 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h4><p>VersionV1Controller</p><pre><code>@RequestMapping(&quot;/${version}/version&quot;)
+@RestController
+public class VersionV1Controller {
+    public String test() {
+        return &quot;version1&quot;;
+    }
+}
+</code></pre><p>VersionV2Controller</p><pre><code>@RequestMapping(&quot;/${version}/version&quot;)
+@RestController
+@ApiVersion(2)
+public class VersionV2Controller {
+    public String test() {
+        return &quot;version2&quot;;
+    }
+}
+</code></pre><p>会不会有人发现这样的起名在生产环境会很low。。。下面这样会不会合理一些。</p><p>但是这样需要修改Spring 默认的名称生成器。。如何修改?。。。一次解决一个问题。。。。</p></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="4142158067"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="5618891265"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><footer class="post-footer"><div class="post-nav"><div class="post-nav-next post-nav-item"><a href="/2017/reflectionjava反射机制的应用场景.html" rel="next" title="Reflection：Java反射机制的应用场景"><i class="fa fa-chevron-left"></i> Reflection：Java反射机制的应用场景</a></div><span class="post-nav-divider"></span><div class="post-nav-prev post-nav-item"><a href="/2017/springcloud体验.html" rel="prev" title="Spring Cloud 体验">Spring Cloud 体验 <i class="fa fa-chevron-right"></i></a></div></div></footer></div></article><div class="post-spread"></div></div></div></div><div class="sidebar-toggle"><div class="sidebar-toggle-line-wrap"><span class="sidebar-toggle-line sidebar-toggle-line-first"></span> <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span> <span class="sidebar-toggle-line sidebar-toggle-line-last"></span></div></div><aside id="sidebar" class="sidebar"><div class="sidebar-inner"><ul class="sidebar-nav motion-element"><li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">Table of Contents</li><li class="sidebar-nav-overview" data-target="site-overview-wrap">Overview</li></ul><section class="site-overview-wrap sidebar-panel"><div class="site-overview"><div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person"><p class="site-author-name" itemprop="name">Hello</p><p class="site-description motion-element" itemprop="description"></p></div><nav class="site-state motion-element"><div class="site-state-item site-state-posts"><a href="/archives/"><span class="site-state-item-count">1358</span> <span class="site-state-item-name">posts</span></a></div></nav></div></section><section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active"><div class="post-toc"><div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#自动配置时序图"><span class="nav-number">1.</span> <span class="nav-text">自动配置时序图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#自动配置RequestMappingHandlerMapping源码分析"><span class="nav-number">2.</span> <span class="nav-text">自动配置RequestMappingHandlerMapping源码分析</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#判断是否存在WebMvcConfigurationSupport"><span class="nav-number">2.1.</span> <span class="nav-text">判断是否存在WebMvcConfigurationSupport</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#引入WebMvc配置"><span class="nav-number">2.2.</span> <span class="nav-text">引入WebMvc配置</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#如何注入RequestMappingHandlerMapping"><span class="nav-number">2.3.</span> <span class="nav-text">如何注入RequestMappingHandlerMapping</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#如何扩展"><span class="nav-number">2.4.</span> <span class="nav-text">如何扩展</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#附上版本控制全部代码"><span class="nav-number">3.</span> <span class="nav-text">附上版本控制全部代码</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#WebMvcRegistrationsConfig"><span class="nav-number">3.1.</span> <span class="nav-text">WebMvcRegistrationsConfig</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ApiRequestMappingHandlerMapping"><span class="nav-number">3.2.</span> <span class="nav-text">ApiRequestMappingHandlerMapping</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ApiVersion"><span class="nav-number">3.3.</span> <span class="nav-text">@ApiVersion</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#使用"><span class="nav-number">3.4.</span> <span class="nav-text">使用</span></a></li></ol></li></ol></div></div></section></div></aside><div class="sfix"><div class="fixedme"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460" data-ad-format="auto"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script></div></div></main><footer id="footer" class="footer"><div class="footer-inner"><div class="copyright">&copy; <span itemprop="copyrightYear">2018</span> <span class="with-love"><i class="fa fa-user"></i> </span><span class="author" itemprop="copyrightHolder">Hello</span></div><div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div><span class="post-meta-divider">|</span><div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div></div></footer><div class="back-to-top"><i class="fa fa-arrow-up"></i></div></div><script type="text/javascript">"[object Function]"!==Object.prototype.toString.call(window.Promise)&&(window.Promise=null)</script><script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script><script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script><script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script><script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script><script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script></body></html><!-- rebuild by neat -->

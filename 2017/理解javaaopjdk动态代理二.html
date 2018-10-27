@@ -1,0 +1,218 @@
+<!-- build time:Sat Oct 27 2018 21:00:18 GMT+0800 (CST) --><!DOCTYPE html><html class="theme-next muse use-motion"><head><meta name="generator" content="Hexo 3.8.0"><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"><meta name="theme-color" content="#222"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"><link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css"><link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css"><link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4"><link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222"><meta name="description" content="业务接口: IBizpublic interface IBiz {     void doSomething(); } 业务实现类: BizImplpublic class BizImpl implements IBiz {      public void doSomething() {         System.out.println(&amp;quot;做一些业务逻辑&amp;quot;);     }"><meta name="keywords" content="JAVA,面试"><meta property="og:type" content="article"><meta property="og:title" content="理解 Java AOP – JDK动态代理《二》"><meta property="og:url" content="http://www.jfox.info/2017/理解javaaopjdk动态代理二.html"><meta property="og:site_name" content="java面试"><meta property="og:description" content="业务接口: IBizpublic interface IBiz {     void doSomething(); } 业务实现类: BizImplpublic class BizImpl implements IBiz {      public void doSomething() {         System.out.println(&amp;quot;做一些业务逻辑&amp;quot;);     }"><meta property="og:locale" content="zh_CN"><meta property="og:updated_time" content="2018-10-27T12:29:37.402Z"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="理解 Java AOP – JDK动态代理《二》"><meta name="twitter:description" content="业务接口: IBizpublic interface IBiz {     void doSomething(); } 业务实现类: BizImplpublic class BizImpl implements IBiz {      public void doSomething() {         System.out.println(&amp;quot;做一些业务逻辑&amp;quot;);     }"><script type="text/javascript" id="hexo.configurations">var NexT=window.NexT||{},CONFIG={root:"/",scheme:"Muse",version:"5.1.4",sidebar:{position:"left",display:"post",offset:12,b2t:!1,scrollpercent:!1,onmobile:!1},fancybox:!0,tabs:!0,motion:{enable:!0,async:!1,transition:{post_block:"fadeIn",post_header:"slideDownIn",post_body:"slideDownIn",coll_header:"slideLeftIn",sidebar:"slideUpIn"}},duoshuo:{userId:"0",author:"Author"},algolia:{applicationID:"",apiKey:"",indexName:"",hits:{per_page:10},labels:{input_placeholder:"Search for Posts",hits_empty:"We didn't find any results for the search: ${query}",hits_stats:"${hits} results found in ${time} ms"}}}</script><link rel="canonical" href="http://www.jfox.info/2017/理解javaaopjdk动态代理二.html"><title>理解 Java AOP – JDK动态代理《二》 | java面试</title></head><body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN"><div class="container sidebar-position-left page-post-detail"><div class="headband"></div><header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="header-inner"><div class="site-brand-wrapper"><div class="site-meta"><div class="custom-logo-site-title"><a href="/" class="brand" rel="start"><span class="logo-line-before"><i></i></span> <span class="site-title">java面试</span> <span class="logo-line-after"><i></i></span></a></div><p class="site-subtitle"></p></div><div class="site-nav-toggle"><button><span class="btn-bar"></span> <span class="btn-bar"></span> <span class="btn-bar"></span></button></div></div><nav class="site-nav"><ul id="menu" class="menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i><br>Home</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i><br>Archives</a></li></ul></nav></div></header><main id="main" class="main"><div class="main-inner"><div class="content-wrap"><div id="content" class="content"><div id="posts" class="posts-expand"><article class="post post-type-normal" itemscope itemtype="http://schema.org/Article"><div class="post-block"><link itemprop="mainEntityOfPage" href="http://www.jfox.info/2017/理解javaaopjdk动态代理二.html"><span hidden itemprop="author" itemscope itemtype="http://schema.org/Person"><meta itemprop="name" content="Hello"><meta itemprop="description" content=""><meta itemprop="image" content="/images/avatar.gif"></span><span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><meta itemprop="name" content="java面试"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">理解 Java AOP – JDK动态代理《二》</h1><div class="post-meta"><span class="post-time"><span class="post-meta-item-icon"><i class="fa fa-calendar-o"></i> </span><span class="post-meta-item-text">Posted on</span> <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-01-01T23:57:40+08:00">2017-01-01</time></span></div></header><div class="post-body" itemprop="articleBody"><h3 id="业务接口-IBiz"><a href="#业务接口-IBiz" class="headerlink" title="业务接口: IBiz"></a>业务接口: <code>IBiz</code></h3><pre><code>public interface IBiz {
+    void doSomething();
+}
+</code></pre><h3 id="业务实现类-BizImpl"><a href="#业务实现类-BizImpl" class="headerlink" title="业务实现类: BizImpl"></a>业务实现类: <code>BizImpl</code></h3><pre><code>public class BizImpl implements IBiz {
+
+    public void doSomething() {
+        System.out.println(&quot;做一些业务逻辑&quot;);
+    }
+}
+</code></pre><h3 id="横切逻辑-PerformanceMonitor"><a href="#横切逻辑-PerformanceMonitor" class="headerlink" title="横切逻辑: PerformanceMonitor"></a>横切逻辑: <code>PerformanceMonitor</code></h3><pre><code>public class PerformanceMonitor {
+
+    public void start() {
+        System.out.println(&quot;开始时间: &quot; + String.valueOf(System.currentTimeMillis()));
+    }
+
+    public void end() {
+        System.out.println(&quot;结束时间: &quot; + String.valueOf(System.currentTimeMillis()));
+    }
+}
+</code></pre><h3 id="代理调用处理器-BizInvocationHandler"><a href="#代理调用处理器-BizInvocationHandler" class="headerlink" title="代理调用处理器: BizInvocationHandler"></a>代理调用处理器: <code>BizInvocationHandler</code></h3><p>为接口生成的模板代理类，所有方法调用时都会委托给<code>InvocationHandler.invoke(...)</code>代为处理，它根据传入的<code>Method</code>信息，使用反射机制调用真实的方法。</p><pre><code>public class BizInvocationHandler implements InvocationHandler {
+
+    private IBiz target;
+    private PerformanceMonitor monitor;
+
+    public BizInvocationHandler(IBiz target) {
+        this.target = target;
+        this.monitor = new PerformanceMonitor();
+    }
+
+    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        monitor.start();
+        method.invoke(target);
+        monitor.end();
+        return null;
+    }
+}
+</code></pre><h3 id="代理生成器-ProxyBuilder"><a href="#代理生成器-ProxyBuilder" class="headerlink" title="代理生成器: ProxyBuilder"></a>代理生成器: <code>ProxyBuilder</code></h3><pre><code>public class ProxyBuilder {
+
+    private Class [] interfaces;
+    private InvocationHandler handler;
+    private ClassLoader classLoader = ProxyBuilder.class.getClassLoader();
+
+    public static ProxyBuilder newProxyBuilder() {
+        return new ProxyBuilder();
+    }
+
+    public ProxyBuilder setInterFaces(Class&lt;?&gt;[] interFaces) {
+        this.interfaces = interFaces;
+        return this;
+    }
+
+    public ProxyBuilder setClassLoader(ClassLoader classLoader) {
+        this.classLoader = classLoader;
+        return this;
+    }
+
+    public ProxyBuilder setInvocationHandler(InvocationHandler handler) {
+        this.handler = handler;
+        return this;
+    }
+
+    public Object build() {
+        return Proxy.newProxyInstance(classLoader, interfaces, handler);
+    }
+
+    public void buildClassFile(String className, String dir) {
+        byte[] proxyClassFile = ProxyGenerator.generateProxyClass(className, interfaces);
+
+        StringBuilder strBuilder = new StringBuilder();
+        strBuilder.append(dir).append(&quot;/&quot;).append(className).append(&quot;class&quot;);
+        String classFileName = strBuilder.toString();
+
+        FileOutputStream out = null;
+        try {
+            out = new FileOutputStream(classFileName);
+            out.write(proxyClassFile);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (out != null) {
+                    out.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+}
+</code></pre><p>其中<code>build()</code>生成代理对象；<code>buildClassFile(...)</code>生成代理类的class文件。</p><h3 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h3><pre><code>public class JDKProxyTest {
+
+    @Test
+    public void testBiz() {
+        IBiz biz = new BizImpl();
+        BizInvocationHandler hander = new BizInvocationHandler(biz);
+
+        IBiz proxy = (IBiz)ProxyBuilder.newProxyBuilder()
+            .setClassLoader(Thread.currentThread().getContextClassLoader())
+            .setInterFaces(new Class[] {IBiz.class})
+            .setInvocationHandler(hander)
+            .build();
+        proxy.doSomething();
+    }
+}
+</code></pre><p>执行输出:</p><pre><code>开始时间: 1500530510627
+做一些业务逻辑
+结束时间: 1500530510628
+</code></pre><h3 id="使用小结"><a href="#使用小结" class="headerlink" title="使用小结"></a>使用小结</h3><p>JDK动态代理使用步骤如下:</p><ol><li><p>实现<code>InvocationHandler</code>接口，为其载入代理的目标实例&amp;横切逻辑，通过实现<code>invoke</code>方法实现横切逻辑织入。</p></li><li><p>通过<code>Proxy.newProxyInstance(...)</code>把要代理的接口和<code>InvocationHandler</code>实例联系起来生成最终的代理实例。</p></li><li><p>通过强制类型转换可以把生成的代理实例转换成任何一个代理的接口类型，从而调用接口方法。</p></li></ol><h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>JDK动态代理要求代理目标必须是接口的实现类，通过接口生成 <strong>模板类</strong> ，模板类实现所有接口方法，实现方法是一个个 <strong>模板方法</strong> ，只是简单的通过反射把请求委托给<code>InvocationHandler.invoke(...)</code>处理。</p><p>回头看下<code>ProxyBuilder.buildClassFile(...)</code>，它通过<code>ProxyGenerator.generateProxyClass(...)</code>生成IBiz的代理类。</p><h3 id="生成代理类"><a href="#生成代理类" class="headerlink" title="生成代理类"></a>生成代理类</h3><pre><code>public class JDKProxyTest {
+
+    @Test
+    public void testBuildClassFile() {
+        IBiz biz = new BizImpl();
+        BizInvocationHandler hander = new BizInvocationHandler(biz);
+
+        ProxyBuilder.newProxyBuilder()
+            .setClassLoader(Thread.currentThread().getContextClassLoader())
+            .setInterFaces(new Class[] {IBiz.class})
+            .setInvocationHandler(hander)
+            .buildClassFile(&quot;proxy&quot;, &quot;.&quot;);
+    }
+}
+</code></pre><h3 id="反编译生成的代理类"><a href="#反编译生成的代理类" class="headerlink" title="反编译生成的代理类"></a>反编译生成的代理类</h3><p>直接通过Idea打开生成的proxy.class文件即可，反编译后的代码一下(注意：这里去掉了<code>hashCode</code>、<code>toString</code>等无强关联性代码):</p><pre><code>public final class proxy extends Proxy implements IBiz {
+    private static Method m1;
+
+    ...
+
+    public proxy(InvocationHandler var1) throws  {
+        super(var1);
+    }
+
+    public final void doSomething() throws  {
+        try {
+            super.h.invoke(this, m1, (Object[])null);
+        } catch (RuntimeException | Error var2) {
+            throw var2;
+        } catch (Throwable var3) {
+            throw new UndeclaredThrowableException(var3);
+        }
+    }
+
+    static {
+        try {
+            m1 = Class.forName(&quot;jdkproxy.IBiz&quot;).getMethod(&quot;doSomething&quot;, new Class[0]);
+
+            ...
+        } catch (NoSuchMethodException var2) {
+            throw new NoSuchMethodError(var2.getMessage());
+        } catch (ClassNotFoundException var3) {
+            throw new NoClassDefFoundError(var3.getMessage());
+        }
+    }
+}
+</code></pre><p>哈哈，代码非常简单，无谓多说。</p><h3 id="代理类实例化过程"><a href="#代理类实例化过程" class="headerlink" title="代理类实例化过程"></a>代理类实例化过程</h3><ul><li><p>入口: <code>Proxy.newProxyInstance(...)</code></p><pre><code>public static Object newProxyInstance(ClassLoader loader,
+                                      Class&lt;?&gt;[] interfaces,
+                                      InvocationHandler h)
+    throws IllegalArgumentException
+{
+    ...
+
+    final Class&lt;?&gt;[] intfs = interfaces.clone();
+
+    // 获取或生成指定接口的代理类，这里会对生成的代理类进行缓存，下面展开。
+    Class&lt;?&gt; cl = getProxyClass0(loader, intfs);
+
+    /*
+     * Invoke its constructor with the designated invocation handler.
+     */
+    try {
+        ...
+
+        // 获取代理类的构造方法
+        final Constructor&lt;?&gt; cons = cl.getConstructor(constructorParams);
+        final InvocationHandler ih = h;
+        if (!Modifier.isPublic(cl.getModifiers())) {
+            // 构造方法不为public的话，修改其访问属性
+            AccessController.doPrivileged(new PrivilegedAction&lt;Void&gt;() {
+                public Void run() {
+                    cons.setAccessible(true);
+                    return null;
+                }
+            });
+        }
+
+        // 通过反射调用代理类的构造方法实例化代理对象返回。
+        return cons.newInstance(new Object[]{h});
+    } catch ...
+
+    ...
+}
+</code></pre></li><li><p><code>Proxy.getProxyClass0(...)</code></p><pre><code>private static Class&lt;?&gt; getProxyClass0(ClassLoader loader,
+                                       Class&lt;?&gt;... interfaces) {
+    // 限制接口数量
+    if (interfaces.length &gt; 65535) {
+        throw new IllegalArgumentException(&quot;interface limit exceeded&quot;);
+    }
+
+    // 这是一个WeakCach。
+    // 如果cache中存在由loader加载并且实现了interfaces接口的代理类，就直接返回。
+    // 否则就通过ProxyClassFactory创建代理类
+    // proxyClassCache = (new WeakCache&lt;&gt;(new KeyFactory(), new ProxyClassFactory());)
+    return proxyClassCache.get(loader, interfaces);
+}
+</code></pre></li><li><p><code>ProxyClassFactory.apply(...)</code></p></li></ul><p>最终生成代理类的逻辑就在这里</p><pre><code>public Class&lt;?&gt; apply(ClassLoader loader, Class&lt;?&gt;[] interfaces) {
+    ....
+    // 生成代理类的字节码，buildClassFile.buildClassFile也是这样生成代理类的。
+    byte[] proxyClassFile = ProxyGenerator.generateProxyClass(
+        proxyName, interfaces, accessFlags);
+    try {
+        // 返回定义的代理类
+        return defineClass0(loader, proxyName,
+                            proxyClassFile, 0, proxyClassFile.length);
+    } catch (ClassFormatError e) {
+        ...
+    }
+}
+</code></pre><h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>通过JDK代理生成的代理类是一个模板类，它通过反射找到接口的所有方法，并为每一个方法生成模板方法，通过反射调<code>InvocationHandler.invoke(...)</code>，通常业务逻辑和横切都在这里被调用。</p><p>由于JDK代理生成的代理类相对cglib生成子类要轻量级一些，所以在生成代理的效率上要优于cglib代理，但是在调用时，GDK代理通过反射的方式调用，相对cglib直接调用效率上要低。</p></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="4142158067"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="5618891265"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><footer class="post-footer"><div class="post-nav"><div class="post-nav-next post-nav-item"><a href="/2017/java数据类型在实际开发中应用二枚举.html" rel="next" title="Java 数据类型在实际开发中应用二枚举"><i class="fa fa-chevron-left"></i> Java 数据类型在实际开发中应用二枚举</a></div><span class="post-nav-divider"></span><div class="post-nav-prev post-nav-item"><a href="/2017/java实用案例之图片水印开发.html" rel="prev" title="JAVA实用案例之图片水印开发">JAVA实用案例之图片水印开发 <i class="fa fa-chevron-right"></i></a></div></div></footer></div></article><div class="post-spread"></div></div></div></div><div class="sidebar-toggle"><div class="sidebar-toggle-line-wrap"><span class="sidebar-toggle-line sidebar-toggle-line-first"></span> <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span> <span class="sidebar-toggle-line sidebar-toggle-line-last"></span></div></div><aside id="sidebar" class="sidebar"><div class="sidebar-inner"><ul class="sidebar-nav motion-element"><li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">Table of Contents</li><li class="sidebar-nav-overview" data-target="site-overview-wrap">Overview</li></ul><section class="site-overview-wrap sidebar-panel"><div class="site-overview"><div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person"><p class="site-author-name" itemprop="name">Hello</p><p class="site-description motion-element" itemprop="description"></p></div><nav class="site-state motion-element"><div class="site-state-item site-state-posts"><a href="/archives/"><span class="site-state-item-count">1358</span> <span class="site-state-item-name">posts</span></a></div></nav></div></section><section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active"><div class="post-toc"><div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#业务接口-IBiz"><span class="nav-number">1.</span> <span class="nav-text">业务接口: IBiz</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#业务实现类-BizImpl"><span class="nav-number">2.</span> <span class="nav-text">业务实现类: BizImpl</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#横切逻辑-PerformanceMonitor"><span class="nav-number">3.</span> <span class="nav-text">横切逻辑: PerformanceMonitor</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#代理调用处理器-BizInvocationHandler"><span class="nav-number">4.</span> <span class="nav-text">代理调用处理器: BizInvocationHandler</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#代理生成器-ProxyBuilder"><span class="nav-number">5.</span> <span class="nav-text">代理生成器: ProxyBuilder</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#测试"><span class="nav-number">6.</span> <span class="nav-text">测试</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用小结"><span class="nav-number">7.</span> <span class="nav-text">使用小结</span></a></li></ol><li class="nav-item nav-level-2"><a class="nav-link" href="#原理"><span class="nav-number"></span> <span class="nav-text">原理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#生成代理类"><span class="nav-number">1.</span> <span class="nav-text">生成代理类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#反编译生成的代理类"><span class="nav-number">2.</span> <span class="nav-text">反编译生成的代理类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#代理类实例化过程"><span class="nav-number">3.</span> <span class="nav-text">代理类实例化过程</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number"></span> <span class="nav-text">总结</span></a></li></div></div></section></div></aside><div class="sfix"><div class="fixedme"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460" data-ad-format="auto"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script></div></div></main><footer id="footer" class="footer"><div class="footer-inner"><div class="copyright">&copy; <span itemprop="copyrightYear">2018</span> <span class="with-love"><i class="fa fa-user"></i> </span><span class="author" itemprop="copyrightHolder">Hello</span></div><div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div><span class="post-meta-divider">|</span><div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div></div></footer><div class="back-to-top"><i class="fa fa-arrow-up"></i></div></div><script type="text/javascript">"[object Function]"!==Object.prototype.toString.call(window.Promise)&&(window.Promise=null)</script><script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script><script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script><script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script><script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script><script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script></body></html><!-- rebuild by neat -->

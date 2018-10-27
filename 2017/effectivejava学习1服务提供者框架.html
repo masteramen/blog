@@ -1,0 +1,140 @@
+<!-- build time:Sat Oct 27 2018 21:00:19 GMT+0800 (CST) --><!DOCTYPE html><html class="theme-next muse use-motion"><head><meta name="generator" content="Hexo 3.8.0"><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"><meta name="theme-color" content="#222"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"><link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css"><link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css"><link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4"><link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222"><meta name="description" content="什么是服务提供者框架？服务提供者框架是指这一个系统:多个服务提供者来实现一个服务，系统为客户端的服务提供者提供多个实现，并且把他们从多个实现中解耦出来。咋一看这个定义，一脸懵逼。那么我们就来看一下他们之间的关系图吧。关系图这里写图片描述讲解服务提供框架有4个组件，依次是服务接口，服务器提供者接口，提供者注册API，服务访问API。服务接口在服务接口中定义一些提供具体服务的方法，假设我们要提供一个注"><meta name="keywords" content="JAVA,面试"><meta property="og:type" content="article"><meta property="og:title" content="Effective Java学习(1) 服务提供者框架"><meta property="og:url" content="http://www.jfox.info/2017/effectivejava学习1服务提供者框架.html"><meta property="og:site_name" content="java面试"><meta property="og:description" content="什么是服务提供者框架？服务提供者框架是指这一个系统:多个服务提供者来实现一个服务，系统为客户端的服务提供者提供多个实现，并且把他们从多个实现中解耦出来。咋一看这个定义，一脸懵逼。那么我们就来看一下他们之间的关系图吧。关系图这里写图片描述讲解服务提供框架有4个组件，依次是服务接口，服务器提供者接口，提供者注册API，服务访问API。服务接口在服务接口中定义一些提供具体服务的方法，假设我们要提供一个注"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="http://www.jfox.info/2017/1225/3a5e329.png"><meta property="og:updated_time" content="2018-10-27T12:29:37.408Z"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="Effective Java学习(1) 服务提供者框架"><meta name="twitter:description" content="什么是服务提供者框架？服务提供者框架是指这一个系统:多个服务提供者来实现一个服务，系统为客户端的服务提供者提供多个实现，并且把他们从多个实现中解耦出来。咋一看这个定义，一脸懵逼。那么我们就来看一下他们之间的关系图吧。关系图这里写图片描述讲解服务提供框架有4个组件，依次是服务接口，服务器提供者接口，提供者注册API，服务访问API。服务接口在服务接口中定义一些提供具体服务的方法，假设我们要提供一个注"><meta name="twitter:image" content="http://www.jfox.info/2017/1225/3a5e329.png"><script type="text/javascript" id="hexo.configurations">var NexT=window.NexT||{},CONFIG={root:"/",scheme:"Muse",version:"5.1.4",sidebar:{position:"left",display:"post",offset:12,b2t:!1,scrollpercent:!1,onmobile:!1},fancybox:!0,tabs:!0,motion:{enable:!0,async:!1,transition:{post_block:"fadeIn",post_header:"slideDownIn",post_body:"slideDownIn",coll_header:"slideLeftIn",sidebar:"slideUpIn"}},duoshuo:{userId:"0",author:"Author"},algolia:{applicationID:"",apiKey:"",indexName:"",hits:{per_page:10},labels:{input_placeholder:"Search for Posts",hits_empty:"We didn't find any results for the search: ${query}",hits_stats:"${hits} results found in ${time} ms"}}}</script><link rel="canonical" href="http://www.jfox.info/2017/effectivejava学习1服务提供者框架.html"><title>Effective Java学习(1) 服务提供者框架 | java面试</title></head><body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN"><div class="container sidebar-position-left page-post-detail"><div class="headband"></div><header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="header-inner"><div class="site-brand-wrapper"><div class="site-meta"><div class="custom-logo-site-title"><a href="/" class="brand" rel="start"><span class="logo-line-before"><i></i></span> <span class="site-title">java面试</span> <span class="logo-line-after"><i></i></span></a></div><p class="site-subtitle"></p></div><div class="site-nav-toggle"><button><span class="btn-bar"></span> <span class="btn-bar"></span> <span class="btn-bar"></span></button></div></div><nav class="site-nav"><ul id="menu" class="menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i><br>Home</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i><br>Archives</a></li></ul></nav></div></header><main id="main" class="main"><div class="main-inner"><div class="content-wrap"><div id="content" class="content"><div id="posts" class="posts-expand"><article class="post post-type-normal" itemscope itemtype="http://schema.org/Article"><div class="post-block"><link itemprop="mainEntityOfPage" href="http://www.jfox.info/2017/effectivejava学习1服务提供者框架.html"><span hidden itemprop="author" itemscope itemtype="http://schema.org/Person"><meta itemprop="name" content="Hello"><meta itemprop="description" content=""><meta itemprop="image" content="/images/avatar.gif"></span><span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><meta itemprop="name" content="java面试"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">Effective Java学习(1) 服务提供者框架</h1><div class="post-meta"><span class="post-time"><span class="post-meta-item-icon"><i class="fa fa-calendar-o"></i> </span><span class="post-meta-item-text">Posted on</span> <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-01-01T23:55:25+08:00">2017-01-01</time></span></div></header><div class="post-body" itemprop="articleBody"><p>什么是服务提供者框架？服务提供者框架是指这一个系统:多个服务提供者来实现一个服务，系统为客户端的服务提供者提供多个实现，并且<br>把他们从多个实现中解耦出来。咋一看这个定义，一脸懵逼。那么我们就来看一下他们之间的关系图吧。</p><h4 id="关系图"><a href="#关系图" class="headerlink" title="关系图"></a>关系图</h4><p><img src="/2017/1225/3a5e329.png" alt=""></p><p>这里写图片描述</p><h4 id="讲解"><a href="#讲解" class="headerlink" title="讲解"></a>讲解</h4><p>服务提供框架有4个组件，依次是服务接口，服务器提供者接口，提供者注册API，服务访问API。</p><ul><li><p>服务接口<br>在服务接口中定义一些提供具体服务的方法，假设我们要提供一个注册登录的服务UserService。那么这个服务接口中肯定有login(),register()方法。我们再去创建这个服务接口的具体实现类去实现login(),register()方法。</p></li><li><p>服务提供者接口<br>在服务提供者接口里，就是去定义提供什么样子的服务的方法。我们上面创建了一个提供“注册登录”的服务。那么这里我们肯定要去定义一个能获取“注册登录”的服务的方法，假设是getUserService(),返回类型是UserService。然后在去创建服务提供者接口的具体实现类去这个getUserService()，那么我们怎么去实现呢？我们只需要返回一个UserService的具体实现类即可。</p></li><li><p>提供者注册API<br>其实是服务提供者接口的具体实现类里面去注册这个API，在类中的静态初始化块中去注册API，因为你只有注册了API，才能享有享受服务的权利。这些注册过的服务集中交给ServiceManager管理。</p></li><li><p>服务访问API<br>既然已经注册了API，那么我们可以向ServiceManager申请具体的服务，可以获得具体服务的实例，就可以调用服务里面的方法。服务访问API是“灵活的静态工厂”，它构成了服务提供者框架的基础。</p></li></ul><h4 id="JDBC"><a href="#JDBC" class="headerlink" title="JDBC"></a>JDBC</h4><p>为什么要讲到JDBC?其实我们可以仔细回想一下JDBC的基本步骤，是不是和我们上面的步骤类似。没错，JDBC也是用到了服务提供者框架。</p><pre><code>Class.forName(&quot;com.mysql.jdbc.Driver&quot;);   
+Connection con=DriverManager.getConnection(&quot;jdbc:mysql://localhost:3306/test&quot;,&quot;root&quot;,&quot;cmazxiaoma&quot;);
+</code></pre><ul><li><p>Class.forName()这个方法其实是利用反射的方法获得服务提供者接口的具体实现类。Connection就是服务接口，DriverManager就是我们上面提供的服务管理类，getConnection()就是从服务管理类里面获取指定名字的且已经注册过的服务。</p></li><li><p>DriverManager.getConnection(“jdbc:mysql://localhost:3306/test”,”root”,”cmazxiaoma”);这个方法返回的是一个服务接口的具体实现类的实例，把这个实现类的实例赋值给Connection的服务接口，就可以调用具体服务的里面的一些方法，接口回调嘛。</p></li><li><p>观看JDBC源码，JDBC中的服务接口具体实现类中其实调用了DriverManager.registerDriver（）静态工厂方法去注册服务的api。java.sql.Driver就是服务提供者接口，com.mysql.jdbc.Driver是服务提供者具体的实现类。</p></li></ul><h4 id="JAVA代码"><a href="#JAVA代码" class="headerlink" title="JAVA代码"></a>JAVA代码</h4><pre><code>/**
+ * 服务接口
+ * @author Administrator
+ *
+ */
+
+public interface UserService {
+
+    public void login();
+
+    public void register();
+
+}
+
+package 服务提供者框架;
+
+/**
+ * 服务具体实现类
+ * @author Administrator
+ *
+ */
+public class UserServiceImpl implements UserService{
+
+    @Override
+    public void login() {
+        // TODO Auto-generated method stub
+        System.out.println(&quot;cmazxiaoma登录成功&quot;);
+
+    }
+
+    @Override
+    public void register() {
+        // TODO Auto-generated method stub
+        System.out.println(&quot;cmazxiaoma注册成功&quot;);
+    }
+
+
+}
+
+  package 服务提供者框架;
+
+/**
+ * 服务提供者接口
+ * @author Administrator
+ *
+ */
+public interface UserProvider {
+
+    public UserService getUserService();
+
+}
+
+ package 服务提供者框架;
+
+/**
+ * 服务提供者具体实现类
+ * @author Administrator
+ *
+ */
+public class UserProviderImpl implements UserProvider{
+
+    @Override
+    public UserService getUserService() {
+        // TODO Auto-generated method stub
+        return new UserServiceImpl();
+    }
+
+
+    static{
+        ServiceManager.registerProvider(&quot;登录注册&quot;,new UserProviderImpl());
+    }
+
+}
+
+  package 服务提供者框架;
+
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+/**
+ * 服务提供者注册类
+ * @author Administrator
+ *
+ */
+public class ServiceManager {
+
+    private ServiceManager(){
+
+    }
+
+    private static final  Map&lt;String,UserProvider&gt; providers=new ConcurrentHashMap&lt;String,UserProvider&gt;();
+
+    public static void  registerProvider(String name,UserProvider provider){
+
+        providers.put(name, provider);
+
+    }
+
+    public static UserService getService(String name){
+        UserProvider provider=providers.get(name);
+        if(provider==null){
+            throw new IllegalArgumentException(&quot;No provider registered with name=&quot;+name);
+
+        }
+        return provider.getUserService();
+    }
+
+
+
+
+}
+
+   package 服务提供者框架;
+
+
+/**
+ * 测试类
+ * @author Administrator
+ *
+ */
+public class test {
+
+    public static void main(String[] args){
+
+        try {
+            Class.forName(&quot;服务提供者框架.UserProviderImpl&quot;);
+            UserService userService=ServiceManager.getService(&quot;登录注册&quot;);
+            userService.register();
+            userService.login();
+
+        } catch (ClassNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+    }
+}
+</code></pre></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="4142158067"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="5618891265"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><footer class="post-footer"><div class="post-nav"><div class="post-nav-next post-nav-item"><a href="/2017/spring源码解析循环依赖的探测与处理.html" rel="next" title="Spring源码解析：循环依赖的探测与处理"><i class="fa fa-chevron-left"></i> Spring源码解析：循环依赖的探测与处理</a></div><span class="post-nav-divider"></span><div class="post-nav-prev post-nav-item"><a href="/2017/死磕java并发juc之java并发容器concurrentlinkedqueue.html" rel="prev" title="【死磕Java并发】—–J.U.C之Java并发容器：ConcurrentLinkedQueue">【死磕Java并发】—–J.U.C之Java并发容器：ConcurrentLinkedQueue <i class="fa fa-chevron-right"></i></a></div></div></footer></div></article><div class="post-spread"></div></div></div></div><div class="sidebar-toggle"><div class="sidebar-toggle-line-wrap"><span class="sidebar-toggle-line sidebar-toggle-line-first"></span> <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span> <span class="sidebar-toggle-line sidebar-toggle-line-last"></span></div></div><aside id="sidebar" class="sidebar"><div class="sidebar-inner"><ul class="sidebar-nav motion-element"><li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">Table of Contents</li><li class="sidebar-nav-overview" data-target="site-overview-wrap">Overview</li></ul><section class="site-overview-wrap sidebar-panel"><div class="site-overview"><div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person"><p class="site-author-name" itemprop="name">Hello</p><p class="site-description motion-element" itemprop="description"></p></div><nav class="site-state motion-element"><div class="site-state-item site-state-posts"><a href="/archives/"><span class="site-state-item-count">1358</span> <span class="site-state-item-name">posts</span></a></div></nav></div></section><section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active"><div class="post-toc"><div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#关系图"><span class="nav-number">1.</span> <span class="nav-text">关系图</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#讲解"><span class="nav-number">2.</span> <span class="nav-text">讲解</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#JDBC"><span class="nav-number">3.</span> <span class="nav-text">JDBC</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#JAVA代码"><span class="nav-number">4.</span> <span class="nav-text">JAVA代码</span></a></li></ol></div></div></section></div></aside><div class="sfix"><div class="fixedme"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460" data-ad-format="auto"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script></div></div></main><footer id="footer" class="footer"><div class="footer-inner"><div class="copyright">&copy; <span itemprop="copyrightYear">2018</span> <span class="with-love"><i class="fa fa-user"></i> </span><span class="author" itemprop="copyrightHolder">Hello</span></div><div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div><span class="post-meta-divider">|</span><div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div></div></footer><div class="back-to-top"><i class="fa fa-arrow-up"></i></div></div><script type="text/javascript">"[object Function]"!==Object.prototype.toString.call(window.Promise)&&(window.Promise=null)</script><script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script><script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script><script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script><script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script><script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script></body></html><!-- rebuild by neat -->

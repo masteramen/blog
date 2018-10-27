@@ -1,0 +1,152 @@
+<!-- build time:Sat Oct 27 2018 21:00:22 GMT+0800 (CST) --><!DOCTYPE html><html class="theme-next muse use-motion"><head><meta name="generator" content="Hexo 3.8.0"><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"><meta name="theme-color" content="#222"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"><link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css"><link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css"><link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4"><link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222"><meta name="description" content="由于谷歌翻译官方API是付费版本，本着免费和开源的精神，分享一下用C#实现谷歌翻译API的代码。这个代码非常简单，主要分两块：通过WebRequest的方式请求内容；获取Get方式的请求参数（难点在于tk的获取）。一、WebRequest代码var webRequest = WebRequest.Create(url) as HttpWebRequest;  webRequest.Method ="><meta name="keywords" content="JAVA,面试"><meta property="og:type" content="article"><meta property="og:title" content="C#实现谷歌翻译API"><meta property="og:url" content="http://www.jfox.info/2017/c实现谷歌翻译api.html"><meta property="og:site_name" content="java面试"><meta property="og:description" content="由于谷歌翻译官方API是付费版本，本着免费和开源的精神，分享一下用C#实现谷歌翻译API的代码。这个代码非常简单，主要分两块：通过WebRequest的方式请求内容；获取Get方式的请求参数（难点在于tk的获取）。一、WebRequest代码var webRequest = WebRequest.Create(url) as HttpWebRequest;  webRequest.Method ="><meta property="og:locale" content="zh_CN"><meta property="og:updated_time" content="2018-10-27T12:29:39.028Z"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="C#实现谷歌翻译API"><meta name="twitter:description" content="由于谷歌翻译官方API是付费版本，本着免费和开源的精神，分享一下用C#实现谷歌翻译API的代码。这个代码非常简单，主要分两块：通过WebRequest的方式请求内容；获取Get方式的请求参数（难点在于tk的获取）。一、WebRequest代码var webRequest = WebRequest.Create(url) as HttpWebRequest;  webRequest.Method ="><script type="text/javascript" id="hexo.configurations">var NexT=window.NexT||{},CONFIG={root:"/",scheme:"Muse",version:"5.1.4",sidebar:{position:"left",display:"post",offset:12,b2t:!1,scrollpercent:!1,onmobile:!1},fancybox:!0,tabs:!0,motion:{enable:!0,async:!1,transition:{post_block:"fadeIn",post_header:"slideDownIn",post_body:"slideDownIn",coll_header:"slideLeftIn",sidebar:"slideUpIn"}},duoshuo:{userId:"0",author:"Author"},algolia:{applicationID:"",apiKey:"",indexName:"",hits:{per_page:10},labels:{input_placeholder:"Search for Posts",hits_empty:"We didn't find any results for the search: ${query}",hits_stats:"${hits} results found in ${time} ms"}}}</script><link rel="canonical" href="http://www.jfox.info/2017/c实现谷歌翻译api.html"><title>C#实现谷歌翻译API | java面试</title></head><body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN"><div class="container sidebar-position-left page-post-detail"><div class="headband"></div><header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="header-inner"><div class="site-brand-wrapper"><div class="site-meta"><div class="custom-logo-site-title"><a href="/" class="brand" rel="start"><span class="logo-line-before"><i></i></span> <span class="site-title">java面试</span> <span class="logo-line-after"><i></i></span></a></div><p class="site-subtitle"></p></div><div class="site-nav-toggle"><button><span class="btn-bar"></span> <span class="btn-bar"></span> <span class="btn-bar"></span></button></div></div><nav class="site-nav"><ul id="menu" class="menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i><br>Home</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i><br>Archives</a></li></ul></nav></div></header><main id="main" class="main"><div class="main-inner"><div class="content-wrap"><div id="content" class="content"><div id="posts" class="posts-expand"><article class="post post-type-normal" itemscope itemtype="http://schema.org/Article"><div class="post-block"><link itemprop="mainEntityOfPage" href="http://www.jfox.info/2017/c实现谷歌翻译api.html"><span hidden itemprop="author" itemscope itemtype="http://schema.org/Person"><meta itemprop="name" content="Hello"><meta itemprop="description" content=""><meta itemprop="image" content="/images/avatar.gif"></span><span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><meta itemprop="name" content="java面试"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">C#实现谷歌翻译API</h1><div class="post-meta"><span class="post-time"><span class="post-meta-item-icon"><i class="fa fa-calendar-o"></i> </span><span class="post-meta-item-text">Posted on</span> <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-01-01T23:51:47+08:00">2017-01-01</time></span></div></header><div class="post-body" itemprop="articleBody"><p>由于谷歌翻译官方API是付费版本，本着免费和开源的精神，分享一下用C#实现谷歌翻译API的代码。这个代码非常简单，主要分两块：通过WebRequest的方式请求内容；获取Get方式的请求参数（难点在于tk的获取）。</p><p>一、WebRequest代码</p><pre><code>var webRequest = WebRequest.Create(url) as HttpWebRequest;
+
+webRequest.Method = &quot;GET&quot;;
+
+webRequest.CookieContainer = cookie;
+
+webRequest.Referer = referer;
+
+webRequest.Timeout = 20000;
+
+webRequest.Headers.Add(&quot;X-Requested-With:XMLHttpRequest&quot;);
+
+webRequest.Accept = &quot;text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8&quot;;
+
+webRequest.UserAgent = useragent;
+
+  using (var webResponse = (HttpWebResponse)webRequest.GetResponse())
+  {
+　　 using (var reader = new StreamReader(webResponse.GetResponseStream(), Encoding.UTF8))
+　　 {
+
+　　　　html = reader.ReadToEnd();
+　　　　reader.Close();
+　　　　webResponse.Close();
+　　 }
+  }
+</code></pre><p>二、谷歌翻译接口的实现</p><p>1、抓包查看翻译网络请求，这里是用谷歌浏览器查看的网络请求，如下图：</p><p>可以看到，请求方式是“Get”方式，后面跟的请求参数很多，如下图：</p><p>其中，最重要的参数有：sl–来源语言，一般设置为auto即自动检测，tl–目标语言，你想翻译成的语言，tk–ticket即使发车车票，谷歌就靠这个来防止我们免费调用的，这是本API最难的地方。</p><p>2、tk的获取</p><p>在打开<a href="https://translate.google.com/页面是，获取到的HTML代码中有如下一个生成TKK的脚本：" target="_blank" rel="noopener">https://translate.google.com/页面是，获取到的HTML代码中有如下一个生成TKK的脚本：</a></p><p>直接运行这个脚本，可以生成一个字符串：</p><p>从监控的网络中可以发现其中一个JS调用了这个TKK值，这个JS加了密进行混淆的，要破解这个JS需要扎实的基本功，以及足够的耐心，我也是网上找的别人破解的JS代码，亲测可用，需将此代码保存在<strong>gettk.js</strong>文档中，方便调用：</p><pre><code>var b = function (a, b) {
+    for (var d = 0; d &lt; b.length - 2; d += 3) {
+        var c = b.charAt(d + 2),
+            c = &quot;a&quot; &lt;= c ? c.charCodeAt(0) - 87 : Number(c),
+            c = &quot;+&quot; == b.charAt(d + 1) ? a &gt;&gt;&gt; c : a &lt;&lt; c;
+        a = &quot;+&quot; == b.charAt(d) ? a + c &amp; 4294967295 : a ^ c
+    }
+    return a
+}
+
+var tk =  function (a,TKK) {
+    for (var e = TKK.split(&quot;.&quot;), h = Number(e[0]) || 0, g = [], d = 0, f = 0; f &lt; a.length; f++) {
+        var c = a.charCodeAt(f);
+        128 &gt; c ? g[d++] = c : (2048 &gt; c ? g[d++] = c &gt;&gt; 6 | 192 : (55296 == (c &amp; 64512) &amp;&amp; f + 1 &lt; a.length &amp;&amp; 56320 == (a.charCodeAt(f + 1) &amp; 64512) ? (c = 65536 + ((c &amp; 1023) &lt;&lt; 10) + (a.charCodeAt(++f) &amp; 1023), g[d++] = c &gt;&gt; 18 | 240, g[d++] = c &gt;&gt; 12 &amp; 63 | 128) : g[d++] = c &gt;&gt; 12 | 224, g[d++] = c &gt;&gt; 6 &amp; 63 | 128), g[d++] = c &amp; 63 | 128)
+    }
+    a = h;
+    for (d = 0; d &lt; g.length; d++) a += g[d], a = b(a, &quot;+-a^+6&quot;);
+    a = b(a, &quot;+-3^+b+-f&quot;);
+    a ^= Number(e[1]) || 0;
+    0 &gt; a &amp;&amp; (a = (a &amp; 2147483647) + 2147483648);
+    a %= 1E6;
+    return a.toString() + &quot;.&quot; + (a ^ h)
+}
+</code></pre><p>要得到tk只需要，运行tk这个函数，它有两个输入值：a为翻译文本内容，TKK是上文正则匹配得到的JS字符串执行的结果值。为方便在C#中执行JS，封装了一个能执行JS的函数，如下：</p><pre><code>/// 执行JS/// 参数体/// 
+        private string ExecuteScript(string sExpression, string sCode)
+        {
+            MSScriptControl.ScriptControl scriptControl = new MSScriptControl.ScriptControl();
+            scriptControl.UseSafeSubset = true;
+            scriptControl.Language = &quot;JScript&quot;;
+            scriptControl.AddCode(sCode);
+            try
+            {
+                string str = scriptControl.Eval(sExpression).ToString();
+                return str;
+            }
+            catch (Exception ex)
+            {
+                string str = ex.Message;
+            }
+            returnnull;
+        }   
+</code></pre><p>3、实现翻译的完整代码</p><pre><code>/// 谷歌翻译/// 待翻译文本/// 中文：zh-CN，英文：en
+
+public string GoogleTranslate(string text, string fromLanguage, string toLanguage)
+{
+    CookieContainer cc = new CookieContainer();
+
+    string GoogleTransBaseUrl = &quot;https://translate.google.com/&quot;;
+
+    var BaseResultHtml = GetResultHtml(GoogleTransBaseUrl, cc, &quot;&quot;);
+
+    Regex re = new Regex(@&quot;(?&lt;=TKK=)(.*?)(?=);)&quot;);
+
+    var TKKStr = re.Match(BaseResultHtml).ToString() + &quot;)&quot;;
+
+    var TKK = ExecuteScript(TKKStr, TKKStr);
+
+    var GetTkkJS = File.ReadAllText(&quot;./gettk.js&quot;);
+
+    var tk = ExecuteScript(&quot;tk(&quot;&quot;+text+&quot;&quot;,&quot;&quot;+TKK+&quot;&quot;)&quot;, GetTkkJS);
+
+    string googleTransUrl = &quot;https://translate.google.com/translate_a/single?client=t&amp;sl=&quot;+fromLanguage+&quot;&amp;tl=&quot;+toLanguage+&quot;&amp;hl=en&amp;dt=at&amp;dt=bd&amp;dt=ex&amp;dt=ld&amp;dt=md&amp;dt=qca&amp;dt=rw&amp;dt=rm&amp;dt=ss&amp;dt=t&amp;ie=UTF-8&amp;oe=UTF-8&amp;otf=1&amp;ssel=0&amp;tsel=0&amp;kc=1&amp;tk=&quot;+tk+&quot;&amp;q=&quot;+HttpUtility.UrlEncode(text);
+
+    var ResultHtml = GetResultHtml(googleTransUrl, cc, &quot;https://translate.google.com/&quot;);
+
+    dynamic TempResult = Newtonsoft.Json.JsonConvert.DeserializeObject(ResultHtml);
+
+    string ResultText = Convert.ToString(TempResult[0][0][0]);
+
+    return ResultText;
+}
+
+public string GetResultHtml(string url,CookieContainer cc,string refer)
+{
+    var html=&quot;&quot;;
+
+    var webRequest = WebRequest.Create(url) as HttpWebRequest;
+
+    webRequest.Method = &quot;GET&quot;;
+
+    webRequest.CookieContainer = cookie;
+
+    webRequest.Referer = referer;
+
+    webRequest.Timeout = 20000;
+
+    webRequest.Headers.Add(&quot;X-Requested-With:XMLHttpRequest&quot;);
+
+    webRequest.Accept = &quot;text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8&quot;;
+
+    webRequest.UserAgent = useragent;
+
+    using (var webResponse = (HttpWebResponse)webRequest.GetResponse())
+    {
+    　　 using (var reader = new StreamReader(webResponse.GetResponseStream(), Encoding.UTF8))
+    　　 {
+
+    　　　　html = reader.ReadToEnd();
+    　　　　reader.Close();
+    　　　　webResponse.Close();
+    　　 }
+    }
+    return html;
+}
+
+
+
+/// 执行JS/// 参数体/// 
+private string ExecuteScript(string sExpression, string sCode)
+{
+    MSScriptControl.ScriptControl scriptControl = new MSScriptControl.ScriptControl();
+    scriptControl.UseSafeSubset = true;
+    scriptControl.Language = &quot;JScript&quot;;
+    scriptControl.AddCode(sCode);
+    try
+    {
+        string str = scriptControl.Eval(sExpression).ToString();
+        return str;
+    }
+    catch (Exception ex)
+    {
+        string str = ex.Message;
+    }
+    returnnull;
+}
+</code></pre></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="4142158067"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="5618891265"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><footer class="post-footer"><div class="post-nav"><div class="post-nav-next post-nav-item"><a href="/2017/kotlin接口，你知道还能写代码吗？.html" rel="next" title="Kotlin接口，你知道还能写代码吗？"><i class="fa fa-chevron-left"></i> Kotlin接口，你知道还能写代码吗？</a></div><span class="post-nav-divider"></span><div class="post-nav-prev post-nav-item"><a href="/2017/为你的web程序加个启动画面.html" rel="prev" title="为你的Web程序加个启动画面">为你的Web程序加个启动画面 <i class="fa fa-chevron-right"></i></a></div></div></footer></div></article><div class="post-spread"></div></div></div></div><div class="sidebar-toggle"><div class="sidebar-toggle-line-wrap"><span class="sidebar-toggle-line sidebar-toggle-line-first"></span> <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span> <span class="sidebar-toggle-line sidebar-toggle-line-last"></span></div></div><aside id="sidebar" class="sidebar"><div class="sidebar-inner"><section class="site-overview-wrap sidebar-panel sidebar-panel-active"><div class="site-overview"><div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person"><p class="site-author-name" itemprop="name">Hello</p><p class="site-description motion-element" itemprop="description"></p></div><nav class="site-state motion-element"><div class="site-state-item site-state-posts"><a href="/archives/"><span class="site-state-item-count">1358</span> <span class="site-state-item-name">posts</span></a></div></nav></div></section></div></aside><div class="sfix"><div class="fixedme"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460" data-ad-format="auto"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script></div></div></main><footer id="footer" class="footer"><div class="footer-inner"><div class="copyright">&copy; <span itemprop="copyrightYear">2018</span> <span class="with-love"><i class="fa fa-user"></i> </span><span class="author" itemprop="copyrightHolder">Hello</span></div><div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div><span class="post-meta-divider">|</span><div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div></div></footer><div class="back-to-top"><i class="fa fa-arrow-up"></i></div></div><script type="text/javascript">"[object Function]"!==Object.prototype.toString.call(window.Promise)&&(window.Promise=null)</script><script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script><script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script><script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script><script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script><script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script></body></html><!-- rebuild by neat -->

@@ -1,0 +1,83 @@
+<!-- build time:Sat Oct 27 2018 21:00:17 GMT+0800 (CST) --><!DOCTYPE html><html class="theme-next muse use-motion"><head><meta name="generator" content="Hexo 3.8.0"><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"><meta name="theme-color" content="#222"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"><link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css"><link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css"><link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4"><link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222"><meta name="description" content="作者凌风郎少2017.07.29 09:07*字数 1329本来以为这个知识点自己已经很了解了，但最近跟同事讨论Java线程对应的状态以及转换过程的时候，发现还是有一些没理清楚的地方，或者说争议点，趁机梳理了一下这块的知识，自己也动手做了实验，写篇文章总结一下。先看一下Thread类中关于状态的源码：public enum State {         /**          * Thread"><meta name="keywords" content="JAVA,面试"><meta property="og:type" content="article"><meta property="og:title" content="谈谈Java线程状态 » java面试题"><meta property="og:url" content="http://www.jfox.info/2017/谈谈java线程状态.html"><meta property="og:site_name" content="java面试"><meta property="og:description" content="作者凌风郎少2017.07.29 09:07*字数 1329本来以为这个知识点自己已经很了解了，但最近跟同事讨论Java线程对应的状态以及转换过程的时候，发现还是有一些没理清楚的地方，或者说争议点，趁机梳理了一下这块的知识，自己也动手做了实验，写篇文章总结一下。先看一下Thread类中关于状态的源码：public enum State {         /**          * Thread"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="http://www.jfox.info/2017/1411/58da995.png"><meta property="og:updated_time" content="2018-10-27T12:29:37.411Z"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="谈谈Java线程状态 » java面试题"><meta name="twitter:description" content="作者凌风郎少2017.07.29 09:07*字数 1329本来以为这个知识点自己已经很了解了，但最近跟同事讨论Java线程对应的状态以及转换过程的时候，发现还是有一些没理清楚的地方，或者说争议点，趁机梳理了一下这块的知识，自己也动手做了实验，写篇文章总结一下。先看一下Thread类中关于状态的源码：public enum State {         /**          * Thread"><meta name="twitter:image" content="http://www.jfox.info/2017/1411/58da995.png"><script type="text/javascript" id="hexo.configurations">var NexT=window.NexT||{},CONFIG={root:"/",scheme:"Muse",version:"5.1.4",sidebar:{position:"left",display:"post",offset:12,b2t:!1,scrollpercent:!1,onmobile:!1},fancybox:!0,tabs:!0,motion:{enable:!0,async:!1,transition:{post_block:"fadeIn",post_header:"slideDownIn",post_body:"slideDownIn",coll_header:"slideLeftIn",sidebar:"slideUpIn"}},duoshuo:{userId:"0",author:"Author"},algolia:{applicationID:"",apiKey:"",indexName:"",hits:{per_page:10},labels:{input_placeholder:"Search for Posts",hits_empty:"We didn't find any results for the search: ${query}",hits_stats:"${hits} results found in ${time} ms"}}}</script><link rel="canonical" href="http://www.jfox.info/2017/谈谈java线程状态.html"><title>谈谈Java线程状态 » java面试题 | java面试</title></head><body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN"><div class="container sidebar-position-left page-post-detail"><div class="headband"></div><header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="header-inner"><div class="site-brand-wrapper"><div class="site-meta"><div class="custom-logo-site-title"><a href="/" class="brand" rel="start"><span class="logo-line-before"><i></i></span> <span class="site-title">java面试</span> <span class="logo-line-after"><i></i></span></a></div><p class="site-subtitle"></p></div><div class="site-nav-toggle"><button><span class="btn-bar"></span> <span class="btn-bar"></span> <span class="btn-bar"></span></button></div></div><nav class="site-nav"><ul id="menu" class="menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i><br>Home</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i><br>Archives</a></li></ul></nav></div></header><main id="main" class="main"><div class="main-inner"><div class="content-wrap"><div id="content" class="content"><div id="posts" class="posts-expand"><article class="post post-type-normal" itemscope itemtype="http://schema.org/Article"><div class="post-block"><link itemprop="mainEntityOfPage" href="http://www.jfox.info/2017/谈谈java线程状态.html"><span hidden itemprop="author" itemscope itemtype="http://schema.org/Person"><meta itemprop="name" content="Hello"><meta itemprop="description" content=""><meta itemprop="image" content="/images/avatar.gif"></span><span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><meta itemprop="name" content="java面试"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">谈谈Java线程状态 » java面试题</h1><div class="post-meta"><span class="post-time"><span class="post-meta-item-icon"><i class="fa fa-calendar-o"></i> </span><span class="post-meta-item-text">Posted on</span> <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-01-01T23:58:31+08:00">2017-01-01</time></span></div></header><div class="post-body" itemprop="articleBody"><p>作者<a href="/u/1d96ba4c1912">凌风郎少</a>2017.07.29 09:07*字数 1329<br>本来以为这个知识点自己已经很了解了，但最近跟同事讨论Java线程对应的状态以及转换过程的时候，发现还是有一些没理清楚的地方，或者说争议点，趁机梳理了一下这块的知识，自己也动手做了实验，写篇文章总结一下。</p><p>先看一下Thread类中关于状态的源码：</p><pre><code>public enum State {
+        /**
+         * Thread state for a thread which has not yet started.
+         */
+        NEW,
+
+        /**
+         * Thread state for a runnable thread.  A thread in the runnable
+         * state is executing in the Java virtual machine but it may
+         * be waiting for other resources from the operating system
+         * such as processor.
+         */
+        RUNNABLE,
+
+        /**
+         * Thread state for a thread blocked waiting for a monitor lock.
+         * A thread in the blocked state is waiting for a monitor lock
+         * to enter a synchronized block/method or
+         * reenter a synchronized block/method after calling
+         * {@link Object#wait() Object.wait}.
+         */
+        BLOCKED,
+
+        /**
+         * Thread state for a waiting thread.
+         * A thread is in the waiting state due to calling one of the
+         * following methods:
+         * &lt;ul&gt;
+         *   &lt;li&gt;{@link Object#wait() Object.wait} with no timeout&lt;/li&gt;
+         *   &lt;li&gt;{@link #join() Thread.join} with no timeout&lt;/li&gt;
+         *   &lt;li&gt;{@link LockSupport#park() LockSupport.park}&lt;/li&gt;
+         * &lt;/ul&gt;
+         *
+         * &lt;p&gt;A thread in the waiting state is waiting for another thread to
+         * perform a particular action.
+         *
+         * For example, a thread that has called &lt;tt&gt;Object.wait()&lt;/tt&gt;
+         * on an object is waiting for another thread to call
+         * &lt;tt&gt;Object.notify()&lt;/tt&gt; or &lt;tt&gt;Object.notifyAll()&lt;/tt&gt; on
+         * that object. A thread that has called &lt;tt&gt;Thread.join()&lt;/tt&gt;
+         * is waiting for a specified thread to terminate.
+         */
+        WAITING,
+
+        /**
+         * Thread state for a waiting thread with a specified waiting time.
+         * A thread is in the timed waiting state due to calling one of
+         * the following methods with a specified positive waiting time:
+         * &lt;ul&gt;
+         *   &lt;li&gt;{@link #sleep Thread.sleep}&lt;/li&gt;
+         *   &lt;li&gt;{@link Object#wait(long) Object.wait} with timeout&lt;/li&gt;
+         *   &lt;li&gt;{@link #join(long) Thread.join} with timeout&lt;/li&gt;
+         *   &lt;li&gt;{@link LockSupport#parkNanos LockSupport.parkNanos}&lt;/li&gt;
+         *   &lt;li&gt;{@link LockSupport#parkUntil LockSupport.parkUntil}&lt;/li&gt;
+         * &lt;/ul&gt;
+         */
+        TIMED_WAITING,
+
+        /**
+         * Thread state for a terminated thread.
+         * The thread has completed execution.
+         */
+        TERMINATED;
+    }
+</code></pre><p>这里特意贴了下英文注释，下面我挨个来解释一下：<br><strong>NEW状态：</strong><br>英文翻译过来是线程还是没有开始执行。<br>首先，既然已经有状态了，那肯定是已经创建好线程对象了（如果对象都没有，何来状态这一说？），这样一来问题的焦点就在于还没有开始执行，我们都知道当调用线程的start()方法时，线程不一定会马上执行，因为Java线程是映射到操作系统的线程进行执行，此时可能还需要等操作系统调度，但此时该线程的状态已经为RUNNABLE了。</p><p><strong>RUNNABLE状态：</strong><br>英文翻译过来是该状态指运行中的线程，一个线程处于RUNNABLE状态的意思是在JVM层面它是在执行的，但是该线程可能是在等待操作系统的资源，比如说CPU。这个状态是最有争议的，注释中说了，它表示线程在JVM层面是执行的，但在操作系统层面不一定，它举例是CPU，毫无疑问CPU是一个操作系统资源，但这也就意味着在等操作系统其他资源的时候，线程也会是这个状态，这里就有一个关键点<strong>IO阻塞</strong>算是等操作系统的资源么？<br>我自己写代码测试了一下：</p><pre><code>public class BIOServer {
+    public static void main(String[] args) throws Exception {
+        ServerSocket serverSocket = new ServerSocket(8888);
+        Socket accept = serverSocket.accept();
+        System.out.println(&quot;连接&quot;);
+        accept.getInputStream().read();
+        System.out.println(&quot;读取&quot;);
+    }
+}
+</code></pre><p>代码很简单，开始的accept()会阻塞直到有连接进来，然后输入流的read()方法又会阻塞等数据进来，这个时候线程的状态应该是BLOKED？RUNNABLE？<br>我用jstack导出线程查了一下：</p><pre><code>&quot;Monitor Ctrl-Break&quot; #10 daemon prio=5 os_prio=31 tid=0x00007fc5ac029000 nid=0x5503 runnable [0x0000000124689000]
+   java.lang.Thread.State: RUNNABLE
+        at java.net.PlainSocketImpl.socketAccept(Native Method)
+        at java.net.AbstractPlainSocketImpl.accept(AbstractPlainSocketImpl.java)
+        at java.net.ServerSocket.implAccept(ServerSocket.java:545)
+        at java.net.ServerSocket.accept(ServerSocket.java:513)
+        at com.intellij.rt.execution.application.AppMain$1.run(AppMain.java:90)
+        at java.lang.Thread.run(Redefined)
+</code></pre><p><strong>java.lang.Thread.State: RUNNABLE！！！</strong><br>从调用栈来看它确实是阻塞在accept()方法上，但是线程状态是RUNNABLE，是不是很意外？同理，read()方法也阻塞了，也处于RUNNABLE状态。<br>在回过头去理解JDK的英文注释，<strong>在等操作系统资源，比如说CPU</strong>，我们都知道Java的线程是映射到操作系统的线程上去执行的，也就是说操作系统的线程到底有没有在执行JVM是不知道的，JVM判断线程是否执行的逻辑就是自己的线程是否已经映射到了一个操作系统的线程，而不关系操作系统层面上该映射到的线程到底有没有再执行。<br>同理，NIO中调用select()方法时，线程状态也是RUNNABLE，这里就不贴代码了。</p><p><strong>BLOCKED状态：</strong><br>英文翻译过来是该状态表示线程在阻塞等待monitor lock(监视器锁)。一个线程在进入synchronized修饰的临界区的时候,或者在synchronized临界区中调用Object.wait然后被唤醒重新进入synchronized临界区都对应该状态。结合上面RUNNABLE的分析,也就是IO阻塞不会进入BLOCKED状态,只有synchronized会导致线程进入该状态。<br>关于BLOCKED状态，注释里只提到一种情况就是进入synchronized声明的临界区时会导致，这个也很好理解，synchronized是JVM自己控制的，所以这个阻塞事件它自己能够知道（对比理解上面的操作系统层面）。</p><p><strong>WAITING状态：</strong><br>代表线程进入等待状态。 当一个线程调用如下方法时会进入该状态:<br>1.Object.wait;<br>2.Thread.join;<br>3.LockSupport.park<br>处在这个状态的线程是在等另一个线程做一些特殊的操作。比如Object.wait()方法在等另一个线程调用Object.notify()或者Object.notifyAll()，Thread.join()方法在等一个指定线程完成,即变为TERMINATED状态，当然，LockSupport.park则是在等另一个线程调用LockSupport.unpark方法。</p><p><strong>TIMED_WAITING状态：</strong><br>代表一个线程在等一个指定时间,然后自动醒来。<br>调用以下方法时,线程会进入该状态:<br>1.Thread.sleep<br>2.Object.wait(long)<br>3.Thread.join(long)<br>4.LockSupport.parkNanos<br>5.LockSupport.parkUntil</p><p><strong>TERMINATED状态：</strong><br>当线程执行完成时会进入该状态。</p><p>通过上面的分析，我画了一个Java线程状态转换图：<br><img src="/2017/1411/58da995.png" alt=""></p><pre><code>Java线程状态转换图 
+</code></pre><p>写在最后：<br>Java线程状态应该算是一个有争议的问题，因为它涉及到操作系统本身。上面的内容只是我自己的理解跟做实验的结论，如果大家有不一样的看法或者其他实验证明我上面的观点有问题，欢迎给我评论或者私信，期待跟大家交流。</p></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="4142158067"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="5618891265"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><footer class="post-footer"><div class="post-nav"><div class="post-nav-next post-nav-item"><a href="/2017/java线程池艺术探索.html" rel="next" title="Java 线程池艺术探索"><i class="fa fa-chevron-left"></i> Java 线程池艺术探索</a></div><span class="post-nav-divider"></span><div class="post-nav-prev post-nav-item"><a href="/2017/httpclient连接池相关参数的坑.html" rel="prev" title="httpclient连接池相关参数的坑">httpclient连接池相关参数的坑 <i class="fa fa-chevron-right"></i></a></div></div></footer></div></article><div class="post-spread"></div></div></div></div><div class="sidebar-toggle"><div class="sidebar-toggle-line-wrap"><span class="sidebar-toggle-line sidebar-toggle-line-first"></span> <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span> <span class="sidebar-toggle-line sidebar-toggle-line-last"></span></div></div><aside id="sidebar" class="sidebar"><div class="sidebar-inner"><section class="site-overview-wrap sidebar-panel sidebar-panel-active"><div class="site-overview"><div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person"><p class="site-author-name" itemprop="name">Hello</p><p class="site-description motion-element" itemprop="description"></p></div><nav class="site-state motion-element"><div class="site-state-item site-state-posts"><a href="/archives/"><span class="site-state-item-count">1358</span> <span class="site-state-item-name">posts</span></a></div></nav></div></section></div></aside><div class="sfix"><div class="fixedme"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460" data-ad-format="auto"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script></div></div></main><footer id="footer" class="footer"><div class="footer-inner"><div class="copyright">&copy; <span itemprop="copyrightYear">2018</span> <span class="with-love"><i class="fa fa-user"></i> </span><span class="author" itemprop="copyrightHolder">Hello</span></div><div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div><span class="post-meta-divider">|</span><div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div></div></footer><div class="back-to-top"><i class="fa fa-arrow-up"></i></div></div><script type="text/javascript">"[object Function]"!==Object.prototype.toString.call(window.Promise)&&(window.Promise=null)</script><script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script><script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script><script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script><script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script><script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script></body></html><!-- rebuild by neat -->

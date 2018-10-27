@@ -1,0 +1,128 @@
+<!-- build time:Sat Oct 27 2018 21:00:24 GMT+0800 (CST) --><!DOCTYPE html><html class="theme-next muse use-motion"><head><meta name="generator" content="Hexo 3.8.0"><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"><meta name="theme-color" content="#222"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"><link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css"><link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css"><link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4"><link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222"><meta name="description" content="Caused by: java.lang.NoClassDefFoundError: Could not initialize class org.hibernate.validator.internal.engine.ConfigurationImplat org.hibernate.validator.HibernateValidator.createGenericConfiguration("><meta name="keywords" content="JAVA,面试"><meta property="og:type" content="article"><meta property="og:title" content="深入 JVM 分析 spring-boot 应用 hibernate-validator NoClassDefFoundError"><meta property="og:url" content="http://www.jfox.info/2017/深入-jvm-分析-spring-boot-应用-hibernate-validator-noclassdeffounderror.html"><meta property="og:site_name" content="java面试"><meta property="og:description" content="Caused by: java.lang.NoClassDefFoundError: Could not initialize class org.hibernate.validator.internal.engine.ConfigurationImplat org.hibernate.validator.HibernateValidator.createGenericConfiguration("><meta property="og:locale" content="zh_CN"><meta property="og:updated_time" content="2018-10-27T12:29:37.406Z"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="深入 JVM 分析 spring-boot 应用 hibernate-validator NoClassDefFoundError"><meta name="twitter:description" content="Caused by: java.lang.NoClassDefFoundError: Could not initialize class org.hibernate.validator.internal.engine.ConfigurationImplat org.hibernate.validator.HibernateValidator.createGenericConfiguration("><script type="text/javascript" id="hexo.configurations">var NexT=window.NexT||{},CONFIG={root:"/",scheme:"Muse",version:"5.1.4",sidebar:{position:"left",display:"post",offset:12,b2t:!1,scrollpercent:!1,onmobile:!1},fancybox:!0,tabs:!0,motion:{enable:!0,async:!1,transition:{post_block:"fadeIn",post_header:"slideDownIn",post_body:"slideDownIn",coll_header:"slideLeftIn",sidebar:"slideUpIn"}},duoshuo:{userId:"0",author:"Author"},algolia:{applicationID:"",apiKey:"",indexName:"",hits:{per_page:10},labels:{input_placeholder:"Search for Posts",hits_empty:"We didn't find any results for the search: ${query}",hits_stats:"${hits} results found in ${time} ms"}}}</script><link rel="canonical" href="http://www.jfox.info/2017/深入-jvm-分析-spring-boot-应用-hibernate-validator-noclassdeffounderror.html"><title>深入 JVM 分析 spring-boot 应用 hibernate-validator NoClassDefFoundError | java面试</title></head><body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN"><div class="container sidebar-position-left page-post-detail"><div class="headband"></div><header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="header-inner"><div class="site-brand-wrapper"><div class="site-meta"><div class="custom-logo-site-title"><a href="/" class="brand" rel="start"><span class="logo-line-before"><i></i></span> <span class="site-title">java面试</span> <span class="logo-line-after"><i></i></span></a></div><p class="site-subtitle"></p></div><div class="site-nav-toggle"><button><span class="btn-bar"></span> <span class="btn-bar"></span> <span class="btn-bar"></span></button></div></div><nav class="site-nav"><ul id="menu" class="menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i><br>Home</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i><br>Archives</a></li></ul></nav></div></header><main id="main" class="main"><div class="main-inner"><div class="content-wrap"><div id="content" class="content"><div id="posts" class="posts-expand"><article class="post post-type-normal" itemscope itemtype="http://schema.org/Article"><div class="post-block"><link itemprop="mainEntityOfPage" href="http://www.jfox.info/2017/深入-jvm-分析-spring-boot-应用-hibernate-validator-noclassdeffounderror.html"><span hidden itemprop="author" itemscope itemtype="http://schema.org/Person"><meta itemprop="name" content="Hello"><meta itemprop="description" content=""><meta itemprop="image" content="/images/avatar.gif"></span><span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><meta itemprop="name" content="java面试"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">深入 JVM 分析 spring-boot 应用 hibernate-validator NoClassDefFoundError</h1><div class="post-meta"><span class="post-time"><span class="post-meta-item-icon"><i class="fa fa-calendar-o"></i> </span><span class="post-meta-item-text">Posted on</span> <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-01-01T23:49:42+08:00">2017-01-01</time></span></div></header><div class="post-body" itemprop="articleBody"><p>Caused by: java.lang.NoClassDefFoundError: Could not initialize class org.hibernate.validator.internal.engine.ConfigurationImpl<br>at org.hibernate.validator.HibernateValidator.createGenericConfiguration(HibernateValidator.java:33) ~[hibernate-validator-5.3.5.Final.jar:5.3.5.Final]<br>at javax.validation.Validation$GenericBootstrapImpl.configure(Validation.java:276) ~[validation-api-1.1.0.Final.jar:na]<br>at org.springframework.boot.validation.MessageInterpolatorFactory.getObject(MessageInterpolatorFactory.java:53) ~[spring-boot-1.5.3.RELEASE.jar:1.5.3.RELEASE]<br>at org.springframework.boot.autoconfigure.validation.DefaultValidatorConfiguration.defaultValidator(DefaultValidatorConfiguration.java:43) ~[spring-boot-autoconfigure-1.5.3.RELEASE.jar:1.5.3.RELEASE]<br>at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[na:1.8.0_112]<br>at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[na:1.8.0_112]<br>at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[na:1.8.0_112]<br>at java.lang.reflect.Method.invoke(Method.java:498) ~[na:1.8.0_112]<br>at org.springframework.beans.factory.support.SimpleInstantiationStrategy.instantiate(SimpleInstantiationStrategy.java:162) ~[spring-beans-4.3.8.RELEASE.jar:4.3.8.RELEASE]<br>… 32 common frames omitted</p><p>这个错误信息表面上是NoClassDefFoundError，但是实际上ConfigurationImpl这个类是在hibernate-validator-5.3.5.Final.jar里的，不应该出现找不到类的情况。</p><p>那为什么应用里抛出这个NoClassDefFoundError ？</p><p>有经验的开发人员从Could not initialize class 这个信息就可以知道，实际上是一个类在初始化时抛出的异常，比如static的静态代码块，或者static字段初始化的异常。</p><h2 id="谁初始化了-org-hibernate-validator-internal-engine-ConfigurationImpl"><a href="#谁初始化了-org-hibernate-validator-internal-engine-ConfigurationImpl" class="headerlink" title="谁初始化了 org.hibernate.validator.internal.engine.ConfigurationImpl"></a>谁初始化了 org.hibernate.validator.internal.engine.ConfigurationImpl</h2><p>但是当我们在HibernateValidator 这个类，创建ConfigurationImpl的代码块里打断点时，发现有两个线程触发了断点：</p><pre><code>public class HibernateValidator implements ValidationProvider&lt;HibernateValidatorConfiguration&gt; {
+    @Override
+    public Configuration&lt;?&gt; createGenericConfiguration(BootstrapState state) {
+        return new ConfigurationImpl( state );
+    }
+</code></pre><p>其中一个线程的调用栈是：</p><pre><code>Thread [background-preinit] (Class load: ConfigurationImpl)
+    HibernateValidator.createGenericConfiguration(BootstrapState) line: 33
+    Validation$GenericBootstrapImpl.configure() line: 276
+    BackgroundPreinitializer$ValidationInitializer.run() line: 107
+    BackgroundPreinitializer$1.runSafely(Runnable) line: 59
+    BackgroundPreinitializer$1.run() line: 52
+    Thread.run() line: 745
+</code></pre><p>另外一个线程调用栈是：</p><pre><code>Thread [main] (Suspended (breakpoint at line 33 in HibernateValidator))
+    owns: ConcurrentHashMap&lt;K,V&gt;  (id=52)
+    owns: Object  (id=53)
+    HibernateValidator.createGenericConfiguration(BootstrapState) line: 33
+    Validation$GenericBootstrapImpl.configure() line: 276
+    MessageInterpolatorFactory.getObject() line: 53
+    DefaultValidatorConfiguration.defaultValidator() line: 43
+    NativeMethodAccessorImpl.invoke0(Method, Object, Object[]) line: not available [native method]
+    NativeMethodAccessorImpl.invoke(Object, Object[]) line: 62
+    DelegatingMethodAccessorImpl.invoke(Object, Object[]) line: 43
+    Method.invoke(Object, Object...) line: 498
+    CglibSubclassingInstantiationStrategy(SimpleInstantiationStrategy).instantiate(RootBeanDefinition, String, BeanFactory, Object, Method, Object...) line: 162
+    ConstructorResolver.instantiateUsingFactoryMethod(String, RootBeanDefinition, Object[]) line: 588
+    DefaultListableBeanFactory(AbstractAutowireCapableBeanFactory).instantiateUsingFactoryMethod(String, RootBeanDefinition, Object[]) line: 1173
+</code></pre><p>显然，这个线程的调用栈是常见的spring的初始化过程。</p><h3 id="BackgroundPreinitializer-做了什么"><a href="#BackgroundPreinitializer-做了什么" class="headerlink" title="BackgroundPreinitializer 做了什么"></a>BackgroundPreinitializer 做了什么</h3><p>那么重点来看下 BackgroundPreinitializer 线程做了哪些事情：</p><pre><code>@Order(LoggingApplicationListener.DEFAULT_ORDER + 1)
+public class BackgroundPreinitializer
+        implements ApplicationListener&lt;ApplicationEnvironmentPreparedEvent&gt; {
+    @Override
+    public void onApplicationEvent(ApplicationEnvironmentPreparedEvent event) {
+        try {
+            Thread thread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    runSafely(new MessageConverterInitializer());
+                    runSafely(new MBeanFactoryInitializer());
+                    runSafely(new ValidationInitializer());
+                    runSafely(new JacksonInitializer());
+                    runSafely(new ConversionServiceInitializer());
+                }
+                public void runSafely(Runnable runnable) {
+                    try {
+                        runnable.run();
+                    }
+                    catch (Throwable ex) {
+                        // Ignore
+                    }
+                }
+            }, &quot;background-preinit&quot;);
+            thread.start();
+        }
+</code></pre><p>可以看到BackgroundPreinitializer类是spring boot为了加速应用的初始化，以一个独立的线程来加载hibernate validator这些组件。</p><p>这个 background-preinit 线程会吞掉所有的异常。<br>显然ConfigurationImpl 初始化的异常也被吞掉了，那么如何才能获取到最原始的信息？</p><h3 id="获取到最原始的异常信息"><a href="#获取到最原始的异常信息" class="headerlink" title="获取到最原始的异常信息"></a>获取到最原始的异常信息</h3><p>在BackgroundPreinitializer的 run() 函数里打一个断点（注意是Suspend thread类型, 不是Suspend VM），让它先不要触发ConfigurationImpl的加载，让spring boot的正常流程去触发ConfigurationImpl的加载，就可以知道具体的信息了。<br>那么打出来的异常信息是：</p><pre><code>Caused by: java.lang.NoSuchMethodError: org.jboss.logging.Logger.getMessageLogger(Ljava/lang/Class;Ljava/lang/String;)Ljava/lang/Object;
+    at org.hibernate.validator.internal.util.logging.LoggerFactory.make(LoggerFactory.java:19) ~[hibernate-validator-5.3.5.Final.jar:5.3.5.Final]
+    at org.hibernate.validator.internal.util.Version.&lt;clinit&gt;(Version.java:22) ~[hibernate-validator-5.3.5.Final.jar:5.3.5.Final]
+    at org.hibernate.validator.internal.engine.ConfigurationImpl.&lt;clinit&gt;(ConfigurationImpl.java:71) ~[hibernate-validator-5.3.5.Final.jar:5.3.5.Final]
+    at org.hibernate.validator.HibernateValidator.createGenericConfiguration(HibernateValidator.java:33) ~[hibernate-validator-5.3.5.Final.jar:5.3.5.Final]
+    at javax.validation.Validation$GenericBootstrapImpl.configure(Validation.java:276) ~[validation-api-1.1.0.Final.jar:na]
+    at org.springframework.boot.validation.MessageInterpolatorFactory.getObject(MessageInterpolatorFactory.java:53) ~[spring-boot-1.5.3.RELEASE.jar:1.5.3.RELEASE]
+</code></pre><p>那么可以看出是 org.jboss.logging.Logger 这个类不兼容，少了getMessageLogger(Ljava/lang/Class;Ljava/lang/String;)Ljava/lang/Object 这个函数。</p><p>那么检查下应用的依赖，可以发现org.jboss.logging.Logger 在jboss-common-1.2.1.GA.jar和jboss-logging-3.3.1.Final.jar里都有。</p><p>显然是jboss-common-1.2.1.GA.jar 这个依赖过时了，需要排除掉。</p><h3 id="总结异常的发生流程"><a href="#总结异常的发生流程" class="headerlink" title="总结异常的发生流程"></a>总结异常的发生流程</h3><ol><li>应用依赖了jboss-common-1.2.1.GA.jar，它里面的org.jboss.logging.Logger太老</li><li>spring boot启动时，BackgroundPreinitializer里的线程去尝试加载ConfigurationImpl，然后触发了org.jboss.logging.Logger的函数执行问题</li><li>BackgroundPreinitializer 吃掉了异常信息，jvm把ConfigurationImpl标记为不可用的</li><li><p>spring boot正常的流程去加载ConfigurationImpl，jvm发现ConfigurationImpl类是不可用，直接抛出NoClassDefFoundError</p><p>Caused by: java.lang.NoClassDefFoundError: Could not initialize class org.hibernate.validator.internal.engine.ConfigurationImpl<br>`</p></li></ol><h2 id="深入JVM"><a href="#深入JVM" class="headerlink" title="深入JVM"></a>深入JVM</h2><p>为什么第二次尝试加载ConfigurationImpl时，会直接抛出java.lang.NoClassDefFoundError: Could not initialize class ？<br>下面用一段简单的代码来重现这个问题：</p><pre><code>try {
+  org.hibernate.validator.internal.util.Version.touch();
+} catch (Throwable e) {
+  e.printStackTrace();
+}
+System.in.read();
+try {
+  org.hibernate.validator.internal.util.Version.touch();
+} catch (Throwable e) {
+  e.printStackTrace();
+}
+</code></pre><h3 id="使用HSDB来确定类的状态"><a href="#使用HSDB来确定类的状态" class="headerlink" title="使用HSDB来确定类的状态"></a>使用HSDB来确定类的状态</h3><p>当抛出第一个异常时，尝试用HSDB来看下这个类的状态。</p><pre><code>sudo java -classpath &quot;$JAVA_HOME/lib/sa-jdi.jar&quot; sun.jvm.hotspot.HSDB
+</code></pre><p>然后在HSDB console里查找到Version的地址信息</p><pre><code>hsdb&gt; class org.hibernate.validator.internal.util.Version
+org/hibernate/validator/internal/util/Version @0x00000007c0060218
+</code></pre><p>然后在Inspector查找到这个地址，发现_init_state是5。</p><p>再看下hotspot代码，可以发现5对应的定义是initialization_error：</p><pre><code>// /hotspot/src/share/vm/oops/instanceKlass.hpp
+// See &quot;The Java Virtual Machine Specification&quot; section 2.16.2-5 for a detailed description
+// of the class loading &amp; initialization procedure, and the use of the states.
+enum ClassState {
+  allocated,                          // allocated (but not yet linked)
+  loaded,                             // loaded and inserted in class hierarchy (but not linked yet)
+  linked,                             // successfully linked/verified (but not initialized yet)
+  being_initialized,                  // currently running class initializer
+  fully_initialized,                  // initialized (successfull final state)
+  initialization_error                // error happened during initialization
+};
+</code></pre><h3 id="JVM规范里关于Initialization的内容"><a href="#JVM规范里关于Initialization的内容" class="headerlink" title="JVM规范里关于Initialization的内容"></a>JVM规范里关于Initialization的内容</h3><p><a href="http://docs.oracle.com/javase/specs/jvms/se7/html/jvms-5.html#jvms-5.5" target="_blank" rel="noopener">http://docs.oracle.com/javase/specs/jvms/se7/html/jvms-5.html#jvms-5.5</a></p><p>从规范里可以看到初始一个类/接口有12步，比较重要的两步都用黑体标记出来了：</p><ul><li>5: If the Class object for C is in an erroneous state, then initialization is not possible. Release LC and throw a NoClassDefFoundError.</li><li>11: Otherwise, the class or interface initialization method must have completed abruptly by throwing some exception E. If the class of E is not Error or one of its subclasses, then create a new instance of the class ExceptionInInitializerError with E as the argument, and use this object in place of E in the following step.</li></ul><h3 id="第一次尝试加载Version类时"><a href="#第一次尝试加载Version类时" class="headerlink" title="第一次尝试加载Version类时"></a>第一次尝试加载Version类时</h3><p>当第一次尝试加载时，hotspot InterpreterRuntime在解析invokestatic指令时，尝试加载org.hibernate.validator.internal.util.Version类，InstanceKlass的_init_state先是标记为being_initialized，然后当加载失败时，被标记为initialization_error。<br>对应Initialization的11步。</p><pre><code>// hotspot/src/share/vm/oops/instanceKlass.cpp
+// Step 10 and 11
+Handle e(THREAD, PENDING_EXCEPTION);
+CLEAR_PENDING_EXCEPTION;
+// JVMTI has already reported the pending exception
+// JVMTI internal flag reset is needed in order to report ExceptionInInitializerError
+JvmtiExport::clear_detected_exception((JavaThread*)THREAD);
+{
+  EXCEPTION_MARK;
+  this_oop-&gt;set_initialization_state_and_notify(initialization_error, THREAD);
+  CLEAR_PENDING_EXCEPTION;   // ignore any exception thrown, class initialization error is thrown below
+  // JVMTI has already reported the pending exception
+  // JVMTI internal flag reset is needed in order to report ExceptionInInitializerError
+  JvmtiExport::clear_detected_exception((JavaThread*)THREAD);
+}
+DTRACE_CLASSINIT_PROBE_WAIT(error, InstanceKlass::cast(this_oop()), -1,wait);
+if (e-&gt;is_a(SystemDictionary::Error_klass())) {
+  THROW_OOP(e());
+} else {
+  JavaCallArguments args(e);
+  THROW_ARG(vmSymbols::java_lang_ExceptionInInitializerError(),
+            vmSymbols::throwable_void_signature(),
+            &amp;args);
+}
+</code></pre><h3 id="第二次尝试加载Version类时"><a href="#第二次尝试加载Version类时" class="headerlink" title="第二次尝试加载Version类时"></a>第二次尝试加载Version类时</h3><p>当第二次尝试加载时，检查InstanceKlass的_init_state是initialization_error，则直接抛出NoClassDefFoundError: Could not initialize class.</p><p>对应Initialization的5步。</p><pre><code>// hotspot/src/share/vm/oops/instanceKlass.cpp
+void InstanceKlass::initialize_impl(instanceKlassHandle this_oop, TRAPS) {
+// ...
+    // Step 5
+    if (this_oop-&gt;is_in_error_state()) {
+      DTRACE_CLASSINIT_PROBE_WAIT(erroneous, InstanceKlass::cast(this_oop()), -1,wait);
+      ResourceMark rm(THREAD);
+      const char* desc = &quot;Could not initialize class &quot;;
+      const char* className = this_oop-&gt;external_name();
+      size_t msglen = strlen(desc) + strlen(className) + 1;
+      char* message = NEW_RESOURCE_ARRAY(char, msglen);
+      if (NULL == message) {
+        // Out of memory: can&apos;t create detailed error message
+        THROW_MSG(vmSymbols::java_lang_NoClassDefFoundError(), className);
+      } else {
+        jio_snprintf(message, msglen, &quot;%s%s&quot;, desc, className);
+        THROW_MSG(vmSymbols::java_lang_NoClassDefFoundError(), message);
+      }
+    }
+</code></pre><h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul><li>spring boot在BackgroundPreinitializer类里用一个独立的线程来加载validator，并吃掉了原始异常</li><li>第一次加载失败的类，在jvm里会被标记为initialization_error，再次加载时会直接抛出NoClassDefFoundError: Could not initialize class</li><li>当在代码里吞掉异常时要谨慎，否则排查问题带来很大的困难</li><li><a href="http://docs.oracle.com/javase/specs/jvms/se7/html/jvms-5.html#jvms-5.5" target="_blank" rel="noopener">http://docs.oracle.com/javase/specs/jvms/se7/html/jvms-5.html#jvms-5.5</a></li></ul></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="4142158067"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="5618891265"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><footer class="post-footer"><div class="post-nav"><div class="post-nav-next post-nav-item"><a href="/2017/面试系列-五-数据库和前端.html" rel="next" title="面试系列（五）：数据库和前端"><i class="fa fa-chevron-left"></i> 面试系列（五）：数据库和前端</a></div><span class="post-nav-divider"></span><div class="post-nav-prev post-nav-item"><a href="/2017/javaee-spring-介绍-搭建-概念-配置详解-属性注入和应用到项目.html" rel="prev" title="JAVAEE——spring01：介绍、搭建、概念、配置详解、属性注入和应用到项目">JAVAEE——spring01：介绍、搭建、概念、配置详解、属性注入和应用到项目 <i class="fa fa-chevron-right"></i></a></div></div></footer></div></article><div class="post-spread"></div></div></div></div><div class="sidebar-toggle"><div class="sidebar-toggle-line-wrap"><span class="sidebar-toggle-line sidebar-toggle-line-first"></span> <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span> <span class="sidebar-toggle-line sidebar-toggle-line-last"></span></div></div><aside id="sidebar" class="sidebar"><div class="sidebar-inner"><ul class="sidebar-nav motion-element"><li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">Table of Contents</li><li class="sidebar-nav-overview" data-target="site-overview-wrap">Overview</li></ul><section class="site-overview-wrap sidebar-panel"><div class="site-overview"><div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person"><p class="site-author-name" itemprop="name">Hello</p><p class="site-description motion-element" itemprop="description"></p></div><nav class="site-state motion-element"><div class="site-state-item site-state-posts"><a href="/archives/"><span class="site-state-item-count">1358</span> <span class="site-state-item-name">posts</span></a></div></nav></div></section><section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active"><div class="post-toc"><div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#谁初始化了-org-hibernate-validator-internal-engine-ConfigurationImpl"><span class="nav-number">1.</span> <span class="nav-text">谁初始化了 org.hibernate.validator.internal.engine.ConfigurationImpl</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#BackgroundPreinitializer-做了什么"><span class="nav-number">1.1.</span> <span class="nav-text">BackgroundPreinitializer 做了什么</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#获取到最原始的异常信息"><span class="nav-number">1.2.</span> <span class="nav-text">获取到最原始的异常信息</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结异常的发生流程"><span class="nav-number">1.3.</span> <span class="nav-text">总结异常的发生流程</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#深入JVM"><span class="nav-number">2.</span> <span class="nav-text">深入JVM</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#使用HSDB来确定类的状态"><span class="nav-number">2.1.</span> <span class="nav-text">使用HSDB来确定类的状态</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JVM规范里关于Initialization的内容"><span class="nav-number">2.2.</span> <span class="nav-text">JVM规范里关于Initialization的内容</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#第一次尝试加载Version类时"><span class="nav-number">2.3.</span> <span class="nav-text">第一次尝试加载Version类时</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#第二次尝试加载Version类时"><span class="nav-number">2.4.</span> <span class="nav-text">第二次尝试加载Version类时</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li></ol></div></div></section></div></aside><div class="sfix"><div class="fixedme"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460" data-ad-format="auto"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script></div></div></main><footer id="footer" class="footer"><div class="footer-inner"><div class="copyright">&copy; <span itemprop="copyrightYear">2018</span> <span class="with-love"><i class="fa fa-user"></i> </span><span class="author" itemprop="copyrightHolder">Hello</span></div><div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div><span class="post-meta-divider">|</span><div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div></div></footer><div class="back-to-top"><i class="fa fa-arrow-up"></i></div></div><script type="text/javascript">"[object Function]"!==Object.prototype.toString.call(window.Promise)&&(window.Promise=null)</script><script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script><script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script><script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script><script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script><script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script></body></html><!-- rebuild by neat -->

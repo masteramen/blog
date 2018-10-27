@@ -1,0 +1,127 @@
+<!-- build time:Sat Oct 27 2018 21:00:18 GMT+0800 (CST) --><!DOCTYPE html><html class="theme-next muse use-motion"><head><meta name="generator" content="Hexo 3.8.0"><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"><meta name="theme-color" content="#222"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"><link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css"><link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css"><link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4"><link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222"><meta name="description" content="老规矩先上图最近 没有什么时间，后面项目再补上详细说明百度地图SDK新增点聚合功能。通过该功能，可通过缩小地图层级，将定义范围内的多个标注点，聚合显示成一个标注点，解决加载大量点要素到地图上产生覆盖现象的问题，并提高性能。本demo 修改算法流程：加入异步添加屏幕上图片，只加载屏幕范围内的图片优化渲染逻辑大大减少运算的时间（经过测试1W张不同经纬度的图片 300-500ms 可以计算完毕）讲解点聚"><meta name="keywords" content="JAVA,面试"><meta property="og:type" content="article"><meta property="og:title" content="高仿 ios 相册地图功能"><meta property="og:url" content="http://www.jfox.info/2017/高仿ios相册地图功能.html"><meta property="og:site_name" content="java面试"><meta property="og:description" content="老规矩先上图最近 没有什么时间，后面项目再补上详细说明百度地图SDK新增点聚合功能。通过该功能，可通过缩小地图层级，将定义范围内的多个标注点，聚合显示成一个标注点，解决加载大量点要素到地图上产生覆盖现象的问题，并提高性能。本demo 修改算法流程：加入异步添加屏幕上图片，只加载屏幕范围内的图片优化渲染逻辑大大减少运算的时间（经过测试1W张不同经纬度的图片 300-500ms 可以计算完毕）讲解点聚"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="http://www.jfox.info/2017/1364/4059e8b.png"><meta property="og:image" content="http://www.jfox.info/2017/1364/4b4d757.png"><meta property="og:image" content="http://www.jfox.info/2017/1364/5715d5b.png"><meta property="og:image" content="http://www.jfox.info/2017/1364/8611dc3.png"><meta property="og:image" content="http://www.jfox.info/2017/1364/ebe6d05.png"><meta property="og:image" content="http://www.jfox.info/2017/1364/6d2830d.png"><meta property="og:updated_time" content="2018-10-27T12:29:39.342Z"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="高仿 ios 相册地图功能"><meta name="twitter:description" content="老规矩先上图最近 没有什么时间，后面项目再补上详细说明百度地图SDK新增点聚合功能。通过该功能，可通过缩小地图层级，将定义范围内的多个标注点，聚合显示成一个标注点，解决加载大量点要素到地图上产生覆盖现象的问题，并提高性能。本demo 修改算法流程：加入异步添加屏幕上图片，只加载屏幕范围内的图片优化渲染逻辑大大减少运算的时间（经过测试1W张不同经纬度的图片 300-500ms 可以计算完毕）讲解点聚"><meta name="twitter:image" content="http://www.jfox.info/2017/1364/4059e8b.png"><script type="text/javascript" id="hexo.configurations">var NexT=window.NexT||{},CONFIG={root:"/",scheme:"Muse",version:"5.1.4",sidebar:{position:"left",display:"post",offset:12,b2t:!1,scrollpercent:!1,onmobile:!1},fancybox:!0,tabs:!0,motion:{enable:!0,async:!1,transition:{post_block:"fadeIn",post_header:"slideDownIn",post_body:"slideDownIn",coll_header:"slideLeftIn",sidebar:"slideUpIn"}},duoshuo:{userId:"0",author:"Author"},algolia:{applicationID:"",apiKey:"",indexName:"",hits:{per_page:10},labels:{input_placeholder:"Search for Posts",hits_empty:"We didn't find any results for the search: ${query}",hits_stats:"${hits} results found in ${time} ms"}}}</script><link rel="canonical" href="http://www.jfox.info/2017/高仿ios相册地图功能.html"><title>高仿 ios 相册地图功能 | java面试</title></head><body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN"><div class="container sidebar-position-left page-post-detail"><div class="headband"></div><header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="header-inner"><div class="site-brand-wrapper"><div class="site-meta"><div class="custom-logo-site-title"><a href="/" class="brand" rel="start"><span class="logo-line-before"><i></i></span> <span class="site-title">java面试</span> <span class="logo-line-after"><i></i></span></a></div><p class="site-subtitle"></p></div><div class="site-nav-toggle"><button><span class="btn-bar"></span> <span class="btn-bar"></span> <span class="btn-bar"></span></button></div></div><nav class="site-nav"><ul id="menu" class="menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i><br>Home</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i><br>Archives</a></li></ul></nav></div></header><main id="main" class="main"><div class="main-inner"><div class="content-wrap"><div id="content" class="content"><div id="posts" class="posts-expand"><article class="post post-type-normal" itemscope itemtype="http://schema.org/Article"><div class="post-block"><link itemprop="mainEntityOfPage" href="http://www.jfox.info/2017/高仿ios相册地图功能.html"><span hidden itemprop="author" itemscope itemtype="http://schema.org/Person"><meta itemprop="name" content="Hello"><meta itemprop="description" content=""><meta itemprop="image" content="/images/avatar.gif"></span><span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><meta itemprop="name" content="java面试"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">高仿 ios 相册地图功能</h1><div class="post-meta"><span class="post-time"><span class="post-meta-item-icon"><i class="fa fa-calendar-o"></i> </span><span class="post-meta-item-text">Posted on</span> <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-01-01T23:57:44+08:00">2017-01-01</time></span></div></header><div class="post-body" itemprop="articleBody"><p>老规矩先上图<br>最近 没有什么时间，后面项目再补上详细说明</p><p><img src="/2017/1364/4059e8b.png" alt=""></p><p>百度地图SDK新增点聚合功能。通过该功能，可通过缩小地图层级，将定义范围内的多个标注点，聚合显示成一个标注点，解决加载大量点要素到地图上产生覆盖现象的问题，并提高性能。</p><p>本demo 修改算法流程：</p><ol><li><p>加入异步添加屏幕上图片，</p></li><li><p>只加载屏幕范围内的图片</p></li><li><p>优化渲染逻辑<br>大大减少运算的时间（经过测试1W张不同经纬度的图片 300-500ms 可以计算完毕）</p></li></ol><p>讲解点聚合功能，整个分析过程分为三部分：</p><p>1、如何添加点聚合功能到项目中；</p><p>2、整体结构分析；</p><p>3、核心算法分析。</p><p>一、添加点聚合功能</p><p>如官网所示，添加点聚合的方法分为三步：<br>1、声明点聚合管理类为全局变量，并初始化。核心代码如下图：</p><pre><code>MarkerOptions opts = new MarkerOptions().position(cluster.getPosition())
+            .icon(BitmapDescriptorFactory.fromBitmap(XX));
+Marker marker = (Marker) mMap.addOverlay(opts);
+</code></pre><p>二、整体结构分析<br>先上一个思维导图：</p><p><img src="/2017/1364/4b4d757.png" alt=""></p><p>如上图，点聚合有四个类</p><p>1、Cluster数据：主要是聚合后的数据类型</p><p>2、四叉树：记录初始范围内的所有图片并以四叉树的数据结构组织。核心算法需要用到的数据结构，后面再讲；</p><p>3、点聚合算法：基于四叉树的核心算法。后面讲；</p><p>4、Cluster管理：对外接口，通过调用核心算法实现点聚合功能、</p><p>整个功能的主要流程有两条：</p><p>1、添加item：Cluster管理类添加item接口 算法类添加item接口：记录所有的图片信息 四叉树类添加item接口：已四叉树的结构记录所有图片信息</p><p>2、获取聚合后的集合：Cluster管理类获取聚合接口 算法类核心算法接口：通过核心算法获取聚合后的集合</p><p>三、核心算法</p><p>首先要说一个概念：世界宽度。<br>百度地图是把整个地球是按照一个平面来展开，并且通过<a href="https://www.jfox.info/go.php?url=https://zh.wikipedia.org/wiki/%E9%BA%A5%E5%8D%A1%E6%89%98%E6%8A%95%E5%BD%B1%E6%B3%95">墨卡托投影</a>投射到xy坐标轴上面。上图：</p><p><img src="/2017/1364/5715d5b.png" alt=""></p><p><img src="/2017/1364/8611dc3.png" alt=""></p><p>很明显墨卡托投影把整张世界地图投影成</p><p><code>X∈ [0,1] ; Y∈ [0,1]。</code></p><p>的一个正方型区域。<br>X 表示的是经度，Y表示的是纬度。</p><p>（其实确认来说是投影一个上下无限延伸的长方体，只是Y属于[0,1]这个范围已经足够我们使用）上图说明：</p><p><img src="/2017/1364/ebe6d05.png" alt=""></p><p>从上面看出 -85°的纬度对应Y坐标是1，那么-90°呢，你们自己可以去算一下，是+∞ （正无穷）。</p><p>至于为什么讲这个，因为计算搜索范围的时候，所有的经纬度都需要换算成Point 来计算，是不是很方便性，而且不易出错。<br>真是感叹伟人的强大！</p><p>附注<br>转换的公式在下面这个类里面：</p><pre><code>SphericalMercatorProjection.java
+</code></pre><p>接下来说说如何通过四叉树组织数据</p><p>四叉树的基本思想是把空间递归划分为不同层次的树结构。它把已知的空间等分成四个相等的子空间，如此递归下去，直到满足当层数目量超过50，或者层级数大于40则停止分割。示意图如下：</p><p><img src="/2017/1364/6d2830d.png" alt=""></p><p>OK，接下来说说具体流程</p><ol><li><p>遍历QuadItem,只加载屏幕内的点，生成四叉树，方便搜索。</p></li><li><p>如果图片已被visitedCandidate记录，则continue下面步骤，直到需要处理的图片没有被visitedCandidates记录；</p></li><li><p>对上一次屏幕上的点<code>QuadItem</code>先进行处理；</p></li><li><p>根据MAX_DISTANCE_IN_DP及图片位置计算出searchBounds;</p></li><li><p>通过四叉树得到searchBounds内所有的图片；</p></li><li><p>如果图片数量为1，记录并跳到步骤2；</p></li><li><p>遍历得到的图片；</p></li><li><p>依次对得到的图片进行处理，</p></li><li><p>如果图片到中心点的距离比distanceToCluster（此图片与包含此图片的前cluster的距离）小，把图片加入结果集，并移除前Cluster拥有该图片的引用，并记录此次更小的距离，跳步骤8继续遍历剩余项。</p></li></ol><p>重点源码分析：</p><pre><code>1.聚合触发口
+ClusterManager.java
+
+@Override
+    public void onMapStatusChangeFinish(MapStatus mapStatus) {
+        if (mRenderer instanceof BaiduMap.OnMapStatusChangeListener) {
+            ((BaiduMap.OnMapStatusChangeListener) mRenderer).onMapStatusChange(mapStatus);
+        }
+
+        // 屏幕缩放范围太小，不进行触发聚合功能
+        if (mPreviousCameraPosition != null
+                &amp;&amp; Math.abs((int) mPreviousCameraPosition.zoom - (int) mapStatus.zoom) &lt; 1
+                &amp;&amp; mPreviousCameraPosition.target.latitude == mapStatus.target.latitude
+                &amp;&amp; mPreviousCameraPosition.target.longitude == mapStatus.target.longitude) {
+            return;
+        }
+       //记录
+        mPreviousCameraPosition = mapStatus;
+
+        //算法运算，计算出聚合后结果集，并且addMarker 到屏幕上
+        cluster(mapStatus.zoom,mapStatus.bound);
+    }
+</code></pre><p>对地图进行手势操作，都会进行触发这个函数，并进行聚合操作</p><pre><code>2.算法运算
+NonHierarchicalDistanceBasedAlgorithm.java
+
+@Override
+    public Set&lt;Cluster&lt;T&gt;&gt; getClusters(double zoom, LatLngBounds visibleBounds) {
+    ...
+    }
+</code></pre><p>这个函数有点多，不过在github 上面的demo 已经注释满满，请移步github 查看。</p><pre><code>3.渲染UI(addMarker) 
+class DefaultClusterRenderer {
+    class CreateMarkerTask {
+       ...
+    }
+}
+
+private void perform(MarkerModifier markerModifier) {
+            // Don&apos;t show small clusters. Render the markers inside, instead.
+            markRemoveAndAddLock.lock();
+            //真正添加Marker 的地方
+
+            Marker marker = mClusterToMarker.get(cluster);
+            if (marker == null || (marker != null
+                    &amp;&amp; mMarkerToCluster.get(marker).getSize() != cluster.getSize())) {
+                //异步加载占时不添加Marker
+                Integer size = onReadyAddCluster.get(cluster);
+                if (size == null || size != cluster.getSize()) {
+                    onReadyAddCluster.put(cluster,cluster.getSize());
+                    onBeforeClusterRendered(cluster, new MarkerOptions()
+                            .position(cluster.getPosition()));
+
+                }
+            }
+            markRemoveAndAddLock.unlock();
+            newClusters.add(cluster);
+
+        }
+</code></pre><p>主要添加图片的是<code>onBeforeClusterRendered</code>这一个函数， 我们看一下实现：</p><pre><code>public class PersonRenderer extends DefaultClusterRenderer&lt;LocalPictrue&gt; {
+  DataSource&lt;CloseableReference&lt;CloseableImage&gt;&gt; target = cancleMap1.get(cluster);
+        if(target != null) {
+            target.close();
+            cancleMap1.remove(target);
+        }
+
+
+        final LocalPictrue person = cluster.getItems().iterator().next();
+
+        ImageRequest imageRequest = ImageRequestBuilder
+                .newBuilderWithSource(Uri.fromFile(new File(person.path)))
+                .setProgressiveRenderingEnabled(false)
+                .setResizeOptions(new ResizeOptions(50, 50))
+                .setPostprocessor(new BadgViewPostprocessor(mContext,cluster))
+                .build();
+
+        ImagePipeline imagePipeline = Fresco.getImagePipeline();
+        DataSource&lt;CloseableReference&lt;CloseableImage&gt;&gt; dataSource =
+                imagePipeline.fetchDecodedImage(imageRequest,mContext);
+
+        dataSource.subscribe(new BaseBitmapDataSubscriber() {
+
+            @Override
+            public void onNewResultImpl(@Nullable Bitmap bitmap) {
+                // You can use the bitmap in only limited ways
+                // No need to do any cleanup.
+                if(bitmap != null &amp;&amp; !bitmap.isRecycled()) {
+                    //you can use bitmap here
+                    setIconByCluster(person.path,cluster,
+                            markerOptions.icon(BitmapDescriptorFactory.fromBitmap(bitmap)));
+                }
+                cancleMap1.remove(cluster);
+            }
+
+            @Override
+            public void onFailureImpl(DataSource dataSource) {
+                // No cleanup required here.
+                System.out.println(&quot;shibai&quot;);
+            }
+
+        }, UiThreadImmediateExecutorService.getInstance());
+
+        cancleMap1.put(cluster, dataSource);
+
+}
+</code></pre><p>很明显我这边解决了 baiduMap 在UI线程上添加图片阻塞问题， 添加强大的 fresco 第三方加载库，进行异步加载图片，接下来看图片下载完成后 执行<code>setIconByCluster</code> 函数：</p><pre><code>//异步回调回来的icon ，需要
+    public void setIconByCluster(String path, Cluster&lt;T&gt; cluster, MarkerOptions markerOptions) {
+        markRemoveAndAddLock.lock();
+        Integer size = onReadyAddCluster.get(cluster);
+        if (size != null &amp;&amp; cluster.getSize() == size) {
+            Marker marker = mClusterToMarker.get(cluster);
+            if (marker != null) {
+     //如果该图在屏幕上已经打了marker，那么替换icon即可，主要解决图片重新加载闪烁问题    
+              marker.setIcon(markerOptions.getIcon());
+            } else {
+            //打入新的Marker
+                marker = mClusterManager.getClusterMarkerCollection().addMarker(markerOptions);
+            }
+
+            mMarkerToCluster.put(marker, cluster);
+            mClusterToMarker.put(cluster, marker);
+        }
+        markRemoveAndAddLock.unlock();
+    }
+</code></pre><p>总结：</p><p>重点源码分析，基本上到这里结束。我们来撸一撸流程：</p><ol><li><p>通过<code>onMapStatusChangeFinish</code>回调，去执行点聚合运算；</p></li><li><p>通过 <code>getClusters</code>把聚合后的结果集算出来；</p></li><li><p>通过<code>CreateMarkerTask.perform()</code> 把 marker打到屏幕上。</p></li></ol></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="4142158067"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="5618891265"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><footer class="post-footer"><div class="post-nav"><div class="post-nav-next post-nav-item"><a href="/2017/java多线程2并发访问控制.html" rel="next" title="Java多线程（2）——并发访问控制"><i class="fa fa-chevron-left"></i> Java多线程（2）——并发访问控制</a></div><span class="post-nav-divider"></span><div class="post-nav-prev post-nav-item"><a href="/2017/springmvc四springmvc的数据校验的实现.html" rel="prev" title="springmvc(四) springmvc的数据校验的实现">springmvc(四) springmvc的数据校验的实现 <i class="fa fa-chevron-right"></i></a></div></div></footer></div></article><div class="post-spread"></div></div></div></div><div class="sidebar-toggle"><div class="sidebar-toggle-line-wrap"><span class="sidebar-toggle-line sidebar-toggle-line-first"></span> <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span> <span class="sidebar-toggle-line sidebar-toggle-line-last"></span></div></div><aside id="sidebar" class="sidebar"><div class="sidebar-inner"><section class="site-overview-wrap sidebar-panel sidebar-panel-active"><div class="site-overview"><div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person"><p class="site-author-name" itemprop="name">Hello</p><p class="site-description motion-element" itemprop="description"></p></div><nav class="site-state motion-element"><div class="site-state-item site-state-posts"><a href="/archives/"><span class="site-state-item-count">1358</span> <span class="site-state-item-name">posts</span></a></div></nav></div></section></div></aside><div class="sfix"><div class="fixedme"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460" data-ad-format="auto"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script></div></div></main><footer id="footer" class="footer"><div class="footer-inner"><div class="copyright">&copy; <span itemprop="copyrightYear">2018</span> <span class="with-love"><i class="fa fa-user"></i> </span><span class="author" itemprop="copyrightHolder">Hello</span></div><div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div><span class="post-meta-divider">|</span><div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div></div></footer><div class="back-to-top"><i class="fa fa-arrow-up"></i></div></div><script type="text/javascript">"[object Function]"!==Object.prototype.toString.call(window.Promise)&&(window.Promise=null)</script><script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script><script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script><script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script><script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script><script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script></body></html><!-- rebuild by neat -->

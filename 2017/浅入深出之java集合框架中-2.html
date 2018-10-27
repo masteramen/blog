@@ -1,0 +1,105 @@
+<!-- build time:Sat Oct 27 2018 21:00:19 GMT+0800 (CST) --><!DOCTYPE html><html class="theme-next muse use-motion"><head><meta name="generator" content="Hexo 3.8.0"><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"><meta name="theme-color" content="#222"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"><link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css"><link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css"><link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4"><link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222"><meta name="description" content="浅入深出之Java集合框架（中）Java中的集合框架（中）由于Java中的集合框架的内容比较多，在这里分为三个部分介绍Java的集合框架，内容是从浅到深，如果已经有java基础的小伙伴可以直接跳到&amp;lt;浅入深出之Java集合框架（下）&amp;gt;。目 录浅入深出之Java集合框架（上）浅入深出之Java集合框架（下）　努力赶制中。。关注后更新会提醒哦！**前 言在&amp;lt;浅入深出之Java集合框架（"><meta name="keywords" content="JAVA,面试"><meta property="og:type" content="article"><meta property="og:title" content="浅入深出之Java集合框架（中）"><meta property="og:url" content="http://www.jfox.info/2017/浅入深出之java集合框架中-2.html"><meta property="og:site_name" content="java面试"><meta property="og:description" content="浅入深出之Java集合框架（中）Java中的集合框架（中）由于Java中的集合框架的内容比较多，在这里分为三个部分介绍Java的集合框架，内容是从浅到深，如果已经有java基础的小伙伴可以直接跳到&amp;lt;浅入深出之Java集合框架（下）&amp;gt;。目 录浅入深出之Java集合框架（上）浅入深出之Java集合框架（下）　努力赶制中。。关注后更新会提醒哦！**前 言在&amp;lt;浅入深出之Java集合框架（"><meta property="og:locale" content="zh_CN"><meta property="og:updated_time" content="2018-10-27T12:29:37.419Z"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="浅入深出之Java集合框架（中）"><meta name="twitter:description" content="浅入深出之Java集合框架（中）Java中的集合框架（中）由于Java中的集合框架的内容比较多，在这里分为三个部分介绍Java的集合框架，内容是从浅到深，如果已经有java基础的小伙伴可以直接跳到&amp;lt;浅入深出之Java集合框架（下）&amp;gt;。目 录浅入深出之Java集合框架（上）浅入深出之Java集合框架（下）　努力赶制中。。关注后更新会提醒哦！**前 言在&amp;lt;浅入深出之Java集合框架（"><script type="text/javascript" id="hexo.configurations">var NexT=window.NexT||{},CONFIG={root:"/",scheme:"Muse",version:"5.1.4",sidebar:{position:"left",display:"post",offset:12,b2t:!1,scrollpercent:!1,onmobile:!1},fancybox:!0,tabs:!0,motion:{enable:!0,async:!1,transition:{post_block:"fadeIn",post_header:"slideDownIn",post_body:"slideDownIn",coll_header:"slideLeftIn",sidebar:"slideUpIn"}},duoshuo:{userId:"0",author:"Author"},algolia:{applicationID:"",apiKey:"",indexName:"",hits:{per_page:10},labels:{input_placeholder:"Search for Posts",hits_empty:"We didn't find any results for the search: ${query}",hits_stats:"${hits} results found in ${time} ms"}}}</script><link rel="canonical" href="http://www.jfox.info/2017/浅入深出之java集合框架中-2.html"><title>浅入深出之Java集合框架（中） | java面试</title></head><body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN"><div class="container sidebar-position-left page-post-detail"><div class="headband"></div><header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="header-inner"><div class="site-brand-wrapper"><div class="site-meta"><div class="custom-logo-site-title"><a href="/" class="brand" rel="start"><span class="logo-line-before"><i></i></span> <span class="site-title">java面试</span> <span class="logo-line-after"><i></i></span></a></div><p class="site-subtitle"></p></div><div class="site-nav-toggle"><button><span class="btn-bar"></span> <span class="btn-bar"></span> <span class="btn-bar"></span></button></div></div><nav class="site-nav"><ul id="menu" class="menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i><br>Home</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i><br>Archives</a></li></ul></nav></div></header><main id="main" class="main"><div class="main-inner"><div class="content-wrap"><div id="content" class="content"><div id="posts" class="posts-expand"><article class="post post-type-normal" itemscope itemtype="http://schema.org/Article"><div class="post-block"><link itemprop="mainEntityOfPage" href="http://www.jfox.info/2017/浅入深出之java集合框架中-2.html"><span hidden itemprop="author" itemscope itemtype="http://schema.org/Person"><meta itemprop="name" content="Hello"><meta itemprop="description" content=""><meta itemprop="image" content="/images/avatar.gif"></span><span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><meta itemprop="name" content="java面试"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">浅入深出之Java集合框架（中）</h1><div class="post-meta"><span class="post-time"><span class="post-meta-item-icon"><i class="fa fa-calendar-o"></i> </span><span class="post-meta-item-text">Posted on</span> <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-01-01T23:55:46+08:00">2017-01-01</time></span></div></header><div class="post-body" itemprop="articleBody"><h1 id="浅入深出之Java集合框架（中）"><a href="#浅入深出之Java集合框架（中）" class="headerlink" title="浅入深出之Java集合框架（中）"></a>浅入深出之Java集合框架（中）</h1><h1 id="Java中的集合框架（中）"><a href="#Java中的集合框架（中）" class="headerlink" title="Java中的集合框架（中）"></a>Java中的集合框架（中）</h1><p>由于Java中的集合框架的内容比较多，在这里分为三个部分介绍Java的集合框架，内容是从浅到深，如果已经有java基础的小伙伴可以直接跳到&lt;浅入深出之Java集合框架（下）&gt;。</p><h3 id="目-录"><a href="#目-录" class="headerlink" title="目 录"></a>目 录</h3><p><em><a href="https://www.jfox.info/go.php?url=http://www.cnblogs.com/hysum/p/7136480.html">浅入深出之Java集合框架（上）</a></em></p><p><em>浅入深出之Java集合框架（下）　</em>努力赶制中。。<em>关注后更新会提醒哦！**</em></p><h3 id="前-言"><a href="#前-言" class="headerlink" title="前 言"></a><strong>前 言</strong></h3><p>在&lt;<em><a href="https://www.jfox.info/go.php?url=http://www.cnblogs.com/hysum/p/7136480.html">浅入深出之Java集合框架（上）</a></em>&gt;中介绍了List接口和Set接口的基本操作，在这篇文章中，我将介绍关于Map接口的基本操作。使用的示例是在&lt;<em><a href="https://www.jfox.info/go.php?url=http://www.cnblogs.com/hysum/p/7136480.html">浅入深出之Java集合框架（上）</a></em>&gt;中的模拟学生选课的小程序，不清楚的朋友可以先去阅读&lt;<em><a href="https://www.jfox.info/go.php?url=http://www.cnblogs.com/hysum/p/7136480.html">浅入深出之Java集合框架（上）</a></em>&gt;。</p><h2 id="一、Map-amp-HashMap简介"><a href="#一、Map-amp-HashMap简介" class="headerlink" title="一、Map&amp;HashMap简介"></a>一、Map&amp;HashMap简介</h2><h4 id="1）Map接口"><a href="#1）Map接口" class="headerlink" title="1）Map接口"></a>1）Map接口</h4><ol><li>Map接口提供了一中映射关系，其中的元素是键值对（key-value）的形式存储的，能够实现根据Key快速查找value。Key-value可以是任何对象，是以Entry类型的对象实例存在的。</li></ol><p>2.Key是不可以重复的，Value是可以重复的。Key-value都可以为null，不过只能有一个key是null。</p><p>3.Map支持泛型，Map&lt;K,V&gt;</p><p>4.每个键最多只能映射到一个值</p><p>5.Map接口提供了分别返回key值集合、value值集合以及Entry（键值对）集合的方法</p><p>6.通过put<k key,v="" value="">,remove<object key="">操作数</object></k></p><h4 id="2）HashMap实现类"><a href="#2）HashMap实现类" class="headerlink" title="2）HashMap实现类"></a>2）HashMap实现类</h4><ol><li><p>HashMap中的Entry对象是无序排列的，HashMap是Map的一个重要实现类，也是最常用的，基于哈希表是实现</p></li><li><p>Key值和value值都可以为null，但是一个HashMap只能有一个key值为null的映射（key不可重复）</p></li></ol><h2 id="二、学生选课——使用Map添加学生"><a href="#二、学生选课——使用Map添加学生" class="headerlink" title="二、学生选课——使用Map添加学生"></a>二、学生选课——使用Map添加学生</h2><h4 id="案例功能说明"><a href="#案例功能说明" class="headerlink" title="案例功能说明"></a>案例功能说明</h4><p>1.通过Map&lt;String,Student&gt;进行学生信息管理，其中key为学生ID，value为学生对象。</p><p>2.通过键盘输入学生信息</p><p>3.对集合中的学生信息进行增删该查操作</p><p>首先创建一个StuMap类来测试Map的使用方法。如下：</p><pre><code> 1/** 2 * 学生类的Map集合类
+ 3 * 
+ 4 * @author acer
+ 5 *
+ 6*/ 7publicclass StuMap {
+ 8// 用来承装学生类型对象 9private Map&lt;String, Student&gt; students;
+10privatestatic Scanner in;
+11    {
+12         in = new Scanner(System.in);
+13    }
+1415public StuMap() {
+16         students = new HashMap&lt;String, Student&gt;();
+1718    }
+19//省略方法，下面的方法会逐个列出20 }
+</code></pre><p><strong>&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;</strong></p><p>和List接口不同，向Map添加对象使用的是put(key,value)方法。以下是使用示例：</p><pre><code> 1/* 2     * 添加学生类 输入学生id，
+ 3     * 判断是否被占用 若未被占用，则输入姓名，创建新的学生对象，并且把该对象添加到Map中
+ 4     * 否则，则提示已有该id
+ 5*/ 6publicvoid AddStu() {
+ 7         System.out.println(&quot;请输入要添加的学生id：&quot;);
+ 8         String Id = in.next();// 接受输入的id 9         Student st=students.get(Id);
+10if(st==null){
+1112             System.out.println(&quot;请输入要添加的学生姓名：&quot;);
+13             String name = in.next();// 接受输入的name14this.students.put(Id, new Student(Id, name));
+15         }else{
+16             System.out.println(&quot;此Id已被占用！&quot;);
+17        }
+1819     }
+</code></pre><p>再写一个打印输出的测试函数，如：</p><pre><code> 1/* 2     * 打印学生类
+ 3     * 
+ 4*/ 5publicvoid PrintStu() {
+ 6         System.out.println(&quot;总共有&quot;+this.students.size()+&quot;名学生：&quot;);
+ 7//遍历keySet 8for (String s : this.students.keySet()) {
+ 9             Student st=students.get(s);
+10if(st!=null){
+11             System.out.println(&quot;学生：&quot; + students.get(s).getId() + &quot;,&quot; + students.get(s).getName());
+12            }
+13        }
+14     }
+</code></pre><p>上面的例子是使用Map的keySet()返回Map中的key的Set集合再用if进行判断输出，在Map还可以用entrySet()的方法返回Map中的键值对Entry，如：</p><pre><code> 1/* 2     * 通过entrySet方法遍历Map
+ 3*/ 4publicvoid EntrySet(){
+ 5         Set&lt;Entry&lt;String, Student&gt;&gt; entrySet =students.entrySet();
+ 6for(Entry&lt;String, Student&gt; entry:entrySet){
+ 7             System.out.println(&quot;取得建：&quot;+entry.getKey());
+ 8             System.out.println(&quot;对应的值：&quot;+entry.getValue().getName());
+ 910        }
+11     }
+</code></pre><p>最后我们用主函数调用一下这些函数来看看效果如何</p><pre><code>1publicstaticvoid main(String[] args) {
+2         StuMap stu = new StuMap();
+3for (int i = 0; i &lt; 3; i++) {
+4            stu.AddStu();
+5        }
+6        stu.PrintStu();
+7        stu.EntrySet();
+8     }
+</code></pre><p>代码分析：</p><p>1.student.get(ID)是采用Map的get（）方法，检测是否存在值为ID的学生，如果没有，则返回null。这里的案例是把Map中的key值设为学生的ID值，所以可以用这样的方式来检测，如果key值是学生其他属则性另当别论！！</p><p>2.keySet()方法，返回所有键的Set集合。</p><p>3.keyset()返回Map中所有的key以集合的形式可用Set集合接收，HashMap当中的映射是无序的。</p><p>3.Map还可以用entrySet()的方法返回Map中的键值对Entry，Entry也是Set集合，它可以调用getKey()和getValue()方法来分别得到键值对的<strong>“键”和“值”</strong>。</p><p>运行结果：</p><h2 id="三、学生选课——删除Map中的学生"><a href="#三、学生选课——删除Map中的学生" class="headerlink" title="三、学生选课——删除Map中的学生"></a>三、学生选课——删除Map中的学生</h2><p>删除Map中的键值对是调用remove(object key)方法，下面是它的使用示例：</p><pre><code> 1/* 2     * 删除map中映射
+ 3*/ 4publicvoid RemoveStu(){
+ 5do{
+ 6         System.out.println(&quot;请输入要删除的学生id：&quot;);
+ 7         String Id = in.next();// 接受输入的id 8         Student st=students.get(Id);
+ 9if(st==null){
+10             System.out.println(&quot;此id不存在！&quot;);
+1112         }else{
+13this.students.remove(Id);
+14             System.out.println(&quot;成功删除&quot;+st.getId()+&quot;,&quot;+st.getName()+&quot;同学&quot;);
+15break;
+16        }
+17         }while(true);
+18     }
+</code></pre><p>运行结果：</p><h2 id="四、学生选课——修改Map中的学生"><a href="#四、学生选课——修改Map中的学生" class="headerlink" title="四、学生选课——修改Map中的学生"></a>四、学生选课——修改Map中的学生</h2><p>修改Map中的键值对有两种方法，第一种就是用<strong>put方法</strong>。其实就是添加方法中的put，使用方法跟添加无异，这里的本质就是利用put把原来的数据给覆盖掉，即修改。</p><pre><code> 1/* 2     * 利用put方法修改Map中的value值
+ 3*/ 4publicvoid ModifyStu(){
+ 5do{
+ 6             System.out.println(&quot;请输入要修改的学生id：&quot;);
+ 7             String Id = in.next();// 接受输入的id 8             Student st=students.get(Id);
+ 9if(st==null){
+10                 System.out.println(&quot;此id不存在！&quot;);
+1112             }else{
+13                 System.out.println(&quot;学生原来的姓名：&quot;+st.getName()+&quot;，请输入修改后的姓名：&quot;);
+14                 String name = in.next();// 接受输入的name15                 st=new Student(Id,name);
+16this.students.put(Id,st);
+17                 System.out.println(&quot;成功修改！修改后的学生为：&quot;+st.getId()+&quot;,&quot;+st.getName()+&quot;同学&quot;);
+18break;
+19            }
+20             }while(true);
+2122     }
+</code></pre><p>除了用put方法外，Map中提供一个叫做replace的方法，知名知其意，就是“替换”的意思。replace的方法使用和put方法一样，这是因为它的内部源码如下：</p><pre><code>1if (map.containsKey(key)) {
+2return map.put(key, value);
+3  } else4returnnull;
+5
+</code></pre><p>可以看出replace方法就是调用put方法来完成修改操作的，但是我们为了和添加put进行区分，最好在使用修改的时候用replace方法进行修改。这样的代码可读性和维护性就增强了。</p><p>那么使用replace修改Map中的value值如下：<strong>（推荐使用replace方法）</strong></p><pre><code> 1/* 2     * 利用replace方法修改Map中的value值
+ 3*/ 4publicvoid Modify(){
+ 5do{
+ 6             System.out.println(&quot;请输入要修改的学生id：&quot;);
+ 7             String Id = in.next();// 接受输入的id 8             Student st=students.get(Id);
+ 9if(st==null){
+10                 System.out.println(&quot;此id不存在！&quot;);
+1112             }else{
+13                 System.out.println(&quot;学生原来的姓名：&quot;+st.getName()+&quot;，请输入修改后的姓名：&quot;);
+14                 String name = in.next();// 接受输入的name15                 st=new Student(Id,name);
+16this.students.replace(Id, st);
+17                 System.out.println(&quot;成功修改！修改后的学生为：&quot;+st.getId()+&quot;,&quot;+st.getName()+&quot;同学&quot;);
+18break;
+19            }
+20             }while(true);
+21     }
+</code></pre><p>运行结果：</p><h2 id="五、总结"><a href="#五、总结" class="headerlink" title="五、总结"></a>五、总结</h2><p>Map<strong> –特点</strong>：元素成对出现，key-value，是映射关系，key不能重复，但value可以重复，也就是说，可以多key对一个value。支持泛型如Map&lt;yy1, yy2&gt;。</p><p>–<strong>实现类</strong>：HashMap是最常用的，HashMap中是无序排列，其元素中key或value可为null(但只能有一个为null)。</p><p>–<strong>声明(泛型)举例</strong>： 在类中声明 public Map&lt;类型1, 类型2&gt; xxx; 然后再构造方法中this.xxx = new HashMap&lt;类型1, 类型2();</p><p>–<strong>获取</strong>：yy temp = xxx.get(key)</p><p>–<strong>添加</strong>：xxx.put( key(xx型), zz(yy型) );</p><p>–<strong>返回map中所有key（返回是set型集合形式）</strong> set xxxxx = xxx.keyset(); 用于遍历。</p><p>–<strong>返回map中所有entry对（key-value对）</strong>（返回是set型集合形式） set&lt;Entry&lt;xx, yy&gt;&gt; xxxxx = xxx.entrySet(); 同样用于遍历。 遍历时：for(Entry&lt;xx,yy&gt; 元素: xxxxx)</p><p>–<strong>删除</strong>：xxx.remove(key);</p><p>–<strong>修改：</strong>可以用put，当put方法传入的key存在就相当于是修改（覆盖）；但是推荐使用replace方法！</p><p>本章主要介绍了Map接口的基本操作，发出下一篇预告：集合的基本操作不够用怎么办？如何判断集合中的某个元素对象是否存在？如何对List集合进行排序呢？这些问题是否困扰着你呢，在下一篇中博主将会针对这些问题来给大家介绍java集合框架的其他成员，后续如何请<strong>关注</strong>~~</p></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="4142158067"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="5618891265"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><footer class="post-footer"><div class="post-nav"><div class="post-nav-next post-nav-item"><a href="/2017/java8collector接口的定制实现.html" rel="next" title="Java8 collector接口的定制实现"><i class="fa fa-chevron-left"></i> Java8 collector接口的定制实现</a></div><span class="post-nav-divider"></span><div class="post-nav-prev post-nav-item"><a href="/2017/reflectionjava反射机制的应用场景.html" rel="prev" title="Reflection：Java反射机制的应用场景">Reflection：Java反射机制的应用场景 <i class="fa fa-chevron-right"></i></a></div></div></footer></div></article><div class="post-spread"></div></div></div></div><div class="sidebar-toggle"><div class="sidebar-toggle-line-wrap"><span class="sidebar-toggle-line sidebar-toggle-line-first"></span> <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span> <span class="sidebar-toggle-line sidebar-toggle-line-last"></span></div></div><aside id="sidebar" class="sidebar"><div class="sidebar-inner"><ul class="sidebar-nav motion-element"><li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">Table of Contents</li><li class="sidebar-nav-overview" data-target="site-overview-wrap">Overview</li></ul><section class="site-overview-wrap sidebar-panel"><div class="site-overview"><div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person"><p class="site-author-name" itemprop="name">Hello</p><p class="site-description motion-element" itemprop="description"></p></div><nav class="site-state motion-element"><div class="site-state-item site-state-posts"><a href="/archives/"><span class="site-state-item-count">1358</span> <span class="site-state-item-name">posts</span></a></div></nav></div></section><section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active"><div class="post-toc"><div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#浅入深出之Java集合框架（中）"><span class="nav-number">1.</span> <span class="nav-text">浅入深出之Java集合框架（中）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Java中的集合框架（中）"><span class="nav-number">2.</span> <span class="nav-text">Java中的集合框架（中）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#目-录"><span class="nav-number">2.0.1.</span> <span class="nav-text">目 录</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#前-言"><span class="nav-number">2.0.2.</span> <span class="nav-text">前 言</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#一、Map-amp-HashMap简介"><span class="nav-number">2.1.</span> <span class="nav-text">一、Map&amp;HashMap简介</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1）Map接口"><span class="nav-number">2.1.0.1.</span> <span class="nav-text">1）Map接口</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2）HashMap实现类"><span class="nav-number">2.1.0.2.</span> <span class="nav-text">2）HashMap实现类</span></a></li></ol></li></ol><li class="nav-item nav-level-2"><a class="nav-link" href="#二、学生选课——使用Map添加学生"><span class="nav-number">2.2.</span> <span class="nav-text">二、学生选课——使用Map添加学生</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#案例功能说明"><span class="nav-number">2.2.0.1.</span> <span class="nav-text">案例功能说明</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#三、学生选课——删除Map中的学生"><span class="nav-number">2.3.</span> <span class="nav-text">三、学生选课——删除Map中的学生</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#四、学生选课——修改Map中的学生"><span class="nav-number">2.4.</span> <span class="nav-text">四、学生选课——修改Map中的学生</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#五、总结"><span class="nav-number">2.5.</span> <span class="nav-text">五、总结</span></a></li></div></div></section></div></aside><div class="sfix"><div class="fixedme"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460" data-ad-format="auto"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script></div></div></main><footer id="footer" class="footer"><div class="footer-inner"><div class="copyright">&copy; <span itemprop="copyrightYear">2018</span> <span class="with-love"><i class="fa fa-user"></i> </span><span class="author" itemprop="copyrightHolder">Hello</span></div><div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div><span class="post-meta-divider">|</span><div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div></div></footer><div class="back-to-top"><i class="fa fa-arrow-up"></i></div></div><script type="text/javascript">"[object Function]"!==Object.prototype.toString.call(window.Promise)&&(window.Promise=null)</script><script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script><script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script><script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script><script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script><script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script></body></html><!-- rebuild by neat -->

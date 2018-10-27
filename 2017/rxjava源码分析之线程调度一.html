@@ -1,0 +1,187 @@
+<!-- build time:Sat Oct 27 2018 21:00:16 GMT+0800 (CST) --><!DOCTYPE html><html class="theme-next muse use-motion"><head><meta name="generator" content="Hexo 3.8.0"><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"><meta name="theme-color" content="#222"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"><link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css"><link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css"><link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4"><link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222"><meta name="description" content="作者TripleZ2017.08.03 16:52*字数 1097RxJava强大的地方之一是他的链式调用，轻松地在线程之间进行切换。这几天也大概分析了一下RxJava的线程切换的主流程于是打算写一篇文章及记录一下。我们使用RxJava进行线程切换的场景很多时候都是在进行网络请求的时候，在IO线程进行网络数据的请求处理，最后在Android的主线程进行请求数据的结果处理。.subscribeOn("><meta name="keywords" content="JAVA,面试"><meta property="og:type" content="article"><meta property="og:title" content="RxJava源码分析之线程调度（一）"><meta property="og:url" content="http://www.jfox.info/2017/rxjava源码分析之线程调度一.html"><meta property="og:site_name" content="java面试"><meta property="og:description" content="作者TripleZ2017.08.03 16:52*字数 1097RxJava强大的地方之一是他的链式调用，轻松地在线程之间进行切换。这几天也大概分析了一下RxJava的线程切换的主流程于是打算写一篇文章及记录一下。我们使用RxJava进行线程切换的场景很多时候都是在进行网络请求的时候，在IO线程进行网络数据的请求处理，最后在Android的主线程进行请求数据的结果处理。.subscribeOn("><meta property="og:locale" content="zh_CN"><meta property="og:updated_time" content="2018-10-27T12:29:37.422Z"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="RxJava源码分析之线程调度（一）"><meta name="twitter:description" content="作者TripleZ2017.08.03 16:52*字数 1097RxJava强大的地方之一是他的链式调用，轻松地在线程之间进行切换。这几天也大概分析了一下RxJava的线程切换的主流程于是打算写一篇文章及记录一下。我们使用RxJava进行线程切换的场景很多时候都是在进行网络请求的时候，在IO线程进行网络数据的请求处理，最后在Android的主线程进行请求数据的结果处理。.subscribeOn("><script type="text/javascript" id="hexo.configurations">var NexT=window.NexT||{},CONFIG={root:"/",scheme:"Muse",version:"5.1.4",sidebar:{position:"left",display:"post",offset:12,b2t:!1,scrollpercent:!1,onmobile:!1},fancybox:!0,tabs:!0,motion:{enable:!0,async:!1,transition:{post_block:"fadeIn",post_header:"slideDownIn",post_body:"slideDownIn",coll_header:"slideLeftIn",sidebar:"slideUpIn"}},duoshuo:{userId:"0",author:"Author"},algolia:{applicationID:"",apiKey:"",indexName:"",hits:{per_page:10},labels:{input_placeholder:"Search for Posts",hits_empty:"We didn't find any results for the search: ${query}",hits_stats:"${hits} results found in ${time} ms"}}}</script><link rel="canonical" href="http://www.jfox.info/2017/rxjava源码分析之线程调度一.html"><title>RxJava源码分析之线程调度（一） | java面试</title></head><body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN"><div class="container sidebar-position-left page-post-detail"><div class="headband"></div><header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="header-inner"><div class="site-brand-wrapper"><div class="site-meta"><div class="custom-logo-site-title"><a href="/" class="brand" rel="start"><span class="logo-line-before"><i></i></span> <span class="site-title">java面试</span> <span class="logo-line-after"><i></i></span></a></div><p class="site-subtitle"></p></div><div class="site-nav-toggle"><button><span class="btn-bar"></span> <span class="btn-bar"></span> <span class="btn-bar"></span></button></div></div><nav class="site-nav"><ul id="menu" class="menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i><br>Home</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i><br>Archives</a></li></ul></nav></div></header><main id="main" class="main"><div class="main-inner"><div class="content-wrap"><div id="content" class="content"><div id="posts" class="posts-expand"><article class="post post-type-normal" itemscope itemtype="http://schema.org/Article"><div class="post-block"><link itemprop="mainEntityOfPage" href="http://www.jfox.info/2017/rxjava源码分析之线程调度一.html"><span hidden itemprop="author" itemscope itemtype="http://schema.org/Person"><meta itemprop="name" content="Hello"><meta itemprop="description" content=""><meta itemprop="image" content="/images/avatar.gif"></span><span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><meta itemprop="name" content="java面试"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">RxJava源码分析之线程调度（一）</h1><div class="post-meta"><span class="post-time"><span class="post-meta-item-icon"><i class="fa fa-calendar-o"></i> </span><span class="post-meta-item-text">Posted on</span> <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-01-01T23:59:22+08:00">2017-01-01</time></span></div></header><div class="post-body" itemprop="articleBody"><p>作者<a href="/u/adb7c6deb713">TripleZ</a>2017.08.03 16:52*字数 1097<br>RxJava强大的地方之一是他的链式调用，轻松地在线程之间进行切换。这几天也大概分析了一下RxJava的线程切换的主流程于是打算写一篇文章及记录一下。</p><p>我们使用RxJava进行线程切换的场景很多时候都是在进行网络请求的时候，在IO线程进行网络数据的请求处理，最后在Android的主线程进行请求数据的结果处理。</p><pre><code>.subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+</code></pre><p>当然因为这段代码的使用场景太多我们还可以利用ObservableTransformer操作符对其进行简化</p><pre><code>public static &lt;T&gt;ObservableTransformer&lt;T,T&gt; io_main()
+ {
+     return new ObservableTransformer&lt;T, T&gt;() {
+         @Override
+         public ObservableSource&lt;T&gt; apply(@NonNull Observable&lt;T&gt; upstream) {
+             return upstream.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+         }
+     };
+ }
+</code></pre><p>这样我们在使用的时候就是这样的：</p><pre><code>.compose(RxTransformUtil.&lt;Object&gt;io_main())
+</code></pre><p>是不是感觉方便了一丢丢</p><p>好了扯远了，现在来分析一下RxJava是如何做到线程的轻松调度的。<br>首先有几个概念是非常重要的：<br>Scheduler官方的解释是这样的</p><pre><code>A Scheduler is an object that specifies an API for scheduling units of work with or without delays or periodically. 
+</code></pre><p>初步看来Scheduler就是一个任务调度器相当于就是一个调度中心的指挥者。当然它是一个抽象类就肯定了Scheduler有很多具体的实现类，例如IO线程的具体调度器就是IoScheduler。就像调度中心指挥者有客运中心的指挥者，有机场中心的指挥者一样分别有不同的实现类。<br>当然现在只有指挥者是肯定不行的，光头司令怎么得行？这个时候关键的Worker类出现了，Worker官方的解释是这样的</p><pre><code>Sequential Scheduler for executing actions on a single thread or event loop.
+Disposing the Scheduler.Worker cancels all outstanding work and allows resource cleanup.
+</code></pre><p>可以看到Worker就是线程任务的具体执行者了。和Scheduler一样Worker同样也是抽象类，在不同的Scheduler具体实现类里面Worker也有自己的具体实现类，例如在IoScheduler类里面，Worker的具体实现类就是EventLoopWorker，它负责管理IO线程的具体操作，接下来我们就找到切入点看一看RxJava源码里面都做了什么。</p><p>这里我们就以最典型的IO线程和主线程之间的切换为例来分析,线程切换的代码就是上面的代码。<br>Scheduler是以工厂方法对外提供它具体的实现类的。Schedulers.io()可以提供一个IoScheduler的对象。你可以往里面看最后源码是如何进行IoScheduler的创建的</p><pre><code>//创建IoScheduler
+static final class IoHolder {
+        static final Scheduler DEFAULT = new IoScheduler();
+    }
+//接着就行了IoScheduler的一系列初始化，CachedWorkerPool地初始化 ，并由RxThreadFactory进行线程地创建，线程优先级别设置，是否是守护进程等等
+</code></pre><p>现在IoScheduler有了，我们就看subscribe里面到底做了什么</p><pre><code>public final Observable&lt;T&gt; subscribeOn(Scheduler scheduler) {
+        ObjectHelper.requireNonNull(scheduler, &quot;scheduler is null&quot;);
+        return RxJavaPlugins.onAssembly(new ObservableSubscribeOn&lt;T&gt;(this, scheduler));
+    }
+</code></pre><p>Hook我们不用管，可以看到是把当前ObservableCreater对象和IoScheduler一起传进了ObservableSubscribeoOn的构造函数里面。进入到ObservableSubscribeOn里面看看。</p><pre><code>//AbstractObservableWithUpstream只是用来保存上游的源事件流的，就是保存刚刚传入进来的ObservableCreater
+public final class ObservableSubscribeOn&lt;T&gt; extends AbstractObservableWithUpstream&lt;T, T&gt; {
+    final Scheduler scheduler;
+
+    public ObservableSubscribeOn(ObservableSource&lt;T&gt; source, Scheduler scheduler) {
+        super(source);
+        this.scheduler = scheduler;
+    }
+
+    @Override
+    public void subscribeActual(final Observer&lt;? super T&gt; s) {
+//装饰模式 把下游的Observer装饰成SubscribeOnObserver
+        final SubscribeOnObserver&lt;T&gt; parent = new SubscribeOnObserver&lt;T&gt;(s);     //执行下游Observer的onSubscribe(Disposable disposabel)方法，当前线程是上游的执行线程
+        s.onSubscribe(parent);
+//开启的子线程最终是以带Disposable的返回值返回的
+//在这里是将子线程加入管理，因为这里是并发操作所以使用了AtomicReference&lt;Object&gt;的院子操作类，是一种效率高于synchronized的乐观锁，感兴趣的可以自行上网搜索
+//我们只用知道这里加入管理了以后方便在以后我们切断上下游的时候可以将我们的子线程一同dispose().
+        parent.setDisposable(scheduler.scheduleDirect(new SubscribeTask(parent)));
+    }
+
+    static final class SubscribeOnObserver&lt;T&gt; extends AtomicReference&lt;Disposable&gt; implements Observer&lt;T&gt;, Disposable {
+
+        private static final long serialVersionUID = 8094547886072529208L;
+        final Observer&lt;? super T&gt; actual;
+
+        final AtomicReference&lt;Disposable&gt; s;
+
+        SubscribeOnObserver(Observer&lt;? super T&gt; actual) {
+            this.actual = actual;
+            this.s = new AtomicReference&lt;Disposable&gt;();
+        }
+
+    //这中间的代码和最基本的链式调用关系是一样的，只不过在onNext、onError、onComplete中实际上还是调用的下游真正的onNext、onError、onComplete
+
+        @Override
+        public void onNext(T t) {
+            actual.onNext(t);
+        }
+        @Override
+        public void onError(Throwable t) {
+            actual.onError(t);
+        }
+        @Override
+        public void onComplete() {
+            actual.onComplete();
+        }
+              void setDisposable(Disposable d) {
+            DisposableHelper.setOnce(this, d);
+        }
+    }
+//这就是实际执行的Runnable 会把其传入IoScheduler中供Worker使用。
+    final class SubscribeTask implements Runnable {
+        private final SubscribeOnObserver&lt;T&gt; parent;
+
+        SubscribeTask(SubscribeOnObserver&lt;T&gt; parent) {
+            this.parent = parent;
+        }
+
+        @Override
+        public void run() {
+/*看到了吧，SubscribeOnObserver 作用其实就是将源事件流发生的地点和下游的事件流处理的地点订阅在了子线程中进行处理。
+这样上游发送事件流的地方就被切换到了子线程中。*/
+            source.subscribe(parent);
+        }
+    }
+}
+</code></pre><p>接下来我们仔细看一下上面代码的这一段：</p><pre><code> @Override
+    public void subscribeActual(final Observer&lt;? super T&gt; s) {
+        final SubscribeOnObserver&lt;T&gt; parent = new SubscribeOnObserver&lt;T&gt;(s);
+        s.onSubscribe(parent);
+//这里scheduler.schedlerDirect非常的重要，可以看到RxJava把刚刚包装好的Runnable对象传入了方法里
+        parent.setDisposable(scheduler.scheduleDirect(new SubscribeTask(parent)));
+    }
+</code></pre><p>我们跟进去看一下里面的具体实现</p><pre><code> @NonNull
+    public Disposable scheduleDirect(@NonNull Runnable run) {
+//实际上是调用的下面3个参数的方法，延迟时间为0
+        return scheduleDirect(run, 0L, TimeUnit.NANOSECONDS);
+    }
+ @NonNull
+    public Disposable scheduleDirect(@NonNull Runnable run, long delay, @NonNull TimeUnit unit) {
+//创建具体的Worker类
+        final Worker w = createWorker();
+//hook函数我们不用管，只要没有设置依旧返回的是传入的Runnable
+        final Runnable decoratedRun = RxJavaPlugins.onSchedule(run);
+//将runnable和worker封装到DisposeTask中
+        DisposeTask task = new DisposeTask(decoratedRun, w);
+//执行Worker的schedule方法具体的就是EventLoopWorker里面的schedule方法
+        w.schedule(task, delay, unit);
+
+        return task;
+    }
+</code></pre><p>接下来我们来看一下EventLoopWorker里面的schedule方法是怎么实现的</p><pre><code>@NonNull
+       @Override
+       public Disposable schedule(@NonNull Runnable action, long delayTime, @NonNull TimeUnit unit) {
+           //判断是否解除订阅
+           if (tasks.isDisposed()) {
+               // don&apos;t schedule, we are unsubscribed
+               return EmptyDisposable.INSTANCE;
+           }
+           return threadWorker.scheduleActual(action, delayTime, unit, tasks);
+       }
+</code></pre><p>可以看到这里如果没有被解除订阅的话又会执行到NewThreadWorker的scheduleActual方法里面。</p><pre><code>@NonNull
+    public ScheduledRunnable scheduleActual(final Runnable run, long delayTime, @NonNull TimeUnit unit, @Nullable DisposableContainer parent) {
+        //hook函数我们这里不用管decoratedRun依然是传进来的Runnable对象run
+        Runnable decoratedRun = RxJavaPlugins.onSchedule(run);
+        //ScheduledRunnable是一个即实现了Runnable接口又实现了Callable接口的对象，为了后面能成功加入到线程池当中    
+        ScheduledRunnable sr = new ScheduledRunnable(decoratedRun, parent);
+        //将sr加入到CompositeDisposable中，方便管理
+        if (parent != null) {
+            if (!parent.add(sr)) {
+                return sr;
+            }
+        }
+
+        Future&lt;?&gt; f;
+        try {
+            if (delayTime &lt;= 0) {
+              //将sr加入到线程池当中 并将线程的执行结果返回给 Future&lt;?&gt; f
+                f = executor.submit((Callable&lt;Object&gt;)sr);
+            } else {
+                f = executor.schedule((Callable&lt;Object&gt;)sr, delayTime, unit);
+            }
+            sr.setFuture(f);//对运行结果进行处理
+        } catch (RejectedExecutionException ex) {
+            if (parent != null) {
+                //在CompositeDisposable中一处刚刚加入的sr
+                parent.remove(sr);
+            }
+            RxJavaPlugins.onError(ex);
+        }
+
+        return sr;
+    }
+</code></pre><p>接下来看一下ScheduledRunnable是如何对返回的结果进行处理的</p><pre><code>  public void setFuture(Future&lt;?&gt; f) {
+//一个死循环会一直判断返回回来的结果 因为其实原子操作类，乐观锁的机制决定了如果不是想要的结果的话会重新执行一次
+        for (;;) {
+            Object o = get(FUTURE_INDEX);
+            if (o == DONE) {
+                //完成直接return
+                return;
+            }
+              //如果取消订阅了则直接取消线程任务
+            if (o == DISPOSED) {
+                f.cancel(get(THREAD_INDEX) != Thread.currentThread());
+                return;
+            }
+            //前两者都不满足的话 就将future的值存下来
+            if (compareAndSet(FUTURE_INDEX, o, f)) {
+                return;
+            }
+        }
+    }
+</code></pre><p>到现在为止上游的线程切换大体的流程就分析的差不多了，我们从源码中也可以分析出很多网上经常说的一些结论，最经典的一条就是上游切换线程只有第一次生效，后面的线程切换都不起作用了，其实分析这点最重要的就是理解 ObservableSubscribeOn类里面下面的这段代码了</p><pre><code>final class SubscribeTask implements Runnable {
+        private final SubscribeOnObserver&lt;T&gt; parent;
+        SubscribeTask(SubscribeOnObserver&lt;T&gt; parent) {
+            this.parent = parent;
+        }
+        @Override
+        public void run() {
+            source.subscribe(parent);
+        }
+    }
+</code></pre><p>再结合RxJava的链式操作，处理数据的时候是自下而上，而发射数据的时候是自上而下（这句话网上说的太多了，我最开始也是不理解，只有自己真正看过源码分析了，自己Debug一边才能真正地理解）。<br>好了先写到这里了，剩下的内容我会放到另外一篇博客里面，感觉文章太长不利于阅读。</p><p>这篇文章也是我第一次试着去分析源码最后写出的，很多都是我自己的理解，所以肯定有不妥当或者错误的地方希望大家看到了以后能给我指出来，我一定改正！</p><p>最后</p><p>没有最后了 大家再见~~~</p></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="4142158067"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="5618891265"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><footer class="post-footer"><div class="post-nav"><div class="post-nav-next post-nav-item"><a href="/2017/java大数据人才应用领域广就业薪酬高.html" rel="next" title="Java大数据人才应用领域广，就业薪酬高"><i class="fa fa-chevron-left"></i> Java大数据人才应用领域广，就业薪酬高</a></div><span class="post-nav-divider"></span><div class="post-nav-prev post-nav-item"><a href="/2017/浅谈servlet和filter的区别以及两者在struts2和springmvc中的应用.html" rel="prev" title="浅谈Servlet和Filter的区别以及两者在Struts2和Springmvc中的应用">浅谈Servlet和Filter的区别以及两者在Struts2和Springmvc中的应用 <i class="fa fa-chevron-right"></i></a></div></div></footer></div></article><div class="post-spread"></div></div></div></div><div class="sidebar-toggle"><div class="sidebar-toggle-line-wrap"><span class="sidebar-toggle-line sidebar-toggle-line-first"></span> <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span> <span class="sidebar-toggle-line sidebar-toggle-line-last"></span></div></div><aside id="sidebar" class="sidebar"><div class="sidebar-inner"><section class="site-overview-wrap sidebar-panel sidebar-panel-active"><div class="site-overview"><div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person"><p class="site-author-name" itemprop="name">Hello</p><p class="site-description motion-element" itemprop="description"></p></div><nav class="site-state motion-element"><div class="site-state-item site-state-posts"><a href="/archives/"><span class="site-state-item-count">1358</span> <span class="site-state-item-name">posts</span></a></div></nav></div></section></div></aside><div class="sfix"><div class="fixedme"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460" data-ad-format="auto"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script></div></div></main><footer id="footer" class="footer"><div class="footer-inner"><div class="copyright">&copy; <span itemprop="copyrightYear">2018</span> <span class="with-love"><i class="fa fa-user"></i> </span><span class="author" itemprop="copyrightHolder">Hello</span></div><div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div><span class="post-meta-divider">|</span><div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div></div></footer><div class="back-to-top"><i class="fa fa-arrow-up"></i></div></div><script type="text/javascript">"[object Function]"!==Object.prototype.toString.call(window.Promise)&&(window.Promise=null)</script><script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script><script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script><script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script><script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script><script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script></body></html><!-- rebuild by neat -->

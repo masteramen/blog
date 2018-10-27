@@ -1,0 +1,271 @@
+<!-- build time:Sat Oct 27 2018 21:00:18 GMT+0800 (CST) --><!DOCTYPE html><html class="theme-next muse use-motion"><head><meta name="generator" content="Hexo 3.8.0"><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"><meta name="theme-color" content="#222"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"><link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css"><link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css"><link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4"><link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222"><meta name="description" content="过滤型操作符即对 Observable 的数据进行过滤，选择性地发射出去。DebounceDebounce 的作用是：控制发射速率。每产生一个数据后，如果在规定的间隔时间内没有别的数据产生，就会发射这个数据，否则忽略该数据。RxJava 的实现有两种：debounce 和 throttleWithTimeout。debouncedebounce 接收两个参数，第一个指定过滤的时间间隔，第二个参数指"><meta name="keywords" content="JAVA,面试"><meta property="og:type" content="article"><meta property="og:title" content="RxJava 1.x 笔记：过滤型操作符"><meta property="og:url" content="http://www.jfox.info/2017/rxjava1x笔记过滤型操作符.html"><meta property="og:site_name" content="java面试"><meta property="og:description" content="过滤型操作符即对 Observable 的数据进行过滤，选择性地发射出去。DebounceDebounce 的作用是：控制发射速率。每产生一个数据后，如果在规定的间隔时间内没有别的数据产生，就会发射这个数据，否则忽略该数据。RxJava 的实现有两种：debounce 和 throttleWithTimeout。debouncedebounce 接收两个参数，第一个指定过滤的时间间隔，第二个参数指"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="http://www.jfox.info/2017/1327/aeba91c.png"><meta property="og:image" content="http://www.jfox.info/2017/1327/8733961.png"><meta property="og:image" content="http://www.jfox.info/2017/1327/66e5a3b.png"><meta property="og:image" content="http://www.jfox.info/2017/1327/785b1df.png"><meta property="og:image" content="http://www.jfox.info/2017/1327/7f3e329.png"><meta property="og:image" content="http://www.jfox.info/2017/1327/8fc9f85.png"><meta property="og:image" content="http://www.jfox.info/2017/1327/ecbc102.png"><meta property="og:image" content="http://www.jfox.info/2017/1327/d157d70.png"><meta property="og:image" content="http://www.jfox.info/2017/1327/91e0800.png"><meta property="og:image" content="http://www.jfox.info/2017/1327/216c821.png"><meta property="og:image" content="http://www.jfox.info/2017/1327/739ba8b.png"><meta property="og:image" content="http://www.jfox.info/2017/1327/b0c8f58.png"><meta property="og:image" content="http://www.jfox.info/2017/1327/6d8a689.png"><meta property="og:image" content="http://www.jfox.info/2017/1327/ac9657d.png"><meta property="og:image" content="http://www.jfox.info/2017/1327/49f0620.png"><meta property="og:image" content="http://www.jfox.info/2017/1327/4cb2e0b.png"><meta property="og:image" content="http://www.jfox.info/2017/1327/4497e12.png"><meta property="og:image" content="http://www.jfox.info/2017/1327/3f773e0.png"><meta property="og:image" content="http://www.jfox.info/2017/1327/6a7874f.png"><meta property="og:image" content="http://www.jfox.info/2017/1327/51c989b.png"><meta property="og:image" content="http://www.jfox.info/2017/1327/54a3494.png"><meta property="og:image" content="http://www.jfox.info/2017/1327/b118480.png"><meta property="og:image" content="http://www.jfox.info/2017/1327/6e72607.png"><meta property="og:image" content="http://www.jfox.info/2017/1327/40e09ab.png"><meta property="og:image" content="http://www.jfox.info/2017/1327/c167d42.png"><meta property="og:image" content="http://www.jfox.info/2017/1327/d395c1e.png"><meta property="og:image" content="http://www.jfox.info/2017/1327/edc1f5b.png"><meta property="og:image" content="http://www.jfox.info/2017/1327/d22d70e.png"><meta property="og:image" content="http://www.jfox.info/2017/1327/330aa65.png"><meta property="og:image" content="http://www.jfox.info/2017/1327/9ae1b87.png"><meta property="og:image" content="http://www.jfox.info/2017/1327/df89422.png"><meta property="og:image" content="http://www.jfox.info/2017/1327/474b13c.png"><meta property="og:image" content="http://www.jfox.info/2017/1327/c46f440.png"><meta property="og:image" content="http://www.jfox.info/2017/1327/c2667a8.png"><meta property="og:image" content="http://www.jfox.info/2017/1327/3488e44.png"><meta property="og:image" content="http://www.jfox.info/2017/1327/ca3752f.png"><meta property="og:image" content="http://www.jfox.info/2017/1327/1f4c1bd.png"><meta property="og:image" content="http://www.jfox.info/2017/1327/d618b4e.png"><meta property="og:image" content="http://www.jfox.info/2017/1327/e08f1b1.png"><meta property="og:updated_time" content="2018-10-27T12:29:37.388Z"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="RxJava 1.x 笔记：过滤型操作符"><meta name="twitter:description" content="过滤型操作符即对 Observable 的数据进行过滤，选择性地发射出去。DebounceDebounce 的作用是：控制发射速率。每产生一个数据后，如果在规定的间隔时间内没有别的数据产生，就会发射这个数据，否则忽略该数据。RxJava 的实现有两种：debounce 和 throttleWithTimeout。debouncedebounce 接收两个参数，第一个指定过滤的时间间隔，第二个参数指"><meta name="twitter:image" content="http://www.jfox.info/2017/1327/aeba91c.png"><script type="text/javascript" id="hexo.configurations">var NexT=window.NexT||{},CONFIG={root:"/",scheme:"Muse",version:"5.1.4",sidebar:{position:"left",display:"post",offset:12,b2t:!1,scrollpercent:!1,onmobile:!1},fancybox:!0,tabs:!0,motion:{enable:!0,async:!1,transition:{post_block:"fadeIn",post_header:"slideDownIn",post_body:"slideDownIn",coll_header:"slideLeftIn",sidebar:"slideUpIn"}},duoshuo:{userId:"0",author:"Author"},algolia:{applicationID:"",apiKey:"",indexName:"",hits:{per_page:10},labels:{input_placeholder:"Search for Posts",hits_empty:"We didn't find any results for the search: ${query}",hits_stats:"${hits} results found in ${time} ms"}}}</script><link rel="canonical" href="http://www.jfox.info/2017/rxjava1x笔记过滤型操作符.html"><title>RxJava 1.x 笔记：过滤型操作符 | java面试</title></head><body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN"><div class="container sidebar-position-left page-post-detail"><div class="headband"></div><header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="header-inner"><div class="site-brand-wrapper"><div class="site-meta"><div class="custom-logo-site-title"><a href="/" class="brand" rel="start"><span class="logo-line-before"><i></i></span> <span class="site-title">java面试</span> <span class="logo-line-after"><i></i></span></a></div><p class="site-subtitle"></p></div><div class="site-nav-toggle"><button><span class="btn-bar"></span> <span class="btn-bar"></span> <span class="btn-bar"></span></button></div></div><nav class="site-nav"><ul id="menu" class="menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i><br>Home</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i><br>Archives</a></li></ul></nav></div></header><main id="main" class="main"><div class="main-inner"><div class="content-wrap"><div id="content" class="content"><div id="posts" class="posts-expand"><article class="post post-type-normal" itemscope itemtype="http://schema.org/Article"><div class="post-block"><link itemprop="mainEntityOfPage" href="http://www.jfox.info/2017/rxjava1x笔记过滤型操作符.html"><span hidden itemprop="author" itemscope itemtype="http://schema.org/Person"><meta itemprop="name" content="Hello"><meta itemprop="description" content=""><meta itemprop="image" content="/images/avatar.gif"></span><span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><meta itemprop="name" content="java面试"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">RxJava 1.x 笔记：过滤型操作符</h1><div class="post-meta"><span class="post-time"><span class="post-meta-item-icon"><i class="fa fa-calendar-o"></i> </span><span class="post-meta-item-text">Posted on</span> <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-01-01T23:57:07+08:00">2017-01-01</time></span></div></header><div class="post-body" itemprop="articleBody"><p>过滤型操作符即对 Observable 的数据进行过滤，选择性地发射出去。</p><h2 id="Debounce"><a href="#Debounce" class="headerlink" title="Debounce"></a>Debounce</h2><p><code>Debounce</code> 的作用是：控制发射速率。</p><p>每产生一个数据后，如果在规定的间隔时间内没有别的数据产生，就会发射这个数据，否则忽略该数据。</p><p><img src="/2017/1327/aeba91c.png" alt=""></p><p>RxJava 的实现有两种：<code>debounce</code> 和 <code>throttleWithTimeout</code>。</p><h3 id="debounce"><a href="#debounce" class="headerlink" title="debounce"></a>debounce</h3><p><img src="/2017/1327/8733961.png" alt=""></p><p><code>debounce</code> 接收两个参数，第一个指定过滤的时间间隔，第二个参数指定单位。</p><pre><code>publicfinal Observable&lt;T&gt; debounce(long timeout, TimeUnit unit) {
+    return debounce(timeout, unit, Schedulers.computation());
+}
+publicfinal Observable&lt;T&gt; debounce(long timeout, TimeUnit unit, Scheduler scheduler) {
+    return lift(new OperatorDebounceWithTime&lt;T&gt;(timeout, unit, scheduler));
+}
+</code></pre><p>使用例子：</p><pre><code>privatevoidfilteringWithDebounce() {
+    Observable
+            .unsafeCreate(new Observable.OnSubscribe&lt;Integer&gt;() {
+                @Overridepublicvoidcall(Subscriber&lt;? super Integer&gt; subscriber) {
+                    for (int i = 0; i &lt; 10; i++) {
+                        SystemClock.sleep(i % 5 * 1000);
+                        subscriber.onNext(i);
+                    }
+                    subscriber.onCompleted();
+                }
+            })
+            .subscribeOn(Schedulers.computation())
+            .debounce(2, TimeUnit.SECONDS)
+            .subscribe(this.&lt;Integer&gt;getPrintSubscriber());
+
+}
+</code></pre><p>在上面的例子中，我们发射 0 到 9 共 10 个数据，每个延迟 i % 5 秒，也就是延迟 0 到 4 秒，过滤时间为 2 秒，所以最终发射结果：</p><p><img src="/2017/1327/66e5a3b.png" alt=""></p><h3 id="throttleWithTimeout"><a href="#throttleWithTimeout" class="headerlink" title="throttleWithTimeout"></a>throttleWithTimeout</h3><p><img src="/2017/1327/785b1df.png" alt=""></p><p><code>throttleWithTimeout</code> 和 <code>debounce</code> 作用一样，通过源码可以看到，它也是调用的 <code>debounce</code>:</p><pre><code>publicfinal Observable&lt;T&gt; throttleWithTimeout(long timeout, TimeUnit unit) {
+    return debounce(timeout, unit);
+}
+</code></pre><p>例子就不演示了。</p><h2 id="Distinct"><a href="#Distinct" class="headerlink" title="Distinct"></a>Distinct</h2><p><img src="/2017/1327/7f3e329.png" alt=""></p><p><code>Distinct</code> 即“去重”，很好理解。</p><p>RxJava 中的实现有 4 种。</p><h3 id="distinct"><a href="#distinct" class="headerlink" title="distinct()"></a>distinct()</h3><p><img src="/2017/1327/8fc9f85.png" alt=""></p><p>第一种就是最简单的无参数 <code>distinct()</code>:</p><pre><code>publicfinal Observable&lt;T&gt; distinct() {
+    return lift(OperatorDistinct.&lt;T&gt; instance());
+}
+</code></pre><p>使用也很简单：</p><pre><code>privatevoidfilteringWithDistinct() {
+    Observable.from(Arrays.asList(1,3,1,3,4))
+            .distinct()
+            .subscribe(this.&lt;Integer&gt;getPrintSubscriber());
+}
+</code></pre><p>结果就和我们期望的一样：</p><p><img src="/2017/1327/ecbc102.png" alt=""></p><h3 id="distinct-keySelector"><a href="#distinct-keySelector" class="headerlink" title="distinct(keySelector)"></a>distinct(keySelector)</h3><p><img src="/2017/1327/d157d70.png" alt=""></p><p>第二种，<code>distinct(keySelector)</code> 允许我们传入一个函数作为参数，这个函数返回了决定是否重复的 Key。</p><pre><code>publicfinal &lt;U&gt; Observable&lt;T&gt; distinct(Func1&lt;? super T, ? extends U&gt; keySelector) {
+    return lift(new OperatorDistinct&lt;T, U&gt;(keySelector));
+}
+</code></pre><p>使用例子：</p><pre><code>privatevoidfilteringWithDistinct2() {
+
+    Observable.from(Arrays.asList(1,3,1,3,4))
+            .distinct(new Func1&lt;Integer, Integer&gt;() {
+                @Override
+                public Integer call(Integer item) {
+                    return item % 2;
+                }
+            })
+            .subscribe(this.&lt;Integer&gt;getPrintSubscriber());
+}
+</code></pre><p>在函数中我们以 item % 2 的结果作为判断是否重复的依据，源 Observable 发射的数据中，对二求余的结果只有 1 和 0，因此输出结果为：</p><p><img src="/2017/1327/91e0800.png" alt=""></p><h3 id="distinctUntilChanged"><a href="#distinctUntilChanged" class="headerlink" title="distinctUntilChanged()"></a>distinctUntilChanged()</h3><p><img src="/2017/1327/216c821.png" alt=""></p><p><code>distinctUntilChanged()</code> 也是去重，不过每个元素只跟前面一个元素比较，如果和前面的一样就去除，否则就发射，不会和其他位置的比较。</p><pre><code>publicfinal Observable&lt;T&gt; distinctUntilChanged() {
+    return lift(OperatorDistinctUntilChanged.&lt;T&gt; instance());
+}
+</code></pre><p>使用例子：</p><pre><code>privatevoidfilteringWithDistinctUntilChanged() {
+    Observable.from(Arrays.asList(1,1,3,1,3,4,4))
+            .distinctUntilChanged()
+            .subscribe(this.&lt;Integer&gt;getPrintSubscriber());
+}
+</code></pre><p>运行结果：</p><p><img src="/2017/1327/739ba8b.png" alt=""></p><p>可以看到，输出的结果还是有重复，去掉的是和前一个元素重复的元素。</p><h3 id="distinctUntilChanged-keySelector"><a href="#distinctUntilChanged-keySelector" class="headerlink" title="distinctUntilChanged(keySelector)"></a>distinctUntilChanged(keySelector)</h3><p><img src="/2017/1327/b0c8f58.png" alt=""></p><p><code>distinctUntilChanged(keySelector)</code> 就是 <code>distinct(keySelector)</code> 和 <code>distinctUntilChanged()</code> 的结合体，传入的参数决定是否重复，并且只和前一个元素比较。</p><p>就不写例子了。</p><h2 id="ElementAt"><a href="#ElementAt" class="headerlink" title="ElementAt"></a>ElementAt</h2><p><img src="/2017/1327/6d8a689.png" alt=""></p><p><code>ElementAt</code> 和名字一样，只发射指定位置的元素（从 0 开始）。</p><p>RxJava 对应的实现有 2 种。</p><h3 id="elementAt"><a href="#elementAt" class="headerlink" title="elementAt"></a>elementAt</h3><p><img src="/2017/1327/ac9657d.png" alt=""></p><p><code>elementAt</code> 和规范一样，只发射指定位置的元素，</p><pre><code>publicfinal Observable&lt;T&gt; elementAt(intindex) {
+    return lift(new OperatorElementAt&lt;T&gt;(index));
+}
+private OperatorElementAt(intindex, T defaultValue, boolean hasDefault) {
+    if (index &lt; 0) {
+        thrownew IndexOutOfBoundsException(index + &quot; is out of bounds&quot;);
+    }
+    this.index = index;
+    this.defaultValue = defaultValue;
+    this.hasDefault = hasDefault;
+}
+</code></pre><p>从 <code>OperatorElementAt</code> 的构造函数我们可以看到当指定的位置小于 0 时，会抛出 <code>java.lang.IndexOutOfBoundsException</code> 异常。<br>当 index &gt; 数据总数时，会发射　<code>onError</code> 事件：</p><pre><code>privatevoidfilteringWithElementAt() {
+    Observable.range(0, 10)
+            .elementAt(12)
+            .subscribe(this.&lt;Integer&gt;getPrintSubscriber());
+}
+</code></pre><p>运行结果：</p><pre><code>07-1522:00:52.42511596-11596/top.shixinzhang.rxjavademo I/System.out: onError: 12 is out of bounds
+</code></pre><h3 id="elementAtOrDefault"><a href="#elementAtOrDefault" class="headerlink" title="elementAtOrDefault"></a>elementAtOrDefault</h3><p><img src="/2017/1327/49f0620.png" alt=""></p><p><code>elementAtOrDefault</code> 和 <code>elementAt</code> 的区别在于，当指定的 index 大于源 Observable 发射的数据长度时，不会发射 onError 事件，而是发射预备的默认值；不过 index &lt; 0 时还是会抛出异常。</p><pre><code>publicfinal Observable&lt;T&gt; elementAtOrDefault(intindex, T defaultValue) {
+    return lift(new OperatorElementAt&lt;T&gt;(index, defaultValue));
+}
+private OperatorElementAt(intindex, T defaultValue, boolean hasDefault) {
+    if (index &lt; 0) {
+        thrownew IndexOutOfBoundsException(index + &quot; is out of bounds&quot;);
+    }
+    this.index = index;
+    this.defaultValue = defaultValue;
+    this.hasDefault = hasDefault;
+}
+</code></pre><p>使用例子：</p><pre><code>privatevoidfilteringWithElementAtDefault() {
+    Observable.range(0, 10)
+            .elementAtOrDefault(12, 222)
+            .subscribe(this.&lt;Integer&gt;getPrintSubscriber());
+
+}
+</code></pre><p>运行结果：</p><pre><code>07-1522:06:27.88216870-16870/top.shixinzhang.rxjavademo I/System.out: onNext: 22207-1522:06:27.88216870-16870/top.shixinzhang.rxjavademo I/System.out: onCompleted
+</code></pre><h2 id="Filter"><a href="#Filter" class="headerlink" title="Filter"></a>Filter</h2><p><img src="/2017/1327/4cb2e0b.png" alt=""></p><p><code>Filter</code> 只发射符合要求的元素。</p><p>RxJava 中的实现有 2 种。</p><h3 id="filter"><a href="#filter" class="headerlink" title="filter"></a>filter</h3><p><img src="/2017/1327/4497e12.png" alt=""></p><p><code>filter(predicate)</code> 的参数指定了要发射的元素需要满足的条件，不满足就不会发射。</p><pre><code>publicfinal Observable&lt;T&gt; filter(Func1&lt;? super T, Boolean&gt; predicate) {
+    return unsafeCreate(new OnSubscribeFilter&lt;T&gt;(this, predicate));
+}
+</code></pre><p>使用例子：</p><pre><code>privatevoidfilteringWithFilter() {
+    Observable.range(0, 10)
+            .filter(new Func1&lt;Integer, Boolean&gt;() {
+                @Overridepublic Boolean call(Integer item) {
+                    return item &gt; 5;
+                }
+            })
+            .subscribe(this.&lt;Integer&gt;getPrintSubscriber());
+}
+</code></pre><p>例子中，我们只允许大于 5 的数据发射。运行结果：</p><pre><code>07-1522:09:38.77319765-19765/top.shixinzhang.rxjavademo I/System.out: onNext: 607-1522:09:38.77319765-19765/top.shixinzhang.rxjavademo I/System.out: onNext: 707-1522:09:38.77319765-19765/top.shixinzhang.rxjavademo I/System.out: onNext: 807-1522:09:38.77319765-19765/top.shixinzhang.rxjavademo I/System.out: onNext: 907-1522:09:38.77319765-19765/top.shixinzhang.rxjavademo I/System.out: onCompleted
+</code></pre><h3 id="ofType"><a href="#ofType" class="headerlink" title="ofType"></a>ofType</h3><p><img src="/2017/1327/3f773e0.png" alt=""></p><p><code>ofType(klass)</code> 的参数指定符合要求的数据类型，最终还是调用的 <code>filter</code>：</p><pre><code>publicfinal &lt;R&gt; Observable&lt;R&gt; ofType(final Class&lt;R&gt; klass) {
+    return filter(InternalObservableUtils.isInstanceOf(klass)).cast(klass);
+}
+</code></pre><p>使用例子：</p><pre><code>privatevoidfilteringWithOfType() {
+    Observable.range(0, 10)
+            .ofType(String.class)
+            .subscribe(this.&lt;String&gt;getPrintSubscriber());
+}
+</code></pre><p>可以看到 <code>ofType</code> 返回的 Observable 的数据类型就是参数的类型。运行结果：</p><pre><code>07-1522:14:38.97924199-24199/top.shixinzhang.rxjavademo I/System.out: onCompleted
+</code></pre><h2 id="First"><a href="#First" class="headerlink" title="First"></a>First</h2><p><img src="/2017/1327/6a7874f.png" alt=""></p><p><code>First</code> 的作用的就是只发射第一个元素（或者是第一个满足要求的元素）。</p><p>在RxJava中，这个操作符被实现为 <code>first</code>，<code>firstOrDefault</code> 和 <code>takeFirst</code>。</p><h3 id="first"><a href="#first" class="headerlink" title="first"></a>first</h3><p><img src="/2017/1327/51c989b.png" alt=""></p><p><code>first()</code> 只发射第一个数据，如果源 Observable是空的话，会抛出 <code>NoSuchElementException</code> 异常。</p><pre><code>publicfinal Observable&lt;T&gt; first() {
+    return take(1).single();
+}
+</code></pre><p>可以看到它调用的是 <code>take(1).single()</code>，这两个操作符我们这篇文章后面介绍。</p><p>运行结果很简单，这里就暂不演示了。</p><h3 id="first-predicate"><a href="#first-predicate" class="headerlink" title="first(predicate)"></a>first(predicate)</h3><p><img src="/2017/1327/54a3494.png" alt=""></p><p><code>first(predicate)</code> 只发射符合要求的第一个元素。</p><pre><code>publicfinal Observable&lt;T&gt; first(Func1&lt;? super T, Boolean&gt; predicate) {
+    return takeFirst(predicate).single();
+}
+</code></pre><p>使用例子：</p><pre><code>privatevoidfilteringWithFirst() {
+    Observable.range(4, 10)
+            .first(new Func1&lt;Integer, Boolean&gt;() {
+                @Overridepublic Boolean call(Integer integer) {
+                    return integer &gt; 5;
+                }
+            })
+            .subscribe(this.&lt;Integer&gt;getPrintSubscriber());
+}
+</code></pre><p>我们只发射第一个大于 5 的数字，也就是 6 喽。运行结果：</p><pre><code>07-1522:23:02.22831262-31262/top.shixinzhang.rxjavademo I/System.out: onNext: 607-1522:23:02.22831262-31262/top.shixinzhang.rxjavademo I/System.out: onCompleted
+</code></pre><h3 id="firstOrDefault"><a href="#firstOrDefault" class="headerlink" title="firstOrDefault"></a>firstOrDefault</h3><p><img src="/2017/1327/b118480.png" alt=""></p><p><code>firstOrDefault</code> 和名字一样，如果没有第一个元素就发射默认的。</p><pre><code>publicfinal Observable&lt;T&gt; firstOrDefault(T defaultValue) {
+    return take(1).singleOrDefault(defaultValue);
+}
+</code></pre><p>使用例子：</p><pre><code>privatevoidfilteringWithFirstOrDefault() {
+    Observable.empty()
+            .firstOrDefault(33)
+            .subscribe(getPrintSubscriber());
+}
+</code></pre><p>运行结果：</p><pre><code>07-1522:26:28.3752910-2910/top.shixinzhang.rxjavademo I/System.out: onNext: 3307-1522:26:28.3752910-2910/top.shixinzhang.rxjavademo I/System.out: onCompleted
+</code></pre><h3 id="firstOrDefault-predicate"><a href="#firstOrDefault-predicate" class="headerlink" title="firstOrDefault(predicate)"></a>firstOrDefault(predicate)</h3><p><img src="/2017/1327/6e72607.png" alt=""></p><p><code>firstOrDefault(predicate)</code> 返回第一个符合要求的，没有的话就返回默认的，也很好理解。</p><pre><code>publicfinal Observable&lt;T&gt; firstOrDefault(T defaultValue, Func1&lt;? super T, Boolean&gt; predicate) {
+    return takeFirst(predicate).singleOrDefault(defaultValue);
+}
+</code></pre><p>使用例子：</p><pre><code>privatevoidfilteringWithFirstOrDefault() {
+    Observable.range(0 , 4)
+            .firstOrDefault(33, new Func1&lt;Integer, Boolean&gt;() {
+                @Overridepublic Boolean call(Integer integer) {
+                    return integer &gt; 5;
+                }
+            })
+            .subscribe(getPrintSubscriber());
+}
+</code></pre><p>运行结果：</p><pre><code>07-1522:26:28.3752910-2910/top.shixinzhang.rxjavademo I/System.out: onNext: 3307-1522:26:28.3752910-2910/top.shixinzhang.rxjavademo I/System.out: onCompleted
+</code></pre><h3 id="takeFirst"><a href="#takeFirst" class="headerlink" title="takeFirst"></a>takeFirst</h3><p><img src="/2017/1327/40e09ab.png" alt=""></p><p><code>takeFirst</code> 与 <code>first</code> 基本一致，除了这一点：如果原始 Observable 没有发射任何满足条件的数据，<code>first</code> 会抛出一个 <code>NoSuchElementException</code>，<code>takeFist</code> 会返回一个空的 Observable（不调用 onNext() 但是会调用 onCompleted）。</p><p>也就是说 <code>takeFirst</code> 比 <code>first</code> 温柔一点，不会抛异常。</p><h3 id="single"><a href="#single" class="headerlink" title="single"></a>single</h3><p><img src="/2017/1327/c167d42.png" alt=""></p><p><code>single</code> 也是只发射一个数据，但是如果源 Observable 发射多个数据，就会发射 <code>onError</code> 事件：</p><pre><code>07-1522:37:15.77412609-12609/top.shixinzhang.rxjavademo I/System.out: onError: Sequence contains too many elements
+</code></pre><p>如果源 Observable 没有数据，也会发射 <code>onError</code> 事件：</p><pre><code>07-1522:38:30.70013779-13779/top.shixinzhang.rxjavademo I/System.out: onError: Sequence contains no elements
+</code></pre><p><strong>也就是说，<code>single</code> 是用来检验并获取只有一个元素的 Observable 发射的数据。</strong></p><p>single 也有传递符合要求函数、默认值的变体，这里就暂不赘述了。</p><h2 id="Last"><a href="#Last" class="headerlink" title="Last"></a>Last</h2><p>有 First 当然就有 Last。</p><p><img src="/2017/1327/d395c1e.png" alt=""></p><p><code>Last</code> 只发射最后一项（或者满足某个条件的最后一项）数据。</p><p>Last 的变体和 First 差不多，这里就不赘述了。</p><h2 id="Take"><a href="#Take" class="headerlink" title="Take"></a>Take</h2><p><img src="/2017/1327/edc1f5b.png" alt=""></p><p><code>first</code> 很多都是使用 <code>take</code> 实现的。</p><p><code>Take</code> 操作符的作用是：<strong>只保留前面的若干项数据</strong>。</p><p>RxJava 对应的实现为 <code>take</code>。</p><h3 id="take-count"><a href="#take-count" class="headerlink" title="take(count)"></a>take(count)</h3><p><img src="/2017/1327/d22d70e.png" alt=""></p><p><code>take(count)</code> 的参数指定要保留的数据项。</p><pre><code>publicfinal Observable&lt;T&gt; take(finalint count) {
+    return lift(new OperatorTake&lt;T&gt;(count));
+}
+</code></pre><p>另外 <code>limit</code> 也只是 <code>take</code> 的别名：</p><pre><code>publicfinal Observable&lt;T&gt; limit(int count) {
+    return take(count);
+}
+</code></pre><p>使用例子：</p><pre><code>privatevoidfilteringWithTake() {
+    Observable.range(0 , 10)
+            .limit(3)
+            .subscribe(this.&lt;Integer&gt;getPrintSubscriber());
+}
+</code></pre><p>运行结果：</p><pre><code>07-1522:51:49.89525751-25751/top.shixinzhang.rxjavademo I/System.out: onNext: 007-1522:51:49.89525751-25751/top.shixinzhang.rxjavademo I/System.out: onNext: 107-1522:51:49.89525751-25751/top.shixinzhang.rxjavademo I/System.out: onNext: 207-1522:51:49.89525751-25751/top.shixinzhang.rxjavademo I/System.out: onCompleted
+</code></pre><h3 id="take-time-unit"><a href="#take-time-unit" class="headerlink" title="take(time, unit)"></a>take(time, unit)</h3><p><img src="/2017/1327/330aa65.png" alt=""></p><p>另一种变体是 <code>take(long time, TimeUnit unit)</code>，参数为时间，即只发射指定时间之内（小于该时间）发射的数据，超时的数据都不会发射。</p><pre><code>publicfinal Observable&lt;T&gt; take(long time, TimeUnit unit) {
+    return take(time, unit, Schedulers.computation());
+}
+publicfinal Observable&lt;T&gt; take(long time, TimeUnit unit, Scheduler scheduler) {
+    return lift(new OperatorTakeTimed&lt;T&gt;(time, unit, scheduler));
+}
+</code></pre><p>使用例子：</p><pre><code>privatevoidfilteringWithTake() {
+    Observable
+            .unsafeCreate(new Observable.OnSubscribe&lt;Integer&gt;() {
+                @Overridepublicvoidcall(Subscriber&lt;? super Integer&gt; subscriber) {
+                    for (int i = 0; i &lt; 10; i++) {
+                        SystemClock.sleep(1_000);
+                        subscriber.onNext(i);
+                    }
+                    subscriber.onCompleted();
+                }
+            })
+            .subscribeOn(Schedulers.computation())
+            .take(3, TimeUnit.SECONDS)
+            .subscribe(this.&lt;Integer&gt;getPrintSubscriber());
+}
+</code></pre><p>每隔一秒发射一个数据，然后指定只要 3 秒内发射的数据。运行结果：</p><pre><code>07-1522:56:01.30429363-29388/top.shixinzhang.rxjavademo I/System.out: onNext: 007-1522:56:02.30629363-29388/top.shixinzhang.rxjavademo I/System.out: onNext: 107-1522:56:03.30229363-29387/top.shixinzhang.rxjavademo I/System.out: onCompleted
+</code></pre><h2 id="TakeLast"><a href="#TakeLast" class="headerlink" title="TakeLast"></a>TakeLast</h2><p><img src="/2017/1327/9ae1b87.png" alt=""></p><p>有从前开始拿，自然就有从后开始拿，<code>TakeLast</code> 就是这个作用。</p><p>使用 <code>TakeLast</code> 操作符可以只发射 Observable 发射的后 N 项数据，忽略前面的数据。</p><p>RxJava 中的实现有 <code>takeLast</code>，它的参数可以是个数也可以是时间。</p><p>还有一种实现是 <code>takeLastBuffer</code>：</p><p><img src="/2017/1327/df89422.png" alt=""></p><p><code>takeLastBuffer</code> 和 <code>takeLast</code> 类似，不同是它把所有的数据项收集到一个 <code>List</code> 再发射，而不是依次发射。</p><h2 id="IgnoreElements"><a href="#IgnoreElements" class="headerlink" title="IgnoreElements"></a>IgnoreElements</h2><p><img src="/2017/1327/474b13c.png" alt=""></p><p><code>IgnoreElements</code> 的作用是不发射任何数据，只发射结束事件（ onError or onCompleted）。</p><p>当你不在乎发射的内容，只希望在它完成时或遇到错误终止时收到通知，可以使用这个操作符。</p><p><code>ignoreElements</code> 会确保永远不会调用观察者的onNext()方法</p><p>RxJava 的实现是 <code>ignoreElements</code>：</p><pre><code>publicfinal Observable&lt;T&gt; ignoreElements() {
+    return lift(OperatorIgnoreElements.&lt;T&gt; instance());
+}
+@Overridepublic Subscriber&lt;? super T&gt; call(final Subscriber&lt;? super T&gt; child) {
+    Subscriber&lt;T&gt; parent = new Subscriber&lt;T&gt;() {
+
+        @OverridepublicvoidonCompleted() {
+            child.onCompleted();
+        }
+
+        @OverridepublicvoidonError(Throwable e) {
+            child.onError(e);
+        }
+
+        @OverridepublicvoidonNext(T t) {
+            // ignore element
+        }
+
+    };
+    child.add(parent);
+    return parent;
+}
+</code></pre><p>可以看到，它的 <code>onNext()</code> 方法没有传递事件。</p><h2 id="Sample"><a href="#Sample" class="headerlink" title="Sample"></a>Sample</h2><p><code>Sample</code> 的作用是：定时发射 Observable 最新发射的数据。</p><p><img src="/2017/1327/c46f440.png" alt=""></p><p><code>Sample</code> 操作符会周期性地查看源 Observable，发射自出上次查看以来，最新发射的数据。</p><p>RxJava 中有三种实现：<code>sample</code>, <code>throttleFirst</code>, <code>throttleLast</code>。</p><h3 id="sample"><a href="#sample" class="headerlink" title="sample"></a>sample</h3><p><img src="/2017/1327/c2667a8.png" alt=""></p><p><code>sample()</code> 的参数指定定期查看的时间间隔：</p><pre><code>publicfinal Observable&lt;T&gt; sample(long period, TimeUnit unit) {
+    return sample(period, unit, Schedulers.computation());
+}
+publicfinal Observable&lt;T&gt; sample(long period, TimeUnit unit, Scheduler scheduler) {
+    return lift(new OperatorSampleWithTime&lt;T&gt;(period, unit, scheduler));
+}
+</code></pre><p><code>throttleLast</code> 和 <code>sample</code> 一样，只不过名称不同：</p><pre><code>publicfinal Observable&lt;T&gt; throttleLast(long intervalDuration, TimeUnit unit) {
+    return sample(intervalDuration, unit);
+}
+</code></pre><p>使用例子：</p><pre><code>privatevoidfilteringWithSample() {
+    Observable
+            .unsafeCreate(new Observable.OnSubscribe&lt;Integer&gt;() {
+                @Overridepublicvoidcall(Subscriber&lt;? super Integer&gt; subscriber) {
+                    for (int i = 0; i &lt; 10; i++) {
+                        SystemClock.sleep( i % 5 * 1000);
+                        subscriber.onNext(i);
+                    }
+                    subscriber.onCompleted();
+                }
+            })
+            .subscribeOn(Schedulers.computation())
+            .sample(3, TimeUnit.SECONDS)
+            .subscribe(this.&lt;Integer&gt;getPrintSubscriber());
+}
+</code></pre><p>例子中，我们每隔 i % 5 秒发射 10 个数据，然后每隔 3 秒去查看一次，发射距离上次查看，最新发射的元素。运行结果：</p><pre><code>07-1523:12:55.91512800-12815/top.shixinzhang.rxjavademo I/System.out: onNext: 007-1523:12:58.91512800-12815/top.shixinzhang.rxjavademo I/System.out: onNext: 207-1523:13:01.91612800-12815/top.shixinzhang.rxjavademo I/System.out: onNext: 307-1523:13:07.91612800-12815/top.shixinzhang.rxjavademo I/System.out: onNext: 607-1523:13:10.91612800-12815/top.shixinzhang.rxjavademo I/System.out: onNext: 707-1523:13:13.91612800-12815/top.shixinzhang.rxjavademo I/System.out: onNext: 807-1523:13:15.49912800-12816/top.shixinzhang.rxjavademo I/System.out: onNext: 907-1523:13:15.49912800-12816/top.shixinzhang.rxjavademo I/System.out: onCompleted
+</code></pre><h3 id="throttleFirst"><a href="#throttleFirst" class="headerlink" title="throttleFirst"></a>throttleFirst</h3><p><img src="/2017/1327/3488e44.png" alt=""></p><p><code>throttleFirst</code> 也是隔一段时间去查看一次，不同的是它发射的是这段时间里第一个发射的数据，而不是最新的。</p><pre><code>publicfinal Observable&lt;T&gt; throttleFirst(long windowDuration, TimeUnit unit) {
+    return throttleFirst(windowDuration, unit, Schedulers.computation());
+}
+publicfinal Observable&lt;T&gt; throttleFirst(long skipDuration, TimeUnit unit, Scheduler scheduler) {
+    return lift(new OperatorThrottleFirst&lt;T&gt;(skipDuration, unit, scheduler));
+}
+</code></pre><p>例子：</p><pre><code>privatevoidfilteringWithThrottleFirst() {
+    Observable
+            .unsafeCreate(new Observable.OnSubscribe&lt;Integer&gt;() {
+                @Overridepublicvoidcall(Subscriber&lt;? super Integer&gt; subscriber) {
+                    for (int i = 0; i &lt; 10; i++) {
+                        SystemClock.sleep( i % 5 * 1000);
+                        subscriber.onNext(i);
+                    }
+                    subscriber.onCompleted();
+                }
+            })
+            .subscribeOn(Schedulers.computation())
+            .throttleFirst(3, TimeUnit.SECONDS)
+            .subscribe(this.&lt;Integer&gt;getPrintSubscriber());
+}
+</code></pre><p>运行结果：</p><pre><code>07-1523:18:00.79817008-17648/top.shixinzhang.rxjavademo I/System.out: onNext: 007-1523:18:03.81317008-17648/top.shixinzhang.rxjavademo I/System.out: onNext: 207-1523:18:06.81517008-17648/top.shixinzhang.rxjavademo I/System.out: onNext: 307-1523:18:10.81617008-17648/top.shixinzhang.rxjavademo I/System.out: onNext: 407-1523:18:13.81817008-17648/top.shixinzhang.rxjavademo I/System.out: onNext: 707-1523:18:16.82017008-17648/top.shixinzhang.rxjavademo I/System.out: onNext: 807-1523:18:20.82217008-17648/top.shixinzhang.rxjavademo I/System.out: onNext: 907-1523:18:20.82217008-17648/top.shixinzhang.rxjavademo I/System.out: onCompleted
+</code></pre><h2 id="Skip"><a href="#Skip" class="headerlink" title="Skip"></a>Skip</h2><p><code>Skip</code> 的作用是，跳过指定数量的数据，发射后面的数据。</p><p><img src="/2017/1327/ca3752f.png" alt=""></p><p>RxJava 中的实现有两种，都叫 <code>skip</code>，不同的是一个是按个数算，一个是按时间算。</p><h3 id="skip-count"><a href="#skip-count" class="headerlink" title="skip(count)"></a>skip(count)</h3><p><img src="/2017/1327/1f4c1bd.png" alt=""></p><pre><code>publicfinal Observable&lt;T&gt; skip(int count) {
+    return lift(new OperatorSkip&lt;T&gt;(count));
+}
+</code></pre><p>使用例子：</p><pre><code>privatevoidfilteringWithSkip() {
+    Observable.range(0 , 10)
+            .skip(3)
+            .subscribe(this.&lt;Integer&gt;getPrintSubscriber());
+}
+</code></pre><p>运行结果：</p><pre><code>07-1523:22:14.47221075-21075/top.shixinzhang.rxjavademo I/System.out: onNext: 307-1523:22:14.47221075-21075/top.shixinzhang.rxjavademo I/System.out: onNext: 407-1523:22:14.47221075-21075/top.shixinzhang.rxjavademo I/System.out: onNext: 507-1523:22:14.47221075-21075/top.shixinzhang.rxjavademo I/System.out: onNext: 607-1523:22:14.47221075-21075/top.shixinzhang.rxjavademo I/System.out: onNext: 707-1523:22:14.47221075-21075/top.shixinzhang.rxjavademo I/System.out: onNext: 807-1523:22:14.47221075-21075/top.shixinzhang.rxjavademo I/System.out: onNext: 907-1523:22:14.47321075-21075/top.shixinzhang.rxjavademo I/System.out: onCompleted
+</code></pre><h3 id="skip-time-unit"><a href="#skip-time-unit" class="headerlink" title="skip(time, unit)"></a>skip(time, unit)</h3><p><img src="/2017/1327/d618b4e.png" alt=""></p><p><code>skip(time, unit)</code> 的参数指定要跳过前指定时间内发射的数据。</p><pre><code>publicfinal Observable&lt;T&gt; skip(long time, TimeUnit unit) {
+    return skip(time, unit, Schedulers.computation());
+}
+publicfinal Observable&lt;T&gt; skip(long time, TimeUnit unit, Scheduler scheduler) {
+    return unsafeCreate(new OnSubscribeSkipTimed&lt;T&gt;(this, time, unit, scheduler));
+}
+</code></pre><h2 id="SkipLast"><a href="#SkipLast" class="headerlink" title="SkipLast"></a>SkipLast</h2><p>既然有跳过从头开始的数据，自然也有跳过从后开始的数据，这就是 <code>SkipLast</code> 的作用。</p><p><img src="/2017/1327/e08f1b1.png" alt=""></p><p>RxJava 中的实现也有两种，按时间和按个数，这里就暂不赘述了。</p></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="4142158067"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="5618891265"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><footer class="post-footer"><div class="post-nav"><div class="post-nav-next post-nav-item"><a href="/2017/java的forkjoin任务.html" rel="next" title="Java的Fork/Join任务"><i class="fa fa-chevron-left"></i> Java的Fork/Join任务</a></div><span class="post-nav-divider"></span><div class="post-nav-prev post-nav-item"><a href="/2017/java使用memcached以及spring配置memcached.html" rel="prev" title="java 使用memcached以及spring 配置memcached">java 使用memcached以及spring 配置memcached <i class="fa fa-chevron-right"></i></a></div></div></footer></div></article><div class="post-spread"></div></div></div></div><div class="sidebar-toggle"><div class="sidebar-toggle-line-wrap"><span class="sidebar-toggle-line sidebar-toggle-line-first"></span> <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span> <span class="sidebar-toggle-line sidebar-toggle-line-last"></span></div></div><aside id="sidebar" class="sidebar"><div class="sidebar-inner"><ul class="sidebar-nav motion-element"><li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">Table of Contents</li><li class="sidebar-nav-overview" data-target="site-overview-wrap">Overview</li></ul><section class="site-overview-wrap sidebar-panel"><div class="site-overview"><div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person"><p class="site-author-name" itemprop="name">Hello</p><p class="site-description motion-element" itemprop="description"></p></div><nav class="site-state motion-element"><div class="site-state-item site-state-posts"><a href="/archives/"><span class="site-state-item-count">1358</span> <span class="site-state-item-name">posts</span></a></div></nav></div></section><section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active"><div class="post-toc"><div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Debounce"><span class="nav-number">1.</span> <span class="nav-text">Debounce</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#debounce"><span class="nav-number">1.1.</span> <span class="nav-text">debounce</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#throttleWithTimeout"><span class="nav-number">1.2.</span> <span class="nav-text">throttleWithTimeout</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Distinct"><span class="nav-number">2.</span> <span class="nav-text">Distinct</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#distinct"><span class="nav-number">2.1.</span> <span class="nav-text">distinct()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#distinct-keySelector"><span class="nav-number">2.2.</span> <span class="nav-text">distinct(keySelector)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#distinctUntilChanged"><span class="nav-number">2.3.</span> <span class="nav-text">distinctUntilChanged()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#distinctUntilChanged-keySelector"><span class="nav-number">2.4.</span> <span class="nav-text">distinctUntilChanged(keySelector)</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ElementAt"><span class="nav-number">3.</span> <span class="nav-text">ElementAt</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#elementAt"><span class="nav-number">3.1.</span> <span class="nav-text">elementAt</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#elementAtOrDefault"><span class="nav-number">3.2.</span> <span class="nav-text">elementAtOrDefault</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Filter"><span class="nav-number">4.</span> <span class="nav-text">Filter</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#filter"><span class="nav-number">4.1.</span> <span class="nav-text">filter</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ofType"><span class="nav-number">4.2.</span> <span class="nav-text">ofType</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#First"><span class="nav-number">5.</span> <span class="nav-text">First</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#first"><span class="nav-number">5.1.</span> <span class="nav-text">first</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#first-predicate"><span class="nav-number">5.2.</span> <span class="nav-text">first(predicate)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#firstOrDefault"><span class="nav-number">5.3.</span> <span class="nav-text">firstOrDefault</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#firstOrDefault-predicate"><span class="nav-number">5.4.</span> <span class="nav-text">firstOrDefault(predicate)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#takeFirst"><span class="nav-number">5.5.</span> <span class="nav-text">takeFirst</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#single"><span class="nav-number">5.6.</span> <span class="nav-text">single</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Last"><span class="nav-number">6.</span> <span class="nav-text">Last</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Take"><span class="nav-number">7.</span> <span class="nav-text">Take</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#take-count"><span class="nav-number">7.1.</span> <span class="nav-text">take(count)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#take-time-unit"><span class="nav-number">7.2.</span> <span class="nav-text">take(time, unit)</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TakeLast"><span class="nav-number">8.</span> <span class="nav-text">TakeLast</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#IgnoreElements"><span class="nav-number">9.</span> <span class="nav-text">IgnoreElements</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Sample"><span class="nav-number">10.</span> <span class="nav-text">Sample</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#sample"><span class="nav-number">10.1.</span> <span class="nav-text">sample</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#throttleFirst"><span class="nav-number">10.2.</span> <span class="nav-text">throttleFirst</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Skip"><span class="nav-number">11.</span> <span class="nav-text">Skip</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#skip-count"><span class="nav-number">11.1.</span> <span class="nav-text">skip(count)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#skip-time-unit"><span class="nav-number">11.2.</span> <span class="nav-text">skip(time, unit)</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SkipLast"><span class="nav-number">12.</span> <span class="nav-text">SkipLast</span></a></li></ol></div></div></section></div></aside><div class="sfix"><div class="fixedme"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460" data-ad-format="auto"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script></div></div></main><footer id="footer" class="footer"><div class="footer-inner"><div class="copyright">&copy; <span itemprop="copyrightYear">2018</span> <span class="with-love"><i class="fa fa-user"></i> </span><span class="author" itemprop="copyrightHolder">Hello</span></div><div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div><span class="post-meta-divider">|</span><div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div></div></footer><div class="back-to-top"><i class="fa fa-arrow-up"></i></div></div><script type="text/javascript">"[object Function]"!==Object.prototype.toString.call(window.Promise)&&(window.Promise=null)</script><script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script><script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script><script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script><script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script><script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script></body></html><!-- rebuild by neat -->

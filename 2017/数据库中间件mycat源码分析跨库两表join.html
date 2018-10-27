@@ -1,0 +1,222 @@
+<!-- build time:Sat Oct 27 2018 21:00:18 GMT+0800 (CST) --><!DOCTYPE html><html class="theme-next muse use-motion"><head><meta name="generator" content="Hexo 3.8.0"><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"><meta name="theme-color" content="#222"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"><link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css"><link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css"><link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4"><link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222"><meta name="description" content="数据库中间件 MyCAT源码分析 —— 跨库两表JoinH2M_LI_HEADER3.1 JoinParserH2M_LI_HEADER3.2 ShareJoin.processSQL(…))H2M_LI_HEADER3.3 BatchSQLJobH2M_LI_HEADER3.4 ShareDBJoinHandlerH2M_LI_HEADER3.5 ShareRowOutPutDataHandle"><meta name="keywords" content="JAVA,面试"><meta property="og:type" content="article"><meta property="og:title" content="数据库中间件 MyCAT源码分析 —— 跨库两表Join"><meta property="og:url" content="http://www.jfox.info/2017/数据库中间件mycat源码分析跨库两表join.html"><meta property="og:site_name" content="java面试"><meta property="og:description" content="数据库中间件 MyCAT源码分析 —— 跨库两表JoinH2M_LI_HEADER3.1 JoinParserH2M_LI_HEADER3.2 ShareJoin.processSQL(…))H2M_LI_HEADER3.3 BatchSQLJobH2M_LI_HEADER3.4 ShareDBJoinHandlerH2M_LI_HEADER3.5 ShareRowOutPutDataHandle"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="http://www.jfox.info/2017/1288/04c6443.png"><meta property="og:image" content="http://www.jfox.info/2017/1288/e448018.png"><meta property="og:image" content="http://www.jfox.info/2017/1288/70b979c.png"><meta property="og:image" content="http://www.jfox.info/2017/1288/6683eac.png"><meta property="og:image" content="http://www.jfox.info/2017/1288/3b7b0ee.png"><meta property="og:image" content="http://www.jfox.info/2017/1288/a506eb2.png"><meta property="og:image" content="http://www.jfox.info/2017/1288/3058177.png"><meta property="og:image" content="http://www.jfox.info/2017/1288/be99aef.png"><meta property="og:image" content="http://www.jfox.info/2017/1288/f0e24be.png"><meta property="og:updated_time" content="2018-10-27T12:29:39.673Z"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="数据库中间件 MyCAT源码分析 —— 跨库两表Join"><meta name="twitter:description" content="数据库中间件 MyCAT源码分析 —— 跨库两表JoinH2M_LI_HEADER3.1 JoinParserH2M_LI_HEADER3.2 ShareJoin.processSQL(…))H2M_LI_HEADER3.3 BatchSQLJobH2M_LI_HEADER3.4 ShareDBJoinHandlerH2M_LI_HEADER3.5 ShareRowOutPutDataHandle"><meta name="twitter:image" content="http://www.jfox.info/2017/1288/04c6443.png"><script type="text/javascript" id="hexo.configurations">var NexT=window.NexT||{},CONFIG={root:"/",scheme:"Muse",version:"5.1.4",sidebar:{position:"left",display:"post",offset:12,b2t:!1,scrollpercent:!1,onmobile:!1},fancybox:!0,tabs:!0,motion:{enable:!0,async:!1,transition:{post_block:"fadeIn",post_header:"slideDownIn",post_body:"slideDownIn",coll_header:"slideLeftIn",sidebar:"slideUpIn"}},duoshuo:{userId:"0",author:"Author"},algolia:{applicationID:"",apiKey:"",indexName:"",hits:{per_page:10},labels:{input_placeholder:"Search for Posts",hits_empty:"We didn't find any results for the search: ${query}",hits_stats:"${hits} results found in ${time} ms"}}}</script><link rel="canonical" href="http://www.jfox.info/2017/数据库中间件mycat源码分析跨库两表join.html"><title>数据库中间件 MyCAT源码分析 —— 跨库两表Join | java面试</title></head><body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN"><div class="container sidebar-position-left page-post-detail"><div class="headband"></div><header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="header-inner"><div class="site-brand-wrapper"><div class="site-meta"><div class="custom-logo-site-title"><a href="/" class="brand" rel="start"><span class="logo-line-before"><i></i></span> <span class="site-title">java面试</span> <span class="logo-line-after"><i></i></span></a></div><p class="site-subtitle"></p></div><div class="site-nav-toggle"><button><span class="btn-bar"></span> <span class="btn-bar"></span> <span class="btn-bar"></span></button></div></div><nav class="site-nav"><ul id="menu" class="menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i><br>Home</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i><br>Archives</a></li></ul></nav></div></header><main id="main" class="main"><div class="main-inner"><div class="content-wrap"><div id="content" class="content"><div id="posts" class="posts-expand"><article class="post post-type-normal" itemscope itemtype="http://schema.org/Article"><div class="post-block"><link itemprop="mainEntityOfPage" href="http://www.jfox.info/2017/数据库中间件mycat源码分析跨库两表join.html"><span hidden itemprop="author" itemscope itemtype="http://schema.org/Person"><meta itemprop="name" content="Hello"><meta itemprop="description" content=""><meta itemprop="image" content="/images/avatar.gif"></span><span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><meta itemprop="name" content="java面试"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">数据库中间件 MyCAT源码分析 —— 跨库两表Join</h1><div class="post-meta"><span class="post-time"><span class="post-meta-item-icon"><i class="fa fa-calendar-o"></i> </span><span class="post-meta-item-text">Posted on</span> <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-01-01T23:56:28+08:00">2017-01-01</time></span></div></header><div class="post-body" itemprop="articleBody"><h1 id="数据库中间件-MyCAT源码分析-——-跨库两表Join"><a href="#数据库中间件-MyCAT源码分析-——-跨库两表Join" class="headerlink" title="数据库中间件 MyCAT源码分析 —— 跨库两表Join"></a>数据库中间件 MyCAT源码分析 —— 跨库两表Join</h1><p>H2M_LI_HEADER<br><a href="3.1 JoinParser">3.1 JoinParser</a></p><p>H2M_LI_HEADER<br><a href="3.2 ShareJoin.processSQL(…">3.2 ShareJoin.processSQL(…)</a>)</p><p>H2M_LI_HEADER<br><a href="3.3 BatchSQLJob">3.3 BatchSQLJob</a></p><p>H2M_LI_HEADER<br><a href="3.4 ShareDBJoinHandler">3.4 ShareDBJoinHandler</a></p><p>H2M_LI_HEADER<br><a href="3.5 ShareRowOutPutDataHandler">3.5 ShareRowOutPutDataHandler</a></p><p>H2M_LI_HEADER<br><a href="4. 彩蛋">4. 彩蛋</a></p><h1 id="1-概述"><a href="#1-概述" class="headerlink" title="1. 概述"></a>1. 概述</h1><p>MyCAT 支持跨库表 Join，目前版本仅支持跨库<strong>两</strong>表 Join。虽然如此，已经能够满足我们大部分的业务场景。况且，Join 过多的表可能带来的性能问题也是很麻烦的。</p><p>本文主要分享：</p><ol><li><p>整体流程、调用顺序图</p></li><li><p>核心代码的分析</p></li></ol><p>OK，Let’s Go。</p><h1 id="2-主流程"><a href="#2-主流程" class="headerlink" title="2. 主流程"></a>2. 主流程</h1><p>当执行跨库两表 Join SQL 时，经历的大体流程如下：</p><p><img src="/2017/1288/04c6443.png" alt=""></p><p>SQL 上，需要添加注解 <code>/*!mycat:catlet=io.mycat.catlets.ShareJoin */ ${SQL}</code> 。<code>RouteService#route(...)</code> 解析注解 <code>mycat:catlet</code> 后，路由给 <code>HintCatletHandler</code> 作进一步处理。</p><p><code>HintCatletHandler</code> 获取注解对应的 <code>Catlet</code> 实现类，<code>io.mycat.catlets.ShareJoin</code> 就是其中一种实现（目前也只有这一种实现），提供了跨库两表 Join 的功能。从类命名上看，<code>ShareJoin</code> 很大可能性后续会提供<strong>完整</strong>的跨库多表的 Join 功能。</p><p>核心代码如下：</p><pre><code>// HintCatletHandler.java
+public RouteResultset route(SystemConfig sysConfig, SchemaConfig schema,
+                           int sqlType, String realSQL, String charset, ServerConnection sc,
+                           LayerCachePool cachePool, String hintSQLValue, int hintSqlType, Map hintMap)
+       throws SQLNonTransientException {
+   String cateletClass = hintSQLValue;
+   if (LOGGER.isDebugEnabled()) {
+       LOGGER.debug(&quot;load catelet class:&quot; + hintSQLValue + &quot; to run sql &quot; + realSQL);
+   }
+   try {
+       Catlet catlet = (Catlet) MycatServer.getInstance().getCatletClassLoader().getInstanceofClass(cateletClass);
+       catlet.route(sysConfig, schema, sqlType, realSQL, charset, sc, cachePool);
+       catlet.processSQL(realSQL, new EngineCtx(sc.getSession2()));
+   } catch (Exception e) {
+       LOGGER.warn(&quot;catlet error &quot; + e);
+       throw new SQLNonTransientException(e);
+   }
+   return null;
+}
+</code></pre><h1 id="3-ShareJoin"><a href="#3-ShareJoin" class="headerlink" title="3. ShareJoin"></a>3. ShareJoin</h1><p>目前支持跨库<strong>两</strong>表 Join。<code>ShareJoin</code> 将 SQL 拆分成左表 SQL 和 右表 SQL，发送给各数据节点执行，汇总数据结果进行合后返回。</p><p>伪代码如下：</p><pre><code>// SELECT u.id, o.id FROM t_order o 
+// INNER JOIN t_user u ON o.uid = u.id
+// 【顺序】查询左表
+String leftSQL = &quot;SELECT o.id, u.id FROM t_order o&quot;;
+List leftList = dn[0].select(leftSQL) + dn[1].select(leftSQL) + ... + dn[n].select(leftsql);
+// 【并行】查询右表
+String rightSQL = &quot;SELECT u.id FROM t_user u WHERE u.id IN (${leftList.uid})&quot;;
+for (dn : dns) { // 此处是并行执行，使用回调逻辑
+    for (rightRecord : dn.select(rightSQL)) { // 查询右表
+        // 合并结果
+        for (leftRecord : leftList) {
+            if (leftRecord.uid == rightRecord.id) {
+                write(leftRecord + leftRecord.uid 拼接结果);
+            }
+        }
+    }
+} 
+</code></pre><p>实际情况会更加复杂，我们接下来一点点往下看。</p><h2 id="3-1-JoinParser"><a href="#3-1-JoinParser" class="headerlink" title="3.1 JoinParser"></a>3.1 JoinParser</h2><p><code>JoinParser</code> 负责对 SQL 进行解析。整体流程如下：</p><p><img src="/2017/1288/e448018.png" alt=""></p><p>举个例子，<code>/*!mycat:catlet=io.mycat.catlets.ShareJoin */ SELECT o.id, u.username from t_order o join t_user u on o.uid = u.id;</code> 解析后，<code>TableFilter</code> 结果如下：</p><p><img src="/2017/1288/70b979c.png" alt=""></p><ul><li><p>tName ：表名</p></li><li><p>tAlia ：表自定义命名</p></li><li><p>where ：过滤条件</p></li><li><p>order ：排序条件</p></li><li><p>parenTable ：左连接的 Join 的表名。<code>t_user</code>表 在 <code>join</code>属性 的 <code>parenTable</code> 为 “o”，即 <code>t_order</code>。</p></li><li><p>joinParentkey ：左连接的 Join 字段</p></li><li><p>joinKey ：join 字段。<code>t_user</code>表 在 <code>join</code>属性 为 <code>id</code>。</p></li><li><p>join ：子 tableFilter。即，该表连接的右边的表。</p></li><li><p>parent ：和 <code>join</code>属性 相对。</p></li></ul><p>看到此处，大家可能有疑问，为什么要把 SQL 解析成 <code>TableFilter</code>。<code>JoinParser</code> 根据 <code>TableFilter</code> 生成数据节点执行 SQL。代码如下：</p><pre><code>// TableFilter.java
+public String getSQL() {
+   String sql = &quot;&quot;;
+   // fields
+   for (Entry&lt;String, String&gt; entry : fieldAliasMap.entrySet()) {
+       String key = entry.getKey();
+       String val = entry.getValue();
+       if (val == null) {
+           sql = unionsql(sql, getFieldfrom(key), &quot;,&quot;);
+       } else {
+           sql = unionsql(sql, getFieldfrom(key) + &quot; as &quot; + val, &quot;,&quot;);
+       }
+   }
+   // where
+   if (parent == null) {    // on/where 等于号左边的表
+       String parentJoinKey = getJoinKey(true);
+       // fix sharejoin bug：
+       // (AbstractConnection.java:458) -close connection,reason:program err:java.lang.IndexOutOfBoundsException:
+       // 原因是左表的select列没有包含 join 列，在获取结果时报上面的错误
+       if (sql != null &amp;&amp; parentJoinKey != null &amp;&amp;
+               !sql.toUpperCase().contains(parentJoinKey.trim().toUpperCase())) {
+           sql += &quot;, &quot; + parentJoinKey;
+       }
+       sql = &quot;select &quot; + sql + &quot; from &quot; + tName;
+       if (!(where.trim().equals(&quot;&quot;))) {
+           sql += &quot; where &quot; + where.trim();
+       }
+   } else {    // on/where 等于号右边边的表
+       if (allField) {
+           sql = &quot;select &quot; + sql + &quot; from &quot; + tName;
+       } else {
+           sql = unionField(&quot;select &quot; + joinKey, sql, &quot;,&quot;);
+           sql = sql + &quot; from &quot; + tName;
+           //sql=&quot;select &quot;+joinKey+&quot;,&quot;+sql+&quot; from &quot;+tName;
+       }
+       if (!(where.trim().equals(&quot;&quot;))) {
+           sql += &quot; where &quot; + where.trim() + &quot; and (&quot; + joinKey + &quot; in %s )&quot;;
+       } else {
+           sql += &quot; where &quot; + joinKey + &quot; in %s &quot;;
+       }
+   }
+   // order
+   if (!(order.trim().equals(&quot;&quot;))) {
+       sql += &quot; order by &quot; + order.trim();
+   }
+   // limit
+   if (parent == null) {
+       if ((rowCount &gt; 0) &amp;&amp; (offset &gt; 0)) {
+           sql += &quot; limit&quot; + offset + &quot;,&quot; + rowCount;
+       } else {
+           if (rowCount &gt; 0) {
+               sql += &quot; limit &quot; + rowCount;
+           }
+       }
+   }
+   return sql;
+}
+</code></pre><ul><li><p>当 <code>parent</code> 为空时，即<strong>on/where 等于号左边的表</strong>。例如：<code>select id, uid from t_order</code>。</p></li><li><p>当 <code>parent</code> 不为空时，即<strong>on/where 等于号右边的表</strong>。例如：<code>select id, username from t_user where id in (1, 2, 3)</code>。</p></li></ul><h2 id="3-2-ShareJoin-processSQL-…"><a href="#3-2-ShareJoin-processSQL-…" class="headerlink" title="3.2 ShareJoin.processSQL(…)"></a>3.2 ShareJoin.processSQL(…)</h2><p>当 SQL 解析完后，生成<strong>左边的表</strong>执行的 SQL，发送给对应的数据节点查询数据。大体流程如下：</p><p><img src="/2017/1288/6683eac.png" alt=""></p><p>当 SQL 为 <code>/*!mycat:catlet=io.mycat.catlets.ShareJoin */ SELECT o.id, u.username from t_order o join t_user u on o.uid = u.id;</code> 时，<br><code>sql = getSql()</code> 的返回结果为 <code>select id, uid from t_order</code>。</p><p>生成<strong>左边的表</strong>执行的 SQL 后，<strong>顺序顺序顺序</strong>发送给对应的数据节点查询数据。具体顺序查询是怎么实现的，我们来看下章 <strong>BatchSQLJob</strong>。</p><h2 id="3-3-BatchSQLJob"><a href="#3-3-BatchSQLJob" class="headerlink" title="3.3 BatchSQLJob"></a>3.3 BatchSQLJob</h2><p><img src="/2017/1288/3b7b0ee.png" alt=""></p><p><code>EngineCtx</code> 对 <code>BatchSQLJob</code> 封装，提供上层两个方法：</p><ol><li><p>executeNativeSQLSequnceJob ：顺序（非并发）在每个数据节点执行SQL任务</p></li><li><p>executeNativeSQLParallJob ：并发在每个数据节点执行SQL任务</p></li></ol><p>核心代码如下：</p><pre><code>// EngineCtx.java
+public void executeNativeSQLSequnceJob(String[] dataNodes, String sql,
+        SQLJobHandler jobHandler) {
+    for (String dataNode : dataNodes) {
+        SQLJob job = new SQLJob(jobId.incrementAndGet(), sql, dataNode,
+                jobHandler, this);
+        bachJob.addJob(job, false);
+    }
+}
+
+public void executeNativeSQLParallJob(String[] dataNodes, String sql,
+        SQLJobHandler jobHandler) {
+    for (String dataNode : dataNodes) {
+        SQLJob job = new SQLJob(jobId.incrementAndGet(), sql, dataNode,
+                jobHandler, this);
+        bachJob.addJob(job, true);
+    }
+}    
+</code></pre><p><code>BatchSQLJob</code> 通过<strong>执行中任务列表</strong>、<strong>待执行任务列表</strong>来实现<strong>顺序/并发</strong>执行任务。核心代码如下：</p><pre><code>// BatchSQLJob.java
+/**
+* 执行中任务列表
+*/
+private ConcurrentHashMap&lt;Integer, SQLJob&gt; runningJobs = new ConcurrentHashMap&lt;Integer, SQLJob&gt;();
+/**
+* 待执行任务列表
+*/
+private ConcurrentLinkedQueue&lt;SQLJob&gt; waitingJobs = new ConcurrentLinkedQueue&lt;SQLJob&gt;();
+
+public void addJob(SQLJob newJob, boolean parallExecute) {
+   if (parallExecute) {
+       runJob(newJob);
+   } else {
+       waitingJobs.offer(newJob);
+       if (runningJobs.isEmpty()) { // 若无正在执行中的任务，则从等待队列里获取任务进行执行。
+           SQLJob job = waitingJobs.poll();
+           if (job != null) {
+               runJob(job);
+           }
+       }
+   }
+}
+
+public boolean jobFinished(SQLJob sqlJob) {
+    runningJobs.remove(sqlJob.getId());
+    SQLJob job = waitingJobs.poll();
+    if (job != null) {
+        runJob(job);
+        return false;
+    } else {
+        if (noMoreJobInput) {
+            return runningJobs.isEmpty() &amp;&amp; waitingJobs.isEmpty();
+        } else {
+            return false;
+        }
+    }
+}
+</code></pre><ul><li><p><strong>顺序</strong>执行时，当 <code>runningJobs</code> 存在执行中的任务时，<code>#addJob(...)</code> 时，不立即执行，添加到 <code>waitingJobs</code>。当 <code>SQLJob</code> 完成时，顺序调用下一个任务。</p></li><li><p><strong>并发</strong>执行时，<code>#addJob(...)</code> 时，立即执行。</p></li></ul><p><code>SQLJob</code> SQL 异步执行任务。其 <code>jobHandler(SQLJobHandler)</code> 属性，在 SQL 执行有返回结果时，会进行回调，从而实现异步执行。</p><p>在 <code>ShareJoin</code> 里，<code>SQLJobHandler</code> 有两个实现：<code>ShareDBJoinHandler</code>、<code>ShareRowOutPutDataHandler</code>。前者，<strong>左边的表</strong>执行的 SQL 回调；后者，<strong>右边的表</strong>执行的 SQL 回调。</p><p><img src="/2017/1288/a506eb2.png" alt=""></p><h2 id="3-4-ShareDBJoinHandler"><a href="#3-4-ShareDBJoinHandler" class="headerlink" title="3.4 ShareDBJoinHandler"></a>3.4 ShareDBJoinHandler</h2><p><code>ShareDBJoinHandler</code>，<strong>左边的表</strong>执行的 SQL 回调。流程如下：</p><p><img src="/2017/1288/3058177.png" alt=""></p><ul><li><p><code>#fieldEofResponse(...)</code> ：接收数据节点返回的 fields，放入内存。</p></li><li><p><code>#rowResponse(...)</code> ：接收数据节点返回的 row，放入内存。</p></li><li><p><code>#rowEofResponse(...)</code> ：接收完一个数据节点返回所有的 row。当所有数据节点都完成 SQL 执行时，提交<strong>右边的表</strong>执行的 SQL 任务，<strong>并行</strong>执行，即图中<strong>#createQryJob(…)</strong>。</p></li></ul><p>当 SQL 为 <code>/*!mycat:catlet=io.mycat.catlets.ShareJoin */ SELECT o.id, u.username from t_order o join t_user u on o.uid = u.id;</code> 时，<br><code>sql = getChildSQL()</code> 的返回结果为 <code>select id, username from t_user where id in (1, 2, 3)</code>。</p><p>核心代码如下：</p><pre><code>// ShareJoin.java
+private void createQryJob(int batchSize) {
+   int count = 0;
+   Map&lt;String, byte[]&gt; batchRows = new ConcurrentHashMap&lt;String, byte[]&gt;();
+   String theId = null;
+   StringBuilder sb = new StringBuilder().append(&apos;(&apos;);
+   String svalue = &quot;&quot;;
+   for (Map.Entry&lt;String, String&gt; e : ids.entrySet()) {
+       theId = e.getKey();
+       byte[] rowbyte = rows.remove(theId);
+       if (rowbyte != null) {
+           batchRows.put(theId, rowbyte);
+       }
+       if (!svalue.equals(e.getValue())) {
+           if (joinKeyType == Fields.FIELD_TYPE_VAR_STRING
+                   || joinKeyType == Fields.FIELD_TYPE_STRING) { // joinkey 为varchar
+               sb.append(&quot;&apos;&quot;).append(e.getValue()).append(&quot;&apos;&quot;).append(&apos;,&apos;); // (&apos;digdeep&apos;,&apos;yuanfang&apos;)
+           } else { // 默认joinkey为int/long
+               sb.append(e.getValue()).append(&apos;,&apos;); // (1,2,3)
+           }
+       }
+       svalue = e.getValue();
+       if (count++ &gt; batchSize) {
+           break;
+       }
+   }
+   if (count == 0) {
+       return;
+   }
+   jointTableIsData = true;
+   sb.deleteCharAt(sb.length() - 1).append(&apos;)&apos;);
+   String sql = String.format(joinParser.getChildSQL(), sb);
+   getRoute(sql);
+   ctx.executeNativeSQLParallJob(getDataNodes(), sql, new ShareRowOutPutDataHandler(this, fields, joinindex, joinParser.getJoinRkey(), batchRows, ctx.getSession()));
+}
+</code></pre><h2 id="3-5-ShareRowOutPutDataHandler"><a href="#3-5-ShareRowOutPutDataHandler" class="headerlink" title="3.5 ShareRowOutPutDataHandler"></a>3.5 ShareRowOutPutDataHandler</h2><p><code>ShareRowOutPutDataHandler</code>，<strong>右边的表</strong>执行的 SQL 回调。流程如下：</p><p><img src="/2017/1288/be99aef.png" alt=""></p><ul><li><p><code>#fieldEofResponse(...)</code> ：接收数据节点返回的 fields，返回 header 给 MySQL Client。</p></li><li><p><code>#rowResponse(...)</code> ：接收数据节点返回的 row，匹配左表的记录，返回合并后返回的 row 给 MySQL Client。</p></li><li><p><code>#rowEofResponse(...)</code> ：当所有 row 都返回完后，返回 eof 给 MySQL Client。</p></li></ul><p>核心代码如下：</p><pre><code>// ShareRowOutPutDataHandler.java
+public boolean onRowData(String dataNode, byte[] rowData) {
+   RowDataPacket rowDataPkgold = ResultSetUtil.parseRowData(rowData, bfields);
+   //拷贝一份batchRows
+   Map&lt;String, byte[]&gt; batchRowsCopy = new ConcurrentHashMap&lt;String, byte[]&gt;();
+   batchRowsCopy.putAll(arows);
+   // 获取Id字段，
+   String id = ByteUtil.getString(rowDataPkgold.fieldValues.get(joinR));
+   // 查找ID对应的A表的记录
+   byte[] arow = getRow(batchRowsCopy, id, joinL);
+   while (arow != null) {
+       RowDataPacket rowDataPkg = ResultSetUtil.parseRowData(arow, afields);//ctx.getAllFields());
+       for (int i = 1; i &lt; rowDataPkgold.fieldCount; i++) {
+           // 设置b.name 字段
+           byte[] bname = rowDataPkgold.fieldValues.get(i);
+           rowDataPkg.add(bname);
+           rowDataPkg.addFieldCount(1);
+       }
+       // huangyiming add
+       MiddlerResultHandler middlerResultHandler = session.getMiddlerResultHandler();
+       if (null == middlerResultHandler) {
+           ctx.writeRow(rowDataPkg);
+       } else {
+           if (middlerResultHandler instanceof MiddlerQueryResultHandler) {
+               byte[] columnData = rowDataPkg.fieldValues.get(0);
+               if (columnData != null &amp;&amp; columnData.length &gt; 0) {
+                   String rowValue = new String(columnData);
+                   middlerResultHandler.add(rowValue);
+               }
+               //}
+           }
+
+       }
+       arow = getRow(batchRowsCopy, id, joinL);
+   }
+   return false;
+}
+</code></pre><h1 id="4-彩蛋"><a href="#4-彩蛋" class="headerlink" title="4. 彩蛋"></a>4. 彩蛋</h1><p>如下是本文涉及到的核心类，有兴趣的同学可以翻一翻。</p><p><img src="/2017/1288/f0e24be.png" alt=""></p><p><code>ShareJoin</code> 另外不支持的功能：</p><ol><li><p>只支持 inner join，不支持 left join、right join 等等连接。</p></li><li><p>不支持 order by。</p></li><li><p>不支持 group by 以及 相关聚合函数。</p></li><li><p>即使 join 左表的字段未声明为返回 fields 也会返回。</p></li></ol><p>恩，<strong>MyCAT 弱XA</strong> 源码继续走起！</p></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="4142158067"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="5618891265"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><footer class="post-footer"><div class="post-nav"><div class="post-nav-next post-nav-item"><a href="/2017/springboot基础系列properties配置.html" rel="next" title="springBoot基础系列–properties配置"><i class="fa fa-chevron-left"></i> springBoot基础系列–properties配置</a></div><span class="post-nav-divider"></span><div class="post-nav-prev post-nav-item"><a href="/2017/javacookie工具类javacookieutils工具类java如何增加cookie.html" rel="prev" title="Java Cookie工具类，Java CookieUtils 工具类，Java如何增加Cookie">Java Cookie工具类，Java CookieUtils 工具类，Java如何增加Cookie <i class="fa fa-chevron-right"></i></a></div></div></footer></div></article><div class="post-spread"></div></div></div></div><div class="sidebar-toggle"><div class="sidebar-toggle-line-wrap"><span class="sidebar-toggle-line sidebar-toggle-line-first"></span> <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span> <span class="sidebar-toggle-line sidebar-toggle-line-last"></span></div></div><aside id="sidebar" class="sidebar"><div class="sidebar-inner"><ul class="sidebar-nav motion-element"><li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">Table of Contents</li><li class="sidebar-nav-overview" data-target="site-overview-wrap">Overview</li></ul><section class="site-overview-wrap sidebar-panel"><div class="site-overview"><div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person"><p class="site-author-name" itemprop="name">Hello</p><p class="site-description motion-element" itemprop="description"></p></div><nav class="site-state motion-element"><div class="site-state-item site-state-posts"><a href="/archives/"><span class="site-state-item-count">1358</span> <span class="site-state-item-name">posts</span></a></div></nav></div></section><section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active"><div class="post-toc"><div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#数据库中间件-MyCAT源码分析-——-跨库两表Join"><span class="nav-number">1.</span> <span class="nav-text">数据库中间件 MyCAT源码分析 —— 跨库两表Join</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#1-概述"><span class="nav-number">2.</span> <span class="nav-text">1. 概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-主流程"><span class="nav-number">3.</span> <span class="nav-text">2. 主流程</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-ShareJoin"><span class="nav-number">4.</span> <span class="nav-text">3. ShareJoin</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-JoinParser"><span class="nav-number">4.1.</span> <span class="nav-text">3.1 JoinParser</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-ShareJoin-processSQL-…"><span class="nav-number">4.2.</span> <span class="nav-text">3.2 ShareJoin.processSQL(…)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-3-BatchSQLJob"><span class="nav-number">4.3.</span> <span class="nav-text">3.3 BatchSQLJob</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-4-ShareDBJoinHandler"><span class="nav-number">4.4.</span> <span class="nav-text">3.4 ShareDBJoinHandler</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-5-ShareRowOutPutDataHandler"><span class="nav-number">4.5.</span> <span class="nav-text">3.5 ShareRowOutPutDataHandler</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-彩蛋"><span class="nav-number">5.</span> <span class="nav-text">4. 彩蛋</span></a></li></ol></div></div></section></div></aside><div class="sfix"><div class="fixedme"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460" data-ad-format="auto"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script></div></div></main><footer id="footer" class="footer"><div class="footer-inner"><div class="copyright">&copy; <span itemprop="copyrightYear">2018</span> <span class="with-love"><i class="fa fa-user"></i> </span><span class="author" itemprop="copyrightHolder">Hello</span></div><div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div><span class="post-meta-divider">|</span><div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div></div></footer><div class="back-to-top"><i class="fa fa-arrow-up"></i></div></div><script type="text/javascript">"[object Function]"!==Object.prototype.toString.call(window.Promise)&&(window.Promise=null)</script><script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script><script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script><script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script><script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script><script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script></body></html><!-- rebuild by neat -->

@@ -1,0 +1,317 @@
+<!-- build time:Sat Oct 27 2018 21:00:16 GMT+0800 (CST) --><!DOCTYPE html><html class="theme-next muse use-motion"><head><meta name="generator" content="Hexo 3.8.0"><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"><meta name="theme-color" content="#222"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"><link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css"><link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css"><link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4"><link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222"><meta name="description" content="XA 分布式事务【推荐阅读】RocketMQ / MyCAT / Sharding-JDBC 所有源码分析文章列表RocketMQ / MyCAT / Sharding-JDBC 中文注释源码 GitHub 地址您对于源码的疑问每条留言都将得到认真回复。甚至不知道如何读源码也可以请教噢。新的源码解析文章实时收到通知。每周更新一篇左右。认真的源码交流微信群。1. 概述2. 主流程3. 查询操作4."><meta name="keywords" content="JAVA,面试"><meta property="og:type" content="article"><meta property="og:title" content="XA 分布式事务【推荐阅读】"><meta property="og:url" content="http://www.jfox.info/2017/xa分布式事务推荐阅读.html"><meta property="og:site_name" content="java面试"><meta property="og:description" content="XA 分布式事务【推荐阅读】RocketMQ / MyCAT / Sharding-JDBC 所有源码分析文章列表RocketMQ / MyCAT / Sharding-JDBC 中文注释源码 GitHub 地址您对于源码的疑问每条留言都将得到认真回复。甚至不知道如何读源码也可以请教噢。新的源码解析文章实时收到通知。每周更新一篇左右。认真的源码交流微信群。1. 概述2. 主流程3. 查询操作4."><meta property="og:locale" content="zh_CN"><meta property="og:image" content="http://www.jfox.info/2017/1455/4c6864f.png"><meta property="og:image" content="http://www.jfox.info/2017/1455/2ffed32.png"><meta property="og:image" content="http://www.jfox.info/2017/1455/f9ed01a.png"><meta property="og:image" content="http://www.jfox.info/2017/1455/a049745.png"><meta property="og:image" content="http://www.jfox.info/2017/1455/86b8f14.png"><meta property="og:updated_time" content="2018-10-27T12:29:39.176Z"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="XA 分布式事务【推荐阅读】"><meta name="twitter:description" content="XA 分布式事务【推荐阅读】RocketMQ / MyCAT / Sharding-JDBC 所有源码分析文章列表RocketMQ / MyCAT / Sharding-JDBC 中文注释源码 GitHub 地址您对于源码的疑问每条留言都将得到认真回复。甚至不知道如何读源码也可以请教噢。新的源码解析文章实时收到通知。每周更新一篇左右。认真的源码交流微信群。1. 概述2. 主流程3. 查询操作4."><meta name="twitter:image" content="http://www.jfox.info/2017/1455/4c6864f.png"><script type="text/javascript" id="hexo.configurations">var NexT=window.NexT||{},CONFIG={root:"/",scheme:"Muse",version:"5.1.4",sidebar:{position:"left",display:"post",offset:12,b2t:!1,scrollpercent:!1,onmobile:!1},fancybox:!0,tabs:!0,motion:{enable:!0,async:!1,transition:{post_block:"fadeIn",post_header:"slideDownIn",post_body:"slideDownIn",coll_header:"slideLeftIn",sidebar:"slideUpIn"}},duoshuo:{userId:"0",author:"Author"},algolia:{applicationID:"",apiKey:"",indexName:"",hits:{per_page:10},labels:{input_placeholder:"Search for Posts",hits_empty:"We didn't find any results for the search: ${query}",hits_stats:"${hits} results found in ${time} ms"}}}</script><link rel="canonical" href="http://www.jfox.info/2017/xa分布式事务推荐阅读.html"><title>XA 分布式事务【推荐阅读】 | java面试</title></head><body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN"><div class="container sidebar-position-left page-post-detail"><div class="headband"></div><header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="header-inner"><div class="site-brand-wrapper"><div class="site-meta"><div class="custom-logo-site-title"><a href="/" class="brand" rel="start"><span class="logo-line-before"><i></i></span> <span class="site-title">java面试</span> <span class="logo-line-after"><i></i></span></a></div><p class="site-subtitle"></p></div><div class="site-nav-toggle"><button><span class="btn-bar"></span> <span class="btn-bar"></span> <span class="btn-bar"></span></button></div></div><nav class="site-nav"><ul id="menu" class="menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i><br>Home</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i><br>Archives</a></li></ul></nav></div></header><main id="main" class="main"><div class="main-inner"><div class="content-wrap"><div id="content" class="content"><div id="posts" class="posts-expand"><article class="post post-type-normal" itemscope itemtype="http://schema.org/Article"><div class="post-block"><link itemprop="mainEntityOfPage" href="http://www.jfox.info/2017/xa分布式事务推荐阅读.html"><span hidden itemprop="author" itemscope itemtype="http://schema.org/Person"><meta itemprop="name" content="Hello"><meta itemprop="description" content=""><meta itemprop="image" content="/images/avatar.gif"></span><span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><meta itemprop="name" content="java面试"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">XA 分布式事务【推荐阅读】</h1><div class="post-meta"><span class="post-time"><span class="post-meta-item-icon"><i class="fa fa-calendar-o"></i> </span><span class="post-meta-item-text">Posted on</span> <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-01-01T23:59:15+08:00">2017-01-01</time></span></div></header><div class="post-body" itemprop="articleBody"><h1 id="XA-分布式事务【推荐阅读】"><a href="#XA-分布式事务【推荐阅读】" class="headerlink" title="XA 分布式事务【推荐阅读】"></a>XA 分布式事务【推荐阅读】</h1><ol><li>RocketMQ / MyCAT / Sharding-JDBC <strong>所有</strong>源码分析文章列表</li><li>RocketMQ / MyCAT / Sharding-JDBC <strong>中文注释源码 GitHub 地址</strong></li><li>您对于源码的疑问每条留言<strong>都</strong>将得到<strong>认真</strong>回复。<strong>甚至不知道如何读源码也可以请教噢</strong>。</li><li><strong>新的</strong>源码解析文章<strong>实时</strong>收到通知。<strong>每周更新一篇左右</strong>。</li><li><strong>认真的</strong>源码交流微信群。</li></ol><ul><li><a href="1. 概述">1. 概述</a></li><li><a href="2. 主流程">2. 主流程</a></li><li><a href="3. 查询操作">3. 查询操作</a></li><li><a href="4. 插入操作">4. 插入操作</a></li><li><a href="5. 彩蛋">5. 彩蛋</a></li></ul><h1 id="1-概述"><a href="#1-概述" class="headerlink" title="1. 概述"></a>1. 概述</h1><p>可能你在看到这个标题会小小的吃惊，MyCAT 能使用 MongoDB 做数据节点。是的，没错，确实可以。<br>吼吼吼，让我们开启这段神奇的“旅途”。</p><p>本文主要分成四部分：</p><ol><li>总体流程，让你有个整体的认识</li><li>查询操作</li><li>插入操作</li><li>彩蛋，😈彩蛋，🙂彩蛋</li></ol><p>建议你看过这两篇文章（<em>非必须</em>）：</p><ol><li><a href="https://www.jfox.info/go.php?url=http://www.yunai.me/MyCAT/single-db-single-table-insert/?self">《MyCAT 源码分析 —— 【单库单表】插入》</a></li><li><a href="https://www.jfox.info/go.php?url=http://www.yunai.me/MyCAT/single-db-single-table-select/?self">《MyCAT 源码分析 —— 【单库单表】查询》</a></li></ol><h1 id="2-主流程"><a href="#2-主流程" class="headerlink" title="2. 主流程"></a>2. 主流程</h1><p><img src="/2017/1455/4c6864f.png" alt=""></p><ol><li><code>MyCAT Server</code> 接收 <code>MySQL Client</code> 基于 <strong>MySQL协议</strong> 的请求，翻译 <strong>SQL</strong> 成 <strong>MongoDB操作</strong> 发送给 <code>MongoDB Server</code>。</li><li><code>MyCAT Server</code> 接收 <code>MongoDB Server</code> 返回的 <strong>MongoDB数据</strong>，翻译成 <code>MySQL数据结果</code> 返回给 <code>MySQL Client</code>。</li></ol><p>这样一看，MyCAT 连接 MongoDB 是不是少神奇一点列。</p><p><img src="/2017/1455/2ffed32.png" alt=""></p><p>Java数据库连接，（Java Database Connectivity，简称JDBC）是Java语言中用来规范客户端程序如何来访问数据库的应用程序接口，提供了诸如查询和更新数据库中数据的方法。JDBC也是Sun Microsystems的商标。JDBC是面向关系型数据库的。</p><p>MyCAT 使用 JDBC 规范，抽象了对 MongoDB 的访问。通过这样的方式，MyCAT 也抽象了 SequoiaDB 的访问。可能这样说法有些抽象，看个类图压压惊。</p><p><img src="/2017/1455/f9ed01a.png" alt=""></p><p>是不是熟悉的味道。<strong>不得不说 JDBC 规范的精妙。</strong></p><h1 id="3-查询操作"><a href="#3-查询操作" class="headerlink" title="3. 查询操作"></a>3. 查询操作</h1><pre><code>SELECT id, name FROM user WHERE name &gt; &apos;&apos; ORDER BY _id DESC;
+</code></pre><p><img src="/2017/1455/a049745.png" alt=""></p><p>看顺序图已经很方便的理解整体逻辑，我就不多废话啦。我们来看几个核心的代码逻辑。</p><p><strong>1、查询 MongoDB</strong></p><pre><code>// MongoSQLParser.java
+public MongoData query() throws MongoSQLException {
+   if (!(statement instanceof SQLSelectStatement)) {
+       //return null;
+       throw new IllegalArgumentException(&quot;not a query sql statement&quot;);
+   }
+   MongoData mongo = new MongoData();
+   DBCursor c = null;
+   SQLSelectStatement selectStmt = (SQLSelectStatement) statement;
+   SQLSelectQuery sqlSelectQuery = selectStmt.getSelect().getQuery();
+   int icount = 0;
+   if (sqlSelectQuery instanceof MySqlSelectQueryBlock) {
+       MySqlSelectQueryBlock mysqlSelectQuery = (MySqlSelectQueryBlock) selectStmt.getSelect().getQuery();
+
+       BasicDBObject fields = new BasicDBObject();
+
+       // 显示（返回）的字段
+       for (SQLSelectItem item : mysqlSelectQuery.getSelectList()) {
+           //System.out.println(item.toString());
+           if (!(item.getExpr() instanceof SQLAllColumnExpr)) {
+               if (item.getExpr() instanceof SQLAggregateExpr) {
+                   SQLAggregateExpr expr = (SQLAggregateExpr) item.getExpr();
+                   if (expr.getMethodName().equals(&quot;COUNT&quot;)) { // TODO 待读：count（*）
+                       icount = 1;
+                       mongo.setField(getExprFieldName(expr), Types.BIGINT);
+                   }
+                   fields.put(getExprFieldName(expr), 1);
+               } else {
+                   fields.put(getFieldName(item), 1);
+               }
+           }
+
+       }
+
+       // 表名
+       SQLTableSource table = mysqlSelectQuery.getFrom();
+       DBCollection coll = this._db.getCollection(table.toString());
+       mongo.setTable(table.toString());
+
+       // WHERE
+       SQLExpr expr = mysqlSelectQuery.getWhere();
+       DBObject query = parserWhere(expr);
+
+       // GROUP BY
+       SQLSelectGroupByClause groupby = mysqlSelectQuery.getGroupBy();
+       BasicDBObject gbkey = new BasicDBObject();
+       if (groupby != null) {
+           for (SQLExpr gbexpr : groupby.getItems()) {
+               if (gbexpr instanceof SQLIdentifierExpr) {
+                   String name = ((SQLIdentifierExpr) gbexpr).getName();
+                   gbkey.put(name, Integer.valueOf(1));
+               }
+           }
+           icount = 2;
+       }
+
+       // SKIP / LIMIT
+       int limitoff = 0;
+       int limitnum = 0;
+       if (mysqlSelectQuery.getLimit() != null) {
+           limitoff = getSQLExprToInt(mysqlSelectQuery.getLimit().getOffset());
+           limitnum = getSQLExprToInt(mysqlSelectQuery.getLimit().getRowCount());
+       }
+       if (icount == 1) { // COUNT（*）
+           mongo.setCount(coll.count(query));
+       } else if (icount == 2) { // MapReduce
+           BasicDBObject initial = new BasicDBObject();
+           initial.put(&quot;num&quot;, 0);
+           String reduce = &quot;function (obj, prev) { &quot; + &quot;  prev.num++}&quot;;
+           mongo.setGrouyBy(coll.group(gbkey, query, initial, reduce));
+       } else {
+           if ((limitoff &gt; 0) || (limitnum &gt; 0)) {
+               c = coll.find(query, fields).skip(limitoff).limit(limitnum);
+           } else {
+               c = coll.find(query, fields);
+           }
+
+           // order by
+           SQLOrderBy orderby = mysqlSelectQuery.getOrderBy();
+           if (orderby != null) {
+               BasicDBObject order = new BasicDBObject();
+               for (int i = 0; i &lt; orderby.getItems().size(); i++) {
+                   SQLSelectOrderByItem orderitem = orderby.getItems().get(i);
+                   order.put(orderitem.getExpr().toString(), getSQLExprToAsc(orderitem.getType()));
+               }
+               c.sort(order);
+               // System.out.println(order);
+           }
+       }
+       mongo.setCursor(c);
+   }
+   return mongo;
+}
+</code></pre><p><strong>2、查询条件</strong></p><pre><code>// MongoSQLParser.java
+private void parserWhere(SQLExpr aexpr, BasicDBObject o) {
+   if (aexpr instanceof SQLBinaryOpExpr) {
+       SQLBinaryOpExpr expr = (SQLBinaryOpExpr) aexpr;
+       SQLExpr exprL = expr.getLeft();
+       if (!(exprL instanceof SQLBinaryOpExpr)) {
+           if (expr.getOperator().getName().equals(&quot;=&quot;)) {
+               o.put(exprL.toString(), getExpValue(expr.getRight()));
+           } else {
+               String op = &quot;&quot;;
+               if (expr.getOperator().getName().equals(&quot;&lt;&quot;)) {
+                   op = &quot;$lt&quot;;
+               } else if (expr.getOperator().getName().equals(&quot;&lt;=&quot;)) {
+                   op = &quot;$lte&quot;;
+               } else if (expr.getOperator().getName().equals(&quot;&gt;&quot;)) {
+                   op = &quot;$gt&quot;;
+               } else if (expr.getOperator().getName().equals(&quot;&gt;=&quot;)) {
+                   op = &quot;$gte&quot;;
+               } else if (expr.getOperator().getName().equals(&quot;!=&quot;)) {
+                   op = &quot;$ne&quot;;
+               } else if (expr.getOperator().getName().equals(&quot;&lt;&gt;&quot;)) {
+                   op = &quot;$ne&quot;;
+               }
+               parserDBObject(o, exprL.toString(), op, getExpValue(expr.getRight()));
+           }
+       } else {
+           if (expr.getOperator().getName().equals(&quot;AND&quot;)) {
+               parserWhere(exprL, o);
+               parserWhere(expr.getRight(), o);
+           } else if (expr.getOperator().getName().equals(&quot;OR&quot;)) {
+               orWhere(exprL, expr.getRight(), o);
+           } else {
+               throw new RuntimeException(&quot;Can&apos;t identify the operation of  of where&quot;);
+           }
+       }
+   }
+}
+
+private void orWhere(SQLExpr exprL, SQLExpr exprR, BasicDBObject ob) {
+   BasicDBObject xo = new BasicDBObject();
+   BasicDBObject yo = new BasicDBObject();
+   parserWhere(exprL, xo);
+   parserWhere(exprR, yo);
+   ob.put(&quot;$or&quot;, new Object[]{xo, yo});
+}
+</code></pre><p><strong>3、解析 MongoDB 数据</strong></p><pre><code>// MongoResultSet.java
+public MongoResultSet(MongoData mongo, String schema) throws SQLException {
+   this._cursor = mongo.getCursor();
+   this._schema = schema;
+   this._table = mongo.getTable();
+   this.isSum = mongo.getCount() &gt; 0;
+   this._sum = mongo.getCount();
+   this.isGroupBy = mongo.getType();
+
+   if (this.isGroupBy) {
+       dblist = mongo.getGrouyBys();
+       this.isSum = true;
+   }
+   if (this._cursor != null) {
+       select = _cursor.getKeysWanted().keySet().toArray(new String[0]);
+       // 解析 fields
+       if (this._cursor.hasNext()) {
+           _cur = _cursor.next();
+           if (_cur != null) {
+               if (select.length == 0) {
+                   SetFields(_cur.keySet());
+               }
+               _row = 1;
+           }
+       }
+       // 设置 fields 类型
+       if (select.length == 0) {
+           select = new String[]{&quot;_id&quot;};
+           SetFieldType(true);
+       } else {
+           SetFieldType(false);
+       }
+   } else {
+       SetFields(mongo.getFields().keySet());//new String[]{&quot;COUNT(*)&quot;};
+       SetFieldType(mongo.getFields());
+   }
+}
+</code></pre><ul><li>当使用 <code>SELECT *</code> 查询字段时，fields 使用第一条数据返回的 fields。即使，后面的数据有其他 fields，也不返回。</li></ul><p><strong>4、返回数据给 MySQL Client</strong></p><pre><code>// JDBCConnection.java
+private void ouputResultSet(ServerConnection sc, String sql)
+       throws SQLException {
+   ResultSet rs = null;
+   Statement stmt = null;
+
+   try {
+       stmt = con.createStatement();
+       rs = stmt.executeQuery(sql);
+
+       // header
+       List&lt;FieldPacket&gt; fieldPks = new LinkedList&lt;&gt;();
+       ResultSetUtil.resultSetToFieldPacket(sc.getCharset(), fieldPks, rs, this.isSpark);
+       int colunmCount = fieldPks.size();
+       ByteBuffer byteBuf = sc.allocate();
+       ResultSetHeaderPacket headerPkg = new ResultSetHeaderPacket();
+       headerPkg.fieldCount = fieldPks.size();
+       headerPkg.packetId = ++packetId;
+       byteBuf = headerPkg.write(byteBuf, sc, true);
+       byteBuf.flip();
+       byte[] header = new byte[byteBuf.limit()];
+       byteBuf.get(header);
+       byteBuf.clear();
+       List&lt;byte[]&gt; fields = new ArrayList&lt;byte[]&gt;(fieldPks.size());
+       for (FieldPacket curField : fieldPks) {
+           curField.packetId = ++packetId;
+           byteBuf = curField.write(byteBuf, sc, false);
+           byteBuf.flip();
+           byte[] field = new byte[byteBuf.limit()];
+           byteBuf.get(field);
+           byteBuf.clear();
+           fields.add(field);
+       }
+       // header eof
+       EOFPacket eofPckg = new EOFPacket();
+       eofPckg.packetId = ++packetId;
+       byteBuf = eofPckg.write(byteBuf, sc, false);
+       byteBuf.flip();
+       byte[] eof = new byte[byteBuf.limit()];
+       byteBuf.get(eof);
+       byteBuf.clear();
+       this.respHandler.fieldEofResponse(header, fields, eof, this);
+
+       // row
+       while (rs.next()) {
+           RowDataPacket curRow = new RowDataPacket(colunmCount);
+           for (int i = 0; i &lt; colunmCount; i++) {
+               int j = i + 1;
+               if (MysqlDefs.isBianry((byte) fieldPks.get(i).type)) {
+                   curRow.add(rs.getBytes(j));
+               } else if (fieldPks.get(i).type == MysqlDefs.FIELD_TYPE_DECIMAL ||
+                       fieldPks.get(i).type == (MysqlDefs.FIELD_TYPE_NEW_DECIMAL - 256)) { // field type is unsigned byte
+                   // ensure that do not use scientific notation format
+                   BigDecimal val = rs.getBigDecimal(j);
+                   curRow.add(StringUtil.encode(val != null ? val.toPlainString() : null, sc.getCharset()));
+               } else {
+                   curRow.add(StringUtil.encode(rs.getString(j), sc.getCharset()));
+               }
+           }
+           curRow.packetId = ++packetId;
+           byteBuf = curRow.write(byteBuf, sc, false);
+           byteBuf.flip();
+           byte[] row = new byte[byteBuf.limit()];
+           byteBuf.get(row);
+           byteBuf.clear();
+           this.respHandler.rowResponse(row, this);
+       }
+       fieldPks.clear();
+       // row eof
+       eofPckg = new EOFPacket();
+       eofPckg.packetId = ++packetId;
+       byteBuf = eofPckg.write(byteBuf, sc, false);
+       byteBuf.flip();
+       eof = new byte[byteBuf.limit()];
+       byteBuf.get(eof);
+       sc.recycle(byteBuf);
+       this.respHandler.rowEofResponse(eof, this);
+   } finally {
+       if (rs != null) {
+           try {
+               rs.close();
+           } catch (SQLException e) {
+           }
+       }
+       if (stmt != null) {
+           try {
+               stmt.close();
+           } catch (SQLException e) {
+           }
+       }
+   }
+}
+
+// MongoResultSet.java
+@Override
+public String getString(String columnLabel) throws SQLException {
+   Object x = getObject(columnLabel);
+   if (x == null) {
+       return null;
+   }
+   return x.toString();
+}
+</code></pre><ul><li><p>当返回字段值是 Object 时，返回该对象.toString()。例如：</p><p>mysql&gt; select * from user order by _id asc;<br>+————————–+——+——————————-+<br>| _id | name | profile |<br>+————————–+——+——————————-+<br>| 1 | 123 | { “age” : 1 , “height” : 100} |</p></li></ul><h1 id="4-插入操作"><a href="#4-插入操作" class="headerlink" title="4. 插入操作"></a>4. 插入操作</h1><p><img src="/2017/1455/86b8f14.png" alt=""></p><pre><code>// MongoSQLParser.java
+public int executeUpdate() throws MongoSQLException {
+   if (statement instanceof SQLInsertStatement) {
+       return InsertData((SQLInsertStatement) statement);
+   }
+   if (statement instanceof SQLUpdateStatement) {
+       return UpData((SQLUpdateStatement) statement);
+   }
+   if (statement instanceof SQLDropTableStatement) {
+       return dropTable((SQLDropTableStatement) statement);
+   }
+   if (statement instanceof SQLDeleteStatement) {
+       return DeleteDate((SQLDeleteStatement) statement);
+   }
+   if (statement instanceof SQLCreateTableStatement) {
+       return 1;
+   }
+   return 1;
+}
+
+private int InsertData(SQLInsertStatement state) {
+   if (state.getValues().getValues().size() == 0) {
+       throw new RuntimeException(&quot;number of  columns error&quot;);
+   }
+   if (state.getValues().getValues().size() != state.getColumns().size()) {
+       throw new RuntimeException(&quot;number of values and columns have to match&quot;);
+   }
+   SQLTableSource table = state.getTableSource();
+   BasicDBObject o = new BasicDBObject();
+   int i = 0;
+   for (SQLExpr col : state.getColumns()) {
+       o.put(getFieldName2(col), getExpValue(state.getValues().getValues().get(i)));
+       i++;
+   }
+   DBCollection coll = this._db.getCollection(table.toString());
+   coll.insert(o);
+   return 1;
+}
+</code></pre><h1 id="5-彩蛋"><a href="#5-彩蛋" class="headerlink" title="5. 彩蛋"></a>5. 彩蛋</h1></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="4142158067"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="5618891265"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><footer class="post-footer"><div class="post-nav"><div class="post-nav-next post-nav-item"><a href="/2017/java基础10java中throw和throws的区别.html" rel="next" title="【Java基础】10、Java中throw和throws的区别"><i class="fa fa-chevron-left"></i> 【Java基础】10、Java中throw和throws的区别</a></div><span class="post-nav-divider"></span><div class="post-nav-prev post-nav-item"><a href="/2017/华为软件开发云对比jenkinsjavaweb项目持续部署方式.html" rel="prev" title="华为软件开发云对比Jenkins-JavaWeb项目持续部署方式">华为软件开发云对比Jenkins-JavaWeb项目持续部署方式 <i class="fa fa-chevron-right"></i></a></div></div></footer></div></article><div class="post-spread"></div></div></div></div><div class="sidebar-toggle"><div class="sidebar-toggle-line-wrap"><span class="sidebar-toggle-line sidebar-toggle-line-first"></span> <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span> <span class="sidebar-toggle-line sidebar-toggle-line-last"></span></div></div><aside id="sidebar" class="sidebar"><div class="sidebar-inner"><ul class="sidebar-nav motion-element"><li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">Table of Contents</li><li class="sidebar-nav-overview" data-target="site-overview-wrap">Overview</li></ul><section class="site-overview-wrap sidebar-panel"><div class="site-overview"><div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person"><p class="site-author-name" itemprop="name">Hello</p><p class="site-description motion-element" itemprop="description"></p></div><nav class="site-state motion-element"><div class="site-state-item site-state-posts"><a href="/archives/"><span class="site-state-item-count">1358</span> <span class="site-state-item-name">posts</span></a></div></nav></div></section><section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active"><div class="post-toc"><div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#XA-分布式事务【推荐阅读】"><span class="nav-number">1.</span> <span class="nav-text">XA 分布式事务【推荐阅读】</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#1-概述"><span class="nav-number">2.</span> <span class="nav-text">1. 概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-主流程"><span class="nav-number">3.</span> <span class="nav-text">2. 主流程</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-查询操作"><span class="nav-number">4.</span> <span class="nav-text">3. 查询操作</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-插入操作"><span class="nav-number">5.</span> <span class="nav-text">4. 插入操作</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-彩蛋"><span class="nav-number">6.</span> <span class="nav-text">5. 彩蛋</span></a></li></ol></div></div></section></div></aside><div class="sfix"><div class="fixedme"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460" data-ad-format="auto"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script></div></div></main><footer id="footer" class="footer"><div class="footer-inner"><div class="copyright">&copy; <span itemprop="copyrightYear">2018</span> <span class="with-love"><i class="fa fa-user"></i> </span><span class="author" itemprop="copyrightHolder">Hello</span></div><div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div><span class="post-meta-divider">|</span><div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div></div></footer><div class="back-to-top"><i class="fa fa-arrow-up"></i></div></div><script type="text/javascript">"[object Function]"!==Object.prototype.toString.call(window.Promise)&&(window.Promise=null)</script><script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script><script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script><script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script><script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script><script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script></body></html><!-- rebuild by neat -->

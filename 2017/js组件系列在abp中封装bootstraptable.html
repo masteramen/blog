@@ -1,0 +1,486 @@
+<!-- build time:Sat Oct 27 2018 21:00:17 GMT+0800 (CST) --><!DOCTYPE html><html class="theme-next muse use-motion"><head><meta name="generator" content="Hexo 3.8.0"><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"><meta name="theme-color" content="#222"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"><link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css"><link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css"><link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4"><link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222"><meta name="description" content="JS组件系列——在ABP中封装BootstrapTable前言：关于ABP框架，博主关注差不多有两年了吧，一直迟迟没有尝试。一方面博主觉得像这种复杂的开发框架肯定有它的过人之处，系统的稳定性和健壮性比一般的开源框架肯定强很多，可是另一方面每每想到它繁琐的封装和复杂的开发流程就望而却步，就这样迟迟没有行动。最近在项目里面用到了ABP框架，没办法，只有硬着头皮上了。经过这一段时间的熟悉，算是对这个框架"><meta name="keywords" content="JAVA,面试"><meta property="og:type" content="article"><meta property="og:title" content="JS组件系列——在ABP中封装BootstrapTable"><meta property="og:url" content="http://www.jfox.info/2017/js组件系列在abp中封装bootstraptable.html"><meta property="og:site_name" content="java面试"><meta property="og:description" content="JS组件系列——在ABP中封装BootstrapTable前言：关于ABP框架，博主关注差不多有两年了吧，一直迟迟没有尝试。一方面博主觉得像这种复杂的开发框架肯定有它的过人之处，系统的稳定性和健壮性比一般的开源框架肯定强很多，可是另一方面每每想到它繁琐的封装和复杂的开发流程就望而却步，就这样迟迟没有行动。最近在项目里面用到了ABP框架，没办法，只有硬着头皮上了。经过这一段时间的熟悉，算是对这个框架"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="http://www.jfox.info/2017/1435/faa5b0b.png"><meta property="og:image" content="http://www.jfox.info/2017/1435/ef8f4fc.png"><meta property="og:image" content="http://www.jfox.info/2017/1435/16b5fb8.png"><meta property="og:image" content="http://www.jfox.info/2017/1435/da05dae.png"><meta property="og:image" content="http://www.jfox.info/2017/1435/fe7b4e6.png"><meta property="og:image" content="http://www.jfox.info/2017/1435/f33597b.png"><meta property="og:image" content="http://www.jfox.info/2017/1435/bbccca9.png"><meta property="og:image" content="http://www.jfox.info/2017/1435/bb04a72.png"><meta property="og:image" content="http://www.jfox.info/2017/1435/47cb6ff.png"><meta property="og:image" content="http://www.jfox.info/2017/1435/b5ca43f.png"><meta property="og:image" content="http://www.jfox.info/2017/1435/63be717.png"><meta property="og:image" content="http://www.jfox.info/2017/1435/650372d.gif"><meta property="og:image" content="http://www.jfox.info/wp-content/uploads/2017/07/15015092081.gif"><meta property="og:image" content="http://www.jfox.info/2017/1435/5f3e1ce.png"><meta property="og:updated_time" content="2018-10-27T12:29:37.367Z"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="JS组件系列——在ABP中封装BootstrapTable"><meta name="twitter:description" content="JS组件系列——在ABP中封装BootstrapTable前言：关于ABP框架，博主关注差不多有两年了吧，一直迟迟没有尝试。一方面博主觉得像这种复杂的开发框架肯定有它的过人之处，系统的稳定性和健壮性比一般的开源框架肯定强很多，可是另一方面每每想到它繁琐的封装和复杂的开发流程就望而却步，就这样迟迟没有行动。最近在项目里面用到了ABP框架，没办法，只有硬着头皮上了。经过这一段时间的熟悉，算是对这个框架"><meta name="twitter:image" content="http://www.jfox.info/2017/1435/faa5b0b.png"><script type="text/javascript" id="hexo.configurations">var NexT=window.NexT||{},CONFIG={root:"/",scheme:"Muse",version:"5.1.4",sidebar:{position:"left",display:"post",offset:12,b2t:!1,scrollpercent:!1,onmobile:!1},fancybox:!0,tabs:!0,motion:{enable:!0,async:!1,transition:{post_block:"fadeIn",post_header:"slideDownIn",post_body:"slideDownIn",coll_header:"slideLeftIn",sidebar:"slideUpIn"}},duoshuo:{userId:"0",author:"Author"},algolia:{applicationID:"",apiKey:"",indexName:"",hits:{per_page:10},labels:{input_placeholder:"Search for Posts",hits_empty:"We didn't find any results for the search: ${query}",hits_stats:"${hits} results found in ${time} ms"}}}</script><link rel="canonical" href="http://www.jfox.info/2017/js组件系列在abp中封装bootstraptable.html"><title>JS组件系列——在ABP中封装BootstrapTable | java面试</title></head><body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN"><div class="container sidebar-position-left page-post-detail"><div class="headband"></div><header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="header-inner"><div class="site-brand-wrapper"><div class="site-meta"><div class="custom-logo-site-title"><a href="/" class="brand" rel="start"><span class="logo-line-before"><i></i></span> <span class="site-title">java面试</span> <span class="logo-line-after"><i></i></span></a></div><p class="site-subtitle"></p></div><div class="site-nav-toggle"><button><span class="btn-bar"></span> <span class="btn-bar"></span> <span class="btn-bar"></span></button></div></div><nav class="site-nav"><ul id="menu" class="menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i><br>Home</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i><br>Archives</a></li></ul></nav></div></header><main id="main" class="main"><div class="main-inner"><div class="content-wrap"><div id="content" class="content"><div id="posts" class="posts-expand"><article class="post post-type-normal" itemscope itemtype="http://schema.org/Article"><div class="post-block"><link itemprop="mainEntityOfPage" href="http://www.jfox.info/2017/js组件系列在abp中封装bootstraptable.html"><span hidden itemprop="author" itemscope itemtype="http://schema.org/Person"><meta itemprop="name" content="Hello"><meta itemprop="description" content=""><meta itemprop="image" content="/images/avatar.gif"></span><span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><meta itemprop="name" content="java面试"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">JS组件系列——在ABP中封装BootstrapTable</h1><div class="post-meta"><span class="post-time"><span class="post-meta-item-icon"><i class="fa fa-calendar-o"></i> </span><span class="post-meta-item-text">Posted on</span> <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-01-01T23:58:55+08:00">2017-01-01</time></span></div></header><div class="post-body" itemprop="articleBody"><h1 id="JS组件系列——在ABP中封装BootstrapTable"><a href="#JS组件系列——在ABP中封装BootstrapTable" class="headerlink" title="JS组件系列——在ABP中封装BootstrapTable"></a>JS组件系列——在ABP中封装BootstrapTable</h1><p>前言：关于ABP框架，博主关注差不多有两年了吧，一直迟迟没有尝试。一方面博主觉得像这种复杂的开发框架肯定有它的过人之处，系统的稳定性和健壮性比一般的开源框架肯定强很多，可是另一方面每每想到它繁琐的封装和复杂的开发流程就望而却步，就这样迟迟没有行动。最近在项目里面用到了ABP框架，没办法，只有硬着头皮上了。经过这一段时间的熟悉，算是对这个框架有了一个大概的了解。今天来分享下如何在ABP框架的模式里面使用bootstrapTable组件。</p><p>本文原创地址：<a href="https://www.jfox.info/go.php?url=http://www.cnblogs.com/landeanfen/p/7261651.html">http://www.cnblogs.com/landeanfen/p/7261651.html</a></p><h1 id="一、关于ABP"><a href="#一、关于ABP" class="headerlink" title="一、关于ABP"></a>一、关于ABP</h1><p>ABP是“ASP.NET Boilerplate Project (ASP.NET样板项目)”的简称，它是一个成熟的开源框架，基于DDD+Repository模式，自带Zero权限和认证模块，避免了从零开始搭建框架的烦恼。关于ABP的框架优势就此打住，因为这样说下去要说三天三夜，脱离文本主题。</p><p>关于ABP的入门，博主不想说太多，园子里面tkb至简和阳光铭睿有很多入门级的文章，有兴趣的可以了解下，还是给出它的官网和开源地址。</p><p><strong>ABP官方网站</strong>：<a href="https://www.jfox.info/go.php?url=http://www.aspnetboilerplate.com/">http://www.aspnetboilerplate.com</a></p><p><strong>ABP开源项目</strong>：<a href="https://www.jfox.info/go.php?url=https://github.com/aspnetboilerplate">https://github.com/aspnetboilerplate</a></p><p>PS：如果你不愿意去看它的源码，可以直接查看ABP官网上面的演示地址：<a href="https://www.jfox.info/go.php?url=https://aspnetzero.com/?ref=abptmplpage">https://aspnetzero.com/?ref=abptmplpage</a></p><p><img src="/2017/1435/faa5b0b.png" alt=""></p><p>点击CREATE MY DEMO按钮，系统会自动为你生成演示地址</p><p><img src="/2017/1435/ef8f4fc.png" alt=""></p><p>进入对应的Demo URL</p><p><img src="/2017/1435/16b5fb8.png" alt=""></p><p>使用演示的用户名和密码登陆进去</p><p><img src="/2017/1435/da05dae.png" alt=""></p><p>可以看到Zero模块的实现效果。</p><h1 id="二、jTable在ABP中的运用"><a href="#二、jTable在ABP中的运用" class="headerlink" title="二、jTable在ABP中的运用"></a>二、jTable在ABP中的运用</h1><p>如果你下载ABP的源码，并且选择的是混合开发模式（ABP提供了两种开发模式，一种是基于MVVM的Angular.js的模式；另一种就是MVC+jQuery的混合开发模式），如下图：</p><p><img src="/2017/1435/fe7b4e6.png" alt=""></p><p>当你Down下来源码之后你就会发现，ABP的源码里面的UI部分的表格都是使用jTable去实现的。为什么会用jTable？原因很简单，jTable是ABP的作者kalkan写的一款开源插件，自己写的肯定用自己的东西喽。下面jTable的效果来一发。</p><p><img src="/2017/1435/f33597b.png" alt=""></p><p><img src="/2017/1435/bbccca9.png" alt=""></p><p>来一个jtable的父子表：</p><p><img src="/2017/1435/bb04a72.png" alt=""></p><p>如果是不带父子表的简单表格，其实jTable的效果其实还行，可是加上一些复杂的功能之后，那一片片蓝色的区域不忍直视，并且jTable的api还有待完善，很多需要的功能都需要自己去实现，于是就接到了将所有的表格组件换成BootstrapTable的需求，才有了今天的主题：在ABP中封装BootstrapTable。</p><h1 id="三、Bootstrap-Table在ABP中的封装"><a href="#三、Bootstrap-Table在ABP中的封装" class="headerlink" title="三、Bootstrap Table在ABP中的封装"></a>三、Bootstrap Table在ABP中的封装</h1><p>接到需求，博主各种百度、各种谷歌，都找不到Bootstrap Table组件在ABP中的封装，有的只是在ABP的项目里面简单的用传统的方式去初始化组件，这并不是博主想要的。说到这里不得不说一下，如果你使用ABP开发的过程中遇到一些难题，你会发现很难从百度里面搜索到相关答案，谷歌里面有时能找到，但大部分都是英文社区，所以如果你英文较弱，在查找资料上面会很吃亏，有时一个简单的配置问题需要折腾很久。</p><h2 id="1、jTable在ABP项目里面的初始化"><a href="#1、jTable在ABP项目里面的初始化" class="headerlink" title="1、jTable在ABP项目里面的初始化"></a>1、jTable在ABP项目里面的初始化</h2><p>首先来看看jTable在一般的ABP项目里面是如何初始化的。比如我们在Application里面有一个如下的接口和实现</p><p><img src="/2017/1435/47cb6ff.png" alt=""></p><pre><code>publicinterface IRequisitionAppService : IApplicationService
+    {
+        Task&lt;PagedResultDto&lt;RequisitionListDto&gt;&gt; GetRequisitionListAsync(GetRequisitionListInput input);
+    }
+
+　　[AbpAuthorize(OrderAppPermissions.Pages_Order_Requisition)]
+    publicclass RequisitionAppService : AbpZeroTemplateAppServiceBase, IRequisitionAppService
+    {
+        privatereadonly IRepository&lt;Requisition, long&gt; _requisitionRepository;
+        public RequisitionAppService(IRepository&lt;Requisition, long&gt; requisitionRepository)
+        {
+            _requisitionRepository = requisitionRepository;
+        }
+
+　　　　 publicasync Task&lt;PagedResultDto&lt;RequisitionListDto&gt;&gt; GetRequisitionListAsync(GetRequisitionListInput input)
+        {
+            var query = _requisitionRepository.GetAll()
+                                                    .WhereIf(input.Status != null, w =&gt; (int)w.Status == input.Status.Value)
+                                                    .WhereIf(
+                                                        !input.Filter.IsNullOrWhiteSpace(),
+                                                        u =&gt;
+                                                            u.No.Contains(input.Filter) ||
+                                                            u.Remark.Contains(input.Filter)
+                                                    );
+
+            var count = await query.CountAsync();
+
+            var list = await query
+            .OrderBy(input.Sorting)
+            .PageBy(input)
+            .ToListAsync();
+
+            var dtos = list.MapTo&lt;List&lt;RequisitionListDto&gt;&gt;();
+            returnnew PagedResultDto&lt;RequisitionListDto&gt;(
+                count,
+                dtos
+                );
+        }
+
+
+    }
+</code></pre><p>然后我们前端有一个页面的列表数据从这个接口GetRequisitionListAsync()获取</p><pre><code>&lt;div class=&quot;portlet-body&quot;&gt;&lt;div id=&quot;dataListTable&quot;&gt;&lt;/div&gt;&lt;/div&gt;
+
+(function () {
+    $(function () {
+        var _$dataListTable = $(&apos;#dataListTable&apos;);
+        var _service = abp.services.app.requisition;
+        _$dataListTable.jtable({
+            paging: true,
+            sorting: true,
+            selecting: true,
+            actions: {
+                listAction: {
+                    method: _service.getRequisitionListAsync
+                }
+            },
+            fields: {
+                id: {
+                    key: true,
+                    list: false
+                },
+                details: {
+                    width: &apos;1%&apos;,
+                    sorting: false,
+                    edit: false,
+                    create: false,
+                    listClass: &apos;child-opener-image-column&apos;,
+                    display: function (detailData) {
+                        var $img = $(&apos;&lt;img class=&quot;child-opener-image&quot; src=&quot;/Common/Images/list_metro.png&quot; title=&quot;申购明细&quot; /&gt;&apos;);
+                        $img.click(function () {
+                            _$dataListTable.jtable(&apos;openChildTable&apos;,
+                                $img.closest(&apos;tr&apos;),
+                                {
+                                    title: &quot;申购明细&quot;,
+                                    showCloseButton: true,
+                                    actions: {
+                                        listAction: {
+                                            method: _service.getRequisitionDetailListByIdAsync
+                                        }
+                                    },
+                                    fields: {
+                                        materialClassParentNameAndName: {
+                                            title: app.localize(&apos;MaterialClassName&apos;),
+                                            width: &apos;8%&apos;
+                                        },
+                                        materialInfoTypeNo: {
+                                            title: app.localize(&apos;TypeNo&apos;),
+                                            width: &apos;5%&apos;
+                                        },
+                                        materialInfoLengthDisplayName: {
+                                            title: app.localize(&apos;LengthDisplayName&apos;),
+                                            width: &apos;3%&apos;
+                                        },
+                                        materialInfoWeight: {
+                                            title: app.localize(&apos;Weight&apos;),
+                                            width: &apos;5%&apos;,
+                                            display: function (data) {
+                                                return data.record.materialInfoMinWeight + &apos;-&apos; + data.record.materialInfoMaxWeight;
+                                            }
+                                        },
+                                        materialInfoMouldTypeDisplayName: {
+                                            title: app.localize(&apos;MouldTypeDisplayName&apos;),
+                                            width: &apos;6%&apos;
+                                        },
+                                        materialInfoProductionRemark: {
+                                            title: app.localize(&apos;ProductionRemark&apos;),
+                                            width: &apos;8%&apos;
+                                        },
+                                        materialInfoBundleCountDisplayName: {
+                                            title: app.localize(&apos;BundleCountDisplayName&apos;),
+                                            width: &apos;3%&apos;
+                                        },
+                                        materialInfoUnitDisplayName: {
+                                            title: app.localize(&apos;UnitDisplayName&apos;),
+                                            width: &apos;3%&apos;
+                                        },
+                                        materialInfoProcessCost: {
+                                            title: app.localize(&apos;ProcessCost&apos;),
+                                            width: &apos;6%&apos;
+                                        },
+                                        materialInfoProductRemark: {
+                                            title: app.localize(&apos;ProductRemark&apos;),
+                                            width: &apos;6%&apos;
+                                        },
+                                        materialInfoRemark: {
+                                            title: app.localize(&apos;Remark&apos;),
+                                            width: &apos;6%&apos;
+                                        },
+                                        count: {
+                                            title: app.localize(&apos;申购数量&apos;),
+                                            width: &apos;6%&apos;
+                                        },
+                                        remark: {
+                                            title: app.localize(&apos;申购备注&apos;),
+                                            width: &apos;6%&apos;
+                                        }
+                                    }
+                                }, function (data) {
+                                    data.childTable.jtable(&apos;load&apos;,
+                                        { requisitionId: detailData.record.id }
+                                    );
+                                });
+                        });
+                        return $img;
+                    }
+                },
+                no: {
+                    title: &quot;申购单号&quot;,
+                    width: &apos;20%&apos;
+                },
+                creatorUserName: {
+                    title: &quot;申购人&quot;,
+                    width: &apos;20%&apos;
+                },
+                creationTime: {
+                    title: &quot;申购时间&quot;,
+                    width: &apos;10%&apos;,
+                    display: function (data) {
+                        return moment(data.record.creationTime).format(&apos;YYYY-MM-DD HH:mm:ss&apos;);
+                    }
+                },
+                sumCount: {
+                    title: &quot;总数&quot;,
+                    width: &apos;10%&apos;
+                },
+                status: {
+                    title: &quot;状态&quot;,
+                    width: &apos;20%&apos;,
+                    display: function (data) {
+                        if (data.record.status === app.order.requisitionAuditStatus.audit)
+                            return &apos;&lt;span class=&quot;label label-info&quot;&gt;&apos; + app.localize(&apos;Autdit&apos;) + &apos;&lt;/span&gt;&apos;
+                        elseif (data.record.status === app.order.requisitionAuditStatus.auditPass)
+                            return &apos;&lt;span class=&quot;label label-success&quot;&gt;&apos; + app.localize(&apos;Pass&apos;) + &apos;&lt;/span&gt;&apos;
+                        elseif (data.record.status === app.order.requisitionAuditStatus.auditReject)
+                            return &apos;&lt;span class=&quot;label label-danger&quot;&gt;&apos; + app.localize(&apos;Reject&apos;) + &apos;&lt;/span&gt;&apos;
+                        elseif (data.record.status === app.order.requisitionAuditStatus.delete)
+                            return &apos;&lt;span class=&quot;label label-danger&quot;&gt;&apos; + app.localize(&apos;Abandon&apos;) + &apos;&lt;/span&gt;&apos;
+                        elsereturn &apos;&lt;span class=&quot;label label-danger&quot;&gt;&apos; + app.localize(&apos;Unknown&apos;) + &apos;&lt;/span&gt;&apos;
+                    }
+                }
+            }
+
+        });
+    });
+})();
+</code></pre><p>得到如下效果：</p><p><img src="/2017/1435/b5ca43f.png" alt=""></p><p>代码释疑：</p><p>（1） var _service = abp.services.app.requisition; 这一句声明当前页面需要使用哪个服务。</p><p>（2） _service.getRequisitionListAsync 这一句对应的是服务调用的方法，你会发现在后台方法名是GetRequisitionListAsync()，而在js里面却变成了getRequisitionListAsync()，我们暂且称之为“潜规则”。</p><h2 id="2、bootstrapTable在ABP项目里面的封装"><a href="#2、bootstrapTable在ABP项目里面的封装" class="headerlink" title="2、bootstrapTable在ABP项目里面的封装"></a>2、bootstrapTable在ABP项目里面的封装</h2><p>通过上述代码你会发现，ABP在application层里面定义的方法，最终会生成某一些js对应的function，这里难点来了。我们找遍了bootstrapTable组件的api，都没有通过某一个function去获取数据的啊。这可如何是好？为这个问题，博主折腾了两天。最开始博主想，function最终还不是要换成http请求的，我们只要拿到http请求的url，然后将function转换为url不就行了么：</p><p><img src="/2017/1435/63be717.png" alt=""></p><p>我们使用bootstrapTable组件初始化的时候声明 {url:’/api/services/app/requisition/GetRequisitionListAsync’} 这样不就行了么？呵呵，经过测试，这样确实能正确取到数据。但是不够理想，因为这前面的前缀是ABP给我们生成的，是否会变化我们尚且不说，给每一个url加上这么一长串着实看着很不爽，于是进一步想，是否我们的bootstrapTable也可以使用function去初始化呢，组件没有，难道我们就不能给他扩展一个吗？我们不用url获取数据，通过调用这个function取到数据，然后将数据渲染到组件不就行了。思路有了，那么这里有两个难题：一是如何将原来url的方式变成这里的调用function的方式呢？二是参数的封装。经过查看组件的源码发现，如果是服务端分页，组件最终是进入到initServer()这个方法去获取数据，然后渲染到页面上面的，组件原始的initServer()方法如下：<br><img src="/2017/1435/650372d.gif" alt=""><img src="/wp-content/uploads/2017/07/15015092081.gif" alt=""><br>BootstrapTable.prototype.initServer = function (silent, query) {<br>var that = this,<br>data = {},<br>params = {<br>pageSize: this.options.pageSize === this.options.formatAllRows() ?<br>this.options.totalRows : this.options.pageSize,<br>pageNumber: this.options.pageNumber,<br>searchText: this.searchText,<br>sortName: this.options.sortName,<br>sortOrder: this.options.sortOrder<br>},<br>request;</p><pre><code>    if (!this.options.url &amp;&amp; !this.options.ajax) {
+        return;
+    }
+
+    if (this.options.queryParamsType === &apos;limit&apos;) {
+        params = {
+            search: params.searchText,
+            sort: params.sortName,
+            order: params.sortOrder
+        };
+        if (this.options.pagination) {
+            params.limit = this.options.pageSize === this.options.formatAllRows() ?
+                this.options.totalRows : this.options.pageSize;
+            params.offset = this.options.pageSize === this.options.formatAllRows() ?
+                0 : this.options.pageSize * (this.options.pageNumber - 1);
+        }
+    }
+
+    if (!($.isEmptyObject(this.filterColumnsPartial))) {
+        params[&apos;filter&apos;] = JSON.stringify(this.filterColumnsPartial, null);
+    }
+
+    data = calculateObjectValue(this.options, this.options.queryParams, [params], data);
+
+    $.extend(data, query || {});
+
+    // false to stop requestif (data === false) {
+        return;
+    }
+
+    if (!silent) {
+        this.$tableLoading.show();
+    }
+    request = $.extend({}, calculateObjectValue(null, this.options.ajaxOptions), {
+        type: this.options.method,
+        url: this.options.url,
+        data: this.options.contentType === &apos;application/json&apos; &amp;&amp; this.options.method === &apos;post&apos; ?
+            JSON.stringify(data) : data,
+        cache: this.options.cache,
+        contentType: this.options.contentType,
+        dataType: this.options.dataType,
+        success: function (res) {
+            res = calculateObjectValue(that.options, that.options.responseHandler, [res], res);
+
+            that.load(res);
+            that.trigger(&apos;load-success&apos;, res);
+        },
+        error: function (res) {
+            that.trigger(&apos;load-error&apos;, res.status, res);
+        },
+        complete: function () {
+            if (!silent) {
+                that.$tableLoading.hide();
+            }
+        }
+    });
+
+    if (this.options.ajax) {
+        calculateObjectValue(this, this.options.ajax, [request], null);
+    } else {
+        $.ajax(request);
+    }
+};
+</code></pre><p>组件原始initServer()方法<br>代码不难读懂，解析参数，整合参数，得到参数，发送ajax请求，在success事件里面将得到的数据渲染到界面。读懂了这段代码，我们再来封装function就容易多了。</p><p>最终我们封装的代码如下：</p><pre><code>(function ($) {
+    &apos;use strict&apos;;
+
+    //debugger;//通过构造函数获取到bootstrapTable里面的初始化方法var BootstrapTable = $.fn.bootstrapTable.Constructor,
+        _initData = BootstrapTable.prototype.initData,
+        _initPagination = BootstrapTable.prototype.initPagination,
+        _initBody = BootstrapTable.prototype.initBody,
+        _initServer = BootstrapTable.prototype.initServer,
+        _initContainer = BootstrapTable.prototype.initContainer;
+
+    //重写
+    BootstrapTable.prototype.initData = function () {
+        _initData.apply(this, Array.prototype.slice.apply(arguments));
+    };
+
+    BootstrapTable.prototype.initPagination = function () {
+        _initPagination.apply(this, Array.prototype.slice.apply(arguments));
+    };
+
+    BootstrapTable.prototype.initBody = function (fixedScroll) {
+        _initBody.apply(this, Array.prototype.slice.apply(arguments));
+    };
+
+    BootstrapTable.prototype.initServer = function (silent, query) {
+        //构造自定义参数for (var key inthis.options.methodParams) {
+            $.fn.bootstrapTable.defaults.methodParams[key] = this.options.methodParams[key];
+        }
+        //如果传了url，则走原来的逻辑if (this.options.url) {
+            _initServer.apply(this, Array.prototype.slice.apply(arguments));
+            return;
+        }
+        //如果定义了abpMethod，则走abpMethod的逻辑if (!this.options.abpMethod) {
+            return;
+        }
+        var that = this,
+            data = {},
+            params = {
+                pageSize: this.options.pageSize === this.options.formatAllRows() ?
+                    this.options.totalRows : this.options.pageSize,
+                pageNumber: this.options.pageNumber,
+                searchText: this.searchText,
+                sortName: this.options.sortName,
+                sortOrder: this.options.sortOrder
+            },
+            request;
+
+
+        //debugger;if (this.options.queryParamsType === &apos;limit&apos;) {
+            params = {
+                search: params.searchText,
+                sort: params.sortName,
+                order: params.sortOrder
+            };
+            if (this.options.pagination) {
+                params.limit = this.options.pageSize === this.options.formatAllRows() ?
+                    this.options.totalRows : this.options.pageSize;
+                params.offset = this.options.pageSize === this.options.formatAllRows() ?
+                    0 : this.options.pageSize * (this.options.pageNumber - 1);
+            }
+        }
+
+        if (!($.isEmptyObject(this.filterColumnsPartial))) {
+            params[&apos;filter&apos;] = JSON.stringify(this.filterColumnsPartial, null);
+        }
+
+        data = $.fn.bootstrapTable.utils.calculateObjectValue(this.options, this.options.queryParams, [params], data);
+
+        $.extend(data, query || {});
+
+        // false to stop requestif (data === false) {
+            return;
+        }
+
+        if (!silent) {
+            this.$tableLoading.show();
+        }
+
+        this.options.abpMethod(data).done(function (result) {
+            result = $.fn.bootstrapTable.utils.calculateObjectValue(that.options, that.options.responseHandler, [result], result);
+            that.load(result);
+            that.trigger(&apos;load-success&apos;, result);
+        });
+        request = $.extend({}, $.fn.bootstrapTable.utils.calculateObjectValue(null, this.options.ajaxOptions), {
+            type: this.options.method,
+            url: this.options.url,
+            data: this.options.contentType === &apos;application/json&apos; &amp;&amp; this.options.method === &apos;post&apos; ?
+                JSON.stringify(data) : data,
+            cache: this.options.cache,
+            contentType: this.options.contentType,
+            dataType: this.options.dataType,
+            success: function (res) {
+                debugger;
+                res = $.fn.bootstrapTable.utils.calculateObjectValue(that.options, that.options.responseHandler, [res], res);
+
+                that.load(res);
+                that.trigger(&apos;load-success&apos;, res);
+            },
+            error: function (res) {
+                that.trigger(&apos;load-error&apos;, res.status, res);
+            },
+            complete: function () {
+                if (!silent) {
+                    that.$tableLoading.hide();
+                }
+            }
+        });
+
+        if (this.options.ajax) {
+            $.fn.bootstrapTable.utils.calculateObjectValue(this, this.options.ajax, [request], null);
+        } else {
+            $.ajax(request);
+        }
+    }
+
+    BootstrapTable.prototype.initContainer = function () {
+        _initContainer.apply(this, Array.prototype.slice.apply(arguments));
+    };
+
+    abp.bootstrapTableDefaults = {
+        striped: false,
+        classes: &apos;table table-striped table-bordered table-advance table-hover&apos;,
+        pagination: true,
+        cache: false,
+        sidePagination: &apos;server&apos;,
+        uniqueId: &apos;id&apos;,
+        showRefresh: false,
+        search: false,
+        method: &apos;post&apos;,
+        //toolbar: &apos;#toolbar&apos;,
+        pageSize: 10,
+        paginationPreText: &apos;上一页&apos;,
+        paginationNextText: &apos;下一页&apos;,
+        queryParams: function (param) {
+            //$.fn.bootstrapTable.defaults.methodParams.propertyIsEnumerable()var abpParam = {
+                Sorting: param.sort,
+                filter: param.search,
+                skipCount: param.offset,
+                maxResultCount: param.limit
+            };
+            for (var key in $.fn.bootstrapTable.defaults.methodParams) {
+                abpParam[key] = $.fn.bootstrapTable.defaults.methodParams[key];
+            }
+            return abpParam;
+        },
+        responseHandler: function (res) {
+            if (res.totalCount)
+                return { total: res.totalCount, rows: res.items };
+            elsereturn { total: res.result.totalCount, rows: res.result.items };
+        },
+        methodParams: {},
+        abpMethod: function () { }
+    };
+
+    $.extend($.fn.bootstrapTable.defaults, abp.bootstrapTableDefaults);
+})(jQuery);
+</code></pre><p>代码释疑：增加两个参数 methodParams: {},abpMethod: function () { } 来获取abp的function和参数，然后获取数据的时候如果定义了abpMethod，则通过function获取数据，否则还是走原来的逻辑。</p><p>然后我们调用就简单了</p><pre><code>//选取界面上要先数据的表格var _$SendOrdersTable = $(&apos;#SendOrdersTable&apos;);
+        //获取服务层方法var _SendOrderService = abp.services.app.sendOrder;
+
+        _$SendOrdersTable.bootstrapTable({
+            abpMethod: _SendOrderService.getSendOrderListAsync,
+            detailView: true,
+            onExpandRow: function (index, row, $detail) {
+                var cur_table = $detail.html(&apos;&lt;table&gt;&lt;/table&gt;&apos;).find(&apos;table&apos;);
+                $(cur_table).bootstrapTable({
+                    showRefresh: false,
+                    search: false,
+                    pagination: false,
+                    abpMethod: _SendOrderService.getSendOrderDetailListAsync,
+                    methodParams: { SendOrderId: row.id },
+                    columns: [
+                        {
+                            field: &apos;materialClassName&apos;,
+                            title: app.localize(&apos;MaterialClassName&apos;),
+                            width: &apos;8%&apos;
+                        },
+                        {
+                            field: &apos;typeNo&apos;,
+                            title: app.localize(&apos;TypeNo&apos;),
+                            width: &apos;8%&apos;
+                        }
+                    ]
+                });
+            },
+            columns: [{
+                field: &apos;no&apos;,
+                title: app.localize(&apos;SendOrderNO&apos;),
+                align: &apos;center&apos;
+            },
+            {
+                field: &apos;supplierName&apos;,
+                title: app.localize(&apos;SupplierName&apos;),
+                align: &apos;center&apos;
+            },
+            {
+                title: app.localize(&apos;SendOrderTime&apos;),
+                align: &apos;center&apos;,
+                field: &apos;createdDate&apos;,
+                formatter: function (data) {
+                    return moment(data).format(&apos;YYYY-MM-DD HH:mm:ss&apos;);
+                }
+            },
+
+            {
+                field: &apos;status&apos;,
+                align: &apos;center&apos;,
+                title: app.localize(&apos;SendOrderStatus&apos;),
+                formatter: function (data) {
+                    var value = &quot;&quot;;
+                    if (data == 1) {
+                        value = &apos;&lt;span class=&quot;label label-info&quot;&gt;&apos; + app.localize(&apos;Autdit&apos;) + &apos;&lt;/span&gt;&apos;;
+                    }
+                    elseif (data == 2) {
+                        value = &apos;&lt;span class=&quot;label label-success&quot;&gt;&apos; + app.localize(&apos;Pass&apos;) + &apos;&lt;/span&gt;&apos;;
+                    }
+                    elseif (data == 3) {
+                        value = &apos;&lt;span class=&quot;label label-default&quot;&gt;&apos; + app.localize(&apos;Reject&apos;) + &apos;&lt;/span&gt;&apos;;
+                    }
+                    else
+                        value = &apos;&lt;span class=&quot;label label-default&quot;&gt;&apos; + app.localize(&apos;Abandon&apos;) + &apos;&lt;/span&gt;&apos;;
+                    return value;
+                }
+            },
+
+            {
+                field: &apos;createName&apos;,
+                align: &apos;center&apos;,
+                title: app.localize(&apos;SendOrderCreator&apos;),
+            },
+
+
+            {
+                field: &apos;sumCount&apos;,
+                align: &apos;center&apos;,
+                title: app.localize(&apos;SendOrderTotalCount&apos;),
+            },
+            ]
+        });
+</code></pre><p>得到如下效果</p><p><img src="/2017/1435/5f3e1ce.png" alt=""></p><h1 id="四、总结"><a href="#四、总结" class="headerlink" title="四、总结"></a>四、总结</h1><p>通过以上一个简单的封装，顺利将bootstrapTable融入到了ABP的操作方式里面。是不是很easy！在使用ABP的过程中，博主还做了其他一些封装，以后有机会再来介绍，关于ABP的技术交流欢迎联系博主。这一篇就到这里，欢迎交流。如果你觉得本文能够帮助你，可以右边随意 <strong>打赏 </strong>博主，打赏后可以获得博主永久免费的技术支持。</p><p>本文原创出处：<a href="https://www.jfox.info/go.php?url=http://www.cnblogs.com/landeanfen/">http://www.cnblogs.com/landeanfen/</a></p></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="4142158067"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="5618891265"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><footer class="post-footer"><div class="post-nav"><div class="post-nav-next post-nav-item"><a href="/2017/终极锁实战单jvm锁分布式锁.html" rel="next" title="终极锁实战：单JVM锁+分布式锁"><i class="fa fa-chevron-left"></i> 终极锁实战：单JVM锁+分布式锁</a></div><span class="post-nav-divider"></span><div class="post-nav-prev post-nav-item"><a href="/2017/译serverjre简介.html" rel="prev" title="[译]Server JRE 简介">[译]Server JRE 简介 <i class="fa fa-chevron-right"></i></a></div></div></footer></div></article><div class="post-spread"></div></div></div></div><div class="sidebar-toggle"><div class="sidebar-toggle-line-wrap"><span class="sidebar-toggle-line sidebar-toggle-line-first"></span> <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span> <span class="sidebar-toggle-line sidebar-toggle-line-last"></span></div></div><aside id="sidebar" class="sidebar"><div class="sidebar-inner"><ul class="sidebar-nav motion-element"><li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">Table of Contents</li><li class="sidebar-nav-overview" data-target="site-overview-wrap">Overview</li></ul><section class="site-overview-wrap sidebar-panel"><div class="site-overview"><div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person"><p class="site-author-name" itemprop="name">Hello</p><p class="site-description motion-element" itemprop="description"></p></div><nav class="site-state motion-element"><div class="site-state-item site-state-posts"><a href="/archives/"><span class="site-state-item-count">1358</span> <span class="site-state-item-name">posts</span></a></div></nav></div></section><section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active"><div class="post-toc"><div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#JS组件系列——在ABP中封装BootstrapTable"><span class="nav-number">1.</span> <span class="nav-text">JS组件系列——在ABP中封装BootstrapTable</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#一、关于ABP"><span class="nav-number">2.</span> <span class="nav-text">一、关于ABP</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#二、jTable在ABP中的运用"><span class="nav-number">3.</span> <span class="nav-text">二、jTable在ABP中的运用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#三、Bootstrap-Table在ABP中的封装"><span class="nav-number">4.</span> <span class="nav-text">三、Bootstrap Table在ABP中的封装</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1、jTable在ABP项目里面的初始化"><span class="nav-number">4.1.</span> <span class="nav-text">1、jTable在ABP项目里面的初始化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2、bootstrapTable在ABP项目里面的封装"><span class="nav-number">4.2.</span> <span class="nav-text">2、bootstrapTable在ABP项目里面的封装</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#四、总结"><span class="nav-number">5.</span> <span class="nav-text">四、总结</span></a></li></ol></div></div></section></div></aside><div class="sfix"><div class="fixedme"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460" data-ad-format="auto"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script></div></div></main><footer id="footer" class="footer"><div class="footer-inner"><div class="copyright">&copy; <span itemprop="copyrightYear">2018</span> <span class="with-love"><i class="fa fa-user"></i> </span><span class="author" itemprop="copyrightHolder">Hello</span></div><div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div><span class="post-meta-divider">|</span><div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div></div></footer><div class="back-to-top"><i class="fa fa-arrow-up"></i></div></div><script type="text/javascript">"[object Function]"!==Object.prototype.toString.call(window.Promise)&&(window.Promise=null)</script><script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script><script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script><script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script><script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script><script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script></body></html><!-- rebuild by neat -->

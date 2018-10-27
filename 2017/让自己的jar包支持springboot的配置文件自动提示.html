@@ -1,0 +1,158 @@
+<!-- build time:Sat Oct 27 2018 21:00:18 GMT+0800 (CST) --><!DOCTYPE html><html class="theme-next muse use-motion"><head><meta name="generator" content="Hexo 3.8.0"><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"><meta name="theme-color" content="#222"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"><link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css"><link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css"><link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4"><link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222"><meta name="description" content="在使用IDEA编写spring-boot的配置文件的时候，如果是框架再带的配置项，在深入.的时候会有自动提示。虽然，没有自动提示，在使用的时候，也不会有问题，但是，如果有提示的话，会更加稳妥些。那么怎么让自己jar包中的配置项也支持自动提示呢？1.需要将配置项写成一个对象。类似这样的package com.moensun.cloud.common.utils2.druid;  import org"><meta name="keywords" content="JAVA,面试"><meta property="og:type" content="article"><meta property="og:title" content="让自己的jar包支持spring-boot的配置文件自动提示"><meta property="og:url" content="http://www.jfox.info/2017/让自己的jar包支持springboot的配置文件自动提示.html"><meta property="og:site_name" content="java面试"><meta property="og:description" content="在使用IDEA编写spring-boot的配置文件的时候，如果是框架再带的配置项，在深入.的时候会有自动提示。虽然，没有自动提示，在使用的时候，也不会有问题，但是，如果有提示的话，会更加稳妥些。那么怎么让自己jar包中的配置项也支持自动提示呢？1.需要将配置项写成一个对象。类似这样的package com.moensun.cloud.common.utils2.druid;  import org"><meta property="og:locale" content="zh_CN"><meta property="og:updated_time" content="2018-10-27T12:29:39.637Z"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="让自己的jar包支持spring-boot的配置文件自动提示"><meta name="twitter:description" content="在使用IDEA编写spring-boot的配置文件的时候，如果是框架再带的配置项，在深入.的时候会有自动提示。虽然，没有自动提示，在使用的时候，也不会有问题，但是，如果有提示的话，会更加稳妥些。那么怎么让自己jar包中的配置项也支持自动提示呢？1.需要将配置项写成一个对象。类似这样的package com.moensun.cloud.common.utils2.druid;  import org"><script type="text/javascript" id="hexo.configurations">var NexT=window.NexT||{},CONFIG={root:"/",scheme:"Muse",version:"5.1.4",sidebar:{position:"left",display:"post",offset:12,b2t:!1,scrollpercent:!1,onmobile:!1},fancybox:!0,tabs:!0,motion:{enable:!0,async:!1,transition:{post_block:"fadeIn",post_header:"slideDownIn",post_body:"slideDownIn",coll_header:"slideLeftIn",sidebar:"slideUpIn"}},duoshuo:{userId:"0",author:"Author"},algolia:{applicationID:"",apiKey:"",indexName:"",hits:{per_page:10},labels:{input_placeholder:"Search for Posts",hits_empty:"We didn't find any results for the search: ${query}",hits_stats:"${hits} results found in ${time} ms"}}}</script><link rel="canonical" href="http://www.jfox.info/2017/让自己的jar包支持springboot的配置文件自动提示.html"><title>让自己的jar包支持spring-boot的配置文件自动提示 | java面试</title></head><body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN"><div class="container sidebar-position-left page-post-detail"><div class="headband"></div><header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="header-inner"><div class="site-brand-wrapper"><div class="site-meta"><div class="custom-logo-site-title"><a href="/" class="brand" rel="start"><span class="logo-line-before"><i></i></span> <span class="site-title">java面试</span> <span class="logo-line-after"><i></i></span></a></div><p class="site-subtitle"></p></div><div class="site-nav-toggle"><button><span class="btn-bar"></span> <span class="btn-bar"></span> <span class="btn-bar"></span></button></div></div><nav class="site-nav"><ul id="menu" class="menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i><br>Home</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i><br>Archives</a></li></ul></nav></div></header><main id="main" class="main"><div class="main-inner"><div class="content-wrap"><div id="content" class="content"><div id="posts" class="posts-expand"><article class="post post-type-normal" itemscope itemtype="http://schema.org/Article"><div class="post-block"><link itemprop="mainEntityOfPage" href="http://www.jfox.info/2017/让自己的jar包支持springboot的配置文件自动提示.html"><span hidden itemprop="author" itemscope itemtype="http://schema.org/Person"><meta itemprop="name" content="Hello"><meta itemprop="description" content=""><meta itemprop="image" content="/images/avatar.gif"></span><span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><meta itemprop="name" content="java面试"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">让自己的jar包支持spring-boot的配置文件自动提示</h1><div class="post-meta"><span class="post-time"><span class="post-meta-item-icon"><i class="fa fa-calendar-o"></i> </span><span class="post-meta-item-text">Posted on</span> <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-01-01T23:57:16+08:00">2017-01-01</time></span></div></header><div class="post-body" itemprop="articleBody"><p>在使用IDEA编写spring-boot的配置文件的时候，如果是框架再带的配置项，在深入.的时候会有自动提示。虽然，没有自动提示，在使用的时候，也不会有问题，但是，如果有提示的话，会更加稳妥些。</p><p>那么怎么让自己jar包中的配置项也支持自动提示呢？</p><p>1.需要将配置项写成一个对象。类似这样的</p><pre><code>package com.moensun.cloud.common.utils2.druid;
+
+import org.springframework.boot.context.properties.ConfigurationProperties;
+
+import java.util.List;
+
+/**
+ * Created by Bane.Shi.
+ * Copyright MoenSun
+ * User: Bane.Shi
+ * Date: 2017/7/13
+ * Time: 16:00
+ */
+@ConfigurationProperties(
+        prefix = &quot;spring.datasource.druid&quot;,
+        ignoreInvalidFields = true,
+        ignoreNestedProperties = true
+)
+public class DruidProperties {
+
+    private int initialSize;
+    private int maxActive;
+    private int minIdle;
+    private long maxWait;
+    private long timeBetweenEvictionRunsMillis;
+    private long minEvictableIdleTimeMillis;
+    private String validationQuery;
+
+
+    private Boolean testWhileIdle;
+    private Boolean testOnBorrow;
+    private Boolean testOnReturn;
+
+    private Boolean poolPreparedStatements;
+    private int maxPoolPreparedStatementPerConnectionSize;
+
+    private String filters;
+    private List proxyFilters;
+
+
+    public int getInitialSize() {
+        return initialSize;
+    }
+
+    public void setInitialSize(int initialSize) {
+        this.initialSize = initialSize;
+    }
+
+    public int getMaxActive() {
+        return maxActive;
+    }
+
+    public void setMaxActive(int maxActive) {
+        this.maxActive = maxActive;
+    }
+
+    public int getMinIdle() {
+        return minIdle;
+    }
+
+    public void setMinIdle(int minIdle) {
+        this.minIdle = minIdle;
+    }
+
+    public long getMaxWait() {
+        return maxWait;
+    }
+
+    public void setMaxWait(long maxWait) {
+        this.maxWait = maxWait;
+    }
+
+    public long getTimeBetweenEvictionRunsMillis() {
+        return timeBetweenEvictionRunsMillis;
+    }
+
+    public void setTimeBetweenEvictionRunsMillis(long timeBetweenEvictionRunsMillis) {
+        this.timeBetweenEvictionRunsMillis = timeBetweenEvictionRunsMillis;
+    }
+
+    public long getMinEvictableIdleTimeMillis() {
+        return minEvictableIdleTimeMillis;
+    }
+
+    public void setMinEvictableIdleTimeMillis(long minEvictableIdleTimeMillis) {
+        this.minEvictableIdleTimeMillis = minEvictableIdleTimeMillis;
+    }
+
+    public String getValidationQuery() {
+        return validationQuery;
+    }
+
+    public void setValidationQuery(String validationQuery) {
+        this.validationQuery = validationQuery;
+    }
+
+    public Boolean getTestWhileIdle() {
+        return testWhileIdle;
+    }
+
+    public void setTestWhileIdle(Boolean testWhileIdle) {
+        this.testWhileIdle = testWhileIdle;
+    }
+
+    public Boolean getTestOnBorrow() {
+        return testOnBorrow;
+    }
+
+    public void setTestOnBorrow(Boolean testOnBorrow) {
+        this.testOnBorrow = testOnBorrow;
+    }
+
+    public Boolean getTestOnReturn() {
+        return testOnReturn;
+    }
+
+    public void setTestOnReturn(Boolean testOnReturn) {
+        this.testOnReturn = testOnReturn;
+    }
+
+    public Boolean getPoolPreparedStatements() {
+        return poolPreparedStatements;
+    }
+
+    public void setPoolPreparedStatements(Boolean poolPreparedStatements) {
+        this.poolPreparedStatements = poolPreparedStatements;
+    }
+
+    public int getMaxPoolPreparedStatementPerConnectionSize() {
+        return maxPoolPreparedStatementPerConnectionSize;
+    }
+
+    public void setMaxPoolPreparedStatementPerConnectionSize(int maxPoolPreparedStatementPerConnectionSize) {
+        this.maxPoolPreparedStatementPerConnectionSize = maxPoolPreparedStatementPerConnectionSize;
+    }
+
+    public String getFilters() {
+        return filters;
+    }
+
+    public void setFilters(String filters) {
+        this.filters = filters;
+    }
+
+    public List getProxyFilters() {
+        return proxyFilters;
+    }
+
+    public void setProxyFilters(List proxyFilters) {
+        this.proxyFilters = proxyFilters;
+    }
+}
+</code></pre><p>2.还需要在resource下创建文件</p><p>resource/META-INFO/spring.factories</p><pre><code>com.moensun.cloud.common.utils2.druid.DruidProperties=
+</code></pre><p>这样，需要的配置基本都有了。但是，还不够，还需要生成 spring-configuration-metadata.json</p><p>3.在pom中添加生成 json的配置json的jar包</p><pre><code>&lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-boot-configuration-processor&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+</code></pre><p>这样，在执行install 就可以了。</p></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="4142158067"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="5618891265"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><footer class="post-footer"><div class="post-nav"><div class="post-nav-next post-nav-item"><a href="/2017/少打一局王者荣耀就能上手springcloud.html" rel="next" title="少打一局王者荣耀就能上手Spring Cloud？！"><i class="fa fa-chevron-left"></i> 少打一局王者荣耀就能上手Spring Cloud？！</a></div><span class="post-nav-divider"></span><div class="post-nav-prev post-nav-item"><a href="/2017/jboot10beta1发布基于jfinal类似springboot的框架.html" rel="prev" title="jboot 1.0-beta1 发布，基于 Jfinal 类似 Springboot 的框架">jboot 1.0-beta1 发布，基于 Jfinal 类似 Springboot 的框架 <i class="fa fa-chevron-right"></i></a></div></div></footer></div></article><div class="post-spread"></div></div></div></div><div class="sidebar-toggle"><div class="sidebar-toggle-line-wrap"><span class="sidebar-toggle-line sidebar-toggle-line-first"></span> <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span> <span class="sidebar-toggle-line sidebar-toggle-line-last"></span></div></div><aside id="sidebar" class="sidebar"><div class="sidebar-inner"><section class="site-overview-wrap sidebar-panel sidebar-panel-active"><div class="site-overview"><div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person"><p class="site-author-name" itemprop="name">Hello</p><p class="site-description motion-element" itemprop="description"></p></div><nav class="site-state motion-element"><div class="site-state-item site-state-posts"><a href="/archives/"><span class="site-state-item-count">1358</span> <span class="site-state-item-name">posts</span></a></div></nav></div></section></div></aside><div class="sfix"><div class="fixedme"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460" data-ad-format="auto"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script></div></div></main><footer id="footer" class="footer"><div class="footer-inner"><div class="copyright">&copy; <span itemprop="copyrightYear">2018</span> <span class="with-love"><i class="fa fa-user"></i> </span><span class="author" itemprop="copyrightHolder">Hello</span></div><div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div><span class="post-meta-divider">|</span><div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div></div></footer><div class="back-to-top"><i class="fa fa-arrow-up"></i></div></div><script type="text/javascript">"[object Function]"!==Object.prototype.toString.call(window.Promise)&&(window.Promise=null)</script><script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script><script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script><script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script><script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script><script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script></body></html><!-- rebuild by neat -->

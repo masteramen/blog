@@ -1,0 +1,295 @@
+<!-- build time:Sat Oct 27 2018 21:00:17 GMT+0800 (CST) --><!DOCTYPE html><html class="theme-next muse use-motion"><head><meta name="generator" content="Hexo 3.8.0"><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"><meta name="theme-color" content="#222"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"><link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css"><link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css"><link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4"><link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222"><meta name="description" content="Spring Cloud简介** springcloud官方文档：http://projects.spring.io/spring-cloud/spring-cloud.html Spring Cloud是一个基于Spring Boot实现的云应用开发工具，它为基于JVM的云应用开发中涉及的配置管理、服务发现、断路器、智能路由、微代理、控制总线、全局锁、决策竞选、分布式会话和集群状态管理等操作提供"><meta name="keywords" content="JAVA,面试"><meta property="og:type" content="article"><meta property="og:title" content="【Spring Cloud微服务全家桶】之服务注册、服务发现(Eureka、Consul作为服务注册中心)"><meta property="og:url" content="http://www.jfox.info/2017/springcloud微服务全家桶之服务注册服务发现eurekaconsul作为服务.html"><meta property="og:site_name" content="java面试"><meta property="og:description" content="Spring Cloud简介** springcloud官方文档：http://projects.spring.io/spring-cloud/spring-cloud.html Spring Cloud是一个基于Spring Boot实现的云应用开发工具，它为基于JVM的云应用开发中涉及的配置管理、服务发现、断路器、智能路由、微代理、控制总线、全局锁、决策竞选、分布式会话和集群状态管理等操作提供"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="http://www.jfox.info/2017/1422/11985d2.png"><meta property="og:image" content="http://www.jfox.info/2017/1422/5101d3c.png"><meta property="og:image" content="http://www.jfox.info/2017/1422/39dc63e.png"><meta property="og:image" content="http://www.jfox.info/2017/1422/9290c71.png"><meta property="og:image" content="http://www.jfox.info/2017/1422/a227777.png"><meta property="og:image" content="http://www.jfox.info/2017/1422/76b043e.png"><meta property="og:image" content="http://www.jfox.info/2017/1422/9971aaf.png"><meta property="og:updated_time" content="2018-10-27T12:29:40.330Z"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="【Spring Cloud微服务全家桶】之服务注册、服务发现(Eureka、Consul作为服务注册中心)"><meta name="twitter:description" content="Spring Cloud简介** springcloud官方文档：http://projects.spring.io/spring-cloud/spring-cloud.html Spring Cloud是一个基于Spring Boot实现的云应用开发工具，它为基于JVM的云应用开发中涉及的配置管理、服务发现、断路器、智能路由、微代理、控制总线、全局锁、决策竞选、分布式会话和集群状态管理等操作提供"><meta name="twitter:image" content="http://www.jfox.info/2017/1422/11985d2.png"><script type="text/javascript" id="hexo.configurations">var NexT=window.NexT||{},CONFIG={root:"/",scheme:"Muse",version:"5.1.4",sidebar:{position:"left",display:"post",offset:12,b2t:!1,scrollpercent:!1,onmobile:!1},fancybox:!0,tabs:!0,motion:{enable:!0,async:!1,transition:{post_block:"fadeIn",post_header:"slideDownIn",post_body:"slideDownIn",coll_header:"slideLeftIn",sidebar:"slideUpIn"}},duoshuo:{userId:"0",author:"Author"},algolia:{applicationID:"",apiKey:"",indexName:"",hits:{per_page:10},labels:{input_placeholder:"Search for Posts",hits_empty:"We didn't find any results for the search: ${query}",hits_stats:"${hits} results found in ${time} ms"}}}</script><link rel="canonical" href="http://www.jfox.info/2017/springcloud微服务全家桶之服务注册服务发现eurekaconsul作为服务.html"><title>【Spring Cloud微服务全家桶】之服务注册、服务发现(Eureka、Consul作为服务注册中心) | java面试</title></head><body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN"><div class="container sidebar-position-left page-post-detail"><div class="headband"></div><header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="header-inner"><div class="site-brand-wrapper"><div class="site-meta"><div class="custom-logo-site-title"><a href="/" class="brand" rel="start"><span class="logo-line-before"><i></i></span> <span class="site-title">java面试</span> <span class="logo-line-after"><i></i></span></a></div><p class="site-subtitle"></p></div><div class="site-nav-toggle"><button><span class="btn-bar"></span> <span class="btn-bar"></span> <span class="btn-bar"></span></button></div></div><nav class="site-nav"><ul id="menu" class="menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i><br>Home</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i><br>Archives</a></li></ul></nav></div></header><main id="main" class="main"><div class="main-inner"><div class="content-wrap"><div id="content" class="content"><div id="posts" class="posts-expand"><article class="post post-type-normal" itemscope itemtype="http://schema.org/Article"><div class="post-block"><link itemprop="mainEntityOfPage" href="http://www.jfox.info/2017/springcloud微服务全家桶之服务注册服务发现eurekaconsul作为服务.html"><span hidden itemprop="author" itemscope itemtype="http://schema.org/Person"><meta itemprop="name" content="Hello"><meta itemprop="description" content=""><meta itemprop="image" content="/images/avatar.gif"></span><span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><meta itemprop="name" content="java面试"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">【Spring Cloud微服务全家桶】之服务注册、服务发现(Eureka、Consul作为服务注册中心)</h1><div class="post-meta"><span class="post-time"><span class="post-meta-item-icon"><i class="fa fa-calendar-o"></i> </span><span class="post-meta-item-text">Posted on</span> <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-01-01T23:58:42+08:00">2017-01-01</time></span></div></header><div class="post-body" itemprop="articleBody"><p><strong>Spring Cloud简介**</strong> <strong>springcloud官方文档：<br><a href="https://www.jfox.info/go.php?url=http://projects.spring.io/spring-cloud/spring-cloud.html">http://projects.spring.io/spring-cloud/spring-cloud.html</a></strong> <strong>Spring Cloud是一个基于Spring Boot实现的云应用开发工具，它为基于JVM的云应用开发中涉及的配置管理、服务发现、断路器、智能路由、微代理、控制总线、全局锁、决策竞选、分布式会话和集群状态管理等操作提供了一种简单的开发方式。 Spring Cloud包含了多个子项目（针对分布式系统中涉及的多个不同开源产品），比如：Spring Cloud Config、Spring Cloud Netflix、Spring Cloud CloudFoundry、Spring Cloud AWS、Spring Cloud Security、Spring Cloud Commons、Spring Cloud Zookeeper、Spring Cloud CLI等项目。 Eureka：实际上在整个过程中维护者每个服务的生命周期。每一个服务都要被注册到Eureka服务器上，这里被注册到Eureka的服务又称为Client。Eureka通过心跳来确定服务是否正常。Eureka只做请求转发。同时Eureka是支持集群的呦！！！ （当然用其他的也是可以如consul,zookeeper）Zuul：类似于网关，反向代理。为外部请求提供统一入口。Ribbon/Feign：可以理解为调用服务的客户端。Hystrix：断路器，服务调用通常是深层的，一个底层服务通常为多个上层服务提供服务，那么如果底层服务失败则会造成大面积失败，Hystrix就是就调用失败后触发定义好的处理方法，从而更友好的解决出错。也是微服务的容错机制。 </strong>创建服务注册中心<strong><strong> </strong></strong>**<img src="/2017/1422/11985d2.png" alt=""></p><p>上图简要描述了Eureka的基本架构，由3个角色组成：</p><ul><li><strong>Eureka Server</strong>：提供服务注册和发现</li><li><strong>Service Provider</strong>：服务提供方，将自身服务注册到Eureka，从而使服务消费方能够找到</li><li><strong>Service Consumer</strong>：服务消费方，从Eureka获取注册服务列表，从而能够消费服务。</li></ul><p><em>需要注意的是，上图中的3个角色都是逻辑角色。在实际运行中，这几个角色甚至可以是同一个实例，比如在我们项目中，Eureka Server和Service Provider就是同一个JVM进程。</em></p><p>在创建服务注册中心前，我们先创建一个maven的pom父项目，然后在这个maven父项目里，使用Spring Initializr创建一个module<img src="/2017/1422/5101d3c.png" alt=""></p><p>创建一个SpringBoot项目，依赖选择Cloud Discovery =&gt; Eureka Server</p><p><img src="/2017/1422/39dc63e.png" alt=""></p><p>发现在pom.xml已经自动生成了依赖，当然也可以创建一个普通的maven项目，将以下pom.xml的配置添加进去<strong></strong></p><pre><code>org.springframework.boot 
+
+
+spring-boot-starter-parent 
+
+
+1.5.4.RELEASE 
+
+
+
+
+
+
+
+
+
+
+
+UTF-8 
+
+
+UTF-8 
+
+
+1.8 
+
+
+Dalston.SR1 
+
+
+
+
+
+
+
+
+
+
+
+    org.springframework.cloud 
+
+
+    spring-cloud-starter-eureka-server 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        org.springframework.cloud 
+
+
+        spring-cloud-dependencies 
+
+
+        Dalston.SR1 
+
+
+        pom 
+
+
+        import 
+
+
+
+
+
+** ****修改application.properties配置**** ** 
+</code></pre><p>spring.application.name=registry-ms #服务名称</p><p>server.port=1001</p><p>eureka.instance.hostname=registry-ms.pay-inner.com #服务使用的主机名</p><p>eureka.client.register-with-eureka=false #eureka本身无需注册到注册中心</p><p>eureka.client.fetch-registry=false #eureka本身无需从注册中心获取服务注册实例</p><hr><p>通过eureka.client.register-with-eureka：false和fetch-registry：false来表明自己是一个eureka server</p><p><strong>启动服务注册中心**</strong> **</p><p>启动类上加上 @EnableEurekaServer注解，表示开启Eureka注册中心服务</p><p>@EnableEurekaServer</p><p>@SpringBootApplication</p><p>public class RegistryApplication {</p><pre><code>public static void main( String[] args ) { 
+
+
+    SpringApplication.run(RegistryApplication.class,args); 
+
+
+} 
+</code></pre><p>}</p><p>看到Instances currently registered with Eureka 还没有服务实例在线<img src="/2017/1422/9290c71.png" alt=""></p><p><strong>创建一个简单的服务提供者</strong></p><p>服务向注册中心注册完成后，服务的eureka client会告知注册中心它的元数据信息，例如ServiceId、主机名、URI、端口号等。Eureka Server接受每个Eureka客户端的心跳，当注册中心感知不到服务实例的存在时（比如心跳超时），那么该服务实例就会从注册中心中剔除。 创建一个SpringBoot应用，怎么创建的过程不再赘述，名为provider-service-ms，由于本例是服务注册、服务发现，可以写个打印所有服务实例服务方法。 创建完后，pom.xml</p><pre><code>    org.springframework.boot 
+
+
+    spring-boot-starter-parent 
+
+
+    1.5.4.RELEASE 
+
+
+
+
+
+
+
+
+4.0.0 
+
+
+
+
+
+com.choosefine 
+
+
+provider-ms 
+
+
+jar 
+
+
+
+
+
+provider-ms 
+
+
+http://maven.apache.org 
+
+
+
+
+
+
+
+
+    UTF-8 
+
+
+    UTF-8 
+
+
+    1.8 
+
+
+    Dalston.SR1 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        org.springframework.cloud 
+
+
+        spring-cloud-starter-eureka 
+
+
+
+
+
+
+
+
+        org.springframework.boot 
+
+
+        spring-boot-starter-web 
+
+
+
+
+
+
+
+
+        org.springframework.boot 
+
+
+        spring-boot-starter-test 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            org.springframework.cloud 
+
+
+            spring-cloud-dependencies 
+
+
+            Dalston.SR1 
+
+
+            pom 
+
+
+            import 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            org.springframework.boot 
+
+
+            spring-boot-maven-plugin 
+</code></pre><p>通过注解@EnableDiscoveryClient 表明自己是一个Eureka Client</p><p>@EnableDiscoveryClient</p><p>@SpringBootApplication</p><p>public class ProviderApplication {</p><pre><code>public static void main( String[] args ) { 
+
+
+    SpringApplication.run(ProviderApplication.class,args); 
+
+
+} 
+</code></pre><p>}</p><p>写一个Rest Controller用于查看服务注册中心中注册的服务实例列表，DiscoveryClient提供了，获取服务列表的方法。</p><p>@RestController</p><p>public class ProviderDemoController {</p><pre><code>@Autowired 
+
+
+private DiscoveryClient discoveryClient; 
+
+
+
+
+
+@RequestMapping(“services”) 
+
+
+public List clientList(){ 
+
+
+    List serviceIds = discoveryClient.getServices(); 
+
+
+    for(String serviceId : serviceIds) { 
+
+
+        List instances = discoveryClient.getInstances(serviceId); 
+
+
+        for (ServiceInstance instance : instances) { 
+
+
+            System.out.println(“ServiceId:” + instance.getServiceId() + “,Host:” + instance.getHost() + “,Port:” + instance.getPort() + “,URI:” + instance.getUri() + “,MetaData:” + instance.getMetadata()); 
+
+
+        } 
+
+
+    } 
+
+
+    return serviceIds; 
+
+
+} 
+</code></pre><p>}</p><p>然后对application.properties做一些配置工作 spring.application.name是很重的一个配置，该名称会作为注册中心中服务实例的id(即ServiceId)，当其他服务需要调用此服务的时候，就需要知道此服务的ServiceId，eureka.client.serviceUrl.defaultZone 指明注册中心的地址。</p><p>server.port=2104</p><p>spring.application.name=provider-ms</p><p>eureka.client.serviceUrl.defaultZone=<a href="http://registry-ms.pay-inner.com:1001/eureka" target="_blank" rel="noopener">http://registry-ms.pay-inner.com:1001/eureka</a></p><p>启动ProviderApplication，观察当前注册到eureka的服务实例，看到此时已经有名为PROVIDER-MS的服务实例上线了（Status为UP）。<img src="/2017/1422/a227777.png" alt=""></p><p>也可以通过访问<a href="http://127.0.0.1:2103/services（provider-ms.pay-inner.com是为了访问方便，配了本地hosts域名解析），查看注册到eureka的服务实例。![](/2017/1422/8811939.png)" target="_blank" rel="noopener">http://127.0.0.1:2103/services（provider-ms.pay-inner.com是为了访问方便，配了本地hosts域名解析），查看注册到eureka的服务实例。![](/2017/1422/8811939.png)</a></p><p>控制台也打印了 ServiceId、Host、Port、URI这些信息<img src="/2017/1422/76b043e.png" alt=""></p><p><strong>将eureka改用consul实现服务注册**</strong> **</p><p><strong></strong>Consul 是一个支持多数据中心分布式高可用的服务发现和配置共享的服务软件,由 HashiCorp 公司用 Go 语言开发, 基于 Mozilla Public License 2.0 的协议进行开源. Consul 支持健康检查,并允许 HTTP 和 DNS 协议调用 API 存储键值对. 命令行超级好用的虚拟机管理软件 vgrant 也是 HashiCorp 公司开发的产品. 一致性协议采用 Raft 算法,用来保证服务的高可用. 使用 GOSSIP 协议管理成员和广播消息, 并且支持 ACL 访问控制.<strong> </strong>使用 Raft 算法来保证一致性, 比复杂的 Paxos 算法更直接. 相比较而言, zookeeper 采用的是 Paxos, 而 etcd 使用的则是 Raft. 支持多数据中心，内外网的服务采用不同的端口进行监听。 多数据中心集群可以避免单数据中心的单点故障,而其部署则需要考虑网络延迟, 分片等情况等. zookeeper 和 etcd 均不提供多数据中心功能的支持. 支持健康检查. etcd 不提供此功能 支持 http 和 dns 协议接口. zookeeper 的集成较为复杂, etcd 只支持 http 协议<strong> </strong>官方提供web管理界面, etcd 无此功能</p><p>只需要更换服务治理的依赖</p><pre><code>org.springframework.cloud 
+
+
+spring-cloud-starter-consul-discovery 
+</code></pre><p>再将application.properties配置修改下，将eureka地址的配置注释掉</p><p>server.port=2103</p><p>spring.application.name=provider-ms</p><p>#eureka.client.serviceUrl.defaultZone=<a href="http://registry-ms.pay-inner.com:1001/eureka" target="_blank" rel="noopener">http://registry-ms.pay-inner.com:1001/eureka</a></p><p>spring.cloud.consul.host=localhost</p><p>spring.cloud.consul.port=8500</p><p>由于Spring Cloud 对于DiscoveryClient已经做了一层抽象，我们无需关心eureka与consul不同的实现细节。而我们需要做的只是更改springcloud封装的不同服务治理依赖，以及在配置文件中配置不同的属性 将consul用dev模式启动。由于consul已经为我们提供了服务，无需像之前创建eureka那样创建服务注册中心，直接从consul官网下载服务端即可,<a href="https://www.jfox.info/go.php?url=https://www.consul.io/">https://www.consul.io/</a><img src="/2017/1422/9971aaf.png" alt=""></p><p>重新启动ProviderApplication 观察Consul UI（<a href="http://127.0.0.1:8500/ui/），是否有服务上线，可以看到PROVIDER-MS已经注册到consul了![](/2017/1422/baf67cf.png)" target="_blank" rel="noopener">http://127.0.0.1:8500/ui/），是否有服务上线，可以看到PROVIDER-MS已经注册到consul了![](/2017/1422/baf67cf.png)</a></p><p>通过访问<a href="http://127.0.0.1:2103/services![](/2017/1422/a8b35b1.png)" target="_blank" rel="noopener">http://127.0.0.1:2103/services![](/2017/1422/a8b35b1.png)</a></p><p>控制台也打印了 ServiceId、Host、Port、URI这些信息，这里也会把consul打印，因为默认是将consul本身也注册到服务注册中心</p></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="4142158067"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="5618891265"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><footer class="post-footer"><div class="post-nav"><div class="post-nav-next post-nav-item"><a href="/2017/jooq中文1七个步骤快速入门.html" rel="next" title="【jOOQ中文】1. 七个步骤快速入门"><i class="fa fa-chevron-left"></i> 【jOOQ中文】1. 七个步骤快速入门</a></div><span class="post-nav-divider"></span><div class="post-nav-prev post-nav-item"><a href="/2017/springcloud微服务全家桶之服务注册服务发现eurekaconsul作为服务-2.html" rel="prev" title="【Spring Cloud微服务全家桶】之服务注册、服务发现(Eureka、Consul作为服务注册中心)">【Spring Cloud微服务全家桶】之服务注册、服务发现(Eureka、Consul作为服务注册中心) <i class="fa fa-chevron-right"></i></a></div></div></footer></div></article><div class="post-spread"></div></div></div></div><div class="sidebar-toggle"><div class="sidebar-toggle-line-wrap"><span class="sidebar-toggle-line sidebar-toggle-line-first"></span> <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span> <span class="sidebar-toggle-line sidebar-toggle-line-last"></span></div></div><aside id="sidebar" class="sidebar"><div class="sidebar-inner"><section class="site-overview-wrap sidebar-panel sidebar-panel-active"><div class="site-overview"><div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person"><p class="site-author-name" itemprop="name">Hello</p><p class="site-description motion-element" itemprop="description"></p></div><nav class="site-state motion-element"><div class="site-state-item site-state-posts"><a href="/archives/"><span class="site-state-item-count">1358</span> <span class="site-state-item-name">posts</span></a></div></nav></div></section></div></aside><div class="sfix"><div class="fixedme"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460" data-ad-format="auto"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script></div></div></main><footer id="footer" class="footer"><div class="footer-inner"><div class="copyright">&copy; <span itemprop="copyrightYear">2018</span> <span class="with-love"><i class="fa fa-user"></i> </span><span class="author" itemprop="copyrightHolder">Hello</span></div><div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div><span class="post-meta-divider">|</span><div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div></div></footer><div class="back-to-top"><i class="fa fa-arrow-up"></i></div></div><script type="text/javascript">"[object Function]"!==Object.prototype.toString.call(window.Promise)&&(window.Promise=null)</script><script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script><script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script><script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script><script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script><script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script></body></html><!-- rebuild by neat -->

@@ -1,0 +1,398 @@
+<!-- build time:Sat Oct 27 2018 21:00:17 GMT+0800 (CST) --><!DOCTYPE html><html class="theme-next muse use-motion"><head><meta name="generator" content="Hexo 3.8.0"><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"><meta name="theme-color" content="#222"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"><link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css"><link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css"><link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4"><link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222"><meta name="description" content="创建一个 maven 多模块项目，结构如下：dubbo-annotation-with-springmvc-sample（父模块） | |__ user-module-api（服务接口模块） | |__ user-module-provider（服务提供者） | |__ user-module-consumer（服务消费者） 1.1 父模块项目dubbo-annotation-with-sprin"><meta name="keywords" content="JAVA,面试"><meta property="og:type" content="article"><meta property="og:title" content="dubbo 注解方式集成 springmvc"><meta property="og:url" content="http://www.jfox.info/2017/dubbo注解方式集成springmvc.html"><meta property="og:site_name" content="java面试"><meta property="og:description" content="创建一个 maven 多模块项目，结构如下：dubbo-annotation-with-springmvc-sample（父模块） | |__ user-module-api（服务接口模块） | |__ user-module-provider（服务提供者） | |__ user-module-consumer（服务消费者） 1.1 父模块项目dubbo-annotation-with-sprin"><meta property="og:locale" content="zh_CN"><meta property="og:updated_time" content="2018-10-27T12:29:39.383Z"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="dubbo 注解方式集成 springmvc"><meta name="twitter:description" content="创建一个 maven 多模块项目，结构如下：dubbo-annotation-with-springmvc-sample（父模块） | |__ user-module-api（服务接口模块） | |__ user-module-provider（服务提供者） | |__ user-module-consumer（服务消费者） 1.1 父模块项目dubbo-annotation-with-sprin"><script type="text/javascript" id="hexo.configurations">var NexT=window.NexT||{},CONFIG={root:"/",scheme:"Muse",version:"5.1.4",sidebar:{position:"left",display:"post",offset:12,b2t:!1,scrollpercent:!1,onmobile:!1},fancybox:!0,tabs:!0,motion:{enable:!0,async:!1,transition:{post_block:"fadeIn",post_header:"slideDownIn",post_body:"slideDownIn",coll_header:"slideLeftIn",sidebar:"slideUpIn"}},duoshuo:{userId:"0",author:"Author"},algolia:{applicationID:"",apiKey:"",indexName:"",hits:{per_page:10},labels:{input_placeholder:"Search for Posts",hits_empty:"We didn't find any results for the search: ${query}",hits_stats:"${hits} results found in ${time} ms"}}}</script><link rel="canonical" href="http://www.jfox.info/2017/dubbo注解方式集成springmvc.html"><title>dubbo 注解方式集成 springmvc | java面试</title></head><body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN"><div class="container sidebar-position-left page-post-detail"><div class="headband"></div><header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="header-inner"><div class="site-brand-wrapper"><div class="site-meta"><div class="custom-logo-site-title"><a href="/" class="brand" rel="start"><span class="logo-line-before"><i></i></span> <span class="site-title">java面试</span> <span class="logo-line-after"><i></i></span></a></div><p class="site-subtitle"></p></div><div class="site-nav-toggle"><button><span class="btn-bar"></span> <span class="btn-bar"></span> <span class="btn-bar"></span></button></div></div><nav class="site-nav"><ul id="menu" class="menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i><br>Home</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i><br>Archives</a></li></ul></nav></div></header><main id="main" class="main"><div class="main-inner"><div class="content-wrap"><div id="content" class="content"><div id="posts" class="posts-expand"><article class="post post-type-normal" itemscope itemtype="http://schema.org/Article"><div class="post-block"><link itemprop="mainEntityOfPage" href="http://www.jfox.info/2017/dubbo注解方式集成springmvc.html"><span hidden itemprop="author" itemscope itemtype="http://schema.org/Person"><meta itemprop="name" content="Hello"><meta itemprop="description" content=""><meta itemprop="image" content="/images/avatar.gif"></span><span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><meta itemprop="name" content="java面试"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">dubbo 注解方式集成 springmvc</h1><div class="post-meta"><span class="post-time"><span class="post-meta-item-icon"><i class="fa fa-calendar-o"></i> </span><span class="post-meta-item-text">Posted on</span> <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-01-01T23:58:18+08:00">2017-01-01</time></span></div></header><div class="post-body" itemprop="articleBody"><p>创建一个 maven 多模块项目，结构如下：</p><pre><code>dubbo-annotation-with-springmvc-sample（父模块）
+|
+|__ user-module-api（服务接口模块）
+|
+|__ user-module-provider（服务提供者）
+|
+|__ user-module-consumer（服务消费者）
+</code></pre><h4 id="1-1-父模块项目"><a href="#1-1-父模块项目" class="headerlink" title="1.1 父模块项目"></a>1.1 父模块项目</h4><p>dubbo-annotation-with-springmvc-sample/pom.xml 配置如下：</p><pre><code>&lt;projectxmlns=&quot;http://maven.apache.org/POM/4.0.0&quot;xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+         xsi:schemaLocation=&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd&quot;&gt;
+    &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
+    &lt;groupId&gt;org.fanlychie&lt;/groupId&gt;
+    &lt;artifactId&gt;dubbo-annotation-with-springmvc-sample&lt;/artifactId&gt;
+    &lt;version&gt;0.0.1-SNAPSHOT&lt;/version&gt;
+    &lt;packaging&gt;pom&lt;/packaging&gt;
+    &lt;name&gt;dubbo-annotation-with-springmvc-sample&lt;/name&gt;
+    &lt;description&gt;Sample project for Dubbo&lt;/description&gt;
+    &lt;url&gt;http://maven.apache.org&lt;/url&gt;
+    &lt;modules&gt;
+        &lt;module&gt;user-module-api&lt;/module&gt;
+        &lt;module&gt;user-module-provider&lt;/module&gt;
+        &lt;module&gt;user-module-consumer&lt;/module&gt;
+    &lt;/modules&gt;
+    &lt;properties&gt;
+        &lt;dubbo.version&gt;2.5.3&lt;/dubbo.version&gt;
+        &lt;spring.version&gt;4.3.7.RELEASE&lt;/spring.version&gt;
+    &lt;/properties&gt;
+    &lt;dependencyManagement&gt;
+        &lt;dependencies&gt;
+            &lt;dependency&gt;
+                &lt;groupId&gt;org.fanlychie&lt;/groupId&gt;
+                &lt;artifactId&gt;user-module-api&lt;/artifactId&gt;
+                &lt;version&gt;${project.version}&lt;/version&gt;
+            &lt;/dependency&gt;
+            &lt;dependency&gt;
+                &lt;groupId&gt;com.alibaba&lt;/groupId&gt;
+                &lt;artifactId&gt;dubbo&lt;/artifactId&gt;
+                &lt;!-- dubbo依赖的spring版本（2.5）较低, 排除此依赖, 使用自己的spring版本 --&gt;
+                &lt;exclusions&gt;
+                    &lt;exclusion&gt;
+                        &lt;groupId&gt;org.springframework&lt;/groupId&gt;
+                        &lt;artifactId&gt;spring&lt;/artifactId&gt;
+                    &lt;/exclusion&gt;
+                &lt;/exclusions&gt;
+                &lt;version&gt;${dubbo.version}&lt;/version&gt;
+            &lt;/dependency&gt;
+            &lt;dependency&gt;
+                &lt;groupId&gt;org.springframework&lt;/groupId&gt;
+                &lt;artifactId&gt;spring-context&lt;/artifactId&gt;
+                &lt;version&gt;${spring.version}&lt;/version&gt;
+            &lt;/dependency&gt;
+            &lt;dependency&gt;
+                &lt;groupId&gt;org.springframework&lt;/groupId&gt;
+                &lt;artifactId&gt;spring-webmvc&lt;/artifactId&gt;
+                &lt;version&gt;${spring.version}&lt;/version&gt;
+            &lt;/dependency&gt;
+            &lt;dependency&gt;
+                &lt;groupId&gt;com.fasterxml.jackson.core&lt;/groupId&gt;
+                &lt;artifactId&gt;jackson-databind&lt;/artifactId&gt;
+                &lt;version&gt;2.8.8&lt;/version&gt;
+            &lt;/dependency&gt;
+            &lt;dependency&gt;
+                &lt;groupId&gt;com.101tec&lt;/groupId&gt;
+                &lt;artifactId&gt;zkclient&lt;/artifactId&gt;
+                &lt;version&gt;0.10&lt;/version&gt;
+            &lt;/dependency&gt;
+        &lt;/dependencies&gt;
+    &lt;/dependencyManagement&gt;
+&lt;/project&gt;
+</code></pre><h4 id="1-2-服务接口模块"><a href="#1-2-服务接口模块" class="headerlink" title="1.2 服务接口模块"></a>1.2 服务接口模块</h4><p>user-module-api/pom.xml 配置如下：</p><pre><code>&lt;projectxmlns=&quot;http://maven.apache.org/POM/4.0.0&quot;xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+         xsi:schemaLocation=&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd&quot;&gt;
+    &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
+    &lt;parent&gt;
+        &lt;groupId&gt;org.fanlychie&lt;/groupId&gt;
+        &lt;artifactId&gt;dubbo-annotation-with-springmvc-sample&lt;/artifactId&gt;
+        &lt;version&gt;0.0.1-SNAPSHOT&lt;/version&gt;
+    &lt;/parent&gt;
+    &lt;artifactId&gt;user-module-api&lt;/artifactId&gt;
+    &lt;packaging&gt;jar&lt;/packaging&gt;
+    &lt;name&gt;user-module-api&lt;/name&gt;
+    &lt;url&gt;http://maven.apache.org&lt;/url&gt;
+&lt;/project&gt;
+</code></pre><p>编写注册用户的示例服务接口：</p><pre><code>package org.fanlychie.service;
+
+public interface UserService{
+
+    void register(String username, String password);
+
+}
+</code></pre><h4 id="1-3-服务提供者"><a href="#1-3-服务提供者" class="headerlink" title="1.3 服务提供者"></a>1.3 服务提供者</h4><p>user-module-provider/pom.xml 配置如下：</p><pre><code>&lt;projectxmlns=&quot;http://maven.apache.org/POM/4.0.0&quot;xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+         xsi:schemaLocation=&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd&quot;&gt;
+    &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
+    &lt;parent&gt;
+        &lt;groupId&gt;org.fanlychie&lt;/groupId&gt;
+        &lt;artifactId&gt;dubbo-annotation-with-springmvc-sample&lt;/artifactId&gt;
+        &lt;version&gt;0.0.1-SNAPSHOT&lt;/version&gt;
+    &lt;/parent&gt;
+    &lt;artifactId&gt;user-module-provider&lt;/artifactId&gt;
+    &lt;packaging&gt;jar&lt;/packaging&gt;
+    &lt;name&gt;user-module-provider&lt;/name&gt;
+    &lt;url&gt;http://maven.apache.org&lt;/url&gt;
+    &lt;dependencies&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.fanlychie&lt;/groupId&gt;
+            &lt;artifactId&gt;user-module-api&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;com.alibaba&lt;/groupId&gt;
+            &lt;artifactId&gt;dubbo&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-context&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;com.101tec&lt;/groupId&gt;
+            &lt;artifactId&gt;zkclient&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+    &lt;/dependencies&gt;
+    &lt;build&gt;
+        &lt;plugins&gt;
+            &lt;!-- 打包配置, 输出可执行的 jar 包 --&gt;
+            &lt;plugin&gt;
+                &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
+                &lt;artifactId&gt;maven-assembly-plugin&lt;/artifactId&gt;
+                &lt;version&gt;2.6&lt;/version&gt;
+                &lt;executions&gt;
+                    &lt;execution&gt;
+                        &lt;id&gt;make-assembly&lt;/id&gt;
+                        &lt;phase&gt;package&lt;/phase&gt;
+                        &lt;goals&gt;
+                            &lt;goal&gt;single&lt;/goal&gt;
+                        &lt;/goals&gt;
+                    &lt;/execution&gt;
+                &lt;/executions&gt;
+                &lt;configuration&gt;
+                    &lt;archive&gt;
+                        &lt;manifest&gt;
+                            &lt;mainClass&gt;com.alibaba.dubbo.container.Main&lt;/mainClass&gt;
+                        &lt;/manifest&gt;
+                    &lt;/archive&gt;
+                    &lt;descriptorRefs&gt;
+                        &lt;descriptorRef&gt;jar-with-dependencies&lt;/descriptorRef&gt;
+                    &lt;/descriptorRefs&gt;
+                    &lt;appendAssemblyId&gt;false&lt;/appendAssemblyId&gt;
+                &lt;/configuration&gt;
+            &lt;/plugin&gt;
+        &lt;/plugins&gt;
+    &lt;/build&gt;
+&lt;/project&gt;
+</code></pre><p>实现服务接口，使用 <code>com.alibaba.dubbo.config.annotation.@Service</code> 注解暴露服务：</p><pre><code>package org.fanlychie.service;
+
+import com.alibaba.dubbo.config.annotation.Service;
+
+@Service
+public class UserServiceImplimplements UserService{
+
+    @Override
+    public void register(String username, String password){
+        System.out.println(&quot;---------------------------------------------------------&quot;);
+        System.out.println(String.format(&quot;接收到注册用户请求 - {username:%s, password:%s}&quot;,
+                username, password));
+        System.out.println(&quot;---------------------------------------------------------&quot;);
+    }
+
+}
+</code></pre><p>user-module-provider/src/main/resources/dubbo.properties 配置如下：</p><pre><code>dubbo.spring.config=classpath:spring-dubbo-provider.xml
+</code></pre><p>user-module-provider/src/main/resources/spring-dubbo-provider.xml 配置如下：</p><pre><code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;beansxmlns=&quot;http://www.springframework.org/schema/beans&quot;
+       xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+       xmlns:dubbo=&quot;http://code.alibabatech.com/schema/dubbo&quot;
+       xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://code.alibabatech.com/schema/dubbo
+       http://code.alibabatech.com/schema/dubbo/dubbo.xsd&quot;&gt;
+
+    &lt;!-- 提供方应用信息，用于计算依赖关系 --&gt;
+    &lt;dubbo:applicationname=&quot;user-module-provider&quot;/&gt;
+
+    &lt;!-- 使用ZK注册中心暴露服务地址 --&gt;
+    &lt;dubbo:registryaddress=&quot;zookeeper://127.0.0.1:2181&quot;/&gt;
+
+    &lt;!-- 用Dubbo协议在20880端口暴露服务 --&gt;
+    &lt;dubbo:protocolname=&quot;dubbo&quot;port=&quot;20880&quot;/&gt;
+
+    &lt;!-- 扫描注解包路径，多个包用逗号分隔 --&gt;
+    &lt;dubbo:annotationpackage=&quot;org.fanlychie.service&quot;/&gt;
+
+&lt;/beans&gt;
+</code></pre><p>user-module-provider/src/main/resources/log4j.properties 配置如下：</p><pre><code>log4j.rootCategory = INFO, console
+log4j.appender.console = org.apache.log4j.ConsoleAppender
+log4j.appender.console.target = System.out
+log4j.appender.console.layout = org.apache.log4j.PatternLayout
+log4j.appender.console.layout.conversionPattern = %d{yyyy-MM-dd HH:mm:ss:SSS} [%t] %-5p [%c{1}:%L] - %m%n
+</code></pre><h4 id="1-4-服务消费者"><a href="#1-4-服务消费者" class="headerlink" title="1.4 服务消费者"></a>1.4 服务消费者</h4><p>user-module-consumer/pom.xml 配置如下：</p><pre><code>&lt;projectxmlns=&quot;http://maven.apache.org/POM/4.0.0&quot;xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+         xsi:schemaLocation=&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd&quot;&gt;
+    &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
+    &lt;parent&gt;
+        &lt;groupId&gt;org.fanlychie&lt;/groupId&gt;
+        &lt;artifactId&gt;dubbo-annotation-with-springmvc-sample&lt;/artifactId&gt;
+        &lt;version&gt;0.0.1-SNAPSHOT&lt;/version&gt;
+    &lt;/parent&gt;
+    &lt;artifactId&gt;user-module-consumer&lt;/artifactId&gt;
+    &lt;packaging&gt;war&lt;/packaging&gt;
+    &lt;name&gt;user-module-consumer&lt;/name&gt;
+    &lt;url&gt;http://maven.apache.org&lt;/url&gt;
+    &lt;dependencies&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.fanlychie&lt;/groupId&gt;
+            &lt;artifactId&gt;user-module-api&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;com.alibaba&lt;/groupId&gt;
+            &lt;artifactId&gt;dubbo&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-webmvc&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;com.fasterxml.jackson.core&lt;/groupId&gt;
+            &lt;artifactId&gt;jackson-databind&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;com.101tec&lt;/groupId&gt;
+            &lt;artifactId&gt;zkclient&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+    &lt;/dependencies&gt;
+    &lt;build&gt;
+        &lt;finalName&gt;autosellrobot-wechat&lt;/finalName&gt;
+        &lt;plugins&gt;
+            &lt;plugin&gt;
+                &lt;groupId&gt;org.apache.tomcat.maven&lt;/groupId&gt;
+                &lt;artifactId&gt;tomcat7-maven-plugin&lt;/artifactId&gt;
+                &lt;configuration&gt;
+                    &lt;path&gt;/&lt;/path&gt;
+                    &lt;port&gt;8080&lt;/port&gt;
+                    &lt;uriEncoding&gt;UTF-8&lt;/uriEncoding&gt;
+                    &lt;url&gt;http://localhost:8080/manager/html&lt;/url&gt;
+                &lt;/configuration&gt;
+            &lt;/plugin&gt;
+        &lt;/plugins&gt;
+    &lt;/build&gt;
+&lt;/project&gt;
+</code></pre><p>服务消费者使用 <code>com.alibaba.dubbo.config.annotation.@Reference</code> 注解引用接口服务：</p><pre><code>import com.alibaba.dubbo.config.annotation.Reference;
+import org.fanlychie.service.UserService;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class UserController{
+
+    @Reference
+    private UserService userService;
+
+    @GetMapping(&quot;/user/register&quot;)
+    publicStringregister(String username, String password){
+        if (!StringUtils.hasText(username) || !StringUtils.hasText(password)) {
+            return &quot;用户名或密码不能为空&quot;;
+        }
+        userService.register(username, password);
+        return &quot;注册完成&quot;;
+    }
+
+}
+</code></pre><p>user-module-consumer/src/main/webapp/WEB-INF/web.xml 配置如下：</p><pre><code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;web-appversion=&quot;2.5&quot;xmlns=&quot;http://java.sun.com/xml/ns/javaee&quot;xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;xsi:schemaLocation=&quot;http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd&quot;&gt;
+
+    &lt;context-param&gt;
+        &lt;param-name&gt;contextConfigLocation&lt;/param-name&gt;
+        &lt;param-value&gt;classpath:spring-context.xml&lt;/param-value&gt;
+    &lt;/context-param&gt;
+
+    &lt;listener&gt;
+        &lt;listener-class&gt;org.springframework.web.util.IntrospectorCleanupListener&lt;/listener-class&gt;
+    &lt;/listener&gt;
+
+    &lt;listener&gt;
+        &lt;listener-class&gt;org.springframework.web.context.request.RequestContextListener&lt;/listener-class&gt;
+    &lt;/listener&gt;
+
+    &lt;listener&gt;
+        &lt;listener-class&gt;org.springframework.web.context.ContextLoaderListener&lt;/listener-class&gt;
+    &lt;/listener&gt;
+
+    &lt;filter&gt;
+        &lt;filter-name&gt;encodingFilter&lt;/filter-name&gt;
+        &lt;filter-class&gt;org.springframework.web.filter.CharacterEncodingFilter&lt;/filter-class&gt;
+        &lt;init-param&gt;
+            &lt;param-name&gt;encoding&lt;/param-name&gt;
+            &lt;param-value&gt;UTF-8&lt;/param-value&gt;
+        &lt;/init-param&gt;
+        &lt;init-param&gt;
+            &lt;param-name&gt;forceEncoding&lt;/param-name&gt;
+            &lt;param-value&gt;true&lt;/param-value&gt;
+        &lt;/init-param&gt;
+    &lt;/filter&gt;
+    &lt;filter-mapping&gt;
+        &lt;filter-name&gt;encodingFilter&lt;/filter-name&gt;
+        &lt;url-pattern&gt;/*&lt;/url-pattern&gt;
+    &lt;/filter-mapping&gt;
+
+    &lt;servlet&gt;
+        &lt;servlet-name&gt;dispatcherServlet&lt;/servlet-name&gt;
+        &lt;servlet-class&gt;org.springframework.web.servlet.DispatcherServlet&lt;/servlet-class&gt;
+        &lt;init-param&gt;
+            &lt;param-name&gt;contextConfigLocation&lt;/param-name&gt;
+            &lt;param-value&gt;classpath:spring-mvc.xml&lt;/param-value&gt;
+        &lt;/init-param&gt;
+        &lt;load-on-startup&gt;1&lt;/load-on-startup&gt;
+    &lt;/servlet&gt;
+    &lt;servlet-mapping&gt;
+        &lt;servlet-name&gt;dispatcherServlet&lt;/servlet-name&gt;
+        &lt;url-pattern&gt;/&lt;/url-pattern&gt;
+    &lt;/servlet-mapping&gt;
+
+&lt;/web-app&gt;
+</code></pre><p>user-module-consumer/src/main/resources/log4j.properties 配置如下：</p><pre><code>log4j.rootCategory = INFO, console
+log4j.appender.console = org.apache.log4j.ConsoleAppender
+log4j.appender.console.target = System.out
+log4j.appender.console.layout = org.apache.log4j.PatternLayout
+log4j.appender.console.layout.conversionPattern = %d{yyyy-MM-dd HH:mm:ss:SSS} [%t] %-5p [%c{1}:%L] - %m%n
+</code></pre><p>user-module-consumer/src/main/resources/spring-context.xml 配置如下：</p><pre><code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;beansxmlns=&quot;http://www.springframework.org/schema/beans&quot;
+       xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+       xmlns:context=&quot;http://www.springframework.org/schema/context&quot;
+       xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd&quot;&gt;
+
+    &lt;context:annotation-config/&gt;
+
+    &lt;context:component-scanbase-package=&quot;org.fanlychie&quot;/&gt;
+
+&lt;/beans&gt;
+</code></pre><p>user-module-consumer/src/main/resources/spring-mvc.xml 配置如下：</p><pre><code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;beansxmlns=&quot;http://www.springframework.org/schema/beans&quot;
+       xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+       xmlns:context=&quot;http://www.springframework.org/schema/context&quot;
+       xmlns:dubbo=&quot;http://code.alibabatech.com/schema/dubbo&quot;
+       xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd
+       http://code.alibabatech.com/schema/dubbo
+       http://code.alibabatech.com/schema/dubbo/dubbo.xsd&quot;&gt;
+
+    &lt;!-- 提供方应用信息，用于计算依赖关系 --&gt;
+    &lt;dubbo:applicationname=&quot;user-module-consumer&quot;/&gt;
+
+    &lt;!-- 使用ZK注册中心暴露服务地址 --&gt;
+    &lt;dubbo:registryaddress=&quot;zookeeper://127.0.0.1:2181&quot;/&gt;
+
+    &lt;!-- 扫描注解包路径，多个包用逗号分隔 --&gt;
+    &lt;dubbo:annotationpackage=&quot;org.fanlychie.controller&quot;/&gt;
+
+    &lt;beanclass=&quot;org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping&quot;&gt;
+        &lt;propertyname=&quot;useSuffixPatternMatch&quot;value=&quot;true&quot;/&gt;
+        &lt;propertyname=&quot;useTrailingSlashMatch&quot;value=&quot;true&quot;/&gt;
+    &lt;/bean&gt;
+
+    &lt;beanid=&quot;stringHttpMessageConverter&quot;class=&quot;org.springframework.http.converter.StringHttpMessageConverter&quot;&gt;
+        &lt;constructor-argvalue=&quot;UTF-8&quot;/&gt;
+        &lt;propertyname=&quot;supportedMediaTypes&quot;&gt;
+            &lt;list&gt;
+                &lt;value&gt;text/html;charset=utf-8&lt;/value&gt;
+                &lt;value&gt;application/xml;charset=utf-8&lt;/value&gt;
+                &lt;value&gt;application/json;charset=utf-8&lt;/value&gt;
+            &lt;/list&gt;
+        &lt;/property&gt;
+    &lt;/bean&gt;
+
+    &lt;beanid=&quot;mappingJackson2HttpMessageConverter&quot;
+          class=&quot;org.springframework.http.converter.json.MappingJackson2HttpMessageConverter&quot;&gt;
+        &lt;propertyname=&quot;prefixJson&quot;value=&quot;false&quot;/&gt;
+        &lt;propertyname=&quot;supportedMediaTypes&quot;&gt;
+            &lt;list&gt;
+                &lt;value&gt;text/html;charset=utf-8&lt;/value&gt;
+                &lt;value&gt;application/xml;charset=utf-8&lt;/value&gt;
+                &lt;value&gt;application/json;charset=utf-8&lt;/value&gt;
+            &lt;/list&gt;
+        &lt;/property&gt;
+    &lt;/bean&gt;
+
+    &lt;beanclass=&quot;org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter&quot;&gt;
+        &lt;propertyname=&quot;messageConverters&quot;&gt;
+            &lt;list&gt;
+                &lt;refbean=&quot;stringHttpMessageConverter&quot;/&gt;
+                &lt;refbean=&quot;mappingJackson2HttpMessageConverter&quot;/&gt;
+            &lt;/list&gt;
+        &lt;/property&gt;
+    &lt;/bean&gt;
+
+    &lt;context:component-scanbase-package=&quot;org.fanlychie.**.controller&quot;/&gt;
+
+&lt;/beans&gt;
+</code></pre><p>服务消费者方 dubbo 注解扫描配置的信息不能独立出 springmvc 配置文件，否则 <code>@Reference</code> 注解引用的接口实例会出现 Null 的状况。</p><p>示例项目开发环境：Java-8、Maven-3、IntelliJ IDEA-2017、Spring-4.7、Dubbo-2.5.3</p><p>完整示例项目链接： <a href="https://www.jfox.info/go.php?url=https://github.com/fanlychie/dubbo-samples/tree/master/dubbo-annotation-with-springmvc-sample">dubbo-annotation-with-springmvc-sample</a></p><p>参考文档文献链接： <a href="https://www.jfox.info/go.php?url=http://dubbo.io/User+Guide-zh.htm">dubbo用户指南</a></p></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="4142158067"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="5618891265"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><footer class="post-footer"><div class="post-nav"><div class="post-nav-next post-nav-item"><a href="/2017/开发团队面临的3大安全挑战.html" rel="next" title="开发团队面临的 3 大安全挑战"><i class="fa fa-chevron-left"></i> 开发团队面临的 3 大安全挑战</a></div><span class="post-nav-divider"></span><div class="post-nav-prev post-nav-item"><a href="/2017/springboot系列一入门ormtransactionlog4j2等.html" rel="prev" title="SpringBoot系列一（入门，ORM，Transaction,log4j2等）">SpringBoot系列一（入门，ORM，Transaction,log4j2等） <i class="fa fa-chevron-right"></i></a></div></div></footer></div></article><div class="post-spread"></div></div></div></div><div class="sidebar-toggle"><div class="sidebar-toggle-line-wrap"><span class="sidebar-toggle-line sidebar-toggle-line-first"></span> <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span> <span class="sidebar-toggle-line sidebar-toggle-line-last"></span></div></div><aside id="sidebar" class="sidebar"><div class="sidebar-inner"><ul class="sidebar-nav motion-element"><li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">Table of Contents</li><li class="sidebar-nav-overview" data-target="site-overview-wrap">Overview</li></ul><section class="site-overview-wrap sidebar-panel"><div class="site-overview"><div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person"><p class="site-author-name" itemprop="name">Hello</p><p class="site-description motion-element" itemprop="description"></p></div><nav class="site-state motion-element"><div class="site-state-item site-state-posts"><a href="/archives/"><span class="site-state-item-count">1358</span> <span class="site-state-item-name">posts</span></a></div></nav></div></section><section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active"><div class="post-toc"><div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-1-父模块项目"><span class="nav-number">1.</span> <span class="nav-text">1.1 父模块项目</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-2-服务接口模块"><span class="nav-number">2.</span> <span class="nav-text">1.2 服务接口模块</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-3-服务提供者"><span class="nav-number">3.</span> <span class="nav-text">1.3 服务提供者</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-4-服务消费者"><span class="nav-number">4.</span> <span class="nav-text">1.4 服务消费者</span></a></li></ol></div></div></section></div></aside><div class="sfix"><div class="fixedme"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460" data-ad-format="auto"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script></div></div></main><footer id="footer" class="footer"><div class="footer-inner"><div class="copyright">&copy; <span itemprop="copyrightYear">2018</span> <span class="with-love"><i class="fa fa-user"></i> </span><span class="author" itemprop="copyrightHolder">Hello</span></div><div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div><span class="post-meta-divider">|</span><div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div></div></footer><div class="back-to-top"><i class="fa fa-arrow-up"></i></div></div><script type="text/javascript">"[object Function]"!==Object.prototype.toString.call(window.Promise)&&(window.Promise=null)</script><script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script><script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script><script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script><script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script><script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script></body></html><!-- rebuild by neat -->

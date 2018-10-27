@@ -1,0 +1,281 @@
+<!-- build time:Sat Oct 27 2018 21:00:19 GMT+0800 (CST) --><!DOCTYPE html><html class="theme-next muse use-motion"><head><meta name="generator" content="Hexo 3.8.0"><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"><meta name="theme-color" content="#222"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"><link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css"><link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css"><link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4"><link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222"><meta name="description" content="本文主要描述了开发中常见的几个与spring懒加载和事务相关的案例，主要描述常见的使用场景，以及如何规避他们，给出具体的代码。在新的线程中，访问某个持久化对象的懒加载属性。在quartz定时任务中，访问某个持久化对象的懒加载属性。在dubbo，motan一类rpc框架中，远程调用时服务端session关闭的问题。上面三个案例，其实核心都是一个问题，就是牵扯到spring对事务的管理，而懒加载这个技"><meta name="keywords" content="JAVA,面试"><meta property="og:type" content="article"><meta property="og:title" content="Spring 中的懒加载与事务 – 排坑记录"><meta property="og:url" content="http://www.jfox.info/2017/spring中的懒加载与事务排坑记录-2.html"><meta property="og:site_name" content="java面试"><meta property="og:description" content="本文主要描述了开发中常见的几个与spring懒加载和事务相关的案例，主要描述常见的使用场景，以及如何规避他们，给出具体的代码。在新的线程中，访问某个持久化对象的懒加载属性。在quartz定时任务中，访问某个持久化对象的懒加载属性。在dubbo，motan一类rpc框架中，远程调用时服务端session关闭的问题。上面三个案例，其实核心都是一个问题，就是牵扯到spring对事务的管理，而懒加载这个技"><meta property="og:locale" content="zh_CN"><meta property="og:updated_time" content="2018-10-27T12:29:37.421Z"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="Spring 中的懒加载与事务 – 排坑记录"><meta name="twitter:description" content="本文主要描述了开发中常见的几个与spring懒加载和事务相关的案例，主要描述常见的使用场景，以及如何规避他们，给出具体的代码。在新的线程中，访问某个持久化对象的懒加载属性。在quartz定时任务中，访问某个持久化对象的懒加载属性。在dubbo，motan一类rpc框架中，远程调用时服务端session关闭的问题。上面三个案例，其实核心都是一个问题，就是牵扯到spring对事务的管理，而懒加载这个技"><script type="text/javascript" id="hexo.configurations">var NexT=window.NexT||{},CONFIG={root:"/",scheme:"Muse",version:"5.1.4",sidebar:{position:"left",display:"post",offset:12,b2t:!1,scrollpercent:!1,onmobile:!1},fancybox:!0,tabs:!0,motion:{enable:!0,async:!1,transition:{post_block:"fadeIn",post_header:"slideDownIn",post_body:"slideDownIn",coll_header:"slideLeftIn",sidebar:"slideUpIn"}},duoshuo:{userId:"0",author:"Author"},algolia:{applicationID:"",apiKey:"",indexName:"",hits:{per_page:10},labels:{input_placeholder:"Search for Posts",hits_empty:"We didn't find any results for the search: ${query}",hits_stats:"${hits} results found in ${time} ms"}}}</script><link rel="canonical" href="http://www.jfox.info/2017/spring中的懒加载与事务排坑记录-2.html"><title>Spring 中的懒加载与事务 – 排坑记录 | java面试</title></head><body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN"><div class="container sidebar-position-left page-post-detail"><div class="headband"></div><header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="header-inner"><div class="site-brand-wrapper"><div class="site-meta"><div class="custom-logo-site-title"><a href="/" class="brand" rel="start"><span class="logo-line-before"><i></i></span> <span class="site-title">java面试</span> <span class="logo-line-after"><i></i></span></a></div><p class="site-subtitle"></p></div><div class="site-nav-toggle"><button><span class="btn-bar"></span> <span class="btn-bar"></span> <span class="btn-bar"></span></button></div></div><nav class="site-nav"><ul id="menu" class="menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i><br>Home</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i><br>Archives</a></li></ul></nav></div></header><main id="main" class="main"><div class="main-inner"><div class="content-wrap"><div id="content" class="content"><div id="posts" class="posts-expand"><article class="post post-type-normal" itemscope itemtype="http://schema.org/Article"><div class="post-block"><link itemprop="mainEntityOfPage" href="http://www.jfox.info/2017/spring中的懒加载与事务排坑记录-2.html"><span hidden itemprop="author" itemscope itemtype="http://schema.org/Person"><meta itemprop="name" content="Hello"><meta itemprop="description" content=""><meta itemprop="image" content="/images/avatar.gif"></span><span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><meta itemprop="name" content="java面试"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">Spring 中的懒加载与事务 – 排坑记录</h1><div class="post-meta"><span class="post-time"><span class="post-meta-item-icon"><i class="fa fa-calendar-o"></i> </span><span class="post-meta-item-text">Posted on</span> <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-01-01T23:55:33+08:00">2017-01-01</time></span></div></header><div class="post-body" itemprop="articleBody"><p>本文主要描述了开发中常见的几个与spring懒加载和事务相关的案例，主要描述常见的使用场景，以及如何规避他们，给出具体的代码。</p><ol><li><p>在新的线程中，访问某个持久化对象的懒加载属性。</p></li><li><p>在quartz定时任务中，访问某个持久化对象的懒加载属性。</p></li><li><p>在dubbo，motan一类rpc框架中，远程调用时服务端session关闭的问题。</p></li></ol><p>上面三个案例，其实核心都是一个问题，就是牵扯到spring对事务的管理，而懒加载这个技术，只是比较容易体现出事务出错的一个实践，主要用它来引发问题，进而对问题进行思考。</p><h2 id="前期准备"><a href="#前期准备" class="headerlink" title="前期准备"></a>前期准备</h2><p>为了能直观的暴露出第一个案例的问题，我新建了一个项目，采用传统的mvc分层，一个student.Java实体类，一个studentDao.java持久层，一个studentService.java业务层，一个studentController控制层。</p><pre><code>@Entity
+@Table(name = &quot;student&quot;)
+public class Student {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Integer id;
+    private String name;
+
+    getter..setter..
+}
+</code></pre><p>持久层使用springdata，框架自动扩展出CURD方法</p><pre><code>public interface StudentDao extends JpaRepository&lt;Student, Integer&gt;{
+}
+</code></pre><p>service层，先给出普通的调用方法。用于错误演示。</p><pre><code>@Service
+public class StudentService {
+
+    @Autowired
+    StudentDao studentDao;
+
+    public void testNormalGetOne(){
+        Student student = studentDao.getOne(1);
+        System.out.println(student.getName());
+    }
+}
+</code></pre><p>注意：getOne和findOne都是springdata提供的根据id查找单个实体的方法，区别是前者是懒加载，后者是立即加载。我们使用getOne来进行懒加载的实验，就不用大费周章去写懒加载属性，设置多个实体类了。</p><p>controller层，不是简简单单的调用，而是在新的线程中调用。使用controller层来代替单元测试（实际项目中，通常使用controller调用service，然后在浏览器或者http工具中调用触发，较为方便）</p><pre><code>@RequestMapping(&quot;/testNormalGetOne&quot;)
+    @ResponseBody
+    public String testNormalGetOne() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                studentService.testNormalGetOne();
+            }
+        }).start();
+        return &quot;testNormalGetOne&quot;;
+    }
+</code></pre><p>启动项目后，访问localhost:8080/testNormalGetOne报错如下：</p><pre><code>Exception in thread &quot;Thread-6&quot; org.hibernate.LazyInitializationException: could not initialize proxy - no Session
+    at org.hibernate.proxy.AbstractLazyInitializer.initialize(AbstractLazyInitializer.java:148)
+    at org.hibernate.proxy.AbstractLazyInitializer.getImplementation(AbstractLazyInitializer.java:266)
+    at org.hibernate.proxy.pojo.javassist.JavassistLazyInitializer.invoke(JavassistLazyInitializer.java:68)
+    at com.example.transaction.entity.Student_$$_jvste17_0.getName(Student_$$_jvste17_0.java)
+    at com.example.transaction.service.StudentService.testNormalGetOne(StudentService.java:71)
+    at com.example.transaction.service.StudentService$$FastClassBySpringCGLIB$$f8048714.invoke(&lt;generated&gt;)
+    at org.springframework.cglib.proxy.MethodProxy.invoke(MethodProxy.java:204)
+    at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:651)
+    at com.example.transaction.service.StudentService$$EnhancerBySpringCGLIB$$a6640151.testNormalGetOne(&lt;generated&gt;)
+    at com.example.transaction.controller.StudentController$1.run(StudentController.java:71)
+    at java.lang.Thread.run(Thread.java:745)
+</code></pre><h2 id="问题分析"><a href="#问题分析" class="headerlink" title="问题分析"></a>问题分析</h2><p>no session说明了什么？</p><p>道理很简单，因为spring的session是和线程绑定的，在整个model-&gt;dao-&gt;service-&gt;controller的调用链中，这种事务和线程绑定的机制非常契合。而我们出现的问题正式由于新开启了一个线程，这个线程与调用链的线程不是同一个。</p><h2 id="问题解决"><a href="#问题解决" class="headerlink" title="问题解决"></a>问题解决</h2><p>我们先使用一种不太优雅的方式解决这个问题。在新的线程中，手动打开session。</p><pre><code>public void testNormalGetOne() {
+        EntityManagerFactory entityManagerFactory = ApplicationContextProvider.getApplicationContext().getBean(EntityManagerFactory.class);
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        EntityManagerHolder entityManagerHolder = new EntityManagerHolder(entityManager);
+        TransactionSynchronizationManager.bindResource(entityManagerFactory, entityManagerHolder);
+        Student student = studentDao.getOne(1);
+        System.out.println(student.getName());
+        TransactionSynchronizationManager.unbindResource(entityManagerFactory);
+        EntityManagerFactoryUtils.closeEntityManager(entityManager);
+}
+</code></pre><p>由于我们使用了JPA，所以事务是由EntityManagerFactory这个工厂类生成的EntityManager来管理的。TransactionSynchronizationManager.bindResource(entityManagerFactory, entityManagerHolder);这个方法使用事务管理器绑定session。</p><p>而ApplicationContextProvider这个工具类是用来获取spring容器中的EntityManagerFactory的，为什么不用注入的方式，下文讲解。它的代码如下：</p><pre><code>public class ApplicationContextProvider implements ApplicationContextAware {
+
+    private static ApplicationContext context = null;
+
+    public static ApplicationContext getApplicationContext() {
+        return context;
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext ac) throws BeansException {
+        context = ac;
+    }
+}
+</code></pre><p>问题暂时得到了解决。</p><h2 id="问题再思考"><a href="#问题再思考" class="headerlink" title="问题再思考"></a>问题再思考</h2><p>我们一般情况下使用懒加载属性，为什么没有出现no session的问题呢？相信大家都知道@Transactional这个注解，他会帮我们进行事务包裹，当然也会绑定session；以及大家熟知的hiberbate中的OpenSessionInterceptor和OpenSessionInViewFilter以及jpa中的OpenEntityManagerInViewInterceptor都是在没有session的情况下，打开session的过滤器。这种方法开始前依赖事务开启，方法结束后回收资源的操作，非常适合用过滤器拦截器处理，后续的两个未讲解的案例，其实都是使用了特殊的过滤器。</p><p>看一下官方文档如何描述这个jpa中的过滤器的：</p><p>29.3.4 Open EntityManager in View</p><p>If you are running a web application, Spring Boot will by default register OpenEntityManagerInViewInterceptor to apply the “Open EntityManager in View” pattern, i.e. to allow for lazy loading in web views. If you don’t want this behavior you should set spring.jpa.open-in-view to false in your application.properties.</p><p>我们尝试着关闭这个过滤器：</p><p>配置application.properties/application.yml文件</p><pre><code>spring.jpa.open-in-view=false
+</code></pre><p>再使用正常的方式访问懒加载属性（而不是在一个新的线程中）：</p><pre><code>@RequestMapping(&quot;/testNormalGetOne&quot;)
+    @ResponseBody
+    public String testNormalGetOne() {
+//      new Thread(new Runnable() {
+//          @Override
+//          public void run() {
+                studentService.testNormalGetOne();
+//          }
+//      }).start();
+        return &quot;testNormalGetOne&quot;;
+    }
+</code></pre><p>报错如下：</p><pre><code>{&quot;timestamp&quot;:1498194914012,&quot;status&quot;:500,&quot;error&quot;:&quot;Internal Server Error&quot;,&quot;exception&quot;:&quot;org.hibernate.LazyInitializationException&quot;,&quot;message&quot;:&quot;could not initialize proxy - no Session&quot;,&quot;path&quot;:&quot;/testNormalGetOne&quot;}
+</code></pre><p>是的，我们使用spring的controller作为单元测试时，以及我们平时在直接使用jpa的懒加载属性时没有太关注这个jpa的特性，因为springboot帮我们默认开启了这个过滤器。这也解释了，为什么在新的线程中，定时任务线程中，rpc远程调用时session没有打开的原因，因为这些流程没有经过springboot的web调用链。</p><h2 id="另外两个实战案例"><a href="#另外两个实战案例" class="headerlink" title="另外两个实战案例"></a>另外两个实战案例</h2><p>上文已经阐释了，为什么quartz定时任务中访问懒加载属性，rpc框架服务端访问懒加载属性（注意不是客户端，客户端访问懒加载属性那是一种作死的行为，因为是代理对象）为出现问题。我们仿照spring打开session的思路（这取决于你使用hibernate还是jpa，抑或是mybatis），来编写我们的过滤器。</p><p>quartz中打开session：</p><p>使用quartz提供的JobListenerSupport支持，编写一个任务过滤器，用于在每次任务执行时打开session</p><pre><code>public class OpenEntityManagerJobListener extends JobListenerSupport implements ApplicationContextAware {
+
+    @Override
+    public String getName() {
+        return &quot;OpenEntityManagerJobListener&quot;;
+    }
+
+    EntityManagerFactory entityManagerFactory;
+
+    @Override
+    public void jobToBeExecuted(JobExecutionContext context) {
+        entityManagerFactory = applicationContext.getBean(EntityManagerFactory.class);
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        EntityManagerHolder emHolder = new EntityManagerHolder(entityManager);
+        TransactionSynchronizationManager.bindResource(entityManagerFactory, emHolder);
+    }
+
+    @Override
+    public void jobWasExecuted(JobExecutionContext context, JobExecutionException jobException) {
+        EntityManagerHolder emHolder = (EntityManagerHolder) TransactionSynchronizationManager.unbindResource(entityManagerFactory);
+        EntityManagerFactoryUtils.closeEntityManager(emHolder.getEntityManager());
+    }
+
+
+    ApplicationContext applicationContext;
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
+        if(this.applicationContext ==null) throw new RuntimeException(&quot;applicationContext is null&quot;);
+    }
+}
+</code></pre><p>配置调度工厂：</p><pre><code>//调度工厂
+    @Bean
+    public SchedulerFactoryBean schedulerFactoryBean() {
+        SchedulerFactoryBean factoryBean = new SchedulerFactoryBean();
+        factoryBean.setTriggers(triggerFactoryBeans().getObject());
+        factoryBean.setGlobalJobListeners(openEntityManagerJobListener());
+        return factoryBean;
+    }
+</code></pre><p>也可以参考我的另一篇描述更为细致的文章，那是我还是刚刚参加工作，可能有些许疏漏之处，不过参考是够了。传送门： <a href="https://www.jfox.info/go.php?url=http://blog.csdn.net/u013815546/article/details/53032445">解决Quartz定时器中查询懒加载数据no session的问题</a></p><p>Motan（我现在使用的rpc框架）服务端打开session 利用了motan对spi扩展的支持，编写了一个Filter，主要参考了motan的spi过滤器写法和springdata打开session/entityManager的思路。</p><pre><code>@SpiMeta(name = &quot;openjpasession&quot;)
+@Activation(sequence = 100)
+public class OpenEntityManagerInMotanFilter implements Filter {
+    private Logger logger = LoggerFactory.getLogger(OpenEntityManagerInMotanFilter.class);
+
+    /**
+     * Default EntityManagerFactory bean name: &quot;entityManagerFactory&quot;.
+     * Only applies when no &quot;persistenceUnitName&quot; param has been specified.
+     *
+     * @see #setEntityManagerFactoryBeanName
+     * @see #setPersistenceUnitName
+     */
+    public static final String DEFAULT_ENTITY_MANAGER_FACTORY_BEAN_NAME = &quot;entityManagerFactory&quot;;
+
+
+    private String entityManagerFactoryBeanName;
+
+    private String persistenceUnitName;
+
+    private volatile EntityManagerFactory entityManagerFactory;
+
+
+    /**
+     * Set the bean name of the EntityManagerFactory to fetch from Spring&apos;s
+     * root application context.
+     * &lt;p&gt;Default is &quot;entityManagerFactory&quot;. Note that this default only applies
+     * when no &quot;persistenceUnitName&quot; param has been specified.
+     *
+     * @see #setPersistenceUnitName
+     * @see #DEFAULT_ENTITY_MANAGER_FACTORY_BEAN_NAME
+     */
+    public void setEntityManagerFactoryBeanName(String entityManagerFactoryBeanName) {
+        this.entityManagerFactoryBeanName = entityManagerFactoryBeanName;
+    }
+
+    /**
+     * Return the bean name of the EntityManagerFactory to fetch from Spring&apos;s
+     * root application context.
+     */
+    protected String getEntityManagerFactoryBeanName() {
+        return this.entityManagerFactoryBeanName;
+    }
+
+    /**
+     * Set the name of the persistence unit to access the EntityManagerFactory for.
+     * &lt;p&gt;This is an alternative to specifying the EntityManagerFactory by bean name,
+     * resolving it by its persistence unit name instead. If no bean name and no persistence
+     * unit name have been specified, we&apos;ll check whether a bean exists for the default
+     * bean name &quot;entityManagerFactory&quot;; if not, a default EntityManagerFactory will
+     * be retrieved through finding a single unique bean of type EntityManagerFactory.
+     *
+     * @see #setEntityManagerFactoryBeanName
+     * @see #DEFAULT_ENTITY_MANAGER_FACTORY_BEAN_NAME
+     */
+    public void setPersistenceUnitName(String persistenceUnitName) {
+        this.persistenceUnitName = persistenceUnitName;
+    }
+
+    /**
+     * Return the name of the persistence unit to access the EntityManagerFactory for, if any.
+     */
+    protected String getPersistenceUnitName() {
+        return this.persistenceUnitName;
+    }
+
+    /**
+     * Look up the EntityManagerFactory that this filter should use.
+     * &lt;p&gt;The default implementation looks for a bean with the specified name
+     * in Spring&apos;s root application context.
+     *
+     * @return the EntityManagerFactory to use
+     * @see #getEntityManagerFactoryBeanName
+     */
+    protected EntityManagerFactory lookupEntityManagerFactory() {
+
+        String emfBeanName = getEntityManagerFactoryBeanName();
+        String puName = getPersistenceUnitName();
+        if (StringUtils.hasLength(emfBeanName)) {
+            return ApplicationContextProvider.getApplicationContext().getBean(emfBeanName, EntityManagerFactory.class);
+        } else if (!StringUtils.hasLength(puName) &amp;&amp; ApplicationContextProvider.getApplicationContext().containsBean(DEFAULT_ENTITY_MANAGER_FACTORY_BEAN_NAME)) {
+            return ApplicationContextProvider.getApplicationContext().getBean(DEFAULT_ENTITY_MANAGER_FACTORY_BEAN_NAME, EntityManagerFactory.class);
+        } else {
+            // Includes fallback search for single EntityManagerFactory bean by type.
+            return EntityManagerFactoryUtils.findEntityManagerFactory(ApplicationContextProvider.getApplicationContext(), puName);
+        }
+    }
+
+    /**
+     * Create a JPA EntityManager to be bound to a request.
+     * &lt;p&gt;Can be overridden in subclasses.
+     *
+     * @param emf the EntityManagerFactory to use
+     * @see javax.persistence.EntityManagerFactory#createEntityManager()
+     */
+    protected EntityManager createEntityManager(EntityManagerFactory emf) {
+        return emf.createEntityManager();
+    }
+
+    @Override
+    public Response filter(Caller&lt;?&gt; caller, Request request) {
+        if (!(caller instanceof Provider)) {
+            return caller.call(request);
+        }
+
+        EntityManagerFactory emf = null;
+        try {
+            emf = lookupEntityManagerFactory();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
+
+        //可能没有启用openjpa
+        if (emf == null) {
+            return caller.call(request);
+        }
+
+        try {
+            //如果没有绑定，绑定到当前线程
+            if (TransactionSynchronizationManager.getResource(emf) == null) {
+                EntityManager em = createEntityManager(emf);
+                EntityManagerHolder emHolder = new EntityManagerHolder(em);
+                TransactionSynchronizationManager.bindResource(emf, emHolder);
+            }
+        } catch (Exception e) {
+            logger.error(e.getLocalizedMessage(), e);
+        }
+        try {
+            return caller.call(request);
+        } finally {
+            //解除绑定
+            closeManager(emf);
+        }
+    }
+
+    /**
+     * 关闭 emf
+     *
+     * @param emf
+     */
+    private void closeManager(EntityManagerFactory emf) {
+        if (emf == null || TransactionSynchronizationManager.getResource(emf) == null) {
+            return;
+        }
+        EntityManagerHolder emHolder = null;
+        try {
+            emHolder = (EntityManagerHolder) TransactionSynchronizationManager.unbindResource(emf);
+        } catch (IllegalStateException e) {
+            logger.error(e.getLocalizedMessage(), e);
+        }
+        try {
+            if (emHolder != null) {
+                EntityManagerFactoryUtils.closeEntityManager(emHolder.getEntityManager());
+            }
+        } catch (Exception e) {
+            logger.error(e.getLocalizedMessage(), e);
+        }
+    }
+}
+</code></pre><h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>springboot中的事务管理做的永远比我们想的多，事务管理器的使用场景，@Transactional究竟起了哪些作用，以及spring-data这个对DDD最佳的阐释，以及mybatis一类的非j2ee规范在微服务的地位中是否高于jpa，各个层次之间的实体传输，消息传递…都是值得思考的。</p></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="4142158067"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="5618891265"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><footer class="post-footer"><div class="post-nav"><div class="post-nav-next post-nav-item"><a href="/2017/无我编程的10条戒律.html" rel="next" title="无我编程的 10 条戒律"><i class="fa fa-chevron-left"></i> 无我编程的 10 条戒律</a></div><span class="post-nav-divider"></span><div class="post-nav-prev post-nav-item"><a href="/2017/springmvcmybatis做分页sql语句.html" rel="prev" title="springmvc+mybatis 做分页sql 语句">springmvc+mybatis 做分页sql 语句 <i class="fa fa-chevron-right"></i></a></div></div></footer></div></article><div class="post-spread"></div></div></div></div><div class="sidebar-toggle"><div class="sidebar-toggle-line-wrap"><span class="sidebar-toggle-line sidebar-toggle-line-first"></span> <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span> <span class="sidebar-toggle-line sidebar-toggle-line-last"></span></div></div><aside id="sidebar" class="sidebar"><div class="sidebar-inner"><ul class="sidebar-nav motion-element"><li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">Table of Contents</li><li class="sidebar-nav-overview" data-target="site-overview-wrap">Overview</li></ul><section class="site-overview-wrap sidebar-panel"><div class="site-overview"><div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person"><p class="site-author-name" itemprop="name">Hello</p><p class="site-description motion-element" itemprop="description"></p></div><nav class="site-state motion-element"><div class="site-state-item site-state-posts"><a href="/archives/"><span class="site-state-item-count">1358</span> <span class="site-state-item-name">posts</span></a></div></nav></div></section><section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active"><div class="post-toc"><div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前期准备"><span class="nav-number">1.</span> <span class="nav-text">前期准备</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#问题分析"><span class="nav-number">2.</span> <span class="nav-text">问题分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#问题解决"><span class="nav-number">3.</span> <span class="nav-text">问题解决</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#问题再思考"><span class="nav-number">4.</span> <span class="nav-text">问题再思考</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#另外两个实战案例"><span class="nav-number">5.</span> <span class="nav-text">另外两个实战案例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">6.</span> <span class="nav-text">总结</span></a></li></ol></div></div></section></div></aside><div class="sfix"><div class="fixedme"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460" data-ad-format="auto"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script></div></div></main><footer id="footer" class="footer"><div class="footer-inner"><div class="copyright">&copy; <span itemprop="copyrightYear">2018</span> <span class="with-love"><i class="fa fa-user"></i> </span><span class="author" itemprop="copyrightHolder">Hello</span></div><div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div><span class="post-meta-divider">|</span><div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div></div></footer><div class="back-to-top"><i class="fa fa-arrow-up"></i></div></div><script type="text/javascript">"[object Function]"!==Object.prototype.toString.call(window.Promise)&&(window.Promise=null)</script><script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script><script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script><script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script><script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script><script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script></body></html><!-- rebuild by neat -->

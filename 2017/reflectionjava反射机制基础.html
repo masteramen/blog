@@ -1,0 +1,221 @@
+<!-- build time:Sat Oct 27 2018 21:00:21 GMT+0800 (CST) --><!DOCTYPE html><html class="theme-next muse use-motion"><head><meta name="generator" content="Hexo 3.8.0"><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"><meta name="theme-color" content="#222"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"><link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css"><link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css"><link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4"><link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222"><meta name="description" content="反射机制是在运行状态中，对于任意一个类，都能够知道这个类的所有属性和方法；对于任意一个对象，都能够调用它的任意一个方法和属性；这种动态获取的信息以及动态调用对象的方法的功能称为java语言的反射机制反射机制能做什么反射机制主要提供了以下功能：在运行时判断任意一个对象所属的类在运行时构造任意一个类的对象在运行时判断任意一个类所具有的成员变量和方法在运行时调用任意一个对象的方法生成动态代理反射机制的相"><meta name="keywords" content="JAVA,面试"><meta property="og:type" content="article"><meta property="og:title" content="Reflection：Java反射机制基础"><meta property="og:url" content="http://www.jfox.info/2017/reflectionjava反射机制基础.html"><meta property="og:site_name" content="java面试"><meta property="og:description" content="反射机制是在运行状态中，对于任意一个类，都能够知道这个类的所有属性和方法；对于任意一个对象，都能够调用它的任意一个方法和属性；这种动态获取的信息以及动态调用对象的方法的功能称为java语言的反射机制反射机制能做什么反射机制主要提供了以下功能：在运行时判断任意一个对象所属的类在运行时构造任意一个类的对象在运行时判断任意一个类所具有的成员变量和方法在运行时调用任意一个对象的方法生成动态代理反射机制的相"><meta property="og:locale" content="zh_CN"><meta property="og:updated_time" content="2018-10-27T12:29:39.637Z"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="Reflection：Java反射机制基础"><meta name="twitter:description" content="反射机制是在运行状态中，对于任意一个类，都能够知道这个类的所有属性和方法；对于任意一个对象，都能够调用它的任意一个方法和属性；这种动态获取的信息以及动态调用对象的方法的功能称为java语言的反射机制反射机制能做什么反射机制主要提供了以下功能：在运行时判断任意一个对象所属的类在运行时构造任意一个类的对象在运行时判断任意一个类所具有的成员变量和方法在运行时调用任意一个对象的方法生成动态代理反射机制的相"><script type="text/javascript" id="hexo.configurations">var NexT=window.NexT||{},CONFIG={root:"/",scheme:"Muse",version:"5.1.4",sidebar:{position:"left",display:"post",offset:12,b2t:!1,scrollpercent:!1,onmobile:!1},fancybox:!0,tabs:!0,motion:{enable:!0,async:!1,transition:{post_block:"fadeIn",post_header:"slideDownIn",post_body:"slideDownIn",coll_header:"slideLeftIn",sidebar:"slideUpIn"}},duoshuo:{userId:"0",author:"Author"},algolia:{applicationID:"",apiKey:"",indexName:"",hits:{per_page:10},labels:{input_placeholder:"Search for Posts",hits_empty:"We didn't find any results for the search: ${query}",hits_stats:"${hits} results found in ${time} ms"}}}</script><link rel="canonical" href="http://www.jfox.info/2017/reflectionjava反射机制基础.html"><title>Reflection：Java反射机制基础 | java面试</title></head><body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN"><div class="container sidebar-position-left page-post-detail"><div class="headband"></div><header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="header-inner"><div class="site-brand-wrapper"><div class="site-meta"><div class="custom-logo-site-title"><a href="/" class="brand" rel="start"><span class="logo-line-before"><i></i></span> <span class="site-title">java面试</span> <span class="logo-line-after"><i></i></span></a></div><p class="site-subtitle"></p></div><div class="site-nav-toggle"><button><span class="btn-bar"></span> <span class="btn-bar"></span> <span class="btn-bar"></span></button></div></div><nav class="site-nav"><ul id="menu" class="menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i><br>Home</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i><br>Archives</a></li></ul></nav></div></header><main id="main" class="main"><div class="main-inner"><div class="content-wrap"><div id="content" class="content"><div id="posts" class="posts-expand"><article class="post post-type-normal" itemscope itemtype="http://schema.org/Article"><div class="post-block"><link itemprop="mainEntityOfPage" href="http://www.jfox.info/2017/reflectionjava反射机制基础.html"><span hidden itemprop="author" itemscope itemtype="http://schema.org/Person"><meta itemprop="name" content="Hello"><meta itemprop="description" content=""><meta itemprop="image" content="/images/avatar.gif"></span><span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><meta itemprop="name" content="java面试"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">Reflection：Java反射机制基础</h1><div class="post-meta"><span class="post-time"><span class="post-meta-item-icon"><i class="fa fa-calendar-o"></i> </span><span class="post-meta-item-text">Posted on</span> <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-01-01T23:53:24+08:00">2017-01-01</time></span></div></header><div class="post-body" itemprop="articleBody"><p>反射机制是在运行状态中，对于任意一个类，都能够知道这个类的所有属性和方法；对于任意一个对象，都能够调用它的任意一个方法和属性；这种动态获取的信息以及动态调用对象的方法的功能称为java语言的反射机制</p><h3 id="反射机制能做什么"><a href="#反射机制能做什么" class="headerlink" title="反射机制能做什么"></a>反射机制能做什么</h3><p>反射机制主要提供了以下功能：</p><ul><li><p>在运行时判断任意一个对象所属的类</p></li><li><p>在运行时构造任意一个类的对象</p></li><li><p>在运行时判断任意一个类所具有的成员变量和方法</p></li><li><p>在运行时调用任意一个对象的方法</p></li><li><p>生成动态代理</p></li></ul><h3 id="反射机制的相关API"><a href="#反射机制的相关API" class="headerlink" title="反射机制的相关API"></a>反射机制的相关API</h3><h4 id="通过一个对象获得完整的包名和类名"><a href="#通过一个对象获得完整的包名和类名" class="headerlink" title="通过一个对象获得完整的包名和类名"></a>通过一个对象获得完整的包名和类名</h4><pre><code>@Test
+public void getReflectionName() {
+    String str = new String();
+    System.out.println(str.getClass().getName()); // java.lang.String
+    System.out.println(str.getClass().getSimpleName()); // String
+}
+</code></pre><h4 id="实例化Class类对象-三种方式"><a href="#实例化Class类对象-三种方式" class="headerlink" title="实例化Class类对象(三种方式)"></a>实例化Class类对象(三种方式)</h4><pre><code>@Test
+public void getInitClazz() {
+
+    try {
+        // 方式一：
+        Class&lt;?&gt; clazz_1 = Class.forName(&quot;java.lang.String&quot;);
+        // 方式二：
+        Class&lt;?&gt; clazz_2 = new String().getClass();
+        // 方式三：
+        Class&lt;?&gt; clazz_3 = String.class;
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+}
+</code></pre><h4 id="获取一个对象的父类与实现的接口"><a href="#获取一个对象的父类与实现的接口" class="headerlink" title="获取一个对象的父类与实现的接口"></a>获取一个对象的父类与实现的接口</h4><pre><code>@Test
+public void getParentAndIntefaces() {
+
+    try {
+        Class&lt;?&gt; clazz = Class.forName(&quot;java.lang.String&quot;);
+        // 取得父类
+        Class&lt;?&gt; parentClass = clazz.getSuperclass();
+        System.out.println(&quot;clazz的父类为：&quot; + parentClass.getName());// clazz的父类为： java.lang.Object
+
+        // 获取所有的接口
+        Class&lt;?&gt; intes[] = clazz.getInterfaces();
+        System.out.println(&quot;clazz实现的接口有：&quot;);
+        for (int i = 0; i &lt; intes.length; i++) {
+            System.out.println((i + 1) + &quot;：&quot; + intes[i].getName());
+        }
+
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+}
+</code></pre><h4 id="通过反射获取属性"><a href="#通过反射获取属性" class="headerlink" title="通过反射获取属性"></a>通过反射获取属性</h4><pre><code>@Test
+public void getFieldsByReflect() {
+
+    try {
+            Class&lt;?&gt; clazz = String.class ;
+            // 取得本类的全部属性
+            Field[] declaredFields = clazz.getDeclaredFields(); 
+            // 取得实现的接口或者父类的属性
+            Field[] fields = clazz.getFields();
+
+            //遍历本类属性
+            for (Field field : declaredFields) {
+                // 权限修饰符
+                int mo = field.getModifiers();
+                String priv = Modifier.toString(mo);
+                // 属性类型
+                Class&lt;?&gt; type = field.getType();
+                System.out.println(priv + &quot; &quot; + type.getName() + &quot; &quot; + field.getName() + &quot;;&quot;);
+            }
+
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+}
+</code></pre><h4 id="通过反射获取方法函数"><a href="#通过反射获取方法函数" class="headerlink" title="通过反射获取方法函数"></a>通过反射获取方法函数</h4><pre><code>@Test
+public void getMethodsByReflect() {
+
+    try {
+        Class&lt;?&gt; clazz = String.class ;
+        // 类的所有公用（public）方法包括其继承类的公用方法，当然也包括它所实现接口的方法
+        Method[] methods = clazz.getMethods();
+        // 类或接口声明的所有方法，包括公共、保护、默认（包）访问和私有方法，但不包括继承的方法。当然也包括它所实现接口的方法
+        Method[] declaredMethods = clazz.getDeclaredMethods();
+
+        //遍历本类属性
+        for (Method method : methods) {
+            // 权限修饰符
+            int mo = method.getModifiers();
+            String priv = Modifier.toString(mo);
+            //返回值
+            Class&lt;?&gt; returnType = method.getReturnType();
+            //方法名
+            String methodName = method.getName();
+            //方法参数类型
+            Class&lt;?&gt;[] parameterTypes = method.getParameterTypes();
+            //抛出的异常
+            Class&lt;?&gt;[] exceptionTypes = method.getExceptionTypes();
+        }
+
+} catch (Exception e) {
+    e.printStackTrace();
+}
+}
+</code></pre><h4 id="通过反射获取构造方法"><a href="#通过反射获取构造方法" class="headerlink" title="通过反射获取构造方法"></a>通过反射获取构造方法</h4><pre><code>@Test
+public void getConstructorsByReflect() {
+
+    try {
+        Class&lt;?&gt; clazz = Class.forName(&quot;java.lang.String&quot;);
+
+        //获取构造方法
+        Constructor&lt;?&gt;[] constructors = clazz.getConstructors();
+        for (Constructor constructor : constructors) {
+
+            //获取构造方法的参数
+            Class[] parameterTypes = constructor.getParameterTypes();
+            for (Class clazzType : parameterTypes) {
+                System.out.print(clazzType.getSimpleName() + &quot;   &quot;);
+            }
+            System.out.println();
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+}
+</code></pre><h4 id="通过反射机制设置属性"><a href="#通过反射机制设置属性" class="headerlink" title="通过反射机制设置属性"></a>通过反射机制设置属性</h4><pre><code>@Test
+public void oprFieldsByReflect() {
+
+    try {
+
+        Class&lt;?&gt; clazz = Class.forName(&quot;java.lang.String&quot;);
+        //实例化对象
+        String str = new String(&quot;String&quot;);
+        //可以直接对 private 的属性赋值
+        Field field = clazz.getDeclaredField(&quot;hash&quot;);
+        //改变属性
+        field.setAccessible(true);
+        //调用映射属性
+        field.set(str, 0);
+
+        System.out.println(field.get(str));
+
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+}
+</code></pre><h4 id="通过反射机制调用方法"><a href="#通过反射机制调用方法" class="headerlink" title="通过反射机制调用方法"></a>通过反射机制调用方法</h4><pre><code>@Test
+public void oprMethodsByReflect() {
+
+    try {
+        Class&lt;?&gt; clazz = Class.forName(&quot;java.lang.String&quot;);
+        //实例化一个对象
+        String str = new String(&quot;String&quot;);
+        //反射出一个方法
+        Method method =  clazz.getMethod(&quot;startsWith&quot;, String.class);
+        //调用映射方法
+        Object result = method.invoke(str, &quot;Str&quot;);
+
+        System.out.println(result);
+
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+}
+</code></pre><h3 id="实例应用"><a href="#实例应用" class="headerlink" title="实例应用"></a>实例应用</h3><h4 id="在泛型为Integer的ArrayList中存放一个String类型的对象"><a href="#在泛型为Integer的ArrayList中存放一个String类型的对象" class="headerlink" title="在泛型为Integer的ArrayList中存放一个String类型的对象"></a>在泛型为Integer的ArrayList中存放一个String类型的对象</h4><pre><code>/**
+ * 在泛型为Integer的ArrayList中存放一个String类型的对象
+ * @throws Exception
+ */
+@Test
+public void test() throws Exception {
+       ArrayList&lt;Integer&gt; list = new ArrayList&lt;Integer&gt;();
+        Method method = list.getClass().getMethod(&quot;add&quot;, Object.class);
+        method.invoke(list, &quot;Java反射机制实例&quot;);
+        System.out.println(list.get(0));
+}
+</code></pre><h4 id="通过反射取得并修改数组的信息"><a href="#通过反射取得并修改数组的信息" class="headerlink" title="通过反射取得并修改数组的信息"></a>通过反射取得并修改数组的信息</h4><pre><code>/**
+ * 通过反射取得并修改数组的信息
+ * 
+ * @throws Exception
+ */
+@Test
+public void test() throws Exception {
+    int[] temp = { 1, 2, 3, 4, 5 };
+    Class&lt;?&gt; demo = temp.getClass().getComponentType();
+
+    System.out.println(&quot;数组类型： &quot; + demo.getName());
+
+    System.out.println(&quot;数组长度  &quot; + Array.getLength(temp));
+
+    System.out.println(&quot;数组的第一个元素: &quot; + Array.get(temp, 0));
+
+    Array.set(temp, 0, 100);
+    System.out.println(&quot;修改之后数组第一个元素为： &quot; + Array.get(temp, 0));
+}
+</code></pre><h4 id="通过反射机制修改数组的大小"><a href="#通过反射机制修改数组的大小" class="headerlink" title="通过反射机制修改数组的大小"></a>通过反射机制修改数组的大小</h4><pre><code>/**
+  * 通过反射机制修改数组的大小
+  * 
+  * @throws Exception
+  */
+ @Test
+ public void test() throws Exception {
+
+     int[] temp = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+     int[] newTemp = (int[]) arrayInc(temp, 15);
+     print(newTemp);
+     String[] atr = { &quot;a&quot;, &quot;b&quot;, &quot;c&quot; };
+     String[] str1 = (String[]) arrayInc(atr, 8);
+     print(str1);
+ }
+
+ // 修改数组大小
+ private static Object arrayInc(Object obj, int len) {
+     Class&lt;?&gt; arr = obj.getClass().getComponentType();
+     Object newArr = Array.newInstance(arr, len);
+     int co = Array.getLength(obj);
+     System.arraycopy(obj, 0, newArr, 0, co);
+     return newArr;
+ }
+
+ // 打印
+ private static void print(Object obj) {
+     Class&lt;?&gt; c = obj.getClass();
+     if (!c.isArray()) {
+         return;
+     }
+     System.out.println(&quot;数组长度为： &quot; + Array.getLength(obj));
+     for (int i = 0; i &lt; Array.getLength(obj); i++) {
+         System.out.print(Array.get(obj, i) + &quot; &quot;);
+     }
+     System.out.println();
+ }
+</code></pre></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="4142158067"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="5618891265"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><footer class="post-footer"><div class="post-nav"><div class="post-nav-next post-nav-item"><a href="/2017/java开发系统内核让内核从严重错误中恢复.html" rel="next" title="java开发系统内核：让内核从严重错误中恢复"><i class="fa fa-chevron-left"></i> java开发系统内核：让内核从严重错误中恢复</a></div><span class="post-nav-divider"></span><div class="post-nav-prev post-nav-item"><a href="/2017/scanner基本用法.html" rel="prev" title="Scanner基本用法">Scanner基本用法 <i class="fa fa-chevron-right"></i></a></div></div></footer></div></article><div class="post-spread"></div></div></div></div><div class="sidebar-toggle"><div class="sidebar-toggle-line-wrap"><span class="sidebar-toggle-line sidebar-toggle-line-first"></span> <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span> <span class="sidebar-toggle-line sidebar-toggle-line-last"></span></div></div><aside id="sidebar" class="sidebar"><div class="sidebar-inner"><ul class="sidebar-nav motion-element"><li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">Table of Contents</li><li class="sidebar-nav-overview" data-target="site-overview-wrap">Overview</li></ul><section class="site-overview-wrap sidebar-panel"><div class="site-overview"><div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person"><p class="site-author-name" itemprop="name">Hello</p><p class="site-description motion-element" itemprop="description"></p></div><nav class="site-state motion-element"><div class="site-state-item site-state-posts"><a href="/archives/"><span class="site-state-item-count">1358</span> <span class="site-state-item-name">posts</span></a></div></nav></div></section><section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active"><div class="post-toc"><div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#反射机制能做什么"><span class="nav-number">1.</span> <span class="nav-text">反射机制能做什么</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#反射机制的相关API"><span class="nav-number">2.</span> <span class="nav-text">反射机制的相关API</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#通过一个对象获得完整的包名和类名"><span class="nav-number">2.1.</span> <span class="nav-text">通过一个对象获得完整的包名和类名</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#实例化Class类对象-三种方式"><span class="nav-number">2.2.</span> <span class="nav-text">实例化Class类对象(三种方式)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#获取一个对象的父类与实现的接口"><span class="nav-number">2.3.</span> <span class="nav-text">获取一个对象的父类与实现的接口</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#通过反射获取属性"><span class="nav-number">2.4.</span> <span class="nav-text">通过反射获取属性</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#通过反射获取方法函数"><span class="nav-number">2.5.</span> <span class="nav-text">通过反射获取方法函数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#通过反射获取构造方法"><span class="nav-number">2.6.</span> <span class="nav-text">通过反射获取构造方法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#通过反射机制设置属性"><span class="nav-number">2.7.</span> <span class="nav-text">通过反射机制设置属性</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#通过反射机制调用方法"><span class="nav-number">2.8.</span> <span class="nav-text">通过反射机制调用方法</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#实例应用"><span class="nav-number">3.</span> <span class="nav-text">实例应用</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#在泛型为Integer的ArrayList中存放一个String类型的对象"><span class="nav-number">3.1.</span> <span class="nav-text">在泛型为Integer的ArrayList中存放一个String类型的对象</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#通过反射取得并修改数组的信息"><span class="nav-number">3.2.</span> <span class="nav-text">通过反射取得并修改数组的信息</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#通过反射机制修改数组的大小"><span class="nav-number">3.3.</span> <span class="nav-text">通过反射机制修改数组的大小</span></a></li></ol></li></ol></div></div></section></div></aside><div class="sfix"><div class="fixedme"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460" data-ad-format="auto"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script></div></div></main><footer id="footer" class="footer"><div class="footer-inner"><div class="copyright">&copy; <span itemprop="copyrightYear">2018</span> <span class="with-love"><i class="fa fa-user"></i> </span><span class="author" itemprop="copyrightHolder">Hello</span></div><div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div><span class="post-meta-divider">|</span><div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div></div></footer><div class="back-to-top"><i class="fa fa-arrow-up"></i></div></div><script type="text/javascript">"[object Function]"!==Object.prototype.toString.call(window.Promise)&&(window.Promise=null)</script><script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script><script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script><script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script><script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script><script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script></body></html><!-- rebuild by neat -->

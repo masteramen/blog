@@ -1,0 +1,544 @@
+<!-- build time:Sat Oct 27 2018 21:00:16 GMT+0800 (CST) --><!DOCTYPE html><html class="theme-next muse use-motion"><head><meta name="generator" content="Hexo 3.8.0"><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"><meta name="theme-color" content="#222"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"><link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css"><link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css"><link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4"><link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222"><meta name="description" content="jOOQ和Spring很容易整合。 在这个例子中，我们将整合：Alibaba Druid（但您也可以使用其他连接池，如BoneCP，C3P0，DBCP等）。Spring TX作为事物管理library。jOOQ作为SQL构建和执行library。一、准备数据库DROP TABLE IF EXISTS `author`; CREATE TABLE `author` (   `id` int(11)"><meta name="keywords" content="JAVA,面试"><meta property="og:type" content="article"><meta property="og:title" content="【jOOQ中文】2. jOOQ与Spring和Druid集成"><meta property="og:url" content="http://www.jfox.info/2017/jooq中文2jooq与spring和druid集成.html"><meta property="og:site_name" content="java面试"><meta property="og:description" content="jOOQ和Spring很容易整合。 在这个例子中，我们将整合：Alibaba Druid（但您也可以使用其他连接池，如BoneCP，C3P0，DBCP等）。Spring TX作为事物管理library。jOOQ作为SQL构建和执行library。一、准备数据库DROP TABLE IF EXISTS `author`; CREATE TABLE `author` (   `id` int(11)"><meta property="og:locale" content="zh_CN"><meta property="og:updated_time" content="2018-10-27T12:29:37.421Z"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="【jOOQ中文】2. jOOQ与Spring和Druid集成"><meta name="twitter:description" content="jOOQ和Spring很容易整合。 在这个例子中，我们将整合：Alibaba Druid（但您也可以使用其他连接池，如BoneCP，C3P0，DBCP等）。Spring TX作为事物管理library。jOOQ作为SQL构建和执行library。一、准备数据库DROP TABLE IF EXISTS `author`; CREATE TABLE `author` (   `id` int(11)"><script type="text/javascript" id="hexo.configurations">var NexT=window.NexT||{},CONFIG={root:"/",scheme:"Muse",version:"5.1.4",sidebar:{position:"left",display:"post",offset:12,b2t:!1,scrollpercent:!1,onmobile:!1},fancybox:!0,tabs:!0,motion:{enable:!0,async:!1,transition:{post_block:"fadeIn",post_header:"slideDownIn",post_body:"slideDownIn",coll_header:"slideLeftIn",sidebar:"slideUpIn"}},duoshuo:{userId:"0",author:"Author"},algolia:{applicationID:"",apiKey:"",indexName:"",hits:{per_page:10},labels:{input_placeholder:"Search for Posts",hits_empty:"We didn't find any results for the search: ${query}",hits_stats:"${hits} results found in ${time} ms"}}}</script><link rel="canonical" href="http://www.jfox.info/2017/jooq中文2jooq与spring和druid集成.html"><title>【jOOQ中文】2. jOOQ与Spring和Druid集成 | java面试</title></head><body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN"><div class="container sidebar-position-left page-post-detail"><div class="headband"></div><header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="header-inner"><div class="site-brand-wrapper"><div class="site-meta"><div class="custom-logo-site-title"><a href="/" class="brand" rel="start"><span class="logo-line-before"><i></i></span> <span class="site-title">java面试</span> <span class="logo-line-after"><i></i></span></a></div><p class="site-subtitle"></p></div><div class="site-nav-toggle"><button><span class="btn-bar"></span> <span class="btn-bar"></span> <span class="btn-bar"></span></button></div></div><nav class="site-nav"><ul id="menu" class="menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i><br>Home</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i><br>Archives</a></li></ul></nav></div></header><main id="main" class="main"><div class="main-inner"><div class="content-wrap"><div id="content" class="content"><div id="posts" class="posts-expand"><article class="post post-type-normal" itemscope itemtype="http://schema.org/Article"><div class="post-block"><link itemprop="mainEntityOfPage" href="http://www.jfox.info/2017/jooq中文2jooq与spring和druid集成.html"><span hidden itemprop="author" itemscope itemtype="http://schema.org/Person"><meta itemprop="name" content="Hello"><meta itemprop="description" content=""><meta itemprop="image" content="/images/avatar.gif"></span><span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><meta itemprop="name" content="java面试"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">【jOOQ中文】2. jOOQ与Spring和Druid集成</h1><div class="post-meta"><span class="post-time"><span class="post-meta-item-icon"><i class="fa fa-calendar-o"></i> </span><span class="post-meta-item-text">Posted on</span> <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-01-01T23:59:25+08:00">2017-01-01</time></span></div></header><div class="post-body" itemprop="articleBody"><p>jOOQ和Spring很容易整合。 在这个例子中，我们将整合：</p><ul><li><p>Alibaba Druid（但您也可以使用其他连接池，如BoneCP，C3P0，DBCP等）。</p></li><li><p>Spring TX作为事物管理library。</p></li><li><p>jOOQ作为SQL构建和执行library。</p></li></ul><h2 id="一、准备数据库"><a href="#一、准备数据库" class="headerlink" title="一、准备数据库"></a>一、准备数据库</h2><pre><code>DROP TABLE IF EXISTS `author`;
+CREATE TABLE `author` (
+  `id` int(11) NOT NULL,
+  `first_name` varchar(50) DEFAULT NULL,
+  `last_name` varchar(50) NOT NULL,
+  `date_of_birth` date DEFAULT NULL,
+  `year_of_birth` int(11) DEFAULT NULL,
+  `distinguished` int(1) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+DROP TABLE IF EXISTS `book`;
+CREATE TABLE `book` (
+  `id` int(11) NOT NULL,
+  `author_id` int(11) NOT NULL,
+  `title` varchar(400) NOT NULL,
+  `published_in` int(11) NOT NULL,
+  `language_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+DROP TABLE IF EXISTS `book_store`;
+CREATE TABLE `book_store` (
+  `name` varchar(400) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+DROP TABLE IF EXISTS `book_to_book_store`;
+CREATE TABLE `book_to_book_store` (
+  `name` varchar(400) NOT NULL,
+  `book_id` int(11) NOT NULL,
+  `stock` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+DROP TABLE IF EXISTS `language`;
+CREATE TABLE `language` (
+  `id` int(11) NOT NULL,
+  `cd` char(2) NOT NULL,
+  `description` varchar(50) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
+ALTER TABLE `author`
+  ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `book`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_book_author` (`author_id`),
+  ADD KEY `fk_book_language` (`language_id`);
+
+ALTER TABLE `book_store`
+  ADD UNIQUE KEY `name` (`name`);
+
+ALTER TABLE `book_to_book_store`
+  ADD PRIMARY KEY (`name`,`book_id`),
+  ADD KEY `fk_b2bs_book` (`book_id`);
+
+ALTER TABLE `language`
+  ADD PRIMARY KEY (`id`);
+</code></pre><h2 id="二、添加所需的Maven依赖项"><a href="#二、添加所需的Maven依赖项" class="headerlink" title="二、添加所需的Maven依赖项"></a>二、添加所需的Maven依赖项</h2><p>在这个例子中，我们将创建以下Maven依赖项：</p><pre><code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;project xmlns=&quot;http://maven.apache.org/POM/4.0.0&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+    xsi:schemaLocation=&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd&quot;&gt;
+    &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
+    &lt;groupId&gt;com.jsyso&lt;/groupId&gt;
+      &lt;artifactId&gt;jooq-tutorials-2&lt;/artifactId&gt;
+      &lt;packaging&gt;jar&lt;/packaging&gt;
+    &lt;name&gt;jooq-tutorials-2&lt;/name&gt;
+    &lt;version&gt;1.0.0&lt;/version&gt;
+
+    &lt;properties&gt;
+        &lt;!-- spring --&gt;
+        &lt;spring.version&gt;4.1.9.RELEASE&lt;/spring.version&gt;
+        &lt;!-- /spring --&gt;
+
+        &lt;!-- environment --&gt;
+        &lt;jdk.version&gt;1.8&lt;/jdk.version&gt;
+        &lt;project.build.sourceEncoding&gt;UTF-8&lt;/project.build.sourceEncoding&gt;
+        &lt;downloadSources&gt;true&lt;/downloadSources&gt;
+        &lt;slf4j.version&gt;1.7.7&lt;/slf4j.version&gt;
+        &lt;!-- /environment --&gt;
+
+        &lt;!-- jdbc --&gt;
+        &lt;mysql.driver.version&gt;5.1.30&lt;/mysql.driver.version&gt;
+        &lt;druid.version&gt;1.0.18&lt;/druid.version&gt;
+        &lt;!-- /jdbc --&gt;
+
+        &lt;!-- jooq --&gt;
+        &lt;jooq.version&gt;3.9.5&lt;/jooq.version&gt;
+        &lt;!-- /jooq --&gt;
+
+    &lt;/properties&gt;
+
+    &lt;repositories&gt;
+        &lt;repository&gt;
+            &lt;id&gt;aliyun-repos&lt;/id&gt;
+            &lt;name&gt;Aliyun Repository&lt;/name&gt;
+            &lt;url&gt;http://maven.aliyun.com/nexus/content/groups/public&lt;/url&gt;
+        &lt;/repository&gt;
+    &lt;/repositories&gt;
+
+    &lt;pluginRepositories&gt; 
+        &lt;pluginRepository&gt;
+            &lt;id&gt;aliyun-repos&lt;/id&gt;
+            &lt;name&gt;Aliyun Repository&lt;/name&gt;
+            &lt;url&gt;http://maven.aliyun.com/nexus/content/groups/public&lt;/url&gt;
+        &lt;/pluginRepository&gt;
+    &lt;/pluginRepositories&gt;
+
+    &lt;dependencies&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;mysql&lt;/groupId&gt;
+            &lt;artifactId&gt;mysql-connector-java&lt;/artifactId&gt;
+            &lt;version&gt;${mysql.driver.version}&lt;/version&gt;
+        &lt;/dependency&gt;
+
+        &lt;dependency&gt;
+            &lt;groupId&gt;junit&lt;/groupId&gt;
+            &lt;artifactId&gt;junit&lt;/artifactId&gt;
+            &lt;version&gt;4.11&lt;/version&gt;
+            &lt;scope&gt;test&lt;/scope&gt;
+        &lt;/dependency&gt;
+
+        &lt;dependency&gt;
+          &lt;groupId&gt;org.jooq&lt;/groupId&gt;
+          &lt;artifactId&gt;jooq&lt;/artifactId&gt;
+          &lt;version&gt;${jooq.version}&lt;/version&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+          &lt;groupId&gt;org.jooq&lt;/groupId&gt;
+          &lt;artifactId&gt;jooq-meta&lt;/artifactId&gt;
+          &lt;version&gt;${jooq.version}&lt;/version&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+          &lt;groupId&gt;org.jooq&lt;/groupId&gt;
+          &lt;artifactId&gt;jooq-codegen&lt;/artifactId&gt;
+          &lt;version&gt;${jooq.version}&lt;/version&gt;
+        &lt;/dependency&gt;
+
+        &lt;dependency&gt;
+            &lt;groupId&gt;com.alibaba&lt;/groupId&gt;
+            &lt;artifactId&gt;druid&lt;/artifactId&gt;
+            &lt;version&gt;${druid.version}&lt;/version&gt;
+        &lt;/dependency&gt;
+
+        &lt;!-- spring --&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-core&lt;/artifactId&gt;
+            &lt;version&gt;${spring.version}&lt;/version&gt;
+            &lt;exclusions&gt;
+                &lt;exclusion&gt;
+                    &lt;groupId&gt;commons-logging&lt;/groupId&gt;
+                    &lt;artifactId&gt;commons-logging&lt;/artifactId&gt;
+                &lt;/exclusion&gt;
+            &lt;/exclusions&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-beans&lt;/artifactId&gt;
+            &lt;version&gt;${spring.version}&lt;/version&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-context&lt;/artifactId&gt;
+            &lt;version&gt;${spring.version}&lt;/version&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-context-support&lt;/artifactId&gt;
+            &lt;version&gt;${spring.version}&lt;/version&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-aop&lt;/artifactId&gt;
+            &lt;version&gt;${spring.version}&lt;/version&gt;
+            &lt;exclusions&gt;
+                &lt;exclusion&gt;
+                    &lt;groupId&gt;commons-logging&lt;/groupId&gt;
+                    &lt;artifactId&gt;commons-logging&lt;/artifactId&gt;
+                &lt;/exclusion&gt;
+            &lt;/exclusions&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-tx&lt;/artifactId&gt;
+            &lt;version&gt;${spring.version}&lt;/version&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-orm&lt;/artifactId&gt;
+            &lt;version&gt;${spring.version}&lt;/version&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-jdbc&lt;/artifactId&gt;
+            &lt;version&gt;${spring.version}&lt;/version&gt;
+        &lt;/dependency&gt;
+
+        &lt;!-- TEST begin --&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;junit&lt;/groupId&gt;
+            &lt;artifactId&gt;junit&lt;/artifactId&gt;
+            &lt;version&gt;4.11&lt;/version&gt;
+            &lt;scope&gt;test&lt;/scope&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-test&lt;/artifactId&gt;
+            &lt;version&gt;${spring.version}&lt;/version&gt;
+            &lt;scope&gt;test&lt;/scope&gt;
+        &lt;/dependency&gt;
+        &lt;!-- TEST end --&gt;
+
+        &lt;!-- LOGGING begin --&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.slf4j&lt;/groupId&gt;
+            &lt;artifactId&gt;slf4j-api&lt;/artifactId&gt;
+            &lt;version&gt;${slf4j.version}&lt;/version&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.slf4j&lt;/groupId&gt;
+            &lt;artifactId&gt;slf4j-log4j12&lt;/artifactId&gt;
+            &lt;version&gt;${slf4j.version}&lt;/version&gt;
+        &lt;/dependency&gt;
+        &lt;!-- common-logging 实际调用slf4j --&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.slf4j&lt;/groupId&gt;
+            &lt;artifactId&gt;jcl-over-slf4j&lt;/artifactId&gt;
+            &lt;version&gt;${slf4j.version}&lt;/version&gt;
+        &lt;/dependency&gt;
+        &lt;!-- java.util.logging 实际调用slf4j --&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.slf4j&lt;/groupId&gt;
+            &lt;artifactId&gt;jul-to-slf4j&lt;/artifactId&gt;
+            &lt;version&gt;${slf4j.version}&lt;/version&gt;
+        &lt;/dependency&gt;
+        &lt;!-- LOGGING end --&gt;
+
+    &lt;/dependencies&gt;
+
+    &lt;build&gt;
+        &lt;plugins&gt;
+            &lt;!-- Compiler 插件, 设定JDK版本 --&gt;
+            &lt;plugin&gt;
+                &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
+                &lt;artifactId&gt;maven-compiler-plugin&lt;/artifactId&gt;
+                &lt;version&gt;3.5.1&lt;/version&gt;
+                &lt;configuration&gt;
+                    &lt;source&gt;${jdk.version}&lt;/source&gt;
+                    &lt;target&gt;${jdk.version}&lt;/target&gt;
+                    &lt;showWarnings&gt;true&lt;/showWarnings&gt;
+                &lt;/configuration&gt;
+            &lt;/plugin&gt;
+
+            &lt;!-- 打包jar文件时，配置manifest文件，加入lib包的jar依赖 --&gt;
+            &lt;plugin&gt;
+                &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
+                &lt;artifactId&gt;maven-jar-plugin&lt;/artifactId&gt;
+                &lt;version&gt;2.4&lt;/version&gt;
+            &lt;/plugin&gt;
+
+            &lt;!-- resource插件 --&gt;
+            &lt;plugin&gt;
+                &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
+                &lt;artifactId&gt;maven-resources-plugin&lt;/artifactId&gt;
+                &lt;version&gt;2.7&lt;/version&gt;
+            &lt;/plugin&gt;
+
+            &lt;!-- install插件 --&gt;
+            &lt;plugin&gt;
+                &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
+                &lt;artifactId&gt;maven-install-plugin&lt;/artifactId&gt;
+                &lt;version&gt;2.5.2&lt;/version&gt;
+            &lt;/plugin&gt;
+
+            &lt;!-- clean插件 --&gt;
+            &lt;plugin&gt;
+                &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
+                &lt;artifactId&gt;maven-clean-plugin&lt;/artifactId&gt;
+                &lt;version&gt;2.6.1&lt;/version&gt;
+            &lt;/plugin&gt;
+
+            &lt;!-- dependency插件 --&gt;
+            &lt;plugin&gt;
+                &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
+                &lt;artifactId&gt;maven-dependency-plugin&lt;/artifactId&gt;
+                &lt;version&gt;2.10&lt;/version&gt;
+            &lt;/plugin&gt;
+
+            &lt;!-- 打包时跳过不执行测试用例 --&gt;
+            &lt;plugin&gt;
+                &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
+                &lt;artifactId&gt;maven-surefire-plugin&lt;/artifactId&gt;
+                &lt;version&gt;2.5&lt;/version&gt;
+                &lt;configuration&gt;
+                    &lt;skipTests&gt;true&lt;/skipTests&gt;
+                &lt;/configuration&gt;
+            &lt;/plugin&gt;
+        &lt;/plugins&gt;
+    &lt;/build&gt;
+
+    &lt;developers&gt;  
+        &lt;developer&gt;
+            &lt;id&gt;com.jsyso&lt;/id&gt;
+            &lt;name&gt;Jan&lt;/name&gt;
+            &lt;email&gt;xujian_jason@163.com&lt;/email&gt;
+            &lt;timezone&gt;+8&lt;/timezone&gt;
+        &lt;/developer&gt;
+    &lt;/developers&gt;
+
+&lt;/project&gt;
+</code></pre><h2 id="三、Spring配置文件"><a href="#三、Spring配置文件" class="headerlink" title="三、Spring配置文件"></a>三、Spring配置文件</h2><pre><code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+    xmlns:context=&quot;http://www.springframework.org/schema/context&quot; xmlns:jdbc=&quot;http://www.springframework.org/schema/jdbc&quot;  
+    xmlns:jee=&quot;http://www.springframework.org/schema/jee&quot; xmlns:tx=&quot;http://www.springframework.org/schema/tx&quot;
+    xmlns:util=&quot;http://www.springframework.org/schema/util&quot; xmlns:task=&quot;http://www.springframework.org/schema/task&quot; xsi:schemaLocation=&quot;
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.1.xsd
+        http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-4.1.xsd
+        http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-4.1.xsd
+        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.1.xsd
+        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.1.xsd
+        http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-4.1.xsd&quot;
+    default-lazy-init=&quot;true&quot;&gt;
+    &lt;description&gt;Spring Configuration&lt;/description&gt;
+
+    &lt;!-- 加载配置属性文件 --&gt;
+    &lt;context:property-placeholder ignore-unresolvable=&quot;true&quot; location=&quot;classpath:config.properties&quot; /&gt;
+
+    &lt;!-- 数据源配置 --&gt;
+    &lt;bean id=&quot;dataSource&quot; class=&quot;com.alibaba.druid.pool.DruidDataSource&quot; init-method=&quot;init&quot; destroy-method=&quot;close&quot;&gt;
+        &lt;!-- 数据源驱动类可不写，Druid默认会自动根据URL识别DriverClass --&gt;
+        &lt;property name=&quot;driverClassName&quot; value=&quot;${jdbc.driver}&quot; /&gt;
+
+        &lt;!-- 基本属性 url、user、password --&gt;
+        &lt;property name=&quot;url&quot; value=&quot;${jdbc.url}&quot; /&gt;
+        &lt;property name=&quot;username&quot; value=&quot;${jdbc.username}&quot; /&gt;
+        &lt;property name=&quot;password&quot; value=&quot;${jdbc.password}&quot; /&gt;
+
+        &lt;!-- 配置初始化大小、最小、最大 --&gt;
+        &lt;property name=&quot;initialSize&quot; value=&quot;${jdbc.pool.init}&quot; /&gt;
+        &lt;property name=&quot;minIdle&quot; value=&quot;${jdbc.pool.minIdle}&quot; /&gt;
+        &lt;property name=&quot;maxActive&quot; value=&quot;${jdbc.pool.maxActive}&quot; /&gt;
+
+        &lt;!-- 配置获取连接等待超时的时间 --&gt;
+        &lt;property name=&quot;maxWait&quot; value=&quot;60000&quot; /&gt;
+
+        &lt;!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 --&gt;
+        &lt;property name=&quot;timeBetweenEvictionRunsMillis&quot; value=&quot;60000&quot; /&gt;
+
+        &lt;!-- 配置一个连接在池中最小生存的时间，单位是毫秒 --&gt;
+        &lt;property name=&quot;minEvictableIdleTimeMillis&quot; value=&quot;300000&quot; /&gt;
+
+        &lt;property name=&quot;validationQuery&quot; value=&quot;${jdbc.testSql}&quot; /&gt;
+        &lt;property name=&quot;testWhileIdle&quot; value=&quot;true&quot; /&gt;
+        &lt;property name=&quot;testOnBorrow&quot; value=&quot;false&quot; /&gt;
+        &lt;property name=&quot;testOnReturn&quot; value=&quot;false&quot; /&gt;
+
+        &lt;!-- 配置监控统计拦截的filters --&gt;
+        &lt;property name=&quot;filters&quot; value=&quot;stat&quot; /&gt;
+    &lt;/bean&gt;
+
+    &lt;!-- 定义事务 --&gt;
+    &lt;bean id=&quot;transactionManager&quot; class=&quot;org.springframework.jdbc.datasource.DataSourceTransactionManager&quot;&gt;
+        &lt;property name=&quot;dataSource&quot; ref=&quot;dataSource&quot; /&gt;
+    &lt;/bean&gt;
+    &lt;!-- 配置 Annotation 驱动，扫描@Transactional注解的类定义事务  --&gt;
+    &lt;tx:annotation-driven transaction-manager=&quot;transactionManager&quot; proxy-target-class=&quot;true&quot;/&gt;
+    &lt;!-- 配置jOOQ的ConnectionProvider使用Spring的TransactionAwareDataSourceProx --&gt;
+    &lt;bean id=&quot;transactionAwareDataSource&quot;
+          class=&quot;org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy&quot;&gt;
+        &lt;constructor-arg ref=&quot;dataSource&quot; /&gt;
+    &lt;/bean&gt;
+    &lt;bean class=&quot;org.jooq.impl.DataSourceConnectionProvider&quot; name=&quot;connectionProvider&quot;&gt;
+        &lt;constructor-arg ref=&quot;transactionAwareDataSource&quot; /&gt;
+    &lt;/bean&gt;
+    &lt;!-- 可选，重写jOOQ异常，抛出Spring Exception --&gt;
+    &lt;bean id=&quot;exceptionTranslator&quot; class=&quot;test.generated.exception.ExceptionTranslator&quot; /&gt;
+
+    &lt;bean class=&quot;org.jooq.impl.DefaultConfiguration&quot; name=&quot;config&quot;&gt;
+        &lt;property name=&quot;SQLDialect&quot;&gt;&lt;value type=&quot;org.jooq.SQLDialect&quot;&gt;MYSQL&lt;/value&gt;&lt;/property&gt;
+        &lt;property name=&quot;connectionProvider&quot; ref=&quot;connectionProvider&quot; /&gt;
+        &lt;property name=&quot;executeListenerProvider&quot;&gt;
+            &lt;array&gt;
+                &lt;bean class=&quot;org.jooq.impl.DefaultExecuteListenerProvider&quot;&gt;
+                    &lt;constructor-arg index=&quot;0&quot; ref=&quot;exceptionTranslator&quot;/&gt;
+                &lt;/bean&gt;
+            &lt;/array&gt;
+        &lt;/property&gt;
+    &lt;/bean&gt;
+
+    &lt;!-- 配置jOOQ的dsl对象 --&gt;
+    &lt;bean id=&quot;dsl&quot; class=&quot;org.jooq.impl.DefaultDSLContext&quot;&gt;
+        &lt;constructor-arg ref=&quot;config&quot; /&gt;
+    &lt;/bean&gt;
+
+&lt;/beans&gt;
+</code></pre><h2 id="四、Spring-Test-JUnit集成测试"><a href="#四、Spring-Test-JUnit集成测试" class="headerlink" title="四、Spring Test + JUnit集成测试"></a>四、Spring Test + JUnit集成测试</h2><p><strong>查询测试：</strong></p><pre><code>package test.generated.service;
+
+import static java.util.Arrays.asList;
+import static org.jooq.impl.DSL.countDistinct;
+import static org.junit.Assert.assertEquals;
+import static test.generated.Tables.*;
+
+import org.jooq.DSLContext;
+import org.jooq.Record3;
+import org.jooq.Result;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import test.generated.tables.Author;
+import test.generated.tables.Book;
+import test.generated.tables.BookStore;
+import test.generated.tables.BookToBookStore;
+import test.generated.tables.records.BookRecord;
+
+/**
+ * @author Lukas Eder
+ */
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = {&quot;/jooq-spring.xml&quot;})
+public class QueryTest {
+    @Autowired
+    DSLContext create;
+
+    @Test
+    public void testJoin() throws Exception {
+        // All of these tables were generated by jOOQ&apos;s Maven plugin
+        Book b = BOOK.as(&quot;b&quot;);
+        Author a = AUTHOR.as(&quot;a&quot;);
+        BookStore s = BOOK_STORE.as(&quot;s&quot;);
+        BookToBookStore t = BOOK_TO_BOOK_STORE.as(&quot;t&quot;);
+
+        Result&lt;Record3&lt;String, String, Integer&gt;&gt; result =
+                create.select(a.FIRST_NAME, a.LAST_NAME, countDistinct(s.NAME))
+                        .from(a)
+                        .join(b).on(b.AUTHOR_ID.eq(a.ID))
+                        .join(t).on(t.BOOK_ID.eq(b.ID))
+                        .join(s).on(t.NAME.eq(s.NAME))
+                        .groupBy(a.FIRST_NAME, a.LAST_NAME)
+                        .orderBy(countDistinct(s.NAME).desc())
+                        .fetch();
+
+        assertEquals(2, result.size());
+        assertEquals(&quot;Paulo&quot;, result.getValue(0, a.FIRST_NAME));
+        assertEquals(&quot;George&quot;, result.getValue(1, a.FIRST_NAME));
+
+        assertEquals(&quot;Coelho&quot;, result.getValue(0, a.LAST_NAME));
+        assertEquals(&quot;Orwell&quot;, result.getValue(1, a.LAST_NAME));
+
+        assertEquals(Integer.valueOf(3), result.getValue(0, countDistinct(s.NAME)));
+        assertEquals(Integer.valueOf(2), result.getValue(1, countDistinct(s.NAME)));
+    }
+
+}
+</code></pre><p><strong>数据插入，使用Spring的TransactionManager来显式处理事务：</strong></p><pre><code>package test.generated.service;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static test.generated.Tables.BOOK;
+
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import org.jooq.DSLContext;
+
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.transaction.TransactionConfiguration;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
+
+/**
+ * @author Petri Kainulainen
+ * @author Lukas Eder
+ *
+ * @see &lt;a
+ *      href=&quot;http://www.petrikainulainen.net/programming/jooq/using-jooq-with-spring-configuration/&quot;&gt;http://www.petrikainulainen.net/programming/jooq/using-jooq-with-spring-configuration/&lt;/a&gt;
+ */
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = {&quot;/jooq-spring.xml&quot;})
+@TransactionConfiguration(transactionManager=&quot;transactionManager&quot;)
+public class TransactionTest {
+
+    @Autowired DSLContext                   dsl;
+    @Autowired DataSourceTransactionManager txMgr;
+
+    @Test
+    public void testDelBooks() {
+
+        // Delete all books that were created in any test
+        dsl.delete(BOOK).where(BOOK.ID.gt(4)).execute();
+    }
+
+    @Test
+    public void testAddBooks() {
+        TransactionStatus tx = txMgr.getTransaction(new DefaultTransactionDefinition());
+        for (int i = 1; i &lt;= 6; i++)
+            dsl.insertInto(BOOK)
+                    .set(BOOK.ID, i)
+                    .set(BOOK.PUBLISHED_IN, 1)
+                    .set(BOOK.LANGUAGE_ID, 1)
+                    .set(BOOK.AUTHOR_ID, 1)
+                    .set(BOOK.TITLE, &quot;Book &quot; + i)
+                    .execute();
+        txMgr.commit(tx);
+    }
+
+    @Test
+    public void testExplicitTransactions() {
+        boolean rollback = false;
+
+        TransactionStatus tx = txMgr.getTransaction(new DefaultTransactionDefinition());
+        try {
+
+            // This is a &quot;bug&quot;. The same book is created twice, resulting in a
+            // constraint violation exception
+            for (int i = 7; i &lt;=9; i++)
+                dsl.insertInto(BOOK)
+                        .set(BOOK.ID, i)
+                        .set(BOOK.AUTHOR_ID, 1)
+                        .set(BOOK.TITLE, &quot;Book &quot; + i)
+                        .execute();
+
+            Assert.fail();
+        }
+
+        // Upon the constraint violation, we explicitly roll back the transaction.
+        catch (DataAccessException e) {
+            txMgr.rollback(tx);
+            rollback = true;
+        }
+
+        assertEquals(4, dsl.fetchCount(BOOK));
+        assertTrue(rollback);
+    }
+}
+</code></pre><p>【jOOQ中文】教程代码都会放在码云，希望多多宣传给Star(^_−)☆。</p></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="4142158067"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="5618891265"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><footer class="post-footer"><div class="post-nav"><div class="post-nav-next post-nav-item"><a href="/2017/netty异步任务channelfuture.html" rel="next" title="netty 异步任务-ChannelFuture"><i class="fa fa-chevron-left"></i> netty 异步任务-ChannelFuture</a></div><span class="post-nav-divider"></span><div class="post-nav-prev post-nav-item"><a href="/2017/使用jpa实现乐观锁.html" rel="prev" title="使用 JPA 实现乐观锁">使用 JPA 实现乐观锁 <i class="fa fa-chevron-right"></i></a></div></div></footer></div></article><div class="post-spread"></div></div></div></div><div class="sidebar-toggle"><div class="sidebar-toggle-line-wrap"><span class="sidebar-toggle-line sidebar-toggle-line-first"></span> <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span> <span class="sidebar-toggle-line sidebar-toggle-line-last"></span></div></div><aside id="sidebar" class="sidebar"><div class="sidebar-inner"><ul class="sidebar-nav motion-element"><li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">Table of Contents</li><li class="sidebar-nav-overview" data-target="site-overview-wrap">Overview</li></ul><section class="site-overview-wrap sidebar-panel"><div class="site-overview"><div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person"><p class="site-author-name" itemprop="name">Hello</p><p class="site-description motion-element" itemprop="description"></p></div><nav class="site-state motion-element"><div class="site-state-item site-state-posts"><a href="/archives/"><span class="site-state-item-count">1358</span> <span class="site-state-item-name">posts</span></a></div></nav></div></section><section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active"><div class="post-toc"><div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#一、准备数据库"><span class="nav-number">1.</span> <span class="nav-text">一、准备数据库</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二、添加所需的Maven依赖项"><span class="nav-number">2.</span> <span class="nav-text">二、添加所需的Maven依赖项</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#三、Spring配置文件"><span class="nav-number">3.</span> <span class="nav-text">三、Spring配置文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#四、Spring-Test-JUnit集成测试"><span class="nav-number">4.</span> <span class="nav-text">四、Spring Test + JUnit集成测试</span></a></li></ol></div></div></section></div></aside><div class="sfix"><div class="fixedme"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460" data-ad-format="auto"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script></div></div></main><footer id="footer" class="footer"><div class="footer-inner"><div class="copyright">&copy; <span itemprop="copyrightYear">2018</span> <span class="with-love"><i class="fa fa-user"></i> </span><span class="author" itemprop="copyrightHolder">Hello</span></div><div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div><span class="post-meta-divider">|</span><div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div></div></footer><div class="back-to-top"><i class="fa fa-arrow-up"></i></div></div><script type="text/javascript">"[object Function]"!==Object.prototype.toString.call(window.Promise)&&(window.Promise=null)</script><script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script><script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script><script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script><script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script><script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script></body></html><!-- rebuild by neat -->

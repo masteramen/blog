@@ -1,0 +1,257 @@
+<!-- build time:Sat Oct 27 2018 21:00:21 GMT+0800 (CST) --><!DOCTYPE html><html class="theme-next muse use-motion"><head><meta name="generator" content="Hexo 3.8.0"><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"><meta name="theme-color" content="#222"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"><link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css"><link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css"><link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4"><link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222"><meta name="description" content="本期的“译见”, 将带您探索 Spring Security 是如何同 JWT 令牌一起使用的。在往期“译见”系列的文章中，我们已经创建了业务逻辑、数据访问层和前端控制器, 但是忽略了对身份进行验证。随着 Spring Security 成为实际意义上的标准, 将会在在构建 Java web 应用程序的身份验证和授权时使用到它。在构建用户管理微服务系列的第五部分中, 将带您探索 Spring Se"><meta name="keywords" content="JAVA,面试"><meta property="og:type" content="article"><meta property="og:title" content="译见｜构建用户管理微服务（五）：使用 JWT 令牌和 Spring Security 来实现身份验证"><meta property="og:url" content="http://www.jfox.info/2017/译见构建用户管理微服务五使用jwt令牌和springsecurity来实现.html"><meta property="og:site_name" content="java面试"><meta property="og:description" content="本期的“译见”, 将带您探索 Spring Security 是如何同 JWT 令牌一起使用的。在往期“译见”系列的文章中，我们已经创建了业务逻辑、数据访问层和前端控制器, 但是忽略了对身份进行验证。随着 Spring Security 成为实际意义上的标准, 将会在在构建 Java web 应用程序的身份验证和授权时使用到它。在构建用户管理微服务系列的第五部分中, 将带您探索 Spring Se"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="http://www.jfox.info/2017/1106/0785735.gif"><meta property="og:image" content="http://www.jfox.info/2017/1106/59f114d.png"><meta property="og:image" content="http://www.jfox.info/2017/1106/951da4c.png"><meta property="og:updated_time" content="2018-10-27T12:51:09.588Z"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="译见｜构建用户管理微服务（五）：使用 JWT 令牌和 Spring Security 来实现身份验证"><meta name="twitter:description" content="本期的“译见”, 将带您探索 Spring Security 是如何同 JWT 令牌一起使用的。在往期“译见”系列的文章中，我们已经创建了业务逻辑、数据访问层和前端控制器, 但是忽略了对身份进行验证。随着 Spring Security 成为实际意义上的标准, 将会在在构建 Java web 应用程序的身份验证和授权时使用到它。在构建用户管理微服务系列的第五部分中, 将带您探索 Spring Se"><meta name="twitter:image" content="http://www.jfox.info/2017/1106/0785735.gif"><script type="text/javascript" id="hexo.configurations">var NexT=window.NexT||{},CONFIG={root:"/",scheme:"Muse",version:"5.1.4",sidebar:{position:"left",display:"post",offset:12,b2t:!1,scrollpercent:!1,onmobile:!1},fancybox:!0,tabs:!0,motion:{enable:!0,async:!1,transition:{post_block:"fadeIn",post_header:"slideDownIn",post_body:"slideDownIn",coll_header:"slideLeftIn",sidebar:"slideUpIn"}},duoshuo:{userId:"0",author:"Author"},algolia:{applicationID:"",apiKey:"",indexName:"",hits:{per_page:10},labels:{input_placeholder:"Search for Posts",hits_empty:"We didn't find any results for the search: ${query}",hits_stats:"${hits} results found in ${time} ms"}}}</script><link rel="canonical" href="http://www.jfox.info/2017/译见构建用户管理微服务五使用jwt令牌和springsecurity来实现.html"><title>译见｜构建用户管理微服务（五）：使用 JWT 令牌和 Spring Security 来实现身份验证 | java面试</title></head><body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN"><div class="container sidebar-position-left page-post-detail"><div class="headband"></div><header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="header-inner"><div class="site-brand-wrapper"><div class="site-meta"><div class="custom-logo-site-title"><a href="/" class="brand" rel="start"><span class="logo-line-before"><i></i></span> <span class="site-title">java面试</span> <span class="logo-line-after"><i></i></span></a></div><p class="site-subtitle"></p></div><div class="site-nav-toggle"><button><span class="btn-bar"></span> <span class="btn-bar"></span> <span class="btn-bar"></span></button></div></div><nav class="site-nav"><ul id="menu" class="menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i><br>Home</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i><br>Archives</a></li></ul></nav></div></header><main id="main" class="main"><div class="main-inner"><div class="content-wrap"><div id="content" class="content"><div id="posts" class="posts-expand"><article class="post post-type-normal" itemscope itemtype="http://schema.org/Article"><div class="post-block"><link itemprop="mainEntityOfPage" href="http://www.jfox.info/2017/译见构建用户管理微服务五使用jwt令牌和springsecurity来实现.html"><span hidden itemprop="author" itemscope itemtype="http://schema.org/Person"><meta itemprop="name" content="Hello"><meta itemprop="description" content=""><meta itemprop="image" content="/images/avatar.gif"></span><span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><meta itemprop="name" content="java面试"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">译见｜构建用户管理微服务（五）：使用 JWT 令牌和 Spring Security 来实现身份验证</h1><div class="post-meta"><span class="post-time"><span class="post-meta-item-icon"><i class="fa fa-calendar-o"></i> </span><span class="post-meta-item-text">Posted on</span> <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-01-01T23:53:26+08:00">2017-01-01</time></span></div></header><div class="post-body" itemprop="articleBody"><p>本期的“译见”, 将带您探索 Spring Security 是如何同 JWT 令牌一起使用的。</p><p><img src="/2017/1106/0785735.gif" alt=""></p><p>在往期“译见”系列的文章中，我们已经创建了业务逻辑、数据访问层和前端控制器, 但是忽略了对身份进行验证。随着 Spring Security 成为实际意义上的标准, 将会在在构建 Java web 应用程序的身份验证和授权时使用到它。在构建用户管理微服务系列的第五部分中, 将带您探索 Spring Security 是如何同 JWT 令牌一起使用的。</p><h3 id="有关-Token-船长导语"><a href="#有关-Token-船长导语" class="headerlink" title="有关 Token | 船长导语"></a>有关 Token | 船长导语</h3><p>诸如 Facebook，Github，Twitter 等大型网站都在使用基于 Token 的身份验证。相比传统的身份验证方法，Token 的扩展性更强，也更安全，非常适合用在 Web 应用或者移动应用上。我们将 Token 翻译成令牌，也就意味着，你能依靠这个令牌去通过一些关卡，来实现验证。实施 Token 验证的方法很多，JWT 就是相关标准方法中的一种。</p><h3 id="关于-JWT-令牌"><a href="#关于-JWT-令牌" class="headerlink" title="关于 JWT 令牌"></a>关于 JWT 令牌</h3><p>JSON Web TOKEN（JWT）是一个开放的标准 （RFC 7519）, 它定义了一种简洁且独立的方式, 让在各方之间的 JSON 对象安全地传输信息。而经过数字签名的信息也可以被验证和信任。</p><p>JWT 的应用越来越广泛, 而因为它是轻量级的，你也不需要有一个用来验证令牌的认证服务器。与 OAuth 相比, 这有利有弊。如果 JWT 令牌被截获，它可以用来模拟用户, 也无法防范使用这个被截获的令牌继续进行身份验证。</p><p>真正的 JWT 令牌看起来像下面这样：</p><pre><code>eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.
+eyJzdWIiOiJsYXN6bG9fQVRfc3ByaW5ndW5pX0RPVF9jb20iLCJuYW1lIjoiTMOhc3psw7MgQ3NvbnRvcyIsImFkbWluIjp0cnVlfQ.
+XEfFHwFGK0daC80EFZBB5ki2CwrOb7clGRGlzchAD84
+</code></pre><p>JWT 令牌的第一部分是令牌的 header , 用于标识令牌的类型和对令牌进行签名的算法。</p><pre><code>{ 
+ &quot;alg&quot;: &quot;HS256&quot;, &quot;typ&quot;: &quot;JWT&quot;
+
+}
+</code></pre><p>第二部分是 JWT 令牌的 payload 或它的声明。这两者是有区别的。Payload 可以是任意一组数据, 它甚至可以是明文或其他 （嵌入 JWT）的数据。而声明则是一组标准的字段。</p><pre><code>{ 
+ &quot;sub&quot;: &quot;laszlo_AT_springuni_DOT_com&quot;, &quot;name&quot;: &quot;László Csontos&quot;, &quot;admin&quot;: true
+
+}
+</code></pre><p>第三部分是由算法产生的、由 JWT 的 header 表示的签名。</p><h4 id="创建和验证-JWT-令牌"><a href="#创建和验证-JWT-令牌" class="headerlink" title="创建和验证 JWT 令牌"></a>创建和验证 JWT 令牌</h4><p>有相当多的第三方库可用于操作 JWT 令牌。而在本文中, 我使用了 JJWT。</p><pre><code>&lt;dependency&gt;
+    &lt;groupId&gt;io.jsonwebtoken&lt;/groupId&gt;
+    &lt;artifactId&gt;jjwt&lt;/artifactId&gt;
+    &lt;version&gt;0.7.0&lt;/version&gt;
+&lt;/dependency&gt;
+</code></pre><p>采用 JwtTokenService 使 JWT 令牌从身份验证实例中创建, 并将 JWTs 解析回身份验证实例。</p><pre><code>public class JwtTokenServiceImpl implements JwtTokenService {  
+
+private static final String AUTHORITIES = &quot;authorities&quot;;  
+
+static final String SECRET = &quot;ThisIsASecret&quot;;
+
+  @Override  
+public String createJwtToken(Authentication authentication, int minutes) {
+    Claims claims = Jwts.claims()
+        .setId(String.valueOf(IdentityGenerator.generate()))
+        .setSubject(authentication.getName())
+        .setExpiration(new Date(currentTimeMillis() + minutes * 60 * 1000))
+        .setIssuedAt(new Date());
+
+    String authorities = authentication.getAuthorities()
+        .stream()
+        .map(GrantedAuthority::getAuthority)
+        .map(String::toUpperCase)
+        .collect(Collectors.joining(&quot;,&quot;));
+
+    claims.put(AUTHORITIES, authorities);    
+
+return Jwts.builder()
+        .setClaims(claims)
+        .signWith(HS512, SECRET)
+        .compact();
+  }
+
+  @Override  
+public Authentication parseJwtToken(String jwtToken) throws AuthenticationException {    
+try {
+      Claims claims = Jwts.parser()
+            .setSigningKey(SECRET)
+            .parseClaimsJws(jwtToken)
+            .getBody();      
+return JwtAuthenticationToken.of(claims);
+    } catch (ExpiredJwtException | SignatureException e) {      
+throw new BadCredentialsException(e.getMessage(), e);
+    } catch (UnsupportedJwtException | MalformedJwtException e) {      
+throw new AuthenticationServiceException(e.getMessage(), e);
+    } catch (IllegalArgumentException e) {      
+throw new InternalAuthenticationServiceException(e.getMessage(), e);
+    }
+  }
+
+}
+</code></pre><p>根据实际的验证，parseClaimsJws () 会引发各种异常。在 parseJwtToken () 中, 引发的异常被转换回 AuthenticationExceptions。虽然 JwtAuthenticationEntryPoint 能将这些异常转换为各种 HTTP 的响应代码, 但它也只是重复 DefaultAuthenticationFailureHandler 来以 http 401 (未经授权) 响应。</p><h3 id="登录和身份验证过程"><a href="#登录和身份验证过程" class="headerlink" title="登录和身份验证过程"></a>登录和身份验证过程</h3><p>基本上, 认证过程有两个短语, 让后端将服务用于单页面 web 应用程序。</p><h4 id="登录时创建-JWT-令牌"><a href="#登录时创建-JWT-令牌" class="headerlink" title="登录时创建 JWT 令牌"></a>登录时创建 JWT 令牌</h4><p>第一次登录变完成启动, 且在这一过程中, 将创建一个 JWT 令牌并将其发送回客户端。这些是通过以下请求完成的：</p><pre><code>POST /session
+{   
+  &quot;username&quot;: &quot;laszlo_AT_sprimguni_DOT_com&quot;,
+   &quot;password&quot;: &quot;secret&quot;
+}
+</code></pre><p>成功登录后, 客户端会像往常一样向其他端点发送后续请求, 并在授权的 header 中提供本地缓存的 JWT 令牌。</p><pre><code>Authorization: Bearer &lt;JWT token&gt;
+</code></pre><p><img src="/2017/1106/59f114d.png" alt=""></p><p>正如上面的步骤所讲, LoginFilter 开始进行登录过程。而Spring Security 的内置 UsernamePasswordAuthenticationFilter 被延长, 来让这种情况发生。这两者之间的唯一的区别是, UsernamePasswordAuthenticationFilter 使用表单参数来捕获用户名和密码, 相比之下, LoginFilter 将它们视做 JSON 对象。</p><pre><code>import org.springframework.security.authentication.*;
+import org.springframework.security.core.*;
+import org.springframework.security.web.authentication.*;
+
+public class LoginFilter extends UsernamePasswordAuthenticationFilter {  
+private static final String LOGIN_REQUEST_ATTRIBUTE = &quot;login_request&quot;;
+
+  ...
+
+  @Override  
+public Authentication attemptAuthentication(
+      HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {    
+try {
+      LoginRequest loginRequest =
+          objectMapper.readValue(request.getInputStream(), LoginRequest.class);
+
+      request.setAttribute(LOGIN_REQUEST_ATTRIBUTE, loginRequest);      
+return super.attemptAuthentication(request, response);
+    } catch (IOException ioe) {      
+throw new InternalAuthenticationServiceException(ioe.getMessage(), ioe);
+    } finally {
+      request.removeAttribute(LOGIN_REQUEST_ATTRIBUTE);
+    }
+  }
+
+  @Override  
+protected String obtainUsername(HttpServletRequest request) {    
+return toLoginRequest(request).getUsername();
+  }
+
+  @Override  
+protected String obtainPassword(HttpServletRequest request) {    
+return toLoginRequest(request).getPassword();
+  }  
+private LoginRequest toLoginRequest(HttpServletRequest request) {    return (LoginRequest)request.getAttribute(LOGIN_REQUEST_ATTRIBUTE);
+  }
+
+}
+</code></pre><p>处理登陆过程的结果将在之后分派给一个 AuthenticationSuccessHandler 和 AuthenticationFailureHandler。</p><p>两者都相当简单。DefaultAuthenticationSuccessHandler 调用 JwtTokenService 发出一个新的令牌, 然后将其发送回客户端。</p><pre><code>public class DefaultAuthenticationSuccessHandler implements AuthenticationSuccessHandler {  
+
+private static final int ONE_DAY_MINUTES = 24 * 60;  
+
+private final JwtTokenService jwtTokenService;  
+private final ObjectMapper objectMapper;  
+
+public DefaultAuthenticationSuccessHandler(
+      JwtTokenService jwtTokenService, ObjectMapper objectMapper) {    
+this.jwtTokenService = jwtTokenService;    
+this.objectMapper = objectMapper;
+  }
+
+  @Override  
+public void onAuthenticationSuccess(
+      HttpServletRequest request, HttpServletResponse response, Authentication authentication)      
+throws IOException {
+
+    response.setContentType(APPLICATION_JSON_VALUE);
+
+    String jwtToken = jwtTokenService.createJwtToken(authentication, ONE_DAY_MINUTES);
+    objectMapper.writeValue(response.getWriter(), jwtToken);
+  }
+
+}
+</code></pre><p>以下是它的对应, DefaultAuthenticationFailureHandler, 只是发送回一个 http 401 错误消息。</p><pre><code>public class DefaultAuthenticationFailureHandler implements AuthenticationFailureHandler {  
+
+private static final Logger LOGGER =
+      LoggerFactory.getLogger(DefaultAuthenticationFailureHandler.class);  
+
+private final ObjectMapper objectMapper;  
+
+public DefaultAuthenticationFailureHandler(ObjectMapper objectMapper) {    
+this.objectMapper = objectMapper;
+  }
+
+  @Override  
+public void onAuthenticationFailure(
+      HttpServletRequest request, HttpServletResponse response, AuthenticationException exception)      
+throws IOException {
+
+    LOGGER.warn(exception.getMessage());
+
+    HttpStatus httpStatus = translateAuthenticationException(exception);
+
+    response.setStatus(httpStatus.value());
+    response.setContentType(APPLICATION_JSON_VALUE);
+
+    writeResponse(response.getWriter(), httpStatus, exception);
+  }  
+protected HttpStatus translateAuthenticationException(AuthenticationException exception) {    
+return UNAUTHORIZED;
+  }  
+protected void writeResponse(
+      Writer writer, HttpStatus httpStatus, AuthenticationException exception) throws IOException {
+
+    RestErrorResponse restErrorResponse = RestErrorResponse.of(httpStatus, exception);
+    objectMapper.writeValue(writer, restErrorResponse);
+  }
+
+}
+</code></pre><h4 id="处理后续请求"><a href="#处理后续请求" class="headerlink" title="处理后续请求"></a>处理后续请求</h4><p>在客户端登陆后, 它将在本地缓存 JWT 令牌, 并在前面讨论的后续请求中发送反回。</p><p><img src="/2017/1106/951da4c.png" alt=""></p><p>对于每个请求, JwtAuthenticationFilter 通过 JwtTokenService 验证接收到的 JWT令牌。</p><pre><code>public class JwtAuthenticationFilter extends OncePerRequestFilter {  
+
+private static final Logger LOGGER =
+      LoggerFactory.getLogger(JwtAuthenticationFilter.class);  
+
+private static final String AUTHORIZATION_HEADER = &quot;Authorization&quot;;  
+private static final String TOKEN_PREFIX = &quot;Bearer&quot;;  
+
+private final JwtTokenService jwtTokenService;  
+
+public JwtAuthenticationFilter(JwtTokenService jwtTokenService) {    
+this.jwtTokenService = jwtTokenService;
+  }
+
+  @Override  
+protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
+      FilterChain filterChain) throws ServletException, IOException {
+
+    Authentication authentication = getAuthentication(request);    
+if (authentication == null) {
+      SecurityContextHolder.clearContext();
+      filterChain.doFilter(request, response);     
+ return;
+    }    
+
+ try {
+      SecurityContextHolder.getContext().setAuthentication(authentication);
+      filterChain.doFilter(request, response);
+    } finally {
+      SecurityContextHolder.clearContext();
+    }
+  }  private Authentication getAuthentication(HttpServletRequest request) {
+    String authorizationHeader = request.getHeader(AUTHORIZATION_HEADER);    if (StringUtils.isEmpty(authorizationHeader)) {
+      LOGGER.debug(&quot;Authorization header is empty.&quot;);      
+return null;
+    }    if (StringUtils.substringMatch(authorizationHeader, 0, TOKEN_PREFIX)) {
+      LOGGER.debug(&quot;Token prefix {} in Authorization header was not found.&quot;, TOKEN_PREFIX);      
+            return null;
+    }
+
+    String jwtToken = authorizationHeader.substring(TOKEN_PREFIX.length() + 1);    try {      
+      return jwtTokenService.parseJwtToken(jwtToken);
+    } catch (AuthenticationException e) {
+      LOGGER.warn(e.getMessage());      
+      return null;
+    }
+  }
+
+}
+</code></pre><p>如果令牌是有效的, 则会实例化 JwtAuthenticationToken, 并执行线程的 SecurityContext。而由于恢复的 JWT 令牌包含唯一的 ID 和经过身份验证的用户的权限, 因此无需与数据库联系以再次获取此信息。</p><pre><code>public class JwtAuthenticationToken extends AbstractAuthenticationToken {  
+
+private static final String AUTHORITIES = &quot;authorities&quot;; 
+
+private final long userId;  
+
+private JwtAuthenticationToken(long userId, Collection&lt;? extends GrantedAuthority&gt; authorities) {    
+super(authorities);    
+this.userId = userId;
+  }
+
+  @Override  
+public Object getCredentials() {    
+return null;
+  }
+
+  @Override  
+public Long getPrincipal() {    
+return userId;
+  }  /**   * Factory method for creating a new {@code {@link JwtAuthenticationToken{% raw%}}}{% endraw%}.   * @param claims JWT claims   * @return a JwtAuthenticationToken   */
+
+public static JwtAuthenticationToken of(Claims claims) {    
+long userId = Long.valueOf(claims.getSubject());
+
+    Collection&lt;GrantedAuthority&gt; authorities =
+        Arrays.stream(String.valueOf(claims.get(AUTHORITIES)).split(&quot;,&quot;))
+            .map(String::trim)
+            .map(String::toUpperCase)
+            .map(SimpleGrantedAuthority::new)
+            .collect(Collectors.toSet());
+
+    JwtAuthenticationToken jwtAuthenticationToken = new JwtAuthenticationToken(userId, authorities);
+
+    Date now = new Date();
+    Date expiration = claims.getExpiration();
+    Date notBefore = claims.getNotBefore();
+    jwtAuthenticationToken.setAuthenticated(now.after(notBefore) &amp;&amp; now.before(expiration));    return jwtAuthenticationToken;
+  }
+
+}
+</code></pre><p>在这之后, 它由安全框架决定是否允许或拒绝请求。</p><h3 id="Spring-Security-在-Java-EE-世界中有竞争者吗？"><a href="#Spring-Security-在-Java-EE-世界中有竞争者吗？" class="headerlink" title="Spring Security 在 Java EE 世界中有竞争者吗？"></a>Spring Security 在 Java EE 世界中有竞争者吗？</h3><p>虽然这不是这篇文章的主题, 但我想花一分钟的时间来谈谈。如果我不得不在一个 JAVA EE 应用程序中完成所有这些？Spring Security 真的是在 JAVA 中实现身份验证和授权的黄金标准吗？</p><h4 id="让我们做个小小的研究！"><a href="#让我们做个小小的研究！" class="headerlink" title="让我们做个小小的研究！"></a>让我们做个小小的研究！</h4><p>JAVA EE 8 指日可待，他将在 2017 年年底发布，我想看看它是否会是 Spring Security 一个强大的竞争者。我发现 JAVA EE 8 将提供 JSR-375 , 这应该会缓解 JAVA EE 应用程序的安全措施的发展。它的参考实施被称为 Soteira, 是一个相对新的 github 项目。那就是说, 现在的答案是真的没有这样的一个竞争者。</p><p>但这项研究是不完整的，并没有提到 Apache Shiro。虽然我从未使用过，但我听说这算是更为简单的 Spring Security。让它更 JWT 令牌 一起使用也不是不可能。从这个角度来看，Apache Shiro 是算 Spring Security 的一个的有可比性的替代品</p><p>下期预告：构建用户管理微服务（六）：添加持久 JWT 令牌的身份验证</p><p>原文链接：<a href="https://www.springuni.com/user-management-microservice-part-5" target="_blank" rel="noopener">https://www.springuni.com/user-management-microservice-part-5</a></p></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="4142158067"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="5618891265"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><footer class="post-footer"><div class="post-nav"><div class="post-nav-next post-nav-item"><a href="/2017/scanner基本用法.html" rel="next" title="Scanner基本用法"><i class="fa fa-chevron-left"></i> Scanner基本用法</a></div><span class="post-nav-divider"></span><div class="post-nav-prev post-nav-item"><a href="/2017/也谈tdd以及三层架构设计模式orm没有免费的午餐.html" rel="prev" title="也谈TDD，以及三层架构、设计模式、ORM……：没有免费的午餐">也谈TDD，以及三层架构、设计模式、ORM……：没有免费的午餐 <i class="fa fa-chevron-right"></i></a></div></div></footer></div></article><div class="post-spread"></div></div></div></div><div class="sidebar-toggle"><div class="sidebar-toggle-line-wrap"><span class="sidebar-toggle-line sidebar-toggle-line-first"></span> <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span> <span class="sidebar-toggle-line sidebar-toggle-line-last"></span></div></div><aside id="sidebar" class="sidebar"><div class="sidebar-inner"><ul class="sidebar-nav motion-element"><li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">Table of Contents</li><li class="sidebar-nav-overview" data-target="site-overview-wrap">Overview</li></ul><section class="site-overview-wrap sidebar-panel"><div class="site-overview"><div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person"><p class="site-author-name" itemprop="name">Hello</p><p class="site-description motion-element" itemprop="description"></p></div><nav class="site-state motion-element"><div class="site-state-item site-state-posts"><a href="/archives/"><span class="site-state-item-count">1358</span> <span class="site-state-item-name">posts</span></a></div></nav></div></section><section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active"><div class="post-toc"><div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#有关-Token-船长导语"><span class="nav-number">1.</span> <span class="nav-text">有关 Token | 船长导语</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#关于-JWT-令牌"><span class="nav-number">2.</span> <span class="nav-text">关于 JWT 令牌</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#创建和验证-JWT-令牌"><span class="nav-number">2.1.</span> <span class="nav-text">创建和验证 JWT 令牌</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#登录和身份验证过程"><span class="nav-number">3.</span> <span class="nav-text">登录和身份验证过程</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#登录时创建-JWT-令牌"><span class="nav-number">3.1.</span> <span class="nav-text">登录时创建 JWT 令牌</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#处理后续请求"><span class="nav-number">3.2.</span> <span class="nav-text">处理后续请求</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Spring-Security-在-Java-EE-世界中有竞争者吗？"><span class="nav-number">4.</span> <span class="nav-text">Spring Security 在 Java EE 世界中有竞争者吗？</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#让我们做个小小的研究！"><span class="nav-number">4.1.</span> <span class="nav-text">让我们做个小小的研究！</span></a></li></ol></li></ol></div></div></section></div></aside><div class="sfix"><div class="fixedme"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460" data-ad-format="auto"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script></div></div></main><footer id="footer" class="footer"><div class="footer-inner"><div class="copyright">&copy; <span itemprop="copyrightYear">2018</span> <span class="with-love"><i class="fa fa-user"></i> </span><span class="author" itemprop="copyrightHolder">Hello</span></div><div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div><span class="post-meta-divider">|</span><div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div></div></footer><div class="back-to-top"><i class="fa fa-arrow-up"></i></div></div><script type="text/javascript">"[object Function]"!==Object.prototype.toString.call(window.Promise)&&(window.Promise=null)</script><script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script><script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script><script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script><script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script><script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script></body></html><!-- rebuild by neat -->

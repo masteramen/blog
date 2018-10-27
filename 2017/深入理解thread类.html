@@ -1,0 +1,239 @@
+<!-- build time:Sat Oct 27 2018 21:00:20 GMT+0800 (CST) --><!DOCTYPE html><html class="theme-next muse use-motion"><head><meta name="generator" content="Hexo 3.8.0"><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"><meta name="theme-color" content="#222"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"><link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css"><link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css"><link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4"><link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222"><meta name="description" content="云计算与大数据时代，分布式、高并发是Java程序员面临的难题，其中Thread类的复杂性，往往让人摸不着头脑，学习《Java多线程编程核心技术》，对于初学者确实是一本入门宝典。一、interrupt、interrupted和isInterrupted方法的差异interrupt仅是为线程打了一个停止标记，并不影响其正常运行；interrupted判断当前线程是否为中断状态，有则清除停止标记；isI"><meta name="keywords" content="JAVA,面试"><meta property="og:type" content="article"><meta property="og:title" content="深入理解Thread类"><meta property="og:url" content="http://www.jfox.info/2017/深入理解thread类.html"><meta property="og:site_name" content="java面试"><meta property="og:description" content="云计算与大数据时代，分布式、高并发是Java程序员面临的难题，其中Thread类的复杂性，往往让人摸不着头脑，学习《Java多线程编程核心技术》，对于初学者确实是一本入门宝典。一、interrupt、interrupted和isInterrupted方法的差异interrupt仅是为线程打了一个停止标记，并不影响其正常运行；interrupted判断当前线程是否为中断状态，有则清除停止标记；isI"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="http://www.jfox.info/2017/1127/5f58a8b.png"><meta property="og:updated_time" content="2018-10-27T12:29:39.329Z"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="深入理解Thread类"><meta name="twitter:description" content="云计算与大数据时代，分布式、高并发是Java程序员面临的难题，其中Thread类的复杂性，往往让人摸不着头脑，学习《Java多线程编程核心技术》，对于初学者确实是一本入门宝典。一、interrupt、interrupted和isInterrupted方法的差异interrupt仅是为线程打了一个停止标记，并不影响其正常运行；interrupted判断当前线程是否为中断状态，有则清除停止标记；isI"><meta name="twitter:image" content="http://www.jfox.info/2017/1127/5f58a8b.png"><script type="text/javascript" id="hexo.configurations">var NexT=window.NexT||{},CONFIG={root:"/",scheme:"Muse",version:"5.1.4",sidebar:{position:"left",display:"post",offset:12,b2t:!1,scrollpercent:!1,onmobile:!1},fancybox:!0,tabs:!0,motion:{enable:!0,async:!1,transition:{post_block:"fadeIn",post_header:"slideDownIn",post_body:"slideDownIn",coll_header:"slideLeftIn",sidebar:"slideUpIn"}},duoshuo:{userId:"0",author:"Author"},algolia:{applicationID:"",apiKey:"",indexName:"",hits:{per_page:10},labels:{input_placeholder:"Search for Posts",hits_empty:"We didn't find any results for the search: ${query}",hits_stats:"${hits} results found in ${time} ms"}}}</script><link rel="canonical" href="http://www.jfox.info/2017/深入理解thread类.html"><title>深入理解Thread类 | java面试</title></head><body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN"><div class="container sidebar-position-left page-post-detail"><div class="headband"></div><header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="header-inner"><div class="site-brand-wrapper"><div class="site-meta"><div class="custom-logo-site-title"><a href="/" class="brand" rel="start"><span class="logo-line-before"><i></i></span> <span class="site-title">java面试</span> <span class="logo-line-after"><i></i></span></a></div><p class="site-subtitle"></p></div><div class="site-nav-toggle"><button><span class="btn-bar"></span> <span class="btn-bar"></span> <span class="btn-bar"></span></button></div></div><nav class="site-nav"><ul id="menu" class="menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i><br>Home</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i><br>Archives</a></li></ul></nav></div></header><main id="main" class="main"><div class="main-inner"><div class="content-wrap"><div id="content" class="content"><div id="posts" class="posts-expand"><article class="post post-type-normal" itemscope itemtype="http://schema.org/Article"><div class="post-block"><link itemprop="mainEntityOfPage" href="http://www.jfox.info/2017/深入理解thread类.html"><span hidden itemprop="author" itemscope itemtype="http://schema.org/Person"><meta itemprop="name" content="Hello"><meta itemprop="description" content=""><meta itemprop="image" content="/images/avatar.gif"></span><span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><meta itemprop="name" content="java面试"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">深入理解Thread类</h1><div class="post-meta"><span class="post-time"><span class="post-meta-item-icon"><i class="fa fa-calendar-o"></i> </span><span class="post-meta-item-text">Posted on</span> <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-01-01T23:53:47+08:00">2017-01-01</time></span></div></header><div class="post-body" itemprop="articleBody"><p>云计算与大数据时代，分布式、高并发是Java程序员面临的难题，其中Thread类的复杂性，往往让人摸不着头脑，学习《Java多线程编程核心技术》，对于初学者确实是一本入门宝典。</p><h4 id="一、interrupt、interrupted和isInterrupted方法的差异"><a href="#一、interrupt、interrupted和isInterrupted方法的差异" class="headerlink" title="一、interrupt、interrupted和isInterrupted方法的差异"></a>一、interrupt、interrupted和isInterrupted方法的差异</h4><ul><li>interrupt仅是为线程打了一个停止标记，并不影响其正常运行；</li><li>interrupted判断当前线程是否为中断状态，有则清除停止标记；</li><li><p>isInterrupted判断调用线程是否为中断状态，不清楚停止标记；</p><p>public class MyThread extends Thread {</p><pre><code>@Override
+public void run() {
+    super.run();
+    for(int i=0;i &lt; 10000;i++){
+        System.out.println(&quot;i : &quot;+(i+1));
+    }
+}
+</code></pre><p>}</p><p>public class Run {</p><pre><code>public static void main(String[] args) {
+    try {
+        MyThread t = new MyThread();
+        t.start();
+        t.interrupt();
+        // interruted方法为判断当前线程是否中断，此为main线程
+        System.out.println(&quot;是否停止： &quot;+t.interrupted()); 
+        // isInterrupted方法为判断调用线程是否中断，此为t 
+        System.out.println(&quot;是否停止: &quot;+t.isInterrupted());
+    } catch (Exception e) {
+        e.getStackTrace();
+    }
+}
+</code></pre><p>}</p><p>i : 1<br>是否停止： false<br>i : 2<br>是否停止: true<br>i : 3</p></li></ul><h4 id="二、sleep与interrupt方法的先后顺序"><a href="#二、sleep与interrupt方法的先后顺序" class="headerlink" title="二、sleep与interrupt方法的先后顺序"></a>二、sleep与interrupt方法的先后顺序</h4><ul><li><p>无论是先sleep后interrupt，或是顺序切换，中断状态均会被清除；</p><p>public class MyThread extends Thread {</p><pre><code>@Override
+public void run() {
+    super.run();
+    try {
+        for(int i=0;i &lt; 200000;i++){
+            System.out.println(&quot;i : &quot;+(i+1));
+        }
+        Thread.sleep(5000);
+    } catch (InterruptedException e) {
+        System.out.println(&quot;睡眠中中断状态是否清除： &quot;+this.isInterrupted());
+        e.printStackTrace();
+    }
+}
+</code></pre><p>}</p><p>public class Run {</p><pre><code>public static void main(String[] args) {
+    try {
+        MyThread t = new MyThread();
+        t.start();
+        t.interrupt(); // 先中断后睡眠
+    } catch (Exception e) {
+        e.getStackTrace();
+    }
+}
+</code></pre><p>}</p><p>i : 199999<br>i : 200000<br>睡眠中中断状态是否清除： false<br>java.lang.InterruptedException: sleep interrupted</p><pre><code>at java.lang.Thread.sleep(Native Method)
+at javaBasic.MyThread.run(MyThread.java:11)
+</code></pre></li></ul><h4 id="三、加锁后被暂停，程序卡顿"><a href="#三、加锁后被暂停，程序卡顿" class="headerlink" title="三、加锁后被暂停，程序卡顿"></a>三、加锁后被暂停，程序卡顿</h4><ul><li>suspend方法，虽然已经被deprecated，学习其工作原理；</li><li><p>suspend与resume联合使用，容易造成数据不一致的情况；</p><p>public class MyThread extends Thread {</p><pre><code>@Override
+public void run() {
+    super.run();
+    try {
+        for(int i=0;i &lt; 200000;i++){
+            System.out.println(&quot;i : &quot;+(i+1));
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+}
+</code></pre><p>}<br>public class Run {</p><pre><code>public static void main(String[] args) {
+    try {
+        MyThread t = new MyThread();
+        t.start();
+        Thread.sleep(1000);
+        t.suspend();
+        System.out.println(&quot;共享对象加锁被停止后，被独占&quot;);
+    } catch (Exception e) {
+        e.getStackTrace();
+    }
+}
+</code></pre><p>}</p><p>// 程序停顿在此，无法继续执行<br>i : 109178<br>i : 109179<br>i : 109180<br>i : 109181<br>i : 109182</p><pre><code>// 加锁后被暂停，println方法不能被使用，知道resume恢复后继续执行
+public void println(String x) {
+    synchronized (this) {
+        print(x);
+        newLine();
+    }
+}
+</code></pre></li></ul><h4 id="四、常用概念小结"><a href="#四、常用概念小结" class="headerlink" title="四、常用概念小结"></a>四、常用概念小结</h4><ul><li>守护线程<br>Dameon的作用是为其他线程提供便利，一旦没有其他线程工作，则伴随JVM一起停止，常见的是JVM垃圾回收线程；</li><li>优先级<br>线程的优先级具有继承性、规则性和随机性，意味着CPU会提供更多的时间为其服务；高优先级的任务会大部分先执行完，不代表会全部先执行完；</li><li>常用的方法<br>yield()：放弃CPU资源，让给其他任务，放弃时间未知；<br>isAlive()：判断当前线程是否是存活状态；<br>concurrentThread()：判断当前线程；</li><li>线程状态(常用五种、细分七种)</li></ul><p><img src="/2017/1127/5f58a8b.png" alt=""></p><p>线程状态切换.png</p><h4 id="五、等待通知机制"><a href="#五、等待通知机制" class="headerlink" title="五、等待通知机制"></a>五、等待通知机制</h4><ul><li>wait和notify方法使用前，均需要获得对象锁，即二者须使用在同步语句中；</li><li>wait方法执行后，释放对象锁，进入阻塞状态；此时调用该进程的interrupt方法，抛出java.lang.InterruptedException异常；</li><li><p>notify方法执行后，从该同步对象的阻塞队列中唤醒一个线程（每个对象具有一个就绪队列和一个阻塞队列）；notify执行完所在的同步语句后，线程才被真正唤醒；（notifyAll唤醒多个线程）</p><p>public class Add {</p><pre><code>private String lock;
+private ArrayList&lt;String&gt; list;
+
+public Add(String lock,ArrayList&lt;String&gt; list){
+    this.lock = lock;
+    this.list = list;
+}
+
+public void add() {
+    synchronized(lock){
+        list.add(&quot;Hello World&quot;);
+        lock.notifyAll();;
+    }
+}
+</code></pre><p>}</p><p>public class Substract {</p><pre><code>private String lock;
+private ArrayList&lt;String&gt; list;
+
+public Substract(String lock,ArrayList&lt;String&gt; list){
+    this.lock = lock;
+    this.list = list;
+}
+
+public void substract(){
+    try {
+        synchronized(lock){
+            while(list.size() == 0){
+                System.out.println(&quot;begin : &quot;+System.currentTimeMillis());
+                lock.wait();
+                System.out.println(&quot;end :　&quot;+System.currentTimeMillis());
+            }
+            list.remove(0);
+            System.out.println(&quot;The operation is done now&quot;);
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+}
+</code></pre><p>}</p><p>public class ThreadAdd extends Thread{</p><pre><code>private Add p;
+
+public ThreadAdd(Add p){
+    super();
+    this.p = p;
+}
+
+@Override
+public void run() {
+    p.add();
+}
+</code></pre><p>}<br>public class ThreadSubstract extends Thread{</p><pre><code>private Substract s;
+
+public ThreadSubstract(Substract s){
+    super();
+    this.s = s;
+}
+
+@Override
+public void run() {
+    s.substract();
+}
+</code></pre><p>}</p><p>public class Test {</p><pre><code>public static void main(String[] args) throws Exception {
+    String lock = new String(&quot;&quot;);
+    ArrayList&lt;String&gt; list = new ArrayList&lt;String&gt;();
+
+    Add p = new Add(lock,list);
+    Substract s = new Substract(lock,list);
+
+    ThreadSubstract ts1 = new ThreadSubstract(s);
+    ts1.start();
+
+    ThreadSubstract ts2 = new ThreadSubstract(s);
+    ts2.start();
+</code></pre><p>// ts1.interrupt();</p><pre><code>    Thread.sleep(1000);
+
+    ThreadAdd ta = new ThreadAdd(p);
+    ta.start();
+
+}
+</code></pre><p>}</p><p>// 执行结果<br>begin : 1499092455187 // ts1执行wait方法阻塞<br>begin : 1499092455187 // ts2执行wait方法阻塞<br>end :　1499092456188 // list添加后执行notifyAll，ts1或者ts2抢先执行后删除list中元素<br>The operation is done now<br>end :　1499092456188 // 未结束的线程一直在循环执行<br>begin : 1499092456188</p></li><li><p>因为synchronized同步语句执行退出后，会将最新值从主内存刷新到线程的工作内存中，同理，在开始执行synchronized语句获得对象锁前，将主内存中的最新值刷新到工作内存中，所以list的大小实现同步；</p></li></ul><h4 id="六、join方法"><a href="#六、join方法" class="headerlink" title="六、join方法"></a>六、join方法</h4><ul><li><p>作用<br>将指定线程添加到当前线程；<br>调用iterrupt方法，直接抛出中断异常（直接原因与wait方法相同）；</p><p>a.join(); // b线程调用a的join方法，等待直到a运行结束<br>a.join(1000); //b线程调用a的join方法，等待1s</p><pre><code>public final synchronized void join(long millis)
+throws InterruptedException {
+    long base = System.currentTimeMillis();
+    long now = 0;
+
+    if (millis &lt; 0) {
+        throw new IllegalArgumentException(&quot;timeout value is negative&quot;);
+    }
+
+    if (millis == 0) {
+        while (isAlive()) {
+            wait(0);
+        }
+    } else {
+        while (isAlive()) {
+            long delay = millis - now;
+            if (delay &lt;= 0) {
+                break;
+            }
+            wait(delay);
+            now = System.currentTimeMillis() - base;
+        }
+    }
+}
+</code></pre><p>public class ThreadA extends Thread{</p><pre><code>@Override
+synchronized public void run() {
+    try {
+        System.out.println(&quot;begin A : ThreadName--&quot;+
+                Thread.currentThread().getName()+System.currentTimeMillis());
+        Thread.sleep(5000);
+        System.out.println(&quot;end A : ThreadName--&quot;+
+                Thread.currentThread().getName()+System.currentTimeMillis());                
+    } catch (InterruptedException e) {
+        e.printStackTrace();
+    }    
+}
+</code></pre><p>}</p><p>public class TestJoin {</p><pre><code>public static void main(String[] args) throws InterruptedException {
+    ThreadA ta = new ThreadA();
+    ta.start();
+    ta.join(1000);        
+    System.out.println(&quot;main end -- &quot; + System.currentTimeMillis());
+}
+</code></pre><p>}</p><p>// 测试结果，main线程无法获取锁对象只能等待，且执行时间为5秒而不是6秒<br>begin A : ThreadName–Thread-01499224208429<br>end A : ThreadName–Thread-01499224213429<br>main end – 1499224213429</p><p>public class ThreadA extends Thread{</p><pre><code>private ThreadB tb;
+
+public ThreadA(ThreadB tb){
+    super();
+    this.tb = tb;
+}
+
+@Override
+public void run() {
+    synchronized(tb){
+        try {
+            System.out.println(&quot;begin A : ThreadName--&quot;+
+                    Thread.currentThread().getName()+System.currentTimeMillis());
+            Thread.sleep(5000);
+            System.out.println(&quot;end A : ThreadName--&quot;+
+                    Thread.currentThread().getName()+System.currentTimeMillis());                
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+}
+</code></pre><p>}</p><p>public class ThreadB extends Thread{</p><pre><code>@Override
+synchronized public void run() {
+    super.run();
+    try {
+        System.out.println(&quot;begin B : ThreadName--&quot;+
+                Thread.currentThread().getName()+System.currentTimeMillis());
+        Thread.sleep(1000);
+        System.out.println(&quot;end B : ThreadName--&quot;+
+                Thread.currentThread().getName()+System.currentTimeMillis());                
+    } catch (InterruptedException e) {
+        e.printStackTrace();
+    }
+}    
+</code></pre><p>}</p><p>public class TestJoin {</p><pre><code>public static void main(String[] args) throws InterruptedException {
+    ThreadB tb = new ThreadB();
+    ThreadA ta = new ThreadA(tb);
+
+    ta.start();
+    tb.start();
+    //参见源码，快速释放锁，出现ta、tb和tb.join抢占锁，出现多种情况
+    tb.join(2000);
+
+    System.out.println(&quot;main end -- &quot; + System.currentTimeMillis());
+}
+</code></pre><p>}</p></li></ul></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="4142158067"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="5618891265"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><footer class="post-footer"><div class="post-nav"><div class="post-nav-next post-nav-item"><a href="/2017/源资讯第34期程序员不用上班还能拿高薪的方法.html" rel="next" title="【源资讯 第34期】程序员不用上班还能拿高薪的方法……"><i class="fa fa-chevron-left"></i> 【源资讯 第34期】程序员不用上班还能拿高薪的方法……</a></div><span class="post-nav-divider"></span><div class="post-nav-prev post-nav-item"><a href="/2017/springcloud构建微服务架构服务注册与发现eurekaconsuldalston版.html" rel="prev" title="Spring Cloud构建微服务架构：服务注册与发现（Eureka、Consul）【Dalston版】">Spring Cloud构建微服务架构：服务注册与发现（Eureka、Consul）【Dalston版】 <i class="fa fa-chevron-right"></i></a></div></div></footer></div></article><div class="post-spread"></div></div></div></div><div class="sidebar-toggle"><div class="sidebar-toggle-line-wrap"><span class="sidebar-toggle-line sidebar-toggle-line-first"></span> <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span> <span class="sidebar-toggle-line sidebar-toggle-line-last"></span></div></div><aside id="sidebar" class="sidebar"><div class="sidebar-inner"><ul class="sidebar-nav motion-element"><li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">Table of Contents</li><li class="sidebar-nav-overview" data-target="site-overview-wrap">Overview</li></ul><section class="site-overview-wrap sidebar-panel"><div class="site-overview"><div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person"><p class="site-author-name" itemprop="name">Hello</p><p class="site-description motion-element" itemprop="description"></p></div><nav class="site-state motion-element"><div class="site-state-item site-state-posts"><a href="/archives/"><span class="site-state-item-count">1358</span> <span class="site-state-item-name">posts</span></a></div></nav></div></section><section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active"><div class="post-toc"><div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#一、interrupt、interrupted和isInterrupted方法的差异"><span class="nav-number">1.</span> <span class="nav-text">一、interrupt、interrupted和isInterrupted方法的差异</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#二、sleep与interrupt方法的先后顺序"><span class="nav-number">2.</span> <span class="nav-text">二、sleep与interrupt方法的先后顺序</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#三、加锁后被暂停，程序卡顿"><span class="nav-number">3.</span> <span class="nav-text">三、加锁后被暂停，程序卡顿</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#四、常用概念小结"><span class="nav-number">4.</span> <span class="nav-text">四、常用概念小结</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#五、等待通知机制"><span class="nav-number">5.</span> <span class="nav-text">五、等待通知机制</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#六、join方法"><span class="nav-number">6.</span> <span class="nav-text">六、join方法</span></a></li></ol></div></div></section></div></aside><div class="sfix"><div class="fixedme"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460" data-ad-format="auto"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script></div></div></main><footer id="footer" class="footer"><div class="footer-inner"><div class="copyright">&copy; <span itemprop="copyrightYear">2018</span> <span class="with-love"><i class="fa fa-user"></i> </span><span class="author" itemprop="copyrightHolder">Hello</span></div><div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div><span class="post-meta-divider">|</span><div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div></div></footer><div class="back-to-top"><i class="fa fa-arrow-up"></i></div></div><script type="text/javascript">"[object Function]"!==Object.prototype.toString.call(window.Promise)&&(window.Promise=null)</script><script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script><script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script><script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script><script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script><script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script></body></html><!-- rebuild by neat -->

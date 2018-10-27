@@ -1,0 +1,450 @@
+<!-- build time:Sat Oct 27 2018 21:00:17 GMT+0800 (CST) --><!DOCTYPE html><html class="theme-next muse use-motion"><head><meta name="generator" content="Hexo 3.8.0"><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"><meta name="theme-color" content="#222"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"><link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css"><link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css"><link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4"><link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222"><meta name="description" content="JPA是一个使用java规范发布的库。因此，它支持所有面向对象的实体持久性概念。原文链接：http://blogxinxiucan.sh1.newtouch.com/2017/07/30/JPA-Advanced-Mappings-映射/继承策略继承是面向对象语言的核心概念，因此我们可以在实体之间使用继承关系或策略。JPA支持三种类型的继承策略，如SINGLE_TABLE，JOINED_TABLE"><meta name="keywords" content="JAVA,面试"><meta property="og:type" content="article"><meta property="og:title" content="JPA Advanced Mappings(映射)"><meta property="og:url" content="http://www.jfox.info/2017/jpaadvancedmappings映射.html"><meta property="og:site_name" content="java面试"><meta property="og:description" content="JPA是一个使用java规范发布的库。因此，它支持所有面向对象的实体持久性概念。原文链接：http://blogxinxiucan.sh1.newtouch.com/2017/07/30/JPA-Advanced-Mappings-映射/继承策略继承是面向对象语言的核心概念，因此我们可以在实体之间使用继承关系或策略。JPA支持三种类型的继承策略，如SINGLE_TABLE，JOINED_TABLE"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="http://www.jfox.info/2017/1432/c7fa7c5.png"><meta property="og:image" content="http://www.jfox.info/2017/1432/07a453d.png"><meta property="og:updated_time" content="2018-10-27T12:29:37.367Z"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="JPA Advanced Mappings(映射)"><meta name="twitter:description" content="JPA是一个使用java规范发布的库。因此，它支持所有面向对象的实体持久性概念。原文链接：http://blogxinxiucan.sh1.newtouch.com/2017/07/30/JPA-Advanced-Mappings-映射/继承策略继承是面向对象语言的核心概念，因此我们可以在实体之间使用继承关系或策略。JPA支持三种类型的继承策略，如SINGLE_TABLE，JOINED_TABLE"><meta name="twitter:image" content="http://www.jfox.info/2017/1432/c7fa7c5.png"><script type="text/javascript" id="hexo.configurations">var NexT=window.NexT||{},CONFIG={root:"/",scheme:"Muse",version:"5.1.4",sidebar:{position:"left",display:"post",offset:12,b2t:!1,scrollpercent:!1,onmobile:!1},fancybox:!0,tabs:!0,motion:{enable:!0,async:!1,transition:{post_block:"fadeIn",post_header:"slideDownIn",post_body:"slideDownIn",coll_header:"slideLeftIn",sidebar:"slideUpIn"}},duoshuo:{userId:"0",author:"Author"},algolia:{applicationID:"",apiKey:"",indexName:"",hits:{per_page:10},labels:{input_placeholder:"Search for Posts",hits_empty:"We didn't find any results for the search: ${query}",hits_stats:"${hits} results found in ${time} ms"}}}</script><link rel="canonical" href="http://www.jfox.info/2017/jpaadvancedmappings映射.html"><title>JPA Advanced Mappings(映射) | java面试</title></head><body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN"><div class="container sidebar-position-left page-post-detail"><div class="headband"></div><header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="header-inner"><div class="site-brand-wrapper"><div class="site-meta"><div class="custom-logo-site-title"><a href="/" class="brand" rel="start"><span class="logo-line-before"><i></i></span> <span class="site-title">java面试</span> <span class="logo-line-after"><i></i></span></a></div><p class="site-subtitle"></p></div><div class="site-nav-toggle"><button><span class="btn-bar"></span> <span class="btn-bar"></span> <span class="btn-bar"></span></button></div></div><nav class="site-nav"><ul id="menu" class="menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i><br>Home</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i><br>Archives</a></li></ul></nav></div></header><main id="main" class="main"><div class="main-inner"><div class="content-wrap"><div id="content" class="content"><div id="posts" class="posts-expand"><article class="post post-type-normal" itemscope itemtype="http://schema.org/Article"><div class="post-block"><link itemprop="mainEntityOfPage" href="http://www.jfox.info/2017/jpaadvancedmappings映射.html"><span hidden itemprop="author" itemscope itemtype="http://schema.org/Person"><meta itemprop="name" content="Hello"><meta itemprop="description" content=""><meta itemprop="image" content="/images/avatar.gif"></span><span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><meta itemprop="name" content="java面试"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">JPA Advanced Mappings(映射)</h1><div class="post-meta"><span class="post-time"><span class="post-meta-item-icon"><i class="fa fa-calendar-o"></i> </span><span class="post-meta-item-text">Posted on</span> <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-01-01T23:58:52+08:00">2017-01-01</time></span></div></header><div class="post-body" itemprop="articleBody"><p>JPA是一个使用java规范发布的库。因此，它支持所有面向对象的实体持久性概念。</p><p><img src="/2017/1432/c7fa7c5.png" alt=""></p><p>原文链接：<a href="https://www.jfox.info/go.php?url=http://blogxinxiucan.sh1.newtouch.com/2017/07/30/JPA-Advanced-Mappings-%E6%98%A0%E5%B0%84/">http://blogxinxiucan.sh1.newtouch.com/2017/07/30/JPA-Advanced-Mappings-映射/</a></p><h3 id="继承策略"><a href="#继承策略" class="headerlink" title="继承策略"></a>继承策略</h3><p>继承是面向对象语言的核心概念，因此我们可以在实体之间使用继承关系或策略。JPA支持三种类型的继承策略，如SINGLE_TABLE，JOINED_TABLE和TABLE_PER_CONCRETE_CLASS。</p><p>Staff, TeachingStaff, NonTeachingStaff关系：</p><p><img src="/2017/1432/07a453d.png" alt=""></p><p>在上图中，Staff是一个实体，TeachingStaff和NonTeachingStaff是员工的子实体。在这里我们将讨论上述三个继承的策略。</p><h3 id="单表策略"><a href="#单表策略" class="headerlink" title="单表策略"></a>单表策略</h3><p>单表策略采用所有类字段（超类和子类），并将其映射到称为SINGLE_TABLE策略的单个表中。鉴别器值在区分一个表中三个实体的值时起关键作用。</p><p>让我们考虑上面的例子，TeachingStaff和NonTeachingStaff是类员工的子类。提醒继承的概念（是通过子类继承超类的属性的机制），因此sid，sname是属于TeachingStaff和NonTeachingStaff的字段。创建一个JPA项目。本项目的所有模块如下：</p><p><strong>创建实体</strong><br>在<code>“src”</code>包下创建一个名为<code>“com.tutorialspoint.eclipselink.entity”</code> 的包。在给定的包下创建一个名为Staff.java的新Java类。Staff实体类显示如下：</p><pre><code>package com.tutorialspoint.eclipselink.entity;import java.io.Serializable;import javax.persistence.DiscriminatorColumn;import javax.persistence.Entity;import javax.persistence.GeneratedValue;import javax.persistence.GenerationType;import javax.persistence.Id;import javax.persistence.Inheritance;import javax.persistence.InheritanceType;import javax.persistence.Table;@Entity@Table@Inheritance( strategy = InheritanceType.SINGLE_TABLE )
+@DiscriminatorColumn( name = &quot;type&quot; )
+
+publicclass Staff implements Serializable {
+   @Id@GeneratedValue( strategy = GenerationType.AUTO )
+
+   privateint sid;
+   private String sname;
+
+   publicStaff( int sid, String sname ) {
+      super( );
+      this.sid = sid;
+      this.sname = sname;
+   }
+
+   publicStaff( ) {
+      super( );
+   }
+
+   publicintgetSid( ) {
+      return sid;
+   }
+
+   publicvoidsetSid( int sid ) {
+      this.sid = sid;
+   }
+
+   public String getSname( ) {
+      return sname;
+   }
+
+   publicvoidsetSname( String sname ) {
+      this.sname = sname;
+   }
+}
+</code></pre><p>在上述代码中，@DescriminatorColumn指定字段名称（type），其值显示剩余的（Teaching and NonTeachingStaff）字段。</p><p>在com.tutorialspoint.eclipselink.entity包下创建一个名为TeachingStaff.java的 Staff类的子类（class）。TeachingStaff实体类显示如下：</p><pre><code>package com.tutorialspoint.eclipselink.entity;import javax.persistence.DiscriminatorValue;import javax.persistence.Entity;@Entity@DiscriminatorValue( value=&quot;TS&quot; )
+publicclass TeachingStaff extends Staff {
+
+   private String qualification;
+   private String subjectexpertise;
+
+   publicTeachingStaff( int sid, String sname, 
+
+   String qualification,String subjectexpertise ) {
+      super( sid, sname );
+      this.qualification = qualification;
+      this.subjectexpertise = subjectexpertise;
+   }
+
+   publicTeachingStaff( ) {
+      super( );
+   }
+
+   public String getQualification( ){
+      return qualification;
+   }
+
+   publicvoidsetQualification( String qualification ){
+      this.qualification = qualification;
+   }
+
+   public String getSubjectexpertise( ) {
+      return subjectexpertise;
+   }
+
+   publicvoidsetSubjectexpertise( String subjectexpertise ){
+      this.subjectexpertise = subjectexpertise;
+   }
+}
+</code></pre><p>在com.tutorialspoint.eclipselink.entity包下创建一个名为NonTeachingStaff.java的 Staff类的子类（class）。NonTeachingStaff实体类显示如下：</p><pre><code>package com.tutorialspoint.eclipselink.entity;import javax.persistence.DiscriminatorValue;import javax.persistence.Entity;@Entity@DiscriminatorValue( value = &quot;NS&quot; )
+
+publicclass NonTeachingStaff extends Staff {
+   private String areaexpertise;
+
+   publicNonTeachingStaff( int sid, String sname, String areaexpertise ) {
+      super( sid, sname );
+      this.areaexpertise = areaexpertise;
+   }
+
+   publicNonTeachingStaff( ) {
+      super( );
+   }
+
+   public String getAreaexpertise( ) {
+      return areaexpertise;
+   }
+
+   publicvoidsetAreaexpertise( String areaexpertise ){
+      this.areaexpertise = areaexpertise;
+   }
+}
+</code></pre><p><strong>persistence.xml中</strong></p><p>Persistence.xml文件包含实体类的数据库和注册信息的配置信息。xml文件显示如下：</p><pre><code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+
+&lt;persistence version=&quot;2.0&quot; xmlns=&quot;http://java.sun.com/xml/ns/persistence&quot;
+   xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; 
+   xsi:schemaLocation=&quot;http://java.sun.com/xml/ns/persistence 
+   http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd&quot;&gt;
+
+   &lt;persistence-unit name=&quot;Eclipselink_JPA&quot; transaction-type=&quot;RESOURCE_LOCAL&quot;&gt;
+
+      &lt;class&gt;com.tutorialspoint.eclipselink.entity.Staff&lt;/class&gt;
+      &lt;class&gt;com.tutorialspoint.eclipselink.entity.NonTeachingStaff&lt;/class&gt;
+      &lt;class&gt;com.tutorialspoint.eclipselink.entity.TeachingStaff&lt;/class&gt;
+
+      &lt;properties&gt;
+         &lt;property name=&quot;javax.persistence.jdbc.url&quot; value=&quot;jdbc:mysql://localhost:3306/jpadb&quot;/&gt;
+         &lt;property name=&quot;javax.persistence.jdbc.user&quot; value=&quot;root&quot;/&gt;
+         &lt;property name=&quot;javax.persistence.jdbc.password&quot; value=&quot;root&quot;/&gt;
+         &lt;property name=&quot;javax.persistence.jdbc.driver&quot; value=&quot;com.mysql.jdbc.Driver&quot;/&gt;
+         &lt;property name=&quot;eclipselink.logging.level&quot; value=&quot;FINE&quot;/&gt;
+         &lt;property name=&quot;eclipselink.ddl-generation&quot; value=&quot;create-tables&quot;/&gt;
+      &lt;/properties&gt;
+
+   &lt;/persistence-unit&gt;
+&lt;/persistence&gt;
+</code></pre><p><strong>Service class</strong></p><p>服务类是业务组件的实现部分。在名为’com.tutorialspoint.eclipselink.service’的’src’包下创建一个包。</p><p>在给定的包下创建一个名为SaveClient.java的类来存储Staff，TeachingStaff和NonTeachingStaff类字段。SaveClient类显示如下：</p><pre><code>package com.tutorialspoint.eclipselink.service;import javax.persistence.EntityManager;import javax.persistence.EntityManagerFactory;import javax.persistence.Persistence;import com.tutorialspoint.eclipselink.entity.NonTeachingStaff;import com.tutorialspoint.eclipselink.entity.TeachingStaff;publicclass SaveClient {
+
+   publicstaticvoidmain( String[ ] args ) {
+
+      EntityManagerFactory emfactory = Persistence.createEntityManagerFactory( &quot;Eclipselink_JPA&quot; );
+      EntityManager entitymanager = emfactory.createEntityManager( );
+      entitymanager.getTransaction( ).begin( );
+
+      //Teaching staff entity 
+      TeachingStaff ts1=newTeachingStaff(1,&quot;Gopal&quot;,&quot;MSc MEd&quot;,&quot;Maths&quot;);
+      TeachingStaff ts2=newTeachingStaff(2, &quot;Manisha&quot;, &quot;BSc BEd&quot;, &quot;English&quot;);
+
+      //Non-Teaching Staff entity
+      NonTeachingStaff nts1=newNonTeachingStaff(3, &quot;Satish&quot;, &quot;Accounts&quot;);
+      NonTeachingStaff nts2=newNonTeachingStaff(4, &quot;Krishna&quot;, &quot;Office Admin&quot;);
+
+      //storing all entities
+      entitymanager.persist(ts1);
+      entitymanager.persist(ts2);
+      entitymanager.persist(nts1);
+      entitymanager.persist(nts2);
+
+      entitymanager.getTransaction().commit();
+
+      entitymanager.close();
+      emfactory.close();
+   }
+}
+</code></pre><p>编译和执行上述程序后，您将在Eclipse IDE的控制面板中收到通知。检查MySQL工作台的输出。表格格式的输出如下所示：<br>SidTypeSnameAreaexpertiseQualificationSubjectexpertise1TSGopal–MSC MEDMaths2TSManisha–BSC BEDEnglish3NSSatishAccounts4NSKrishnaOffice Admin<br>最后，您将获得包含所有三类字段的单表，并与名为“Type”（字段）的discriminator列不同。</p><h3 id="加盟表策略"><a href="#加盟表策略" class="headerlink" title="加盟表策略"></a>加盟表策略</h3><p>加入表策略是共享引用的列，其中包含唯一值以加入表并进行简单的事务。让我们考虑与上述相同的例子。</p><p>创建JPA项目。所有项目模块如下所示：</p><p><strong>创建实体</strong><br>在“src”包下创建一个名为“com.tutorialspoint.eclipselink.entity” 的包。在给定的包下创建一个名为Staff.java的新Java类。Staff实体类显示如下：</p><pre><code>package com.tutorialspoint.eclipselink.entity;import java.io.Serializable;import javax.persistence.Entity;import javax.persistence.GeneratedValue;import javax.persistence.GenerationType;import javax.persistence.Id;import javax.persistence.Inheritance;import javax.persistence.InheritanceType;import javax.persistence.Table;@Entity@Table@Inheritance( strategy = InheritanceType.JOINED )
+
+publicclass Staff implements Serializable {
+
+   @Id@GeneratedValue( strategy = GenerationType.AUTO )
+
+   privateint sid;
+   private String sname;
+
+   publicStaff( int sid, String sname ) {
+      super( );
+      this.sid = sid;
+      this.sname = sname;
+   }
+
+   publicStaff( ) {
+      super( );
+   }
+
+   publicintgetSid( ) {
+      return sid;
+   }
+
+   publicvoidsetSid( int sid ) {
+      this.sid = sid;
+   }
+
+   public String getSname( ) {
+      return sname;
+   }
+
+   publicvoidsetSname( String sname ) {
+      this.sname = sname;
+   }
+}
+</code></pre><p>在com.tutorialspoint.eclipselink.entity包下创建一个名为TeachingStaff.java的 Staff类的子类（class）。TeachingStaff实体类显示如下：</p><pre><code>package com.tutorialspoint.eclipselink.entity;import javax.persistence.DiscriminatorValue;import javax.persistence.Entity;@Entity@PrimaryKeyJoinColumn(referencedColumnName=&quot;sid&quot;)
+
+publicclass TeachingStaff extends Staff {
+   private String qualification;
+   private String subjectexpertise;
+
+   publicTeachingStaff( int sid, String sname, 
+
+   String qualification,String subjectexpertise ) {
+      super( sid, sname );
+      this.qualification = qualification;
+      this.subjectexpertise = subjectexpertise;
+   }
+
+   publicTeachingStaff( ) {
+      super( );
+   }
+
+   public String getQualification( ){
+      return qualification;
+   }
+
+   publicvoidsetQualification( String qualification ){
+      this.qualification = qualification;
+   }
+
+   public String getSubjectexpertise( ) {
+      return subjectexpertise;
+   }
+
+   publicvoidsetSubjectexpertise( String subjectexpertise ){
+      this.subjectexpertise = subjectexpertise;
+   }
+}
+</code></pre><p>在com.tutorialspoint.eclipselink.entity包下创建一个名为NonTeachingStaff.java的 Staff类的子类（class）。NonTeachingStaff实体类显示如下：</p><pre><code>package com.tutorialspoint.eclipselink.entity;import javax.persistence.DiscriminatorValue;import javax.persistence.Entity;@Entity@PrimaryKeyJoinColumn(referencedColumnName=&quot;sid&quot;)
+
+publicclass NonTeachingStaff extends Staff {
+   private String areaexpertise;
+
+   publicNonTeachingStaff( int sid, String sname, String areaexpertise ) {
+      super( sid, sname );
+      this.areaexpertise = areaexpertise;
+   }
+
+   publicNonTeachingStaff( ) {
+      super( );
+   }
+
+   public String getAreaexpertise( ) {
+      return areaexpertise;
+   }
+
+   publicvoidsetAreaexpertise( String areaexpertise ) {
+      this.areaexpertise = areaexpertise;
+   }
+}
+</code></pre><h3 id="persistence-xml中"><a href="#persistence-xml中" class="headerlink" title="persistence.xml中"></a>persistence.xml中</h3><p>Persistence.xml文件包含实体类的数据库和注册信息的配置信息。xml文件显示如下：</p><pre><code>&lt;?xml version = &quot;1.0&quot; encoding = &quot;UTF-8&quot;?&gt;
+
+&lt;persistence version = &quot;2.0&quot; xmlns = &quot;http://java.sun.com/xml/ns/persistence&quot; 
+   xmlns:xsi = &quot;http://www.w3.org/2001/XMLSchema-instance&quot; 
+   xsi:schemaLocation = &quot;http://java.sun.com/xml/ns/persistence 
+   http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd&quot;&gt;
+
+   &lt;persistence-unit name = &quot;Eclipselink_JPA&quot; transaction-type = &quot;RESOURCE_LOCAL&quot;&gt;
+      &lt;class&gt;com.tutorialspoint.eclipselink.entity.Staff&lt;/class&gt;
+      &lt;class&gt;com.tutorialspoint.eclipselink.entity.NonTeachingStaff&lt;/class&gt;
+      &lt;class&gt;com.tutorialspoint.eclipselink.entity.TeachingStaff&lt;/class&gt;
+
+      &lt;properties&gt;
+         &lt;property name = &quot;javax.persistence.jdbc.url&quot; value = &quot;jdbc:mysql://localhost:3306/jpadb&quot;/&gt;
+         &lt;property name = &quot;javax.persistence.jdbc.user&quot; value = &quot;root&quot;/&gt;
+         &lt;property name = &quot;javax.persistence.jdbc.password&quot; value = &quot;root&quot;/&gt;
+         &lt;property name = &quot;javax.persistence.jdbc.driver&quot; value = &quot;com.mysql.jdbc.Driver&quot;/&gt;
+         &lt;property name = &quot;eclipselink.logging.level&quot; value = &quot;FINE&quot;/&gt;
+         &lt;property name = &quot;eclipselink.ddl-generation&quot; value = &quot;create-tables&quot;/&gt;
+      &lt;/properties&gt;
+
+   &lt;/persistence-unit&gt;
+&lt;/persistence&gt;
+</code></pre><h3 id="服务类"><a href="#服务类" class="headerlink" title="服务类"></a>服务类</h3><p>服务类是业务组件的实现部分。在名为’com.tutorialspoint.eclipselink.service’的’src’包下创建一个包。</p><p>在给定的包下创建一个名为SaveClient.java的类来存储Staff，TeachingStaff和NonTeachingStaff类字段。然后SaveClient类如下：</p><pre><code>package com.tutorialspoint.eclipselink.service;
+
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
+import com.tutorialspoint.eclipselink.entity.NonTeachingStaff;
+import com.tutorialspoint.eclipselink.entity.TeachingStaff;
+
+public class SaveClient {
+   public static void main( String[ ] args ) {
+      EntityManagerFactory emfactory = Persistence.createEntityManagerFactory( &quot;Eclipselink_JPA&quot; );
+      EntityManager entitymanager = emfactory.createEntityManager( );
+      entitymanager.getTransaction( ).begin( );
+
+      //Teaching staff entity 
+      TeachingStaff ts1 = new TeachingStaff(1,&quot;Gopal&quot;,&quot;MSc MEd&quot;,&quot;Maths&quot;);
+      TeachingStaff ts2 = new TeachingStaff(2, &quot;Manisha&quot;, &quot;BSc BEd&quot;, &quot;English&quot;);
+
+      //Non-Teaching Staff entity
+      NonTeachingStaff nts1 = new NonTeachingStaff(3, &quot;Satish&quot;, &quot;Accounts&quot;);
+      NonTeachingStaff nts2 = new NonTeachingStaff(4, &quot;Krishna&quot;, &quot;Office Admin&quot;);
+
+      //storing all entities
+      entitymanager.persist(ts1);
+      entitymanager.persist(ts2);
+      entitymanager.persist(nts1);
+      entitymanager.persist(nts2);
+
+      entitymanager.getTransaction().commit();
+      entitymanager.close();
+      emfactory.close();
+   }
+}
+</code></pre><p>编译和执行上述程序后，您将在Eclipse IDE的控制面板中收到通知。输出检查MySQL工作台如下：</p><p>这里创建了三个表格，表格格式的员工表格的结果如下所示：<br>SidDtypeSname1TeachingStaffGopal2TeachingStaffManisha3NonTeachingStaffSatish4NonTeachingStaffKrishna<br><strong>TeachingStaff</strong>表的结果如表格所示：<br>SidQualificationSubjectexpertise1MSC MEDMaths2BSC BEDEnglish<br>在上表中sid是外键（参考字段表单staff表）NonTeachingStaff表的结果如表格所示：<br>SidAreaexpertise3Accounts4Office Admin<br>最后，这三个表分别使用它们的字段创建，SID字段由所有三个表共享。在员工表SID中是主键，在剩余的（TeachingStaff和NonTeachingStaff）表中SID是外键。</p><h3 id="每个类策略表"><a href="#每个类策略表" class="headerlink" title="每个类策略表"></a>每个类策略表</h3><p>每个类策略的表是为每个子实体创建一个表。工作人员表将被创建，但它将包含空记录。Staff表的字段值必须由TeachingStaff和NonTeachingStaff表共享。</p><p>让我们考虑与上述相同的例子。本项目的所有模块如下所示：</p><p><strong>创建实体</strong><br>在“src”包下创建一个名为“com.tutorialspoint.eclipselink.entity” 的包。在给定的包下创建一个名为Staff.java的新Java类。Staff实体类显示如下：</p><pre><code>package com.tutorialspoint.eclipselink.entity;
+
+import java.io.Serializable;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.Table;
+
+@Entity
+@Table
+@Inheritance( strategy = InheritanceType.TABLE_PER_CLASS )
+
+public class Staff implements Serializable {
+
+   @Id
+   @GeneratedValue( strategy = GenerationType.AUTO )
+
+   private int sid;
+   private String sname;
+
+   public Staff( int sid, String sname ) {
+      super( );
+      this.sid = sid;
+      this.sname = sname;
+   }
+
+   public Staff( ) {
+      super( );
+   }
+
+   public int getSid( ) {
+      return sid;
+   }
+
+   public void setSid( int sid ) {
+      this.sid = sid;
+   }
+
+   public String getSname( ) {
+      return sname;
+   }
+
+   public void setSname( String sname ) {
+      this.sname = sname;
+   }
+}
+</code></pre><p>在com.tutorialspoint.eclipselink.entity包下创建一个名为TeachingStaff.java的 Staff类的子类（class）。TeachingStaff实体类显示如下：</p><pre><code>package com.tutorialspoint.eclipselink.entity;
+
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+
+@Entity
+public class TeachingStaff extends Staff {
+   private String qualification;
+   private String subjectexpertise;
+
+   public TeachingStaff( int sid, String sname, String qualification, String subjectexpertise ) {
+      super( sid, sname );
+      this.qualification = qualification;
+      this.subjectexpertise = subjectexpertise;
+   }
+
+   public TeachingStaff( ) {
+      super( );
+   }
+
+   public String getQualification( ){
+      return qualification;
+   }
+
+   public void setQualification( String qualification ) {
+      this.qualification = qualification;
+   }
+
+   public String getSubjectexpertise( ) {
+      return subjectexpertise;
+   }
+
+   public void setSubjectexpertise( String subjectexpertise ){
+      this.subjectexpertise = subjectexpertise;
+   }
+}
+</code></pre><p>在com.tutorialspoint.eclipselink.entity包下创建一个名为NonTeachingStaff.java的 Staff类的子类（class）。NonTeachingStaff实体类显示如下：</p><pre><code>package com.tutorialspoint.eclipselink.entity;
+
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+
+@Entity
+public class NonTeachingStaff extends Staff {
+   private String areaexpertise;
+
+   public NonTeachingStaff( int sid, String sname, String areaexpertise ) {
+      super( sid, sname );
+      this.areaexpertise = areaexpertise;
+   }
+
+   public NonTeachingStaff( ) {
+      super( );
+   }
+
+   public String getAreaexpertise( ) {
+      return areaexpertise;
+   }
+
+   public void setAreaexpertise( String areaexpertise ) {
+      this.areaexpertise = areaexpertise;
+   }
+}
+</code></pre><p><strong>persistence.xml中</strong><br>Persistence.xml文件包含实体类的数据库和注册信息的配置信息。xml文件显示如下：</p><pre><code>&lt;?xml version=&quot;1.0&quot; encoding = &quot;UTF-8&quot;?&gt;
+&lt;persistence version = &quot;2.0&quot; xmlns = &quot;http://java.sun.com/xml/ns/persistence&quot;
+   xmlns:xsi = &quot;http://www.w3.org/2001/XMLSchema-instance&quot; 
+   xsi:schemaLocation = &quot;http://java.sun.com/xml/ns/persistence 
+   http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd&quot;&gt;
+
+   &lt;persistence-unit name = &quot;Eclipselink_JPA&quot; transaction-type = &quot;RESOURCE_LOCAL&quot;&gt;
+      &lt;class&gt;com.tutorialspoint.eclipselink.entity.Staff&lt;/class&gt;
+      &lt;class&gt;com.tutorialspoint.eclipselink.entity.NonTeachingStaff&lt;/class&gt;
+      &lt;class&gt;com.tutorialspoint.eclipselink.entity.TeachingStaff&lt;/class&gt;
+
+      &lt;properties&gt;
+         &lt;property name = &quot;javax.persistence.jdbc.url&quot; value = &quot;jdbc:mysql://localhost:3306/jpadb&quot;/&gt;
+         &lt;property name = &quot;javax.persistence.jdbc.user&quot; value = &quot;root&quot;/&gt;
+         &lt;property name = &quot;javax.persistence.jdbc.password&quot; value = &quot;root&quot;/&gt;
+         &lt;property name = &quot;javax.persistence.jdbc.driver&quot; value = &quot;com.mysql.jdbc.Driver&quot;/&gt;
+         &lt;property name = &quot;eclipselink.logging.level&quot; value = &quot;FINE&quot;/&gt;
+         &lt;property name = &quot;eclipselink.ddl-generation&quot; value=&quot;create-tables&quot;/&gt;
+      &lt;/properties&gt;
+
+   &lt;/persistence-unit&gt;
+&lt;/persistence&gt;
+</code></pre><h3 id="服务类-1"><a href="#服务类-1" class="headerlink" title="服务类"></a>服务类</h3><p>服务类是业务组件的实现部分。在名为’com.tutorialspoint.eclipselink.service’的’src’包下创建一个包。</p><p>在给定的包下创建一个名为SaveClient.java的类来存储Staff，TeachingStaff和NonTeachingStaff类字段。SaveClient类显示如下：</p><pre><code>package com.tutorialspoint.eclipselink.service;import javax.persistence.EntityManager;import javax.persistence.EntityManagerFactory;import javax.persistence.Persistence;import com.tutorialspoint.eclipselink.entity.NonTeachingStaff;import com.tutorialspoint.eclipselink.entity.TeachingStaff;publicclass SaveClient {
+   publicstaticvoidmain( String[ ] args ) {
+      EntityManagerFactory emfactory = Persistence.createEntityManagerFactory( &quot;Eclipselink_JPA&quot; );
+      EntityManager entitymanager = emfactory.createEntityManager( );
+      entitymanager.getTransaction( ).begin( );
+
+      //Teaching staff entity 
+      TeachingStaff ts1 = newTeachingStaff(1,&quot;Gopal&quot;,&quot;MSc MEd&quot;,&quot;Maths&quot;);
+      TeachingStaff ts2 = newTeachingStaff(2, &quot;Manisha&quot;, &quot;BSc BEd&quot;, &quot;English&quot;);
+
+      //Non-Teaching Staff entity
+      NonTeachingStaff nts1 = newNonTeachingStaff(3, &quot;Satish&quot;, &quot;Accounts&quot;);
+      NonTeachingStaff nts2 = newNonTeachingStaff(4, &quot;Krishna&quot;, &quot;Office Admin&quot;);
+
+      //storing all entities
+      entitymanager.persist(ts1);
+      entitymanager.persist(ts2);
+      entitymanager.persist(nts1);
+      entitymanager.persist(nts2);
+
+      entitymanager.getTransaction().commit();
+      entitymanager.close();
+      emfactory.close();
+   }
+}
+</code></pre><p>编译和执行上述程序后，您将在Eclipse IDE的控制面板中收到通知。对于输出，检查MySQL工作台如下：</p><p>这里创建了三个表，Staff表包含空记录。</p><p>TeachingStaff的结果如表格所示：</p></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="4142158067"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="5618891265"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><footer class="post-footer"><div class="post-nav"><div class="post-nav-next post-nav-item"><a href="/2017/深入理解java虚拟机三.html" rel="next" title="《深入理解Java虚拟机》（三）"><i class="fa fa-chevron-left"></i> 《深入理解Java虚拟机》（三）</a></div><span class="post-nav-divider"></span><div class="post-nav-prev post-nav-item"><a href="/2017/shardingjdbc150正式发布全新sql解析发动机.html" rel="prev" title="Sharding-JDBC 1.5.0 正式发布：全新 SQL 解析发动机">Sharding-JDBC 1.5.0 正式发布：全新 SQL 解析发动机 <i class="fa fa-chevron-right"></i></a></div></div></footer></div></article><div class="post-spread"></div></div></div></div><div class="sidebar-toggle"><div class="sidebar-toggle-line-wrap"><span class="sidebar-toggle-line sidebar-toggle-line-first"></span> <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span> <span class="sidebar-toggle-line sidebar-toggle-line-last"></span></div></div><aside id="sidebar" class="sidebar"><div class="sidebar-inner"><ul class="sidebar-nav motion-element"><li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">Table of Contents</li><li class="sidebar-nav-overview" data-target="site-overview-wrap">Overview</li></ul><section class="site-overview-wrap sidebar-panel"><div class="site-overview"><div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person"><p class="site-author-name" itemprop="name">Hello</p><p class="site-description motion-element" itemprop="description"></p></div><nav class="site-state motion-element"><div class="site-state-item site-state-posts"><a href="/archives/"><span class="site-state-item-count">1358</span> <span class="site-state-item-name">posts</span></a></div></nav></div></section><section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active"><div class="post-toc"><div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#继承策略"><span class="nav-number">1.</span> <span class="nav-text">继承策略</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#单表策略"><span class="nav-number">2.</span> <span class="nav-text">单表策略</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#加盟表策略"><span class="nav-number">3.</span> <span class="nav-text">加盟表策略</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#persistence-xml中"><span class="nav-number">4.</span> <span class="nav-text">persistence.xml中</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#服务类"><span class="nav-number">5.</span> <span class="nav-text">服务类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#每个类策略表"><span class="nav-number">6.</span> <span class="nav-text">每个类策略表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#服务类-1"><span class="nav-number">7.</span> <span class="nav-text">服务类</span></a></li></ol></div></div></section></div></aside><div class="sfix"><div class="fixedme"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460" data-ad-format="auto"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script></div></div></main><footer id="footer" class="footer"><div class="footer-inner"><div class="copyright">&copy; <span itemprop="copyrightYear">2018</span> <span class="with-love"><i class="fa fa-user"></i> </span><span class="author" itemprop="copyrightHolder">Hello</span></div><div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div><span class="post-meta-divider">|</span><div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div></div></footer><div class="back-to-top"><i class="fa fa-arrow-up"></i></div></div><script type="text/javascript">"[object Function]"!==Object.prototype.toString.call(window.Promise)&&(window.Promise=null)</script><script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script><script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script><script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script><script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script><script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script></body></html><!-- rebuild by neat -->

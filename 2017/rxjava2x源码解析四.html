@@ -1,0 +1,258 @@
+<!-- build time:Sat Oct 27 2018 21:00:18 GMT+0800 (CST) --><!DOCTYPE html><html class="theme-next muse use-motion"><head><meta name="generator" content="Hexo 3.8.0"><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"><meta name="theme-color" content="#222"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"><link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css"><link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css"><link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4"><link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222"><meta name="description" content="H2M_LI_HEADER 基于RxJava2.1.1H2M_LI_HEADER我们在前面的 RxJava2.0使用详解（一）初步分析了RxJava从创建到执行的流程。RxJava2.0使用详解（二) 中分析了RxJava的随意终止Reactive流的能力的来源；也明白了RxJava的onComplete();与onError(t);只有一个会被执行的秘密。RxJava2.X 源码分析（三）中探索"><meta name="keywords" content="JAVA,面试"><meta property="og:type" content="article"><meta property="og:title" content="RxJava2.X源码解析（四）"><meta property="og:url" content="http://www.jfox.info/2017/rxjava2x源码解析四.html"><meta property="og:site_name" content="java面试"><meta property="og:description" content="H2M_LI_HEADER 基于RxJava2.1.1H2M_LI_HEADER我们在前面的 RxJava2.0使用详解（一）初步分析了RxJava从创建到执行的流程。RxJava2.0使用详解（二) 中分析了RxJava的随意终止Reactive流的能力的来源；也明白了RxJava的onComplete();与onError(t);只有一个会被执行的秘密。RxJava2.X 源码分析（三）中探索"><meta property="og:locale" content="zh_CN"><meta property="og:updated_time" content="2018-10-27T12:29:39.638Z"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="RxJava2.X源码解析（四）"><meta name="twitter:description" content="H2M_LI_HEADER 基于RxJava2.1.1H2M_LI_HEADER我们在前面的 RxJava2.0使用详解（一）初步分析了RxJava从创建到执行的流程。RxJava2.0使用详解（二) 中分析了RxJava的随意终止Reactive流的能力的来源；也明白了RxJava的onComplete();与onError(t);只有一个会被执行的秘密。RxJava2.X 源码分析（三）中探索"><script type="text/javascript" id="hexo.configurations">var NexT=window.NexT||{},CONFIG={root:"/",scheme:"Muse",version:"5.1.4",sidebar:{position:"left",display:"post",offset:12,b2t:!1,scrollpercent:!1,onmobile:!1},fancybox:!0,tabs:!0,motion:{enable:!0,async:!1,transition:{post_block:"fadeIn",post_header:"slideDownIn",post_body:"slideDownIn",coll_header:"slideLeftIn",sidebar:"slideUpIn"}},duoshuo:{userId:"0",author:"Author"},algolia:{applicationID:"",apiKey:"",indexName:"",hits:{per_page:10},labels:{input_placeholder:"Search for Posts",hits_empty:"We didn't find any results for the search: ${query}",hits_stats:"${hits} results found in ${time} ms"}}}</script><link rel="canonical" href="http://www.jfox.info/2017/rxjava2x源码解析四.html"><title>RxJava2.X源码解析（四） | java面试</title></head><body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN"><div class="container sidebar-position-left page-post-detail"><div class="headband"></div><header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="header-inner"><div class="site-brand-wrapper"><div class="site-meta"><div class="custom-logo-site-title"><a href="/" class="brand" rel="start"><span class="logo-line-before"><i></i></span> <span class="site-title">java面试</span> <span class="logo-line-after"><i></i></span></a></div><p class="site-subtitle"></p></div><div class="site-nav-toggle"><button><span class="btn-bar"></span> <span class="btn-bar"></span> <span class="btn-bar"></span></button></div></div><nav class="site-nav"><ul id="menu" class="menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i><br>Home</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i><br>Archives</a></li></ul></nav></div></header><main id="main" class="main"><div class="main-inner"><div class="content-wrap"><div id="content" class="content"><div id="posts" class="posts-expand"><article class="post post-type-normal" itemscope itemtype="http://schema.org/Article"><div class="post-block"><link itemprop="mainEntityOfPage" href="http://www.jfox.info/2017/rxjava2x源码解析四.html"><span hidden itemprop="author" itemscope itemtype="http://schema.org/Person"><meta itemprop="name" content="Hello"><meta itemprop="description" content=""><meta itemprop="image" content="/images/avatar.gif"></span><span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><meta itemprop="name" content="java面试"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">RxJava2.X源码解析（四）</h1><div class="post-meta"><span class="post-time"><span class="post-meta-item-icon"><i class="fa fa-calendar-o"></i> </span><span class="post-meta-item-text">Posted on</span> <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-01-01T23:57:11+08:00">2017-01-01</time></span></div></header><div class="post-body" itemprop="articleBody"><p>H2M_LI_HEADER 基于RxJava2.1.1<br>H2M_LI_HEADER<br>我们在前面的 <a href="https://www.jfox.info/go.php?url=http://cherylgood.cn/articles/2017/07/10/1499671003613.html">RxJava2.0使用详解（一）</a>初步分析了RxJava从创建到执行的流程。<a href="https://www.jfox.info/go.php?url=http://cherylgood.cn/articles/2017/07/11/1499770780242.html">RxJava2.0使用详解（二) </a>中分析了RxJava的随意终止Reactive流的能力的来源；也明白了<code>RxJava</code>的<code>onComplete();</code>与<code>onError(t);</code>只有一个会被执行的秘密。<a href="https://www.jfox.info/go.php?url=http://cherylgood.cn/articles/2017/07/13/1499925392920.html">RxJava2.X 源码分析（三）</a>中探索了RxJava2调用subscribeOn切换被观察者线程的原理。</p><p>H2M_LI_HEADER<br>本次我们将继续探索<code>RxJava2.x</code>切换观察者的原理，分析<code>observeOn</code>与<code>subscribeOn</code>的不同之处。继续实现我们在第一篇中定下的小目标</p><h3 id="二、从Demo到原理"><a href="#二、从Demo到原理" class="headerlink" title="二、从Demo到原理"></a>二、从Demo到原理</h3><ul><li>OK，我们的Demo还是上次的demo，忘记了的小伙伴可以点击<a href="https://www.jfox.info/go.php?url=http://cherylgood.cn/articles/2017/07/13/1499925392920.html">RxJava2.X 源码分析（三）</a>，这里就不再重复了哦，我们直接进入正题。</li><li>Ok，按照套路，我们从<code>observeOn</code>方法入手。</li><li><p>Ok，我点～^_^</p><pre><code>@CheckReturnValue
+@SchedulerSupport(SchedulerSupport.CUSTOM)
+public final Observable&lt;T&gt; observeOn(Scheduler scheduler) {
+    //false为默认无延迟发送错误，bufferSize为缓冲区大小
+    return observeOn(scheduler, false, bufferSize());
+}
+</code></pre></li><li><p>我们继续往下看，我猜套路跟<code>subscribeOn</code>的逃不多，也是采用装饰者模式，wrapper我们的<code>Observable</code>和<code>Observer</code>产生一个中间被观察者和观察中，通过中间被观察者订阅上游被观察者，通过中间观察者接收上游被观察者下发的数据，然后通过线程切换将数据传递给下游观察者。</p></li><li><p>Ok，我们来验证下才想。我觉得就是没完全猜对，也能猜对其中的大部分。</p><pre><code>@CheckReturnValue
+@SchedulerSupport(SchedulerSupport.CUSTOM)
+public final Observable&lt;T&gt; observeOn(Scheduler scheduler, boolean delayError, int bufferSize) {
+    ObjectHelper.requireNonNull(scheduler, &quot;scheduler is null&quot;);
+    ObjectHelper.verifyPositive(bufferSize, &quot;bufferSize&quot;);
+    return RxJavaPlugins.onAssembly(new ObservableObserveOn&lt;T&gt;(this, scheduler, delayError, bufferSize));
+}
+</code></pre></li><li><p>Ok，熟悉的<code>RxJavaPlugins.onAssembly</code>hook处理，略过，直接看<code>new ObservableObserveOn&lt;T&gt;(this, scheduler, delayError, bufferSize)</code></p><pre><code>public final class ObservableObserveOn&lt;T&gt; extends AbstractObservableWithUpstream&lt;T, T&gt; {
+    final Scheduler scheduler;
+    final boolean delayError;
+    final int bufferSize;
+    public ObservableObserveOn(ObservableSource&lt;T&gt; source, Scheduler scheduler, boolean delayError, int bufferSize) {
+        super(source);
+        this.scheduler = scheduler;
+        this.delayError = delayError;
+        this.bufferSize = bufferSize;
+    }
+
+    @Override
+  protected void subscribeActual(Observer&lt;? super T&gt; observer) {
+        if (scheduler instanceof TrampolineScheduler) {
+            source.subscribe(observer);
+        } else {
+            Scheduler.Worker w = scheduler.createWorker();
+
+            source.subscribe(new ObserveOnObserver&lt;T&gt;(observer, w, delayError, bufferSize));
+        }
+    }
+.....
+}
+</code></pre></li><li><p>Ok,果然，熟悉的模式，对我们上游的<code>Observable</code>,下游的<code>Observer</code>wrapper一次。<br>1、<code>ObservableObserveOn</code>继承了<code>AbstractObservableWithUpstream</code><br>2、<code>source</code>保存上游的<code>Observable</code><br>3、<code>scheduler</code>为本次的调度器<br>4、在下游调用<code>subscribe</code>订阅时触发-&gt;<code>subscribeActual</code>-&gt;Wrapper了下游的<code>Observer</code></p></li><li><p>然们把<code>subscribeActual</code>里的代码拿出来分析下。</p><pre><code>@Override
+          protected void subscribeActual(Observer&lt;? super T&gt; observer) {
+                if (scheduler instanceof TrampolineScheduler) {
+                                        //1、在当前线程调度，但不是立即执行，放入队列中
+                    source.subscribe(observer);
+                } else {
+                  //2、本次走的是这里
+                    Scheduler.Worker w = scheduler.createWorker();
+                    //3、source为游Observable，下游Observer被wrapper到ObserveOnObserver，发生订阅数件，上游Observable开始执行subscribeActual，调用ObserveOnObserver的onSubscribe以及onNext、onError、onComplete等
+                    source.subscribe(new ObserveOnObserver&lt;T&gt;(observer, w, delayError, bufferSize));
+                }
+            }
+</code></pre></li><li><p>OK，我们接着看Observer被包装进 ObserveOnObserver的样子，代码有点多，我们分段讲解</p><pre><code>static final class ObserveOnObserver&lt;T&gt; extends BasicIntQueueDisposable&lt;T&gt;
+implements Observer&lt;T&gt;, Runnable {
+
+    private static final long serialVersionUID = 6576896619930983584L;
+    //下游的Observer
+    final Observersuper T&gt; actual;
+    //调度工作者
+    final Scheduler.Worker worker;
+    //是否延迟错误，默认false
+    final boolean delayError;
+    //队列大小
+    final int bufferSize;
+    //存储上游Observable下发的数据队列
+    SimpleQueue&lt;T&gt; queue;
+    //存储下游Observer的Disposable
+    Disposable s;
+    //存储错误信息
+    Throwable error;
+    //校验是否完毕
+    volatile boolean done;
+    //是否被取消
+    volatile boolean cancelled;
+    //存储执行模式，同步或者异步 同步
+    int sourceMode;
+
+    boolean outputFused;
+
+    ObserveOnObserver(Observersuper T&gt; actual, Scheduler.Worker worker, boolean delayError, int bufferSize) {
+        this.actual = actual;
+        this.worker = worker;
+        this.delayError = delayError;
+        this.bufferSize = bufferSize;
+    }
+
+    @Override
+  public void onSubscribe(Disposable s) {
+
+        if (DisposableHelper.validate(this.s, s)) {
+            this.s = s;
+            if (s instanceof QueueDisposable) {
+                @SuppressWarnings(&quot;unchecked&quot;)
+                QueueDisposable&lt;T&gt; qd = (QueueDisposable&lt;T&gt;) s;
+
+                int m = qd.requestFusion(QueueDisposable.ANY | QueueDisposable.BOUNDARY);
+
+              //1、判断执行模式并调用onSubscribe传递给下游Observer
+                if (m == QueueDisposable.SYNC) {
+                    sourceMode = m;
+                    queue = qd;
+                    //true 后面的onXX方法都不会被调用
+                    done = true;
+                    actual.onSubscribe(this);
+                    //2、同步模式下，直接调用schedule
+                    schedule();
+                    return;
+                }
+                if (m == QueueDisposable.ASYNC) {
+                    sourceMode = m;
+                    queue = qd;
+                    actual.onSubscribe(this);
+                    //2、异步模式下，等待schedule
+                    return;
+                }
+            }
+
+            queue = new SpscLinkedArrayQueue&lt;T&gt;(bufferSize);
+            //判断执行模式并调用onSubscribe传递给下游Observer
+            actual.onSubscribe(this);
+        }
+    }
+</code></pre></li><li><p>OK，执行玩这里之后，就到我们的onXX方法了</p></li><li><p>首先可无限调用的<code>onNext</code></p><pre><code>@Override
+public void onNext(T t) {
+     //3、数据源是同步模式或者执行过error / complete 会是true
+    if (done) {
+        return;
+    }
+    //如果数据源不是异步类型，
+    if (sourceMode != QueueDisposable.ASYNC) {
+        //4、上游Observable下发的数据压入queue
+        queue.offer(t);
+    }
+    //5、开始调度
+    schedule();
+}
+</code></pre></li><li><p>其次只能触发一次的onError，基本差不多</p><pre><code>@Override
+public void onError(Throwable t) {
+    if (done) {
+        //6、已完成再执行会抛一场
+        RxJavaPlugins.onError(t);
+        return;
+    }
+    //7、记录错误信息
+    error = t;
+    //8、标识已完成
+    done = true;
+    //9、开始调度
+    schedule();
+}
+</code></pre></li><li><p>同样是只能触发一次的onComplete，同样的套路，就不说了</p><pre><code>@Override
+public void onComplete() {
+    if (done) {
+        return;
+    }
+    done = true;
+    schedule();
+}
+</code></pre></li><li><p>然后就是我们的关键点<code>schedule();</code></p><pre><code>//关键点就是直接、简单、里面线程调度工作者调用schedule(this)，传入了this
+void schedule() {
+       //getAndIncrement很关键，他原子性的保证了worker.schedule(this);在调度完之前不会被再次调度
+    if (getAndIncrement() == 0) {
+        worker.schedule(this);
+    }
+}
+</code></pre></li><li><p>什么？传入了this？那么说明什么呢？(￣∇￣)</p></li><li><p>嗯？this是个<code>runnable</code>，没错，我们的<code>ObserveOnObserver</code>实现了<code>Runnable</code>接口</p></li><li><p>那么，接下来自然是调用<code>run</code>方法</p><pre><code>@Override
+public void run() {
+      //outputFused一般是false
+    if (outputFused) {
+        drainFused();
+    } else {
+        drainNormal();
+    }
+</code></pre></li><li><p>好吧，在看drainNormal前，我们先看一个函数</p><pre><code>  //从名字看是检测是否已终止
+boolean checkTerminated(boolean d, boolean empty, Observersuper T&gt; a) {
+    //1、订阅已取消
+    if (cancelled) {
+        //清空队列
+        queue.clear();
+        return true;
+    }
+    //2、d其实是done，
+    if (d) {
+        //done==ture可能的情况onNext刚被调度完，onError或者onCompele被调用，
+        Throwable e = error;
+        if (delayError) {
+            //delayError==true时等到队列为空才调用
+            if (empty) {
+                if (e != null) {
+                    a.onError(e);
+                } else {
+                    a.onComplete();
+                }
+                worker.dispose();
+                return true;
+            }
+        } else {
+            //否则直接调用
+            if (e != null) {
+                queue.clear();
+                a.onError(e);
+                worker.dispose();
+                return true;
+            } else
+ if (empty) {
+                a.onComplete();
+                worker.dispose();
+                return true;
+            }
+        }
+    }
+    //否则未终结
+    return false;
+}
+</code></pre></li><li><p>true：1、订阅被取消cancelled==true，2、done==true onNext刚被调度完，onError或者onCompele被调用</p></li><li><p>继续看drainNormal</p><p>void drainNormal() {</p><pre><code>    int missed = 1;
+    final SimpleQueue&lt;T&gt; q = queue;
+    final Observersuper T&gt; a = actual;
+    //Ok,死循环，我们来看下有哪些出口
+    for (;;) {
+    //Ok，出口，该方法前面分析的
+    if (checkTerminated(done, q.isEmpty(), a)) {
+            return;
+        }
+
+        //在此死循环
+        for (;;) {
+            boolean d = done;
+            T v;
+            try {
+                //分发数据出队列
+                v = q.poll();
+            } catch (Throwable ex) {
+                //有异常时终止退出
+                Exceptions.throwIfFatal(ex);
+                s.dispose();
+                q.clear();
+                a.onError(ex);
+                //停止worker（线程）
+                worker.dispose();
+                return;
+            }
+            boolean empty = v == null;
+            //判断队列是否为空
+            if (checkTerminated(d, empty, a)) {
+                return;
+            }
+             //没数据退出
+            if (empty) {
+                break;
+            }
+            //数据下发给下游Obsever，这里支付者onNext，onComplete和onError主要放在了checkTerminated里面回调
+            a.onNext(v);
+        }
+     //保证此时确实有一个 worker.schedule(this);正在被执行，
+        missed = addAndGet(-missed);
+     //为何要这样做呢？我的理解是保证drainNormal方法被原子性调用，如果执行了addAndGet之后getAndIncrement() == 0就成立了，此时又一个worker.schedule(this);被调用了，那么就不能执行break了
+        if (missed == 0) {
+            break;
+        }
+    }
+}
+</code></pre></li></ul><h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><ul><li>Ok，看到这里我们基本了解了observeOn的实现流程，同样是老套路，使用装饰者模式，中间Wrapper了我们的Observable和Observer，通过中间增加一个Observable和Observer来实现线程的切换。</li></ul></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="4142158067"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="5618891265"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><footer class="post-footer"><div class="post-nav"><div class="post-nav-next post-nav-item"><a href="/2017/spring核心ioc容器的实现二.html" rel="next" title="Spring核心：IOC容器的实现（二）"><i class="fa fa-chevron-left"></i> Spring核心：IOC容器的实现（二）</a></div><span class="post-nav-divider"></span><div class="post-nav-prev post-nav-item"><a href="/2017/springmvc三参数绑定.html" rel="prev" title="springmvc(三) 参数绑定、">springmvc(三) 参数绑定、 <i class="fa fa-chevron-right"></i></a></div></div></footer></div></article><div class="post-spread"></div></div></div></div><div class="sidebar-toggle"><div class="sidebar-toggle-line-wrap"><span class="sidebar-toggle-line sidebar-toggle-line-first"></span> <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span> <span class="sidebar-toggle-line sidebar-toggle-line-last"></span></div></div><aside id="sidebar" class="sidebar"><div class="sidebar-inner"><ul class="sidebar-nav motion-element"><li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">Table of Contents</li><li class="sidebar-nav-overview" data-target="site-overview-wrap">Overview</li></ul><section class="site-overview-wrap sidebar-panel"><div class="site-overview"><div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person"><p class="site-author-name" itemprop="name">Hello</p><p class="site-description motion-element" itemprop="description"></p></div><nav class="site-state motion-element"><div class="site-state-item site-state-posts"><a href="/archives/"><span class="site-state-item-count">1358</span> <span class="site-state-item-name">posts</span></a></div></nav></div></section><section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active"><div class="post-toc"><div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#二、从Demo到原理"><span class="nav-number">1.</span> <span class="nav-text">二、从Demo到原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-number">2.</span> <span class="nav-text">总结</span></a></li></ol></div></div></section></div></aside><div class="sfix"><div class="fixedme"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460" data-ad-format="auto"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script></div></div></main><footer id="footer" class="footer"><div class="footer-inner"><div class="copyright">&copy; <span itemprop="copyrightYear">2018</span> <span class="with-love"><i class="fa fa-user"></i> </span><span class="author" itemprop="copyrightHolder">Hello</span></div><div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div><span class="post-meta-divider">|</span><div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div></div></footer><div class="back-to-top"><i class="fa fa-arrow-up"></i></div></div><script type="text/javascript">"[object Function]"!==Object.prototype.toString.call(window.Promise)&&(window.Promise=null)</script><script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script><script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script><script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script><script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script><script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script></body></html><!-- rebuild by neat -->

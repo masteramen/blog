@@ -1,0 +1,115 @@
+<!-- build time:Sat Oct 27 2018 21:00:19 GMT+0800 (CST) --><!DOCTYPE html><html class="theme-next muse use-motion"><head><meta name="generator" content="Hexo 3.8.0"><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"><meta name="theme-color" content="#222"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"><link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css"><link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css"><link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4"><link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222"><meta name="description" content="引言最近我的同事分享了一个页面渲染过程中，字符串拼接的优化处理。我们系统的页面渲染是分模块渲染，每个模块渲染完成后都是一个String型的html片段，最终我们需要把所有模块的html片段拼接成一个完整html页面。老代码逻辑大致如下：List&amp;lt;String&amp;gt; moudleHtmls = new ArrayList&amp;lt;&amp;gt;(moduleSize); for(int i=0;i&amp;"><meta name="keywords" content="JAVA,面试"><meta property="og:type" content="article"><meta property="og:title" content="StringBuilder StringBuffer –阅读源码从jdk开始"><meta property="og:url" content="http://www.jfox.info/2017/stringbuilderstringbuffer阅读源码从jdk开始.html"><meta property="og:site_name" content="java面试"><meta property="og:description" content="引言最近我的同事分享了一个页面渲染过程中，字符串拼接的优化处理。我们系统的页面渲染是分模块渲染，每个模块渲染完成后都是一个String型的html片段，最终我们需要把所有模块的html片段拼接成一个完整html页面。老代码逻辑大致如下：List&amp;lt;String&amp;gt; moudleHtmls = new ArrayList&amp;lt;&amp;gt;(moduleSize); for(int i=0;i&amp;"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="http://www.jfox.info/2017/1258/573ae16.png"><meta property="og:updated_time" content="2018-10-27T12:29:37.428Z"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="StringBuilder StringBuffer –阅读源码从jdk开始"><meta name="twitter:description" content="引言最近我的同事分享了一个页面渲染过程中，字符串拼接的优化处理。我们系统的页面渲染是分模块渲染，每个模块渲染完成后都是一个String型的html片段，最终我们需要把所有模块的html片段拼接成一个完整html页面。老代码逻辑大致如下：List&amp;lt;String&amp;gt; moudleHtmls = new ArrayList&amp;lt;&amp;gt;(moduleSize); for(int i=0;i&amp;"><meta name="twitter:image" content="http://www.jfox.info/2017/1258/573ae16.png"><script type="text/javascript" id="hexo.configurations">var NexT=window.NexT||{},CONFIG={root:"/",scheme:"Muse",version:"5.1.4",sidebar:{position:"left",display:"post",offset:12,b2t:!1,scrollpercent:!1,onmobile:!1},fancybox:!0,tabs:!0,motion:{enable:!0,async:!1,transition:{post_block:"fadeIn",post_header:"slideDownIn",post_body:"slideDownIn",coll_header:"slideLeftIn",sidebar:"slideUpIn"}},duoshuo:{userId:"0",author:"Author"},algolia:{applicationID:"",apiKey:"",indexName:"",hits:{per_page:10},labels:{input_placeholder:"Search for Posts",hits_empty:"We didn't find any results for the search: ${query}",hits_stats:"${hits} results found in ${time} ms"}}}</script><link rel="canonical" href="http://www.jfox.info/2017/stringbuilderstringbuffer阅读源码从jdk开始.html"><title>StringBuilder StringBuffer –阅读源码从jdk开始 | java面试</title></head><body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN"><div class="container sidebar-position-left page-post-detail"><div class="headband"></div><header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="header-inner"><div class="site-brand-wrapper"><div class="site-meta"><div class="custom-logo-site-title"><a href="/" class="brand" rel="start"><span class="logo-line-before"><i></i></span> <span class="site-title">java面试</span> <span class="logo-line-after"><i></i></span></a></div><p class="site-subtitle"></p></div><div class="site-nav-toggle"><button><span class="btn-bar"></span> <span class="btn-bar"></span> <span class="btn-bar"></span></button></div></div><nav class="site-nav"><ul id="menu" class="menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i><br>Home</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i><br>Archives</a></li></ul></nav></div></header><main id="main" class="main"><div class="main-inner"><div class="content-wrap"><div id="content" class="content"><div id="posts" class="posts-expand"><article class="post post-type-normal" itemscope itemtype="http://schema.org/Article"><div class="post-block"><link itemprop="mainEntityOfPage" href="http://www.jfox.info/2017/stringbuilderstringbuffer阅读源码从jdk开始.html"><span hidden itemprop="author" itemscope itemtype="http://schema.org/Person"><meta itemprop="name" content="Hello"><meta itemprop="description" content=""><meta itemprop="image" content="/images/avatar.gif"></span><span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><meta itemprop="name" content="java面试"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">StringBuilder StringBuffer –阅读源码从jdk开始</h1><div class="post-meta"><span class="post-time"><span class="post-meta-item-icon"><i class="fa fa-calendar-o"></i> </span><span class="post-meta-item-text">Posted on</span> <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-01-01T23:55:58+08:00">2017-01-01</time></span></div></header><div class="post-body" itemprop="articleBody"><p><strong>引言</strong></p><p>最近我的同事分享了一个页面渲染过程中，字符串拼接的优化处理。我们系统的页面渲染是分模块渲染，每个模块渲染完成后都是一个String型的html片段，最终我们需要把所有模块的html片段拼接成一个完整html页面。老代码逻辑大致如下：</p><pre><code>List&lt;String&gt; moudleHtmls = new ArrayList&lt;&gt;(moduleSize);
+for(int i=0;i&lt;moduleSize;i++){
+    String tempHtml = null;
+    //模块内容渲染 省略代码
+    moudleHtmls.set(i, tempHtml);//把每个模块html片段放入List
+}
+
+String pageString=&quot;&quot;;
+for (int i=0;i &lt;moduleSize; i++){
+    pageString+=moudleHtmls.get(i);//遍历把所有模块的html片段拼接成一个页面
+}
+</code></pre><p>通过反编译发现第二个for循环，每次拼接操作都会自动生成一个StringBuilder对象，反编译的代码如下（第二个for循环部分）：</p><pre><code>String pageString=&quot;&quot;;
+for (int i=0;i &lt;moduleSize; i++){
+    pageString=new StringBuilder().append(pageString).append(moudleHtmls.get(i)).toString();
+}
+</code></pre><p>每次for循环都会生成一个StringBuilder，其默认容量为16，超过16又需要自动扩容（后面源码详细讲解），势必会影响性能。改进后的代码如下：</p><pre><code>StringBuilder pageString = new StringBuilder(pageTemplate.length * 2);//预估页面长度
+for (int i=0;i &lt;moduleSize; i++){
+            pageString.append(moudleHtmls.get(i));//遍历把所有模块的html片段拼接成一个页面
+        }
+</code></pre><p>通过对比发现改造后的拼接性能大幅提升。我们系统每天都有上百万次的页面渲染，这个小小的改动带来的收益是可想而知的。</p><p>为了对StringBuilder有更深入的了解，决定阅读其相关源码，做一次全面的总结。</p><p><strong>字符串连接的三种方式</strong></p><p>1、字符串连接操作符（+），是把多个字符串合并为一个字符串的便利途径。</p><p>2、StringBuilder，创建该类对象，调用其append方法实现字符串连接，从jdk1.5开始支持。</p><p>3、StringBuffer，用法和StringBuilder相同，从jdk1.0就开始支持。</p><p>通过阅读源码发现StringBuilder、StringBuffer都是继承自AbstractStringBuilder，方式实现也是基本相同，只是StringBuffer的每个方式都是synchronized修饰的，也就是说StringBuffer适合使用在多线程并发环境下的字符串拼接。单线程环境下使用StringBuilder的性能会更好些。</p><p>String t=“123”+“456”；</p><p>这种方式每次执行，本质上是创建一个新String，然后把两个String的的内容复制到这个新String，性能非常差。但从jdk1.5开始，该操作做了优化，执行过程中会自动new 一个StringBuilder，真实的执行过程变为：String t=new StringBuilder().append(“123”).append(“456”)。</p><p>也就是说在拼接后的字符串总长度比较短的情况下（总长度不超过16），直接使用“(+)”符号拼接是最佳选择。</p><p>如果拼接后的字符串总长度大于16，最好新建一个指定预估容量的StringBuilder，调用其append方法进行拼接。如上述优化中：</p><p>StringBuilder pageString = new StringBuilder(pageTemplate.length * 2);//预估页面长度</p><p>另外如果在for循环中也不建议直接使用(+)操作，因为这会导致每次循环都会新创建一个StringBuilder，如上述优化中主要就是优化这个问题。</p><p>为什么要指定StringBuilder容量，其实跟ArrayList、HashMap等原理相同，都存在自动扩容的问题，看下源码就一目了然。</p><p><strong>StringBuilder、StringBuffer、AbstractStringBuilder 源码解析</strong></p><p>StringBuilder、StringBuffer都是继承自AbstractStringBuilder抽象类，每个方法的实现基本相同，都是调用AbstractStringBuilder中的方法。唯一的差异，就是toString方法，方法也是AbstractStringBuilder中唯一的抽象方法。</p><p>成员变量是一个char性的数组，StringBuilder、StringBuffer的所有操作基本都是围绕这个数组进行：</p><pre><code>char[] value;//在AbstractStringBuilder中定义
+</code></pre><p>该字符数组在StringBuilder、StringBuffer的初始默认容量都是16，方法操作完全相同，以StringBuilder为例：</p><pre><code>//默认构造方法
+public StringBuilder() {
+        super(16);//默认容量
+}
+//指定容量构造方法
+public StringBuilder(int capacity) {
+        super(capacity);
+}
+//指定初始字符串构造方法
+public StringBuilder (String str) {
+        super(str.length() + 16); //初始容量为字符串长度+16
+        append(str);
+}
+</code></pre><p>这里通过super调用AbstractStringBuilder的构造方法：</p><pre><code>AbstractStringBuilder(int capacity) {
+        value = new char[capacity];//指定数组容量，初始化字节数组
+}
+</code></pre><p>成员变量字节数组value初始化完成。</p><p><strong>append系列重载方法</strong></p><p>AbstractStringBuilder中的append系列重载方法（StringBuilder、StringBuffer 中的append方法通过super直接调用该系列方法），是其核心方法，可以处理处理所有的基础类型（比如boolean、int、long、double等）、引用类型的拼接（String、Object、AbstractStringBuilder自身等），这里以用得最多的append(String)进行讲解：</p><pre><code>public AbstractStringBuilder append(String str) {
+        if (str == null)
+            return appendNull();//注意如果为str为null，会拼接一个&quot;null&quot;字符串
+        int len = str.length();
+        ensureCapacityInternal(count + len);//判断容量是否足够，如不够先扩容，再copy到新扩容后的数组
+        str.getChars(0, len, value, count);//把str copy到 字符数组中
+        count += len;//重新计算字符数组总长度
+        return this;
+    }
+
+private void ensureCapacityInternal(int minimumCapacity) {
+        // overflow-conscious code
+        if (minimumCapacity - value.length &gt; 0)
+            expandCapacity(minimumCapacity);//容量不够，进行扩容
+    }
+
+    void expandCapacity(int minimumCapacity) {
+        int newCapacity = value.length * 2 + 2;//扩容两倍 + 2
+        if (newCapacity - minimumCapacity &lt; 0)
+            newCapacity = minimumCapacity;
+        if (newCapacity &lt; 0) {//溢出处理
+            if (minimumCapacity &lt; 0) // overflow
+                throw new OutOfMemoryError();
+            newCapacity = Integer.MAX_VALUE;
+        }
+        value = Arrays.copyOf(value, newCapacity); //把老数据复制到扩容后的新数组。
+    }
+</code></pre><p>StringBuilder、StringBuffer的字符串拼接，实际上就是把待拼接的字符串，放到自己的字符数组，如果字符数组的容量不够，需要进行扩容。具体操作是新创建一个字符数组（容量为老数组的2倍+2），再把老数组中的内容copy到新数组。这就是为什么在拼接大量字符串（拼接后超过长度16），最好采用指定容量的方式创建StringBuilder（或StringBuffer），防止拼接过程中不断扩容带来的性能消耗。</p><p><strong>toString方法</strong></p><p>需要注意的是StringBuilder、StringBuffer不是String类型，不能强制转换。只能通过调用其toString方法转换为String。前面已经提到StringBuilder、StringBuffer重要区别就是toString方法的实现不同。</p><p>StringBuilder的toString方法，采用自己成员变量value字符数组新建一个String：</p><pre><code>@Override
+    public String toString() {
+        // Create a copy, don&apos;t share the array
+        return new String(value, 0, count);
+}
+</code></pre><p>StringBuffer的toString方法：</p><pre><code>public synchronized String toString() {
+        if (toStringCache == null) {
+            toStringCache = Arrays.copyOfRange(value, 0, count);//缓存成员变量value字符数组
+        }
+        return new String(toStringCache, true);
+}
+</code></pre><p>其中toStringCache主要用作缓存。当StringBuffer对成员变量value字符数组有修改时，需要先清理缓存，如StringBuffer的append(String)方法实现：</p><pre><code>@Override
+    public synchronized StringBuffer append(String str) {
+        toStringCache = null;//清理缓存
+        super.append(str);//调用父类AbstractStringBuilder的append方法
+        return this;
+    }
+</code></pre><p>再来看下StringBuilder的append(String)方法实现：</p><pre><code>@Override
+    public StringBuilder append(String str) {
+        super.append(str);
+        return this; //调用父类AbstractStringBuilder的append方法
+}
+</code></pre><p>区别有两点：</p><p>1、StringBuffer的方法是synchronized修饰。</p><p>2、StringBuffer的方法需要清理缓存。</p><p>StringBuilder、StringBuffer的append系列方法不再一一讲解，具体操作都差不多，把待拼接类型转换中字符，依次放到其成员变量value字符数组中。</p><p><strong>其他方法：</strong></p><p>AbstractStringBuilder的delete方法，本质上也是对字符数组的copy操作：</p><pre><code>public AbstractStringBuilder delete(int start, int end) {
+        if (start &lt; 0)
+            throw new StringIndexOutOfBoundsException(start);
+        if (end &gt; count)
+            end = count;
+        if (start &gt; end)
+            throw new StringIndexOutOfBoundsException();
+        int len = end - start;
+        if (len &gt; 0) {
+            System.arraycopy(value, start+len, value, start, count-end);//本质上先复制到一个临时数组，再覆盖原数组 无内存泄漏问题
+            count -= len;
+        }
+        return this;
+    }
+</code></pre><p>AbstractStringBuilder的insert系列方法，这里以String为例：</p><pre><code>public AbstractStringBuilder insert(int offset, String str) {
+        if ((offset &lt; 0) || (offset &gt; length()))
+            throw new StringIndexOutOfBoundsException(offset);
+        if (str == null)
+            str = &quot;null&quot;;
+        int len = str.length();
+        ensureCapacityInternal(count + len);//确认容量
+        System.arraycopy(value, offset, value, offset + len, count - offset);//通过复制预留出待插入空间
+        str.getChars(value, offset);//copy字符串 到指定开始位置
+        count += len;
+        return this;
+    }
+</code></pre><p>举个列子:在“hello!”字符串中插入“pig”字符串，形成“hellopig!”, java代码如下：</p><pre><code>StringBuilder sb = new StringBuilder；
+sb.append(“hello!”)
+sb.insert(4,“pig”);
+</code></pre><p>对应的示意图：</p><p><img src="/2017/1258/573ae16.png" alt=""></p><p>AbstractStringBuilder的reverse方法，本质上就是把字符数组里每个字符反序排列，不在累述。</p><p>最后总结下：</p><p>1、拼接完成的字符串长度短的情况下，直接使用(+)操作符即可：如String t = “123”+”456”。</p><p>2、不要在for循环中使用(+)操作符，使用StringBuilder代替。</p><p>3、单线程环境下，使用StringBuilder拼接一个比较长的字符串，最好先预估容量，采用指定容量的StringBuilder构造方法，构造StringBuilder实例。</p><p>4、多线程环境下使用StringBuffer。</p></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="4142158067"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="5618891265"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><footer class="post-footer"><div class="post-nav"><div class="post-nav-next post-nav-item"><a href="/2017/keepalivenginx实现高可用性及负载均衡原理介绍.html" rel="next" title="【 keepalive + Nginx实现高可用性及负载均衡原理介绍】"><i class="fa fa-chevron-left"></i> 【 keepalive + Nginx实现高可用性及负载均衡原理介绍】</a></div><span class="post-nav-divider"></span><div class="post-nav-prev post-nav-item"><a href="/2017/数据应用达人之sql基础教程分享13存储过程与事务.html" rel="prev" title="数据应用达人之SQL基础教程分享13-存储过程与事务">数据应用达人之SQL基础教程分享13-存储过程与事务 <i class="fa fa-chevron-right"></i></a></div></div></footer></div></article><div class="post-spread"></div></div></div></div><div class="sidebar-toggle"><div class="sidebar-toggle-line-wrap"><span class="sidebar-toggle-line sidebar-toggle-line-first"></span> <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span> <span class="sidebar-toggle-line sidebar-toggle-line-last"></span></div></div><aside id="sidebar" class="sidebar"><div class="sidebar-inner"><section class="site-overview-wrap sidebar-panel sidebar-panel-active"><div class="site-overview"><div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person"><p class="site-author-name" itemprop="name">Hello</p><p class="site-description motion-element" itemprop="description"></p></div><nav class="site-state motion-element"><div class="site-state-item site-state-posts"><a href="/archives/"><span class="site-state-item-count">1358</span> <span class="site-state-item-name">posts</span></a></div></nav></div></section></div></aside><div class="sfix"><div class="fixedme"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460" data-ad-format="auto"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script></div></div></main><footer id="footer" class="footer"><div class="footer-inner"><div class="copyright">&copy; <span itemprop="copyrightYear">2018</span> <span class="with-love"><i class="fa fa-user"></i> </span><span class="author" itemprop="copyrightHolder">Hello</span></div><div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div><span class="post-meta-divider">|</span><div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div></div></footer><div class="back-to-top"><i class="fa fa-arrow-up"></i></div></div><script type="text/javascript">"[object Function]"!==Object.prototype.toString.call(window.Promise)&&(window.Promise=null)</script><script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script><script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script><script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script><script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script><script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script></body></html><!-- rebuild by neat -->

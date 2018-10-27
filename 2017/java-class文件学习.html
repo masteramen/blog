@@ -1,0 +1,114 @@
+<!-- build time:Sat Oct 27 2018 21:00:23 GMT+0800 (CST) --><!DOCTYPE html><html class="theme-next muse use-motion"><head><meta name="generator" content="Hexo 3.8.0"><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"><meta name="theme-color" content="#222"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"><link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css"><link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css"><link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4"><link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222"><meta name="description" content="数据类型：class 文件结构minor version:副版本major version:主版本号文件的版本号 major_version.minor_versionflags:访问标志ACC_PUBLICH 声明为publichACC_FINAL 声明为finalACC_SUPER 当用到invokespecial指令时，需要对父类方法做特殊处理ACC_INTERFACE 该class文件定义"><meta name="keywords" content="JAVA,面试"><meta property="og:type" content="article"><meta property="og:title" content="Java Class文件学习"><meta property="og:url" content="http://www.jfox.info/2017/java-class文件学习.html"><meta property="og:site_name" content="java面试"><meta property="og:description" content="数据类型：class 文件结构minor version:副版本major version:主版本号文件的版本号 major_version.minor_versionflags:访问标志ACC_PUBLICH 声明为publichACC_FINAL 声明为finalACC_SUPER 当用到invokespecial指令时，需要对父类方法做特殊处理ACC_INTERFACE 该class文件定义"><meta property="og:locale" content="zh_CN"><meta property="og:updated_time" content="2018-10-27T12:29:37.385Z"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="Java Class文件学习"><meta name="twitter:description" content="数据类型：class 文件结构minor version:副版本major version:主版本号文件的版本号 major_version.minor_versionflags:访问标志ACC_PUBLICH 声明为publichACC_FINAL 声明为finalACC_SUPER 当用到invokespecial指令时，需要对父类方法做特殊处理ACC_INTERFACE 该class文件定义"><script type="text/javascript" id="hexo.configurations">var NexT=window.NexT||{},CONFIG={root:"/",scheme:"Muse",version:"5.1.4",sidebar:{position:"left",display:"post",offset:12,b2t:!1,scrollpercent:!1,onmobile:!1},fancybox:!0,tabs:!0,motion:{enable:!0,async:!1,transition:{post_block:"fadeIn",post_header:"slideDownIn",post_body:"slideDownIn",coll_header:"slideLeftIn",sidebar:"slideUpIn"}},duoshuo:{userId:"0",author:"Author"},algolia:{applicationID:"",apiKey:"",indexName:"",hits:{per_page:10},labels:{input_placeholder:"Search for Posts",hits_empty:"We didn't find any results for the search: ${query}",hits_stats:"${hits} results found in ${time} ms"}}}</script><link rel="canonical" href="http://www.jfox.info/2017/java-class文件学习.html"><title>Java Class文件学习 | java面试</title></head><body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN"><div class="container sidebar-position-left page-post-detail"><div class="headband"></div><header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="header-inner"><div class="site-brand-wrapper"><div class="site-meta"><div class="custom-logo-site-title"><a href="/" class="brand" rel="start"><span class="logo-line-before"><i></i></span> <span class="site-title">java面试</span> <span class="logo-line-after"><i></i></span></a></div><p class="site-subtitle"></p></div><div class="site-nav-toggle"><button><span class="btn-bar"></span> <span class="btn-bar"></span> <span class="btn-bar"></span></button></div></div><nav class="site-nav"><ul id="menu" class="menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i><br>Home</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i><br>Archives</a></li></ul></nav></div></header><main id="main" class="main"><div class="main-inner"><div class="content-wrap"><div id="content" class="content"><div id="posts" class="posts-expand"><article class="post post-type-normal" itemscope itemtype="http://schema.org/Article"><div class="post-block"><link itemprop="mainEntityOfPage" href="http://www.jfox.info/2017/java-class文件学习.html"><span hidden itemprop="author" itemscope itemtype="http://schema.org/Person"><meta itemprop="name" content="Hello"><meta itemprop="description" content=""><meta itemprop="image" content="/images/avatar.gif"></span><span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><meta itemprop="name" content="java面试"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">Java Class文件学习</h1><div class="post-meta"><span class="post-time"><span class="post-meta-item-icon"><i class="fa fa-calendar-o"></i> </span><span class="post-meta-item-text">Posted on</span> <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-01-01T23:49:58+08:00">2017-01-01</time></span></div></header><div class="post-body" itemprop="articleBody"><p>数据类型：</p><p>class 文件结构</p><p>minor version:副版本</p><p>major version:主版本号</p><p>文件的版本号 major_version.minor_version</p><p>flags:访问标志</p><ol><li>ACC_PUBLICH 声明为publich</li><li>ACC_FINAL 声明为final</li><li>ACC_SUPER 当用到invokespecial指令时，需要对父类方法做特殊处理</li><li>ACC_INTERFACE 该class文件定义的是接口而不是类</li><li>ACC_ABSTRACT 声明为abstract</li><li>ACC_SYNTHETIC 声明为synthetic</li><li>ACC_ANNOTATION 标识注解类型</li><li>ACC_ENUM 标识枚举类型</li></ol><p>constant pool 常量池</p><p>方法调用和返回指令</p><ol><li>invokevirtual 指令用于调用对象的实例方法，根据对象的实际类型进行分派</li><li>invokeinterface 指令用于调用接口方法，它会在运行时搜索由特定对象实现的这个接口方法，并找出适合的方法进行调用</li><li>invokespecial 指令用于调用一些需要特殊的实例方法，包括实例的初始化，私有方法和父类方法</li><li>invokestatic 指令用于调用命名类中的静态方法</li><li>invokedynamic 指令用于调用可以绑定invokedynamic指令的调用点对象作为目标方法。</li></ol><p>aaload_<n>:从局部变量表中加载索引值为n的引用</n></p><p>aconst_null:将一个null值压入到操作数栈顶</p><p>putfield:为制定类的字段赋值</p><p>通过执行javac xxx.java javap -verbose xxx.class 查看class文件</p><pre><code>public class AconstNullDemo {
+    Integer i=null;
+    void test(){
+        i=1;
+        if(i.equals(Integer.valueOf(1))){
+            System.out.println(&quot;eq&quot;);
+        }
+    }
+}
+public class common.jvm.AconstNullDemo
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #9.#20         // java/lang/Object.&quot;&lt;init&gt;&quot;:()V
+   #2 = Fieldref           #8.#21         // common/jvm/AconstNullDemo.i:Ljava/lang/Integer;
+   #3 = Methodref          #22.#23        // java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+   #4 = Methodref          #22.#24        // java/lang/Integer.equals:(Ljava/lang/Object;)Z
+   #5 = Fieldref           #25.#26        // java/lang/System.out:Ljava/io/PrintStream;
+   #6 = String             #27            // eq
+   #7 = Methodref          #28.#29        // java/io/PrintStream.println:(Ljava/lang/String;)V
+   #8 = Class              #30            // common/jvm/AconstNullDemo
+   #9 = Class              #31            // java/lang/Object
+  #10 = Utf8               i
+  #11 = Utf8               Ljava/lang/Integer;
+  #12 = Utf8               &lt;init&gt;
+  #13 = Utf8               ()V
+  #14 = Utf8               Code
+  #15 = Utf8               LineNumberTable
+  #16 = Utf8               test
+  #17 = Utf8               StackMapTable
+  #18 = Utf8               SourceFile
+  #19 = Utf8               AconstNullDemo.java
+  #20 = NameAndType        #12:#13        // &quot;&lt;init&gt;&quot;:()V
+  #21 = NameAndType        #10:#11        // i:Ljava/lang/Integer;
+  #22 = Class              #32            // java/lang/Integer
+  #23 = NameAndType        #33:#34        // valueOf:(I)Ljava/lang/Integer;
+  #24 = NameAndType        #35:#36        // equals:(Ljava/lang/Object;)Z
+  #25 = Class              #37            // java/lang/System
+  #26 = NameAndType        #38:#39        // out:Ljava/io/PrintStream;
+  #27 = Utf8               eq
+  #28 = Class              #40            // java/io/PrintStream
+  #29 = NameAndType        #41:#42        // println:(Ljava/lang/String;)V
+  #30 = Utf8               common/jvm/AconstNullDemo
+  #31 = Utf8               java/lang/Object
+  #32 = Utf8               java/lang/Integer
+  #33 = Utf8               valueOf
+  #34 = Utf8               (I)Ljava/lang/Integer;
+  #35 = Utf8               equals
+  #36 = Utf8               (Ljava/lang/Object;)Z
+  #37 = Utf8               java/lang/System
+  #38 = Utf8               out
+  #39 = Utf8               Ljava/io/PrintStream;
+  #40 = Utf8               java/io/PrintStream
+  #41 = Utf8               println
+  #42 = Utf8               (Ljava/lang/String;)V
+{
+  java.lang.Integer i;
+    descriptor: Ljava/lang/Integer;
+    flags:
+  public common.jvm.AconstNullDemo();
+    descriptor: ()V
+    flags: ACC_PUBLIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object.&quot;&lt;init&gt;&quot;:()V
+         4: aload_0
+         //将null压入栈顶
+         5: aconst_null
+         //将null赋值给属性i
+         6: putfield      #2                  // Field i:Ljava/lang/Integer;
+         9: return
+      LineNumberTable:
+        line 6: 0
+        line 7: 4
+  void test();
+    descriptor: ()V
+    flags:
+    Code:
+      stack=2, locals=1, args_size=1
+        //加载this到操作栈
+         0: aload_0  
+         //加载常量1到操作栈
+         1: iconst_1
+         //调用静态方法
+         2: invokestatic  #3                  // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+         //将计算结果赋值给属性，为什么putfield的索引不是连续的？这是因为invokestatic操作和操作数长度为3个slot
+         5: putfield      #2                  // Field i:Ljava/lang/Integer;
+         //加载this到操作栈
+         8: aload_0
+         //将属性压入栈顶
+         9: getfield      #2                  // Field i:Ljava/lang/Integer;
+        //加载常量1到操作栈顶
+        12: iconst_1
+        //调用静态方法Integer.valueOf()
+        13: invokestatic  #3                  // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+        //调用虚方法equals
+        16: invokevirtual #4                  // Method java/lang/Integer.equals:(Ljava/lang/Object;)Z
+        //如果ifeq的结果为0则挑战到30行
+        19: ifeq          30
+        22: getstatic     #5                  // Field java/lang/System.out:Ljava/io/PrintStream;
+        25: ldc           #6                  // String eq
+        27: invokevirtual #7                  // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+        30: return
+      LineNumberTable:
+        line 10: 0
+        line 11: 8
+        line 12: 22
+        line 14: 30
+      StackMapTable: number_of_entries = 1
+        frame_type = 30 /* same */
+}
+</code></pre></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="4142158067"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="5618891265"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><footer class="post-footer"><div class="post-nav"><div class="post-nav-next post-nav-item"><a href="/2017/基于spring的最简单的定时任务实现与配置-三-番外篇-cron.html" rel="next" title="基于Spring的最简单的定时任务实现与配置（三）–番外篇 cron表达式的相关内容"><i class="fa fa-chevron-left"></i> 基于Spring的最简单的定时任务实现与配置（三）–番外篇 cron表达式的相关内容</a></div><span class="post-nav-divider"></span><div class="post-nav-prev post-nav-item"><a href="/2017/b-b产业互联网分析.html" rel="prev" title="B2B产业互联网分析 » java面试题">B2B产业互联网分析 » java面试题 <i class="fa fa-chevron-right"></i></a></div></div></footer></div></article><div class="post-spread"></div></div></div></div><div class="sidebar-toggle"><div class="sidebar-toggle-line-wrap"><span class="sidebar-toggle-line sidebar-toggle-line-first"></span> <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span> <span class="sidebar-toggle-line sidebar-toggle-line-last"></span></div></div><aside id="sidebar" class="sidebar"><div class="sidebar-inner"><section class="site-overview-wrap sidebar-panel sidebar-panel-active"><div class="site-overview"><div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person"><p class="site-author-name" itemprop="name">Hello</p><p class="site-description motion-element" itemprop="description"></p></div><nav class="site-state motion-element"><div class="site-state-item site-state-posts"><a href="/archives/"><span class="site-state-item-count">1358</span> <span class="site-state-item-name">posts</span></a></div></nav></div></section></div></aside><div class="sfix"><div class="fixedme"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460" data-ad-format="auto"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script></div></div></main><footer id="footer" class="footer"><div class="footer-inner"><div class="copyright">&copy; <span itemprop="copyrightYear">2018</span> <span class="with-love"><i class="fa fa-user"></i> </span><span class="author" itemprop="copyrightHolder">Hello</span></div><div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div><span class="post-meta-divider">|</span><div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div></div></footer><div class="back-to-top"><i class="fa fa-arrow-up"></i></div></div><script type="text/javascript">"[object Function]"!==Object.prototype.toString.call(window.Promise)&&(window.Promise=null)</script><script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script><script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script><script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script><script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script><script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script></body></html><!-- rebuild by neat -->

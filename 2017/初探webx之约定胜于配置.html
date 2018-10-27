@@ -1,0 +1,179 @@
+<!-- build time:Sat Oct 27 2018 21:00:18 GMT+0800 (CST) --><!DOCTYPE html><html class="theme-next muse use-motion"><head><meta name="generator" content="Hexo 3.8.0"><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"><meta name="theme-color" content="#222"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"><link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css"><link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css"><link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4"><link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222"><meta name="description" content="在分析之前，我们需要强调 Webx 的一个重要设计理念——约定胜于配置。“约定”即规则，规则是预先定义的，工程师只需要按着规则来做事，就不需要额外的“配置”。对比其它一些框架，往往每增加一个页面，都需要在配置文件中增加若干行内容。注意，本篇文章仅用于解答上文提出的两个疑问，更多 Webx 的设计理念及原理性知识请参阅 官方文档 。execute()为什么会被调用？本文以解析请求 http://lo"><meta name="keywords" content="JAVA,面试"><meta property="og:type" content="article"><meta property="og:title" content="初探Webx之约定胜于配置"><meta property="og:url" content="http://www.jfox.info/2017/初探webx之约定胜于配置.html"><meta property="og:site_name" content="java面试"><meta property="og:description" content="在分析之前，我们需要强调 Webx 的一个重要设计理念——约定胜于配置。“约定”即规则，规则是预先定义的，工程师只需要按着规则来做事，就不需要额外的“配置”。对比其它一些框架，往往每增加一个页面，都需要在配置文件中增加若干行内容。注意，本篇文章仅用于解答上文提出的两个疑问，更多 Webx 的设计理念及原理性知识请参阅 官方文档 。execute()为什么会被调用？本文以解析请求 http://lo"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="http://www.jfox.info/2017/1317/1ca80c8.png"><meta property="og:updated_time" content="2018-10-27T12:29:37.384Z"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="初探Webx之约定胜于配置"><meta name="twitter:description" content="在分析之前，我们需要强调 Webx 的一个重要设计理念——约定胜于配置。“约定”即规则，规则是预先定义的，工程师只需要按着规则来做事，就不需要额外的“配置”。对比其它一些框架，往往每增加一个页面，都需要在配置文件中增加若干行内容。注意，本篇文章仅用于解答上文提出的两个疑问，更多 Webx 的设计理念及原理性知识请参阅 官方文档 。execute()为什么会被调用？本文以解析请求 http://lo"><meta name="twitter:image" content="http://www.jfox.info/2017/1317/1ca80c8.png"><script type="text/javascript" id="hexo.configurations">var NexT=window.NexT||{},CONFIG={root:"/",scheme:"Muse",version:"5.1.4",sidebar:{position:"left",display:"post",offset:12,b2t:!1,scrollpercent:!1,onmobile:!1},fancybox:!0,tabs:!0,motion:{enable:!0,async:!1,transition:{post_block:"fadeIn",post_header:"slideDownIn",post_body:"slideDownIn",coll_header:"slideLeftIn",sidebar:"slideUpIn"}},duoshuo:{userId:"0",author:"Author"},algolia:{applicationID:"",apiKey:"",indexName:"",hits:{per_page:10},labels:{input_placeholder:"Search for Posts",hits_empty:"We didn't find any results for the search: ${query}",hits_stats:"${hits} results found in ${time} ms"}}}</script><link rel="canonical" href="http://www.jfox.info/2017/初探webx之约定胜于配置.html"><title>初探Webx之约定胜于配置 | java面试</title></head><body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN"><div class="container sidebar-position-left page-post-detail"><div class="headband"></div><header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="header-inner"><div class="site-brand-wrapper"><div class="site-meta"><div class="custom-logo-site-title"><a href="/" class="brand" rel="start"><span class="logo-line-before"><i></i></span> <span class="site-title">java面试</span> <span class="logo-line-after"><i></i></span></a></div><p class="site-subtitle"></p></div><div class="site-nav-toggle"><button><span class="btn-bar"></span> <span class="btn-bar"></span> <span class="btn-bar"></span></button></div></div><nav class="site-nav"><ul id="menu" class="menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i><br>Home</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i><br>Archives</a></li></ul></nav></div></header><main id="main" class="main"><div class="main-inner"><div class="content-wrap"><div id="content" class="content"><div id="posts" class="posts-expand"><article class="post post-type-normal" itemscope itemtype="http://schema.org/Article"><div class="post-block"><link itemprop="mainEntityOfPage" href="http://www.jfox.info/2017/初探webx之约定胜于配置.html"><span hidden itemprop="author" itemscope itemtype="http://schema.org/Person"><meta itemprop="name" content="Hello"><meta itemprop="description" content=""><meta itemprop="image" content="/images/avatar.gif"></span><span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><meta itemprop="name" content="java面试"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">初探Webx之约定胜于配置</h1><div class="post-meta"><span class="post-time"><span class="post-meta-item-icon"><i class="fa fa-calendar-o"></i> </span><span class="post-meta-item-text">Posted on</span> <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-01-01T23:56:57+08:00">2017-01-01</time></span></div></header><div class="post-body" itemprop="articleBody"><p>在分析之前，我们需要强调 <code>Webx</code> 的一个重要设计理念——约定胜于配置。“约定”即规则，规则是预先定义的，工程师只需要按着规则来做事，就不需要额外的“配置”。对比其它一些框架，往往每增加一个页面，都需要在配置文件中增加若干行内容。</p><p>注意，本篇文章仅用于解答上文提出的两个疑问，更多 <code>Webx</code> 的设计理念及原理性知识请参阅 <a href="https://www.jfox.info/go.php?url=http://openwebx.org/docs/">官方文档</a> 。</p><h2 id="execute-为什么会被调用？"><a href="#execute-为什么会被调用？" class="headerlink" title="execute()为什么会被调用？"></a>execute()为什么会被调用？</h2><p>本文以解析请求 <code>http://localhost:8080/webx/simple/say_hi.do</code> 为例来回答第一个问题，在 <code>SayHi</code> 类中 <code>execute()</code> 处添加断点，启动 <code>Tomcat</code> ，程序执行至断点处，查看此时当前线程的函数调用栈，如下图所示（截取了部分）。</p><p><img src="/2017/1317/1ca80c8.png" alt=""></p><p>想要更好的理解该函数调用栈的信息，需要先从理论上对 <code>Webx</code> 处理一个 <code>Web</code> 请求有一个认知。</p><ul><li>首先，增强 <code>request</code> 、 <code>response</code> 、 <code>session</code> 的功能，并把它们打包成更易使用的 <code>RequestContext</code> 对象。</li><li>其次，它会调用相应子应用的 <code>pipeline</code> ，用它来做进一步的处理。</li></ul><p><code>pipeline</code> 是 <code>Webx</code> 的一种机制，这种机制给予开发者极大的自由来自定制处理请求的流程。 <code>pipeline</code> 由一系列的 <code>valve</code> 构成，一个请求在获取响应（ <code>Module</code> ）前需经历这一系列 <code>valve</code> 。 <code>Webx</code> 将 <code>URL</code> 映射成 <code>target</code> ，由开发者定制不同类型的 <code>target</code> 所匹配的 <code>pipeline</code> 。例如，当前请求的 <code>target</code> 为 <code>/simple/say_hi.do</code> ，与之对应的 <code>pipeline</code> 如下所示。</p><pre><code>&lt;when&gt;
+    &lt;!-- 执行不带模板的screen，无layout。 --&gt;
+    &lt;pl-conditions:target-extension-conditionextension=&quot;do&quot;/&gt;
+    &lt;pl-valves:performAction/&gt;
+    &lt;pl-valves:performScreen/&gt;
+&lt;/when&gt;
+</code></pre><p>结合 <code>pipeline</code> 与函数调用栈，在执行 <code>execute()</code> 之前，请求经历了一系列 <code>invoke()</code> 与 <code>invokeNext()</code> 。首先执行 <code>&lt;pl-valves:performAction /&gt;</code> 对应 <code>PerformActionValve</code> 中的 <code>invoke()</code> 与 <code>invokeNext()</code> ，由于当前请求并不包含表单提交，所以 <code>PerformActionValve</code> 不做任何操作。接着执行 <code>&lt;pl-valves:performScreen /&gt;</code> 对应的 <code>PerformScreenValve</code> 中的 <code>invoke()</code> ，这也是我们分析的重点，该 <code>invoke</code> 方法对应的源码如下所示。</p><pre><code>public void invoke(PipelineContext pipelineContext)throwsException{
+    TurbineRunData rundata = TurbineUtil.getTurbineRunData(this.request);
+    if(!rundata.isRedirected()) {
+        this.setContentType(rundata);
+        Object result = null;
+
+        try {
+            result = this.performScreenModule(rundata);
+        } finally {
+            this.setOutputValue(pipelineContext, result);
+        }
+    }
+
+    pipelineContext.invokeNext();
+}
+</code></pre><p>进入 <code>performScreenModule</code> 方法，其源码如下所示（省略部分无关代码）。</p><pre><code>protectedObjectperformScreenModule(TurbineRunData rundata){
+    PerformScreenValve.ModuleFinder finder = new PerformScreenValve.ModuleFinder(rundata.getTarget());
+    rundata.setLayoutEnabled(true);
+    try {
+        Module e = finder.getScreenModule();
+        if(e != null) {
+            ScreenEventUtil.setEventName(rundata.getRequest(), finder.event);
+            Object var4;
+            try {
+                if(!(e instanceof ModuleReturningValue)) {
+                    e.execute();
+                    return null;
+                }
+                var4 = ((ModuleReturningValue)e).executeAndReturn();
+            } finally {
+                ...
+            }
+            return var4;
+        } 
+        ...
+    } 
+    ...
+}
+</code></pre><p><code>performScreenModule</code> 首先根据当前 <code>target</code> 获取对应的 <code>Module</code> 。在 <code>Webx</code> 中， <code>Module</code> 承担了用户提交数据的接收与处理、请求的控制与转发、处理结果的展示等重要功能。 <code>Webx</code> 缺省定义了三种类型的 <code>Module</code> 。</p><ul><li><code>action</code> ：主要用于处理用户提交的数据，以及请求的控制与转发。</li><li><code>screen</code> ：主要用于处理页面的主体内容。</li><li><p><code>control</code> ：主要用于处理页面的部分内容，特别是可重用的内容。</p><p>我们接着进入 <code>finder.getScreenModule()</code> ，源码如下。</p><p>publicModulegetScreenModule()throwsModuleLoaderException{</p><pre><code>this.moduleName = PerformScreenValve.this.getModuleName(this.target);
+Module module = PerformScreenValve.this.moduleLoaderService.getModuleQuiet(&quot;screen&quot;, this.moduleName);
+if(module != null) {
+    return module;
+} else {
+    if(this.parseEvent()) {
+        module = PerformScreenValve.this.moduleLoaderService.getModuleQuiet(&quot;screen&quot;, this.eventModuleName);
+        if(module instanceof ModuleEvent) {
+            return module;
+        }
+    }
+
+    return null;
+}
+</code></pre><p>}</p></li></ul><p>打断点一步一步深入下去，进入 <code>getModuleQuiet()</code> ，源码如下。</p><pre><code>publicModulegetModuleQuiet(String moduleType, String moduleName)throwsModuleLoaderException{
+    ModuleKey moduleKey = new ModuleKey(moduleType, moduleName);
+    moduleType = moduleKey.getModuleType();
+    moduleName = moduleKey.getModuleName();
+    if(this.cacheEnabled.booleanValue()) {
+        Module moduleObject = (Module)this.moduleCache.get(moduleKey);
+        if(moduleObject != null) {
+            return moduleObject;
+        }
+    }
+
+    Object var10 = null;
+    Module module = null;
+    ModuleFactory[] arr$ = this.factories;
+    int len$ = arr$.length;
+
+    int i$;
+    for(i$ = 0; i$ &lt; len$; ++i$) {
+        ModuleFactory adapter = arr$[i$];
+        var10 = adapter.getModule(moduleType, moduleName);
+        if(var10 != null) {
+            break;
+        }
+    }
+
+    if(var10 != null) {
+        if(var10 instanceof Module) {
+            module = (Module)var10;
+        } else {
+            ModuleAdapterFactory[] var11 = this.adapters;
+            len$ = var11.length;
+
+            for(i$ = 0; i$ &lt; len$; ++i$) {
+                ModuleAdapterFactory var12 = var11[i$];
+                module = var12.adapt(moduleType, moduleName, var10);
+                if(module != null) {
+                    break;
+                }
+            }
+        }
+    }
+
+    if(module == null &amp;&amp; var10 != null) {
+        throw new UnadaptableModuleException(&quot;Could not adapt object to module: type=&quot; + moduleType + &quot;, name=&quot; + moduleName + &quot;, class=&quot; + var10.getClass());
+    } else {
+        if(this.cacheEnabled.booleanValue() &amp;&amp; module != null) {
+            this.moduleCache.put(moduleKey, module);
+        }
+
+        return module;
+    }
+}
+</code></pre><p>在 <code>getModuleQuiet()</code> 中，首先根据 <code>moduleType</code> 和 <code>moduleName</code> 创建 <code>modulekey</code> ， <code>Webx</code> 会对 <code>Module</code> 进行缓存，因此首先根据 <code>moduleKey</code> 从缓存中获取 <code>Module</code> 。如果缓存中还不存在当前 <code>target</code> 对应的 <code>Module</code> ，继续深入，进入 <code>DataBindingAdapterFactory</code> 类的 <code>adapt</code> 方法，源码如下。</p><pre><code>publicModuleadapt(String type, String name, Object moduleObject){
+    ModuleInfo moduleInfo = new ModuleInfo(type, name);
+    Class moduleClass = moduleObject.getClass();
+    Method executeMethod = this.getMethod(moduleClass, &quot;execute&quot;);
+    if(executeMethod != null) {
+        FastClass fc = FastClass.create(moduleClass);
+        FastMethod fm = fc.getMethod(executeMethod);
+        boolean skippable = &quot;action&quot;.equalsIgnoreCase(type);
+        return new DataBindingAdapter(moduleObject, this.getMethodInvoker(fm, moduleInfo, skippable));
+    } else {
+        return null;
+    }
+}
+</code></pre><p>在 <code>adapt</code> 方法中，一切开始变得清晰起来：首先尝试获取 <code>moduleObject</code> 的 <code>execute()</code> 方法，若存在，那么当前 <code>target</code> 对应的Module的最关键部分也就构建完成了。 至此，第一个疑问“为什么 <code>execute()</code> 会被调用”得到了解答 。</p><p>获取了 <code>Module</code> 之后， <code>executeAndReturn()</code> 调用 <code>execute()</code> ，完成页面主体内容的处理。 <code>executeAndReturn()</code> 源码如下。</p><pre><code>publicObjectexecuteAndReturn()throwsException{
+    return this.executeMethod.invoke(this.moduleObject, this.log);
+}
+</code></pre><h2 id="doChinese-为什么会被调用？"><a href="#doChinese-为什么会被调用？" class="headerlink" title="doChinese()为什么会被调用？"></a>doChinese()为什么会被调用？</h2><p>此时 <code>Web</code> 请求 <code>URL</code> 为 <code>http://localhost:8080/webx/multievent/say_hello_1/chinese.do</code> ，因此相应的 <code>target</code> 即为 <code>/multievent/say_hello_1/chinese.do</code> 。与第一个问题的请求处理流程相同， <code>Webx</code> 首先根据当前 <code>target</code> 去获取 <code>Module</code> ，若无法获取，那么认为当前 <code>target</code> 是由两部分组成： <code>event</code> 和 <code>eventModuleName</code> ，解析 <code>target</code> 的源码如下。</p><pre><code>private boolean parseEvent(){
+    int slashIndex = this.target.lastIndexOf(&quot;/&quot;);
+    int dotIndex = this.target.lastIndexOf(&quot;.&quot;);
+    if(slashIndex &gt; 0) {
+        this.event = this.target.substring(slashIndex + 1, dotIndex &gt; slashIndex?dotIndex:this.target.length());
+        this.eventModuleName = PerformScreenValve.this.getModuleName(this.target.substring(0, slashIndex));
+        return true;
+    } else {
+        return false;
+    }
+}
+</code></pre><p>继续打断点深入源码， <code>Webx</code> 会将 <code>eventModuleName</code> 作为 <code>moduleName</code> 获取 <code>Module</code> 。同样的，首先尝试获取 <code>execute()</code> ，如果获取不到便获取所有的 <code>EventHandler</code> ，源码如下。</p><pre><code>privateMap&lt;String, Method&gt;getEventHandlers(Class&lt;?&gt; moduleClass){
+    HashMap handlers = null;
+    Method[] arr$ = moduleClass.getMethods();
+    int len$ = arr$.length;
+
+    for(int i$ = 0; i$ &lt; len$; ++i$) {
+        Method method = arr$[i$];
+        if(this.checkMethod(method)) {
+            String methodName = method.getName();
+            if(methodName.length() &gt; 2 &amp;&amp; methodName.startsWith(&quot;do&quot;) &amp;&amp; Character.isUpperCase(methodName.charAt(2))) {
+                String eventName = StringUtil.toCamelCase(methodName.substring(2));
+                if(&quot;perform&quot;.equals(eventName)) {
+                    eventName = null;
+                }
+
+                if(handlers == null) {
+                    handlers = CollectionUtil.createHashMap();
+                }
+
+                handlers.put(eventName, method);
+            }
+        }
+    }
+
+    return handlers;
+}
+</code></pre><p>至此我们理解为什么 <code>doChinese()</code> 为什么会被调用了：获取当前 <code>target</code> 对应的 <code>screen</code> 的类的所有以 <code>do</code> 开头的方法，构建 <code>eventName</code> 与 <code>Method</code> 的映射关系，存储在一个 <code>Map</code> 中，注意我们的 <code>target</code> 已被划分为 <code>event</code> 和 <code>eventModuleName</code> ，在 <code>executeAndReturn()</code> 中根据 <code>event</code> 从 <code>Map</code> 中获取相应的 <code>Method</code> 并执行，源码如下（省略部分无关代码）。</p><pre><code>publicObjectexecuteAndReturn()throwsModuleEventException, ModuleEventNotFoundException{
+    Object result = null;
+    String event = this.getEventName(this.request);
+    MethodInvoker handler = null;
+    if(event != null) {
+        handler = (MethodInvoker)this.handlers.get(event);
+    }
+
+    if(handler == null) {
+        handler = (MethodInvoker)this.handlers.get((Object)null);
+    }
+...
+    result = handler.invoke(this.moduleObject, this.log);
+    ...
+}
+</code></pre><h4 id="所以第二个疑问也得到了解答-😛"><a href="#所以第二个疑问也得到了解答-😛" class="headerlink" title="所以第二个疑问也得到了解答 😛"></a>所以第二个疑问也得到了解答 😛</h4></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="4142158067"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="5618891265"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><footer class="post-footer"><div class="post-nav"><div class="post-nav-next post-nav-item"><a href="/2017/springboot系列五web开发thymeleaffreemarker模板发动机-2.html" rel="next" title="Spring Boot 系列（五）web开发-Thymeleaf、FreeMarker模板发动机"><i class="fa fa-chevron-left"></i> Spring Boot 系列（五）web开发-Thymeleaf、FreeMarker模板发动机</a></div><span class="post-nav-divider"></span><div class="post-nav-prev post-nav-item"><a href="/2017/怎样写好业务代码那些年领域建模教会我的东西.html" rel="prev" title="怎样写好业务代码——那些年领域建模教会我的东西">怎样写好业务代码——那些年领域建模教会我的东西 <i class="fa fa-chevron-right"></i></a></div></div></footer></div></article><div class="post-spread"></div></div></div></div><div class="sidebar-toggle"><div class="sidebar-toggle-line-wrap"><span class="sidebar-toggle-line sidebar-toggle-line-first"></span> <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span> <span class="sidebar-toggle-line sidebar-toggle-line-last"></span></div></div><aside id="sidebar" class="sidebar"><div class="sidebar-inner"><ul class="sidebar-nav motion-element"><li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">Table of Contents</li><li class="sidebar-nav-overview" data-target="site-overview-wrap">Overview</li></ul><section class="site-overview-wrap sidebar-panel"><div class="site-overview"><div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person"><p class="site-author-name" itemprop="name">Hello</p><p class="site-description motion-element" itemprop="description"></p></div><nav class="site-state motion-element"><div class="site-state-item site-state-posts"><a href="/archives/"><span class="site-state-item-count">1358</span> <span class="site-state-item-name">posts</span></a></div></nav></div></section><section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active"><div class="post-toc"><div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#execute-为什么会被调用？"><span class="nav-number">1.</span> <span class="nav-text">execute()为什么会被调用？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#doChinese-为什么会被调用？"><span class="nav-number">2.</span> <span class="nav-text">doChinese()为什么会被调用？</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#所以第二个疑问也得到了解答-😛"><span class="nav-number">2.0.1.</span> <span class="nav-text">所以第二个疑问也得到了解答 😛</span></a></li></ol></li></ol></div></div></section></div></aside><div class="sfix"><div class="fixedme"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460" data-ad-format="auto"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script></div></div></main><footer id="footer" class="footer"><div class="footer-inner"><div class="copyright">&copy; <span itemprop="copyrightYear">2018</span> <span class="with-love"><i class="fa fa-user"></i> </span><span class="author" itemprop="copyrightHolder">Hello</span></div><div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div><span class="post-meta-divider">|</span><div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div></div></footer><div class="back-to-top"><i class="fa fa-arrow-up"></i></div></div><script type="text/javascript">"[object Function]"!==Object.prototype.toString.call(window.Promise)&&(window.Promise=null)</script><script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script><script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script><script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script><script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script><script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script></body></html><!-- rebuild by neat -->

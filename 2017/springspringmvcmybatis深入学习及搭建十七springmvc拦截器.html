@@ -1,0 +1,123 @@
+<!-- build time:Sat Oct 27 2018 21:00:22 GMT+0800 (CST) --><!DOCTYPE html><html class="theme-next muse use-motion"><head><meta name="generator" content="Hexo 3.8.0"><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"><meta name="theme-color" content="#222"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"><link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css"><link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css"><link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4"><link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222"><meta name="description" content="Spring+SpringMVC+MyBatis深入学习及搭建(十七)——SpringMVC拦截器Spring Web MVC的处理器拦截器类似于Servlet开发中的过滤器Filter，用于对处理器进行预处理和后处理。定义拦截器，实现HandlerInterceptor接口。接口中提供三个方法。package joanna.yan.ssm.interceptor;  import javax.s"><meta name="keywords" content="JAVA,面试"><meta property="og:type" content="article"><meta property="og:title" content="Spring+SpringMVC+MyBatis深入学习及搭建(十七)——SpringMVC拦截器"><meta property="og:url" content="http://www.jfox.info/2017/springspringmvcmybatis深入学习及搭建十七springmvc拦截器.html"><meta property="og:site_name" content="java面试"><meta property="og:description" content="Spring+SpringMVC+MyBatis深入学习及搭建(十七)——SpringMVC拦截器Spring Web MVC的处理器拦截器类似于Servlet开发中的过滤器Filter，用于对处理器进行预处理和后处理。定义拦截器，实现HandlerInterceptor接口。接口中提供三个方法。package joanna.yan.ssm.interceptor;  import javax.s"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="http://www.jfox.info/2017/1056/a23adff.png"><meta property="og:image" content="http://www.jfox.info/2017/1056/840985e.png"><meta property="og:updated_time" content="2018-10-27T12:29:37.367Z"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="Spring+SpringMVC+MyBatis深入学习及搭建(十七)——SpringMVC拦截器"><meta name="twitter:description" content="Spring+SpringMVC+MyBatis深入学习及搭建(十七)——SpringMVC拦截器Spring Web MVC的处理器拦截器类似于Servlet开发中的过滤器Filter，用于对处理器进行预处理和后处理。定义拦截器，实现HandlerInterceptor接口。接口中提供三个方法。package joanna.yan.ssm.interceptor;  import javax.s"><meta name="twitter:image" content="http://www.jfox.info/2017/1056/a23adff.png"><script type="text/javascript" id="hexo.configurations">var NexT=window.NexT||{},CONFIG={root:"/",scheme:"Muse",version:"5.1.4",sidebar:{position:"left",display:"post",offset:12,b2t:!1,scrollpercent:!1,onmobile:!1},fancybox:!0,tabs:!0,motion:{enable:!0,async:!1,transition:{post_block:"fadeIn",post_header:"slideDownIn",post_body:"slideDownIn",coll_header:"slideLeftIn",sidebar:"slideUpIn"}},duoshuo:{userId:"0",author:"Author"},algolia:{applicationID:"",apiKey:"",indexName:"",hits:{per_page:10},labels:{input_placeholder:"Search for Posts",hits_empty:"We didn't find any results for the search: ${query}",hits_stats:"${hits} results found in ${time} ms"}}}</script><link rel="canonical" href="http://www.jfox.info/2017/springspringmvcmybatis深入学习及搭建十七springmvc拦截器.html"><title>Spring+SpringMVC+MyBatis深入学习及搭建(十七)——SpringMVC拦截器 | java面试</title></head><body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN"><div class="container sidebar-position-left page-post-detail"><div class="headband"></div><header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="header-inner"><div class="site-brand-wrapper"><div class="site-meta"><div class="custom-logo-site-title"><a href="/" class="brand" rel="start"><span class="logo-line-before"><i></i></span> <span class="site-title">java面试</span> <span class="logo-line-after"><i></i></span></a></div><p class="site-subtitle"></p></div><div class="site-nav-toggle"><button><span class="btn-bar"></span> <span class="btn-bar"></span> <span class="btn-bar"></span></button></div></div><nav class="site-nav"><ul id="menu" class="menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i><br>Home</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i><br>Archives</a></li></ul></nav></div></header><main id="main" class="main"><div class="main-inner"><div class="content-wrap"><div id="content" class="content"><div id="posts" class="posts-expand"><article class="post post-type-normal" itemscope itemtype="http://schema.org/Article"><div class="post-block"><link itemprop="mainEntityOfPage" href="http://www.jfox.info/2017/springspringmvcmybatis深入学习及搭建十七springmvc拦截器.html"><span hidden itemprop="author" itemscope itemtype="http://schema.org/Person"><meta itemprop="name" content="Hello"><meta itemprop="description" content=""><meta itemprop="image" content="/images/avatar.gif"></span><span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><meta itemprop="name" content="java面试"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">Spring+SpringMVC+MyBatis深入学习及搭建(十七)——SpringMVC拦截器</h1><div class="post-meta"><span class="post-time"><span class="post-meta-item-icon"><i class="fa fa-calendar-o"></i> </span><span class="post-meta-item-text">Posted on</span> <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-01-01T23:52:36+08:00">2017-01-01</time></span></div></header><div class="post-body" itemprop="articleBody"><h1 id="Spring-SpringMVC-MyBatis深入学习及搭建-十七-——SpringMVC拦截器"><a href="#Spring-SpringMVC-MyBatis深入学习及搭建-十七-——SpringMVC拦截器" class="headerlink" title="Spring+SpringMVC+MyBatis深入学习及搭建(十七)——SpringMVC拦截器"></a>Spring+SpringMVC+MyBatis深入学习及搭建(十七)——SpringMVC拦截器</h1><p>Spring Web MVC的处理器拦截器类似于Servlet开发中的过滤器Filter，用于对处理器进行预处理和后处理。</p><p>定义拦截器，实现HandlerInterceptor接口。接口中提供三个方法。</p><pre><code>package joanna.yan.ssm.interceptor;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import org.springframework.web.servlet.HandlerInterceptor;
+import org.springframework.web.servlet.ModelAndView;
+
+publicclass HandlerInterceptor1 implements HandlerInterceptor{
+
+    //执行Handler完成执行此方法
+    //应用场景：统一异常处理，统一日志处理    @Override
+    publicvoid afterCompletion(HttpServletRequest request,
+            HttpServletResponse response, Object handler, Exception ex)
+            throws Exception {
+        System.out.println(&quot;HandlerInterceptor1......afterCompletion&quot;);
+    }
+
+    //进入Handler方法之后，返回modelAndView之前执行
+    //应用场景从modelAndView出发：将公用的模型数据（比如菜单导航）在这里传到视图，也可以在这里同意指定视图    @Override
+    publicvoid postHandle(HttpServletRequest request, HttpServletResponse response,
+            Object handler, ModelAndView modelAndView) throws Exception {
+        System.out.println(&quot;HandlerInterceptor1......postHandle&quot;);
+    }
+
+    //进入Handler方法之前执行
+    //用于身份认证、身份授权
+    //比如身份认证，如果认证不通过表示当前用户没有登录，需要此方法拦截不再向下执行。    @Override
+    publicboolean preHandle(HttpServletRequest request, HttpServletResponse response,
+            Object handler) throws Exception {
+        System.out.println(&quot;HandlerInterceptor1......preHandle&quot;);
+        //return false表示拦截，不向下执行
+        //return true表示放行returntrue;
+    }
+
+}
+</code></pre><h1 id="2-拦截器配置"><a href="#2-拦截器配置" class="headerlink" title="2.拦截器配置"></a>2.拦截器配置</h1><p>struts中是有一个大的拦截器链，它是一个共享的东西，可以把它添加到任何的action链接，都让它拦截。但是spring的拦截器不是全局的。</p><h2 id="2-1针对某种mapping配置拦截器"><a href="#2-1针对某种mapping配置拦截器" class="headerlink" title="2.1针对某种mapping配置拦截器"></a>2.1针对某种mapping配置拦截器</h2><p>springmvc拦截器针对HandlerMapping进行拦截设置，如果在某个HandlerMapping中设置拦截，经过该HandlerMapping映射成功的handler最终使用该拦截器。</p><pre><code>&lt;bean
+    class=&quot;org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping&quot;&gt;&lt;property name=&quot;interceptors&quot;&gt;&lt;list&gt;&lt;ref bean=&quot;handlerInterceptor1&quot;/&gt;&lt;ref bean=&quot;handlerInterceptor2&quot;/&gt;&lt;/list&gt;&lt;/property&gt;&lt;/bean&gt;&lt;bean id=&quot;handlerInterceptor1&quot; class=&quot;joanna.yan.ssm.interceptor.HandlerInterceptor1&quot;/&gt;&lt;bean id=&quot;handlerInterceptor2&quot; class=&quot;joanna.yan.ssm.interceptor.HandlerInterceptor2&quot;/&gt;
+</code></pre><p>一般不推荐使用。</p><h2 id="2-2针对所有mapping配置全局拦截器"><a href="#2-2针对所有mapping配置全局拦截器" class="headerlink" title="2.2针对所有mapping配置全局拦截器"></a>2.2针对所有mapping配置全局拦截器</h2><p>springmvc可以配置类似全局的拦截器，springmvc框架将配置的类似全局的拦截器注入到每个HandlerMapping中。</p><pre><code>&lt;!--拦截器 --&gt;&lt;mvc:interceptors&gt;&lt;!--多个拦截器,顺序执行 --&gt;&lt;mvc:interceptor&gt;&lt;!-- /**表示所有url包括子url路径 --&gt;&lt;mvc:mapping path=&quot;/**&quot;/&gt;&lt;bean class=&quot;joanna.yan.ssm.interceptor.HandlerInterceptor1&quot;&gt;&lt;/bean&gt;&lt;/mvc:interceptor&gt;&lt;mvc:interceptor&gt;&lt;mvc:mapping path=&quot;/**&quot;/&gt;&lt;bean class=&quot;joanna.yan.ssm.interceptor.HandlerInterceptor2&quot;&gt;&lt;/bean&gt;&lt;/mvc:interceptor&gt;&lt;/mvc:interceptors&gt;
+</code></pre><h1 id="3-拦截测试"><a href="#3-拦截测试" class="headerlink" title="3.拦截测试"></a>3.拦截测试</h1><h2 id="3-1测试需求"><a href="#3-1测试需求" class="headerlink" title="3.1测试需求"></a>3.1测试需求</h2><p>测试多个拦截器各个方法的执行时机。</p><h2 id="3-2编写两个拦截器"><a href="#3-2编写两个拦截器" class="headerlink" title="3.2编写两个拦截器"></a>3.2编写两个拦截器</h2><p><img src="/2017/1056/a23adff.png" alt=""></p><h2 id="3-3两个拦截器都放行"><a href="#3-3两个拦截器都放行" class="headerlink" title="3.3两个拦截器都放行"></a>3.3两个拦截器都放行</h2><p>运行日志信息：</p><pre><code>HandlerInterceptor1...preHandle
+HandlerInterceptor2...preHandle
+
+HandlerInterceptor2...postHandle
+HandlerInterceptor1...postHandle
+
+HandlerInterceptor2...afterCompletion
+HandlerInterceptor1...afterCompletion
+</code></pre><p>总结：</p><p>preHandle方法按顺序执行，postHandle和afterCompletion按拦截器配置的逆向顺序执行。</p><h2 id="3-4拦截器1放行，拦截器2不放行"><a href="#3-4拦截器1放行，拦截器2不放行" class="headerlink" title="3.4拦截器1放行，拦截器2不放行"></a>3.4拦截器1放行，拦截器2不放行</h2><p>运行日志信息：</p><pre><code>HandlerInterceptor1...preHandle
+HandlerInterceptor2...preHandle
+HandlerInterceptor1...afterCompletion
+</code></pre><p>总结：</p><p>拦截器1放行，拦截器2的preHandle才会执行。</p><p>拦截器2的preHandle不放行，拦截器2的postHandle和afterCompletion不会执行。</p><p>只要有一个拦截器不放行，postHandle就不会执行。</p><h2 id="3-5拦截器1不放行，拦截器2不放行"><a href="#3-5拦截器1不放行，拦截器2不放行" class="headerlink" title="3.5拦截器1不放行，拦截器2不放行"></a>3.5拦截器1不放行，拦截器2不放行</h2><p>运行日志信息：</p><pre><code>HandlerInterceptor1...preHandle
+</code></pre><p>拦截器1的preHandle不放行，postHandle和afterCompletion不会执行。</p><p>拦截器1的preHandle不放行，拦截器2不执行。</p><h1 id="4-小结"><a href="#4-小结" class="headerlink" title="4.小结"></a>4.小结</h1><p>根据测试结果，对拦截器应用。</p><p>比如：统一日志处理拦截器，需要改拦截器preHandle一定要放行，且将它放在拦截器链中的第一位置。</p><p>比如：登录认证拦截器，放在拦截器链中第一个位置。权限校验拦截器，放在登录拦截器之后。（因为登录通过后才校验权限）</p><h1 id="5-拦截器应用（实现登录认证）"><a href="#5-拦截器应用（实现登录认证）" class="headerlink" title="5.拦截器应用（实现登录认证）"></a>5.拦截器应用（实现登录认证）</h1><h2 id="5-1需求"><a href="#5-1需求" class="headerlink" title="5.1需求"></a>5.1需求</h2><p>（1）用户请求url</p><p>（2）拦截器进行拦截校验</p><p>如果请求的url是公开地址（无需登录即可访问的url），让放行</p><p>如果用户session不存在，跳转到登录页面。</p><p>如果用户session存在，放行，继续操作。</p><h2 id="5-2登录、退出controller方法"><a href="#5-2登录、退出controller方法" class="headerlink" title="5.2登录、退出controller方法"></a>5.2登录、退出controller方法</h2><pre><code>package joanna.yan.ssm.controller;
+
+import javax.servlet.http.HttpSession;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+@Controller
+publicclass LoginController {
+
+    //登录
+    @RequestMapping(&quot;/login&quot;)
+    public String login(HttpSession session, String username, String password) throws Exception{
+        //调用service进行用户身份认证
+        //...
+
+        //在session中保存用户身份信息
+        session.setAttribute(&quot;username&quot;, username);
+        return &quot;redirect:items/queryItems.action&quot;;
+    }
+
+    //退出
+    @RequestMapping(&quot;/logout&quot;)
+    public String logout(HttpSession session) throws Exception{
+        //清除session        session.invalidate();
+        return &quot;redirect:items/queryItems.action&quot;;
+    }
+
+}
+</code></pre><h2 id="5-3登录认证拦截实现"><a href="#5-3登录认证拦截实现" class="headerlink" title="5.3登录认证拦截实现"></a>5.3登录认证拦截实现</h2><h3 id="5-3-1LoginInterceptor"><a href="#5-3-1LoginInterceptor" class="headerlink" title="5.3.1LoginInterceptor"></a>5.3.1LoginInterceptor</h3><pre><code>publicclass LoginInterceptor implements HandlerInterceptor{
+
+    //执行Handler完成执行此方法
+    //应用场景：统一异常处理，统一日志处理    @Override
+    publicvoid afterCompletion(HttpServletRequest request,
+            HttpServletResponse response, Object handler, Exception ex)
+            throws Exception {
+        System.out.println(&quot;HandlerInterceptor1......afterCompletion&quot;);
+    }
+
+    //进入Handler方法之后，返回modelAndView之前执行
+    //应用场景从modelAndView出发：将公用的模型数据（比如菜单导航）在这里传到视图，也可以在这里同意指定视图    @Override
+    publicvoid postHandle(HttpServletRequest request, HttpServletResponse response,
+            Object handler, ModelAndView modelAndView) throws Exception {
+        System.out.println(&quot;HandlerInterceptor1......postHandle&quot;);
+    }
+
+    //进入Handler方法之前执行
+    //用于身份认证、身份授权
+    //比如身份认证，如果认证不通过表示当前用户没有登录，需要此方法拦截不再向下执行。    @Override
+    publicboolean preHandle(HttpServletRequest request, HttpServletResponse response,
+            Object handler) throws Exception {
+        System.out.println(&quot;HandlerInterceptor1......preHandle&quot;);
+        //获取请求的url
+        String url=request.getRequestURI();
+        //判断url是否是公开地址（实际使用时要将公开地址配置到文件中）
+        //这里公开地址是登录提交的地址if(url.indexOf(&quot;login.action&quot;)&gt;=0){
+            //如果进行登录提交，放行returntrue;
+        }
+        //判断session
+        HttpSession session=request.getSession();
+        String username=(String) session.getAttribute(&quot;username&quot;);
+        if(username!=null){
+            //身份存在，放行returntrue;
+        }
+
+        //执行到这里，表示用户身份需要认证，跳转登录页面
+        request.getRequestDispatcher(&quot;/WEB-INF/jsp/login.jsp&quot;).forward(request, response);
+
+        //return false表示拦截，不向下执行
+        //return true表示放行returnfalse;
+    }
+
+}
+</code></pre><h3 id="5-3-2拦截器配置"><a href="#5-3-2拦截器配置" class="headerlink" title="5.3.2拦截器配置"></a>5.3.2拦截器配置</h3><p>classpath下springmvc.xml中配置：</p><p><img src="/2017/1056/840985e.png" alt=""></p><p>如果此文对您有帮助，微信打赏我一下吧~</p></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="4142158067"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="5618891265"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><footer class="post-footer"><div class="post-nav"><div class="post-nav-next post-nav-item"><a href="/2017/mybais集成spring百度ueditor的一个例子附演示及源码.html" rel="next" title="Mybais集成spring,百度ueditor的一个例子, 附演示及源码"><i class="fa fa-chevron-left"></i> Mybais集成spring,百度ueditor的一个例子, 附演示及源码</a></div><span class="post-nav-divider"></span><div class="post-nav-prev post-nav-item"><a href="/2017/什么是rocauc.html" rel="prev" title="什么是 ROC AUC">什么是 ROC AUC <i class="fa fa-chevron-right"></i></a></div></div></footer></div></article><div class="post-spread"></div></div></div></div><div class="sidebar-toggle"><div class="sidebar-toggle-line-wrap"><span class="sidebar-toggle-line sidebar-toggle-line-first"></span> <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span> <span class="sidebar-toggle-line sidebar-toggle-line-last"></span></div></div><aside id="sidebar" class="sidebar"><div class="sidebar-inner"><ul class="sidebar-nav motion-element"><li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">Table of Contents</li><li class="sidebar-nav-overview" data-target="site-overview-wrap">Overview</li></ul><section class="site-overview-wrap sidebar-panel"><div class="site-overview"><div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person"><p class="site-author-name" itemprop="name">Hello</p><p class="site-description motion-element" itemprop="description"></p></div><nav class="site-state motion-element"><div class="site-state-item site-state-posts"><a href="/archives/"><span class="site-state-item-count">1358</span> <span class="site-state-item-name">posts</span></a></div></nav></div></section><section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active"><div class="post-toc"><div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Spring-SpringMVC-MyBatis深入学习及搭建-十七-——SpringMVC拦截器"><span class="nav-number">1.</span> <span class="nav-text">Spring+SpringMVC+MyBatis深入学习及搭建(十七)——SpringMVC拦截器</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-拦截器配置"><span class="nav-number">2.</span> <span class="nav-text">2.拦截器配置</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1针对某种mapping配置拦截器"><span class="nav-number">2.1.</span> <span class="nav-text">2.1针对某种mapping配置拦截器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2针对所有mapping配置全局拦截器"><span class="nav-number">2.2.</span> <span class="nav-text">2.2针对所有mapping配置全局拦截器</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-拦截测试"><span class="nav-number">3.</span> <span class="nav-text">3.拦截测试</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1测试需求"><span class="nav-number">3.1.</span> <span class="nav-text">3.1测试需求</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2编写两个拦截器"><span class="nav-number">3.2.</span> <span class="nav-text">3.2编写两个拦截器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-3两个拦截器都放行"><span class="nav-number">3.3.</span> <span class="nav-text">3.3两个拦截器都放行</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-4拦截器1放行，拦截器2不放行"><span class="nav-number">3.4.</span> <span class="nav-text">3.4拦截器1放行，拦截器2不放行</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-5拦截器1不放行，拦截器2不放行"><span class="nav-number">3.5.</span> <span class="nav-text">3.5拦截器1不放行，拦截器2不放行</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-小结"><span class="nav-number">4.</span> <span class="nav-text">4.小结</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-拦截器应用（实现登录认证）"><span class="nav-number">5.</span> <span class="nav-text">5.拦截器应用（实现登录认证）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#5-1需求"><span class="nav-number">5.1.</span> <span class="nav-text">5.1需求</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-2登录、退出controller方法"><span class="nav-number">5.2.</span> <span class="nav-text">5.2登录、退出controller方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-3登录认证拦截实现"><span class="nav-number">5.3.</span> <span class="nav-text">5.3登录认证拦截实现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#5-3-1LoginInterceptor"><span class="nav-number">5.3.1.</span> <span class="nav-text">5.3.1LoginInterceptor</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-3-2拦截器配置"><span class="nav-number">5.3.2.</span> <span class="nav-text">5.3.2拦截器配置</span></a></li></ol></li></ol></li></ol></div></div></section></div></aside><div class="sfix"><div class="fixedme"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460" data-ad-format="auto"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script></div></div></main><footer id="footer" class="footer"><div class="footer-inner"><div class="copyright">&copy; <span itemprop="copyrightYear">2018</span> <span class="with-love"><i class="fa fa-user"></i> </span><span class="author" itemprop="copyrightHolder">Hello</span></div><div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div><span class="post-meta-divider">|</span><div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div></div></footer><div class="back-to-top"><i class="fa fa-arrow-up"></i></div></div><script type="text/javascript">"[object Function]"!==Object.prototype.toString.call(window.Promise)&&(window.Promise=null)</script><script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script><script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script><script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script><script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script><script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script></body></html><!-- rebuild by neat -->

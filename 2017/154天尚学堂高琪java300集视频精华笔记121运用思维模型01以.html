@@ -1,0 +1,148 @@
+<!-- build time:Sat Oct 27 2018 21:00:20 GMT+0800 (CST) --><!DOCTYPE html><html class="theme-next muse use-motion"><head><meta name="generator" content="Hexo 3.8.0"><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"><meta name="theme-color" content="#222"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"><link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css"><link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css"><link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4"><link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222"><meta name="description" content="H2M_LI_HEADER我发现我很享受这个不看视频，自我探索式的还原老师的代码的过程。H2M_LI_HEADER这一次我对“以终为始，逐级分解”这个思维模型进行了刻意练习。思维模型：以终为始，逐级分解条件一堆学生，有不同的班级，分数，不同的班级有班号结果统计出每个班级的总分和平均分分解问：为获得预期结果，目前可知道有哪些内容需要代码表示？答：班级、学生、个人分数、班级总分、平均分、班号、班级的学"><meta name="keywords" content="JAVA,面试"><meta property="og:type" content="article"><meta property="og:title" content="【154天】尚学堂高琪Java300集视频精华笔记（121）【运用思维模型01：以终为始，逐级分解】"><meta property="og:url" content="http://www.jfox.info/2017/154天尚学堂高琪java300集视频精华笔记121运用思维模型01以.html"><meta property="og:site_name" content="java面试"><meta property="og:description" content="H2M_LI_HEADER我发现我很享受这个不看视频，自我探索式的还原老师的代码的过程。H2M_LI_HEADER这一次我对“以终为始，逐级分解”这个思维模型进行了刻意练习。思维模型：以终为始，逐级分解条件一堆学生，有不同的班级，分数，不同的班级有班号结果统计出每个班级的总分和平均分分解问：为获得预期结果，目前可知道有哪些内容需要代码表示？答：班级、学生、个人分数、班级总分、平均分、班号、班级的学"><meta property="og:locale" content="zh_CN"><meta property="og:updated_time" content="2018-10-27T12:29:37.407Z"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="【154天】尚学堂高琪Java300集视频精华笔记（121）【运用思维模型01：以终为始，逐级分解】"><meta name="twitter:description" content="H2M_LI_HEADER我发现我很享受这个不看视频，自我探索式的还原老师的代码的过程。H2M_LI_HEADER这一次我对“以终为始，逐级分解”这个思维模型进行了刻意练习。思维模型：以终为始，逐级分解条件一堆学生，有不同的班级，分数，不同的班级有班号结果统计出每个班级的总分和平均分分解问：为获得预期结果，目前可知道有哪些内容需要代码表示？答：班级、学生、个人分数、班级总分、平均分、班号、班级的学"><script type="text/javascript" id="hexo.configurations">var NexT=window.NexT||{},CONFIG={root:"/",scheme:"Muse",version:"5.1.4",sidebar:{position:"left",display:"post",offset:12,b2t:!1,scrollpercent:!1,onmobile:!1},fancybox:!0,tabs:!0,motion:{enable:!0,async:!1,transition:{post_block:"fadeIn",post_header:"slideDownIn",post_body:"slideDownIn",coll_header:"slideLeftIn",sidebar:"slideUpIn"}},duoshuo:{userId:"0",author:"Author"},algolia:{applicationID:"",apiKey:"",indexName:"",hits:{per_page:10},labels:{input_placeholder:"Search for Posts",hits_empty:"We didn't find any results for the search: ${query}",hits_stats:"${hits} results found in ${time} ms"}}}</script><link rel="canonical" href="http://www.jfox.info/2017/154天尚学堂高琪java300集视频精华笔记121运用思维模型01以.html"><title>【154天】尚学堂高琪Java300集视频精华笔记（121）【运用思维模型01：以终为始，逐级分解】 | java面试</title></head><body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN"><div class="container sidebar-position-left page-post-detail"><div class="headband"></div><header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="header-inner"><div class="site-brand-wrapper"><div class="site-meta"><div class="custom-logo-site-title"><a href="/" class="brand" rel="start"><span class="logo-line-before"><i></i></span> <span class="site-title">java面试</span> <span class="logo-line-after"><i></i></span></a></div><p class="site-subtitle"></p></div><div class="site-nav-toggle"><button><span class="btn-bar"></span> <span class="btn-bar"></span> <span class="btn-bar"></span></button></div></div><nav class="site-nav"><ul id="menu" class="menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i><br>Home</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i><br>Archives</a></li></ul></nav></div></header><main id="main" class="main"><div class="main-inner"><div class="content-wrap"><div id="content" class="content"><div id="posts" class="posts-expand"><article class="post post-type-normal" itemscope itemtype="http://schema.org/Article"><div class="post-block"><link itemprop="mainEntityOfPage" href="http://www.jfox.info/2017/154天尚学堂高琪java300集视频精华笔记121运用思维模型01以.html"><span hidden itemprop="author" itemscope itemtype="http://schema.org/Person"><meta itemprop="name" content="Hello"><meta itemprop="description" content=""><meta itemprop="image" content="/images/avatar.gif"></span><span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><meta itemprop="name" content="java面试"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">【154天】尚学堂高琪Java300集视频精华笔记（121）【运用思维模型01：以终为始，逐级分解】</h1><div class="post-meta"><span class="post-time"><span class="post-meta-item-icon"><i class="fa fa-calendar-o"></i> </span><span class="post-meta-item-text">Posted on</span> <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-01-01T23:54:56+08:00">2017-01-01</time></span></div></header><div class="post-body" itemprop="articleBody"><p>H2M_LI_HEADER<br>我发现我很享受这个不看视频，自我探索式的还原老师的代码的过程。</p><p>H2M_LI_HEADER<br>这一次我对“以终为始，逐级分解”这个思维模型进行了刻意练习。</p><h3 id="思维模型：以终为始，逐级分解"><a href="#思维模型：以终为始，逐级分解" class="headerlink" title="思维模型：以终为始，逐级分解"></a>思维模型：以终为始，逐级分解</h3><h4 id="条件"><a href="#条件" class="headerlink" title="条件"></a>条件</h4><p>一堆学生，有不同的班级，分数，不同的班级有班号</p><h4 id="结果"><a href="#结果" class="headerlink" title="结果"></a>结果</h4><p>统计出每个班级的总分和平均分</p><h4 id="分解"><a href="#分解" class="headerlink" title="分解"></a>分解</h4><ol><li>问：为获得预期结果，目前可知道有哪些内容需要代码表示？</li></ol><p>答：班级、学生、个人分数、班级总分、平均分、班号、班级的学生人数、</p><ol start="2"><li><p>问：这些内容如何形成用Java的对象装起来。答：</p></li><li><p>对象</p></li><li><p>班级</p></li><li><p>属性</p></li><li><p>装学生的容器（这里可得学生人数，进而算出平均分）</p></li><li><p>班号</p></li><li><p>总分</p></li><li><p>方法</p></li><li><p>将学生添加进对应班级的方法——&gt;根据学生的班号，将班级与学生对应起来——&gt;根据学生的班号，创建对应班级，再将班级与学生对应起来——&gt;根据学生的班号，创建对应班级，再将学生添加进新建出来的班级中——&gt;</p></li><li><p>计算平均分的方法</p></li><li><p>打印平均分的方法</p></li><li><p>set/get方法</p></li><li><p>带参与不带参构造函数</p></li><li><p>学生</p></li><li><p>属性</p></li><li><p>所属班级班号</p></li><li><p>个人分数</p></li><li><p>方法</p></li><li><p>set/get方法</p></li><li><p>带参与不带参构造函数</p></li><li><p>问：接下来呢？答：想不明白时写代码，寻求进行下一步的思路</p></li></ol><pre><code>package test121;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+public class ClassRoom {
+    private String no;
+    private int totalScore;
+    private List&lt;Student&gt; list;
+
+    public ClassRoom(){
+        list = new ArrayList&lt;Student&gt;();
+    }
+
+    public ClassRoom(String no){
+        this.no = no;
+    }
+
+    public void setNo(String no){
+        this.no = no;
+    }
+
+    public String getNo(){
+        return no;
+    }
+
+
+    public int getTotalScore() {
+        return totalScore;
+    }
+
+
+    public void setTotalScore(int totalScore) {
+        this.totalScore = totalScore;
+    }
+
+
+    public void setList(List&lt;Student&gt; list){
+        this.list = list;
+    }
+
+    public List&lt;Student&gt; getList(){
+        return list;
+    }
+
+
+    //******
+
+    public static void main(String[] args){
+        List&lt;Student&gt; testList = new ArrayList&lt;Student&gt;();
+        exam(testList);
+
+        //将学生添加进对应班级的方法
+        //根据学生的班号，创建对应班级，再将学生添加进新建出来的班级中
+        Map&lt;String,ClassRoom&gt; rooms = new HashMap&lt;String,ClassRoom&gt;();
+
+        //把班号与班级形成键值对，通过键能找到班级，也能通过键找到学生
+
+        statistics(testList,rooms);
+
+        //至此已将总分算出来了，数据存在room的totalScore属性里
+        //将每个班级的这个属性取出来打印。
+        //遍历rooms
+
+        printScore(rooms);//打印Map容器中的班级分数情况
+
+
+    }
+
+    //创建学生的数据
+    public static void exam(List&lt;Student&gt; testList){
+        testList.add(new Student(&quot;273&quot;,98));
+        testList.add(new Student(&quot;283&quot;,88));
+        testList.add(new Student(&quot;243&quot;,28));
+        testList.add(new Student(&quot;273&quot;,58));
+        testList.add(new Student(&quot;283&quot;,68));
+        testList.add(new Student(&quot;243&quot;,98));
+    }
+
+
+    public static void statistics(List&lt;Student&gt; testList,Map&lt;String,ClassRoom&gt; rooms){
+        for(Student temp:testList){
+            String classNo = temp.getNo();
+            if(rooms.get(classNo)==null){//判断根据学生的班号能否找到一个班级，若有，直接累加分数，若无，新建一个班级，再累加分数
+                ClassRoom room = new ClassRoom();
+                rooms.put(classNo, room);
+                room.setTotalScore(room.getTotalScore()+temp.getScore());
+                room.getList().add(temp);
+            } else {
+                ClassRoom room = rooms.get(classNo);
+                room.setTotalScore(room.getTotalScore()+temp.getScore());
+                room.getList().add(temp);
+            }
+        }
+    }
+
+    public static void printScore(Map&lt;String,ClassRoom&gt; rooms){
+        Set&lt;Map.Entry&lt;String,ClassRoom&gt;&gt; a =rooms.entrySet();
+        Iterator&lt;Map.Entry&lt;String,ClassRoom&gt;&gt; itr = a.iterator();
+        while(itr.hasNext()){
+            Map.Entry&lt;String, ClassRoom&gt; tempRoom = itr.next();
+            String tempNo = tempRoom.getKey();
+            int tempTotalScore = tempRoom.getValue().getTotalScore();
+            int tempNum = tempRoom.getValue().getList().size();
+            System.out.println(&quot;班级：&quot;+tempNo+&quot; 总分：&quot;+tempTotalScore+&quot; 平均分：&quot;+tempTotalScore/tempNum);
+        }
+    }
+
+}
+
+
+package test121;
+
+public class Student {
+    private String no;
+    private int score;
+
+    public void setNo(String no){
+        this.no = no;
+    }
+
+    public String getNo(){
+        return no;
+    }
+
+    public void setScore(int score){
+        this.score = score;
+    }
+
+    public int getScore(){
+        return score;
+    }
+
+    public Student(){
+
+    }
+
+    public Student(String no,int score){
+        this.no = no;
+        this.score = score;
+    }
+
+}
+</code></pre></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="4142158067"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="5618891265"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><footer class="post-footer"><div class="post-nav"><div class="post-nav-next post-nav-item"><a href="/2017/whatisanullpointerexceptionandhowdoifixit.html" rel="next" title="What is a NullPointerException, and how do I fix it?"><i class="fa fa-chevron-left"></i> What is a NullPointerException, and how do I fix it?</a></div><span class="post-nav-divider"></span><div class="post-nav-prev post-nav-item"><a href="/2017/incorrectcolumncountexpected1actual5jdbctemplatequeryforlist出错.html" rel="prev" title="Incorrect column count: expected 1, actual 5，JdbcTemplate queryForList 出错">Incorrect column count: expected 1, actual 5，JdbcTemplate queryForList 出错 <i class="fa fa-chevron-right"></i></a></div></div></footer></div></article><div class="post-spread"></div></div></div></div><div class="sidebar-toggle"><div class="sidebar-toggle-line-wrap"><span class="sidebar-toggle-line sidebar-toggle-line-first"></span> <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span> <span class="sidebar-toggle-line sidebar-toggle-line-last"></span></div></div><aside id="sidebar" class="sidebar"><div class="sidebar-inner"><ul class="sidebar-nav motion-element"><li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">Table of Contents</li><li class="sidebar-nav-overview" data-target="site-overview-wrap">Overview</li></ul><section class="site-overview-wrap sidebar-panel"><div class="site-overview"><div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person"><p class="site-author-name" itemprop="name">Hello</p><p class="site-description motion-element" itemprop="description"></p></div><nav class="site-state motion-element"><div class="site-state-item site-state-posts"><a href="/archives/"><span class="site-state-item-count">1358</span> <span class="site-state-item-name">posts</span></a></div></nav></div></section><section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active"><div class="post-toc"><div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#思维模型：以终为始，逐级分解"><span class="nav-number">1.</span> <span class="nav-text">思维模型：以终为始，逐级分解</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#条件"><span class="nav-number">1.1.</span> <span class="nav-text">条件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#结果"><span class="nav-number">1.2.</span> <span class="nav-text">结果</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#分解"><span class="nav-number">1.3.</span> <span class="nav-text">分解</span></a></li></ol></li></ol></div></div></section></div></aside><div class="sfix"><div class="fixedme"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460" data-ad-format="auto"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script></div></div></main><footer id="footer" class="footer"><div class="footer-inner"><div class="copyright">&copy; <span itemprop="copyrightYear">2018</span> <span class="with-love"><i class="fa fa-user"></i> </span><span class="author" itemprop="copyrightHolder">Hello</span></div><div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div><span class="post-meta-divider">|</span><div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div></div></footer><div class="back-to-top"><i class="fa fa-arrow-up"></i></div></div><script type="text/javascript">"[object Function]"!==Object.prototype.toString.call(window.Promise)&&(window.Promise=null)</script><script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script><script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script><script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script><script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script><script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script></body></html><!-- rebuild by neat -->

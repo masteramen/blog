@@ -1,0 +1,84 @@
+<!-- build time:Sat Oct 27 2018 21:00:24 GMT+0800 (CST) --><!DOCTYPE html><html class="theme-next muse use-motion"><head><meta name="generator" content="Hexo 3.8.0"><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"><meta name="theme-color" content="#222"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"><link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css"><link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css"><link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4"><link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222"><meta name="description" content="Java 程序流程控制 （下）此篇单独对循环结构的知识点进行整理：之前讲到循环结构分为：for循环，while循环，do…while循环三种最基本的循环结构；在JDK1.5以后的版本还提供了foreach循环，用于进行数组和集合的遍历。循环语句的四个组成部分：for循环：for(初始化条件; 循环条件; 迭代部分)**{**循环体}1publicclass TestFor { 2publicsta"><meta name="keywords" content="JAVA,面试"><meta property="og:type" content="article"><meta property="og:title" content="Java 基础 程序流程控制 （下）"><meta property="og:url" content="http://www.jfox.info/2017/java-基础-程序流程控制-下.html"><meta property="og:site_name" content="java面试"><meta property="og:description" content="Java 程序流程控制 （下）此篇单独对循环结构的知识点进行整理：之前讲到循环结构分为：for循环，while循环，do…while循环三种最基本的循环结构；在JDK1.5以后的版本还提供了foreach循环，用于进行数组和集合的遍历。循环语句的四个组成部分：for循环：for(初始化条件; 循环条件; 迭代部分)**{**循环体}1publicclass TestFor { 2publicsta"><meta property="og:locale" content="zh_CN"><meta property="og:updated_time" content="2018-10-27T12:29:37.401Z"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="Java 基础 程序流程控制 （下）"><meta name="twitter:description" content="Java 程序流程控制 （下）此篇单独对循环结构的知识点进行整理：之前讲到循环结构分为：for循环，while循环，do…while循环三种最基本的循环结构；在JDK1.5以后的版本还提供了foreach循环，用于进行数组和集合的遍历。循环语句的四个组成部分：for循环：for(初始化条件; 循环条件; 迭代部分)**{**循环体}1publicclass TestFor { 2publicsta"><script type="text/javascript" id="hexo.configurations">var NexT=window.NexT||{},CONFIG={root:"/",scheme:"Muse",version:"5.1.4",sidebar:{position:"left",display:"post",offset:12,b2t:!1,scrollpercent:!1,onmobile:!1},fancybox:!0,tabs:!0,motion:{enable:!0,async:!1,transition:{post_block:"fadeIn",post_header:"slideDownIn",post_body:"slideDownIn",coll_header:"slideLeftIn",sidebar:"slideUpIn"}},duoshuo:{userId:"0",author:"Author"},algolia:{applicationID:"",apiKey:"",indexName:"",hits:{per_page:10},labels:{input_placeholder:"Search for Posts",hits_empty:"We didn't find any results for the search: ${query}",hits_stats:"${hits} results found in ${time} ms"}}}</script><link rel="canonical" href="http://www.jfox.info/2017/java-基础-程序流程控制-下.html"><title>Java 基础 程序流程控制 （下） | java面试</title></head><body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN"><div class="container sidebar-position-left page-post-detail"><div class="headband"></div><header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="header-inner"><div class="site-brand-wrapper"><div class="site-meta"><div class="custom-logo-site-title"><a href="/" class="brand" rel="start"><span class="logo-line-before"><i></i></span> <span class="site-title">java面试</span> <span class="logo-line-after"><i></i></span></a></div><p class="site-subtitle"></p></div><div class="site-nav-toggle"><button><span class="btn-bar"></span> <span class="btn-bar"></span> <span class="btn-bar"></span></button></div></div><nav class="site-nav"><ul id="menu" class="menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i><br>Home</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i><br>Archives</a></li></ul></nav></div></header><main id="main" class="main"><div class="main-inner"><div class="content-wrap"><div id="content" class="content"><div id="posts" class="posts-expand"><article class="post post-type-normal" itemscope itemtype="http://schema.org/Article"><div class="post-block"><link itemprop="mainEntityOfPage" href="http://www.jfox.info/2017/java-基础-程序流程控制-下.html"><span hidden itemprop="author" itemscope itemtype="http://schema.org/Person"><meta itemprop="name" content="Hello"><meta itemprop="description" content=""><meta itemprop="image" content="/images/avatar.gif"></span><span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><meta itemprop="name" content="java面试"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">Java 基础 程序流程控制 （下）</h1><div class="post-meta"><span class="post-time"><span class="post-meta-item-icon"><i class="fa fa-calendar-o"></i> </span><span class="post-meta-item-text">Posted on</span> <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-01-01T23:49:44+08:00">2017-01-01</time></span></div></header><div class="post-body" itemprop="articleBody"><h2 id="Java-程序流程控制-（下）"><a href="#Java-程序流程控制-（下）" class="headerlink" title="Java 程序流程控制 （下）"></a>Java 程序流程控制 （下）</h2><p>此篇单独对循环结构的知识点进行整理：</p><p>之前讲到循环结构分为：for循环，while循环，do…while循环三种最基本的循环结构；在JDK1.5以后的版本还提供了foreach循环，用于进行数组和集合的遍历。</p><p><strong>循环语句的四个组成部分：</strong></p><h2 id="for循环："><a href="#for循环：" class="headerlink" title="for循环："></a><strong>for循环：</strong></h2><p><strong>for(初始化条件; 循环条件; 迭代部分)**</strong>{**</p><p><strong>循环体</strong></p><p><strong>}</strong></p><pre><code>1publicclass TestFor {
+2publicstaticvoid main(String[] args) {
+3//基础for循环，讲一个语句打印多次4for(int i=0; i&lt;7; i++){
+5             System.out.println(&quot;Hello World!!  第&quot;+i+&quot;次打印&quot;);
+6        }
+7    }
+8 }
+</code></pre><p>练习：打印1-100中的所有偶数</p><pre><code> 1publicclass TestFor {
+ 2publicvoid PrintNum(){
+ 3for(int i=1; i&lt;=100; i++){
+ 4if(i%2==0){//对2取余，若为0则证明是偶数，执行打印语句，反之则继续循环直到满足偶数条件或者i&gt;0 5                 System.out.println(&quot;i=&quot;+i);
+ 6            }
+ 7        }
+ 8    }
+ 9publicstaticvoid main(String[] args) {
+10         TestFor testFor = new TestFor();
+11        testFor.PrintNum();
+12    }
+13 }
+</code></pre><p>练习：编写代码满足从1循环到150并在每一行打印一个值，另外需要在每个3的倍数的行打印“foo”,在每个5的倍数的行打印“biz”,</p><p>在每个7的倍数行上打印输出“baz”</p><pre><code> 1publicclass TestFor {
+ 2publicvoid FooBizBaz(){
+ 3for(int i=1; i&lt;=150; i++){
+ 4             System.out.print(i+&quot;:&quot;);
+ 5if(i%3 == 0){
+ 6                 System.out.print(&quot; foo&quot;);
+ 7            }
+ 8if(i%5 == 0){
+ 9                 System.out.print(&quot; biz&quot;);
+10            }
+11if(i%7 == 0){
+12                 System.out.print(&quot; baz&quot;);
+13            }
+14            System.out.println();
+15        }
+16    }
+17publicstaticvoid main(String[] args) {
+18         TestFor testFor = new TestFor();
+19        testFor.FooBizBaz();
+20    }
+21 }
+</code></pre><p>注：一定要注意，这个题里不能使用else if(){}，一旦使用，会无法在同时满足3、5、7的倍数的行数中同时打印三个字段，因为一旦有一个满足判断条件就不会执行下方的if判断语句从而直接跳出当前循环执行下一次循环。</p><p>还有很多小的基础的for循环算法，如打印1-100所有奇数的和、打印出所有的水仙花数（水仙花数可以自己搜索一下），这些题可以自行练习，有助于加强对for循环的理解，这里就不一一赘述了。</p><h2 id="while-循环："><a href="#while-循环：" class="headerlink" title="while 循环："></a>while 循环：</h2><p><strong>初始化条件</strong></p><p><strong>while(循环条件){</strong></p><p><strong>循环体</strong></p><p><strong>迭代条件</strong></p><p><strong>}</strong></p><p>示例：输出1-100以内的所有偶数</p><pre><code> 1publicclass TestWhile {
+ 2publicvoid evenNum(){
+ 3int i = 1; //初始化条件 4while(i&lt;=100 ){//循环条件 5 6if(i % 2 == 0){
+ 7                 System.out.println(&quot;i=&quot;+i);
+ 8             }//循环体 910             i++;//迭代条件11        }
+12    }
+1314publicstaticvoid main(String[] args) {
+15         TestWhile testWhile = new TestWhile();
+16        testWhile.evenNum();
+17    }
+18 }
+</code></pre><p>注：for循环和while循环是能够实现互相转化的，因为二者拥有同样的四部分，只是四部分放置的位置不同。</p><p><strong>while循环的另一种循环方式：</strong></p><p><strong>do…while 循环：</strong></p><p><strong>初始化条件</strong></p><p><strong>do{</strong></p><p><strong>循环体</strong></p><p><strong>迭代条件</strong></p><p><strong>}while(循环条件);</strong></p><p><strong>由上述结构可以看出，do…while循环是先进行一次循环在来判断是否满足循环条件，满足则进行下一次循环，不满足则停止循环。</strong></p><p>示例：打印1-100中的所有偶数</p><pre><code> 1publicclass TestDoWhile {
+ 2publicvoid evenNum(){
+ 3int i = 1;
+ 4do{
+ 5if(i % 2 == 0){
+ 6                 System.out.println(&quot;i=&quot;+i);
+ 7            }
+ 8             i++;
+ 9         }while(i &lt;= 100);
+10    }
+11publicstaticvoid main(String[] args) {
+12         TestDoWhile testDoWhile = new TestDoWhile();
+13        testDoWhile.evenNum();
+14    }
+15 }
+</code></pre><p>do…while和while循环的区别：</p><p>do…while循环中 初始化条件即使不满足循环条件也会直接执行一次循环体再进行循环条件判断，所以循环体至少被执行一次，而while循环是必须满足循环条件才会执行循环体。</p><h2 id="嵌套循环"><a href="#嵌套循环" class="headerlink" title="嵌套循环"></a>嵌套循环</h2><p><strong>顾名思义,嵌套循环就是再一个循环中还能再声明一个循环</strong></p><p><strong>几种嵌套方式：</strong></p><p><strong>1.for循环中能够嵌套一个for或多个for；</strong></p><p><strong>2.while循环中可以嵌套一个或多个while循环；</strong></p><p><strong>3.for循环中可以嵌套一个或多个while循环；</strong></p><p><strong>4.while循环中可以嵌套一个或多个for循环；</strong></p><p><strong>5.for循环中可以嵌套一个或多个for/while循环；</strong></p><p><strong>6.while循环中可以嵌套一个或多个for/while循环。</strong></p><p><strong>示例：</strong></p><p><strong>For之间嵌套</strong></p><pre><code> 1publicclass TestForFor {
+ 2/*打印出 *****
+ 3     *     *****
+ 4     *     *****
+ 5     *     *****
+ 6     *      */ 7publicvoid forQianTao(){
+ 8for(int i = 1; i &lt;= 4;i++){
+ 9for(int j = 1; j&lt;=5 ;j++){
+10                 System.out.print(&quot;*&quot;);
+11            }
+12            System.out.println();
+13         }//此为两层循环，i用于控制打印的行数，j用于控制打印的列数14    }
+15publicstaticvoid main(String[] args) {
+16         TestForFor testForFor = new TestForFor();
+17        testForFor.forQianTao();
+18    }
+1920 }
+</code></pre><p>其它几种嵌套循环可以参考上面的示例，结构类似。自己可以进行练习，如通过嵌套循环打印九九乘法表、或者打印一个由星号组成的菱形图案，每个星号之间要有一个空格，这些题可以加强对嵌套循环的理解。</p></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="4142158067"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="5618891265"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><footer class="post-footer"><div class="post-nav"><div class="post-nav-next post-nav-item"><a href="/2017/javaee-spring-介绍-搭建-概念-配置详解-属性注入和应用到项目.html" rel="next" title="JAVAEE——spring01：介绍、搭建、概念、配置详解、属性注入和应用到项目"><i class="fa fa-chevron-left"></i> JAVAEE——spring01：介绍、搭建、概念、配置详解、属性注入和应用到项目</a></div><span class="post-nav-divider"></span><div class="post-nav-prev post-nav-item"><a href="/2017/基于spring的最简单的定时任务实现与配置-一.html" rel="prev" title="基于Spring的最简单的定时任务实现与配置（一）">基于Spring的最简单的定时任务实现与配置（一） <i class="fa fa-chevron-right"></i></a></div></div></footer></div></article><div class="post-spread"></div></div></div></div><div class="sidebar-toggle"><div class="sidebar-toggle-line-wrap"><span class="sidebar-toggle-line sidebar-toggle-line-first"></span> <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span> <span class="sidebar-toggle-line sidebar-toggle-line-last"></span></div></div><aside id="sidebar" class="sidebar"><div class="sidebar-inner"><ul class="sidebar-nav motion-element"><li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">Table of Contents</li><li class="sidebar-nav-overview" data-target="site-overview-wrap">Overview</li></ul><section class="site-overview-wrap sidebar-panel"><div class="site-overview"><div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person"><p class="site-author-name" itemprop="name">Hello</p><p class="site-description motion-element" itemprop="description"></p></div><nav class="site-state motion-element"><div class="site-state-item site-state-posts"><a href="/archives/"><span class="site-state-item-count">1358</span> <span class="site-state-item-name">posts</span></a></div></nav></div></section><section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active"><div class="post-toc"><div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Java-程序流程控制-（下）"><span class="nav-number">1.</span> <span class="nav-text">Java 程序流程控制 （下）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#for循环："><span class="nav-number">2.</span> <span class="nav-text">for循环：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#while-循环："><span class="nav-number">3.</span> <span class="nav-text">while 循环：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#嵌套循环"><span class="nav-number">4.</span> <span class="nav-text">嵌套循环</span></a></li></ol></div></div></section></div></aside><div class="sfix"><div class="fixedme"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460" data-ad-format="auto"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script></div></div></main><footer id="footer" class="footer"><div class="footer-inner"><div class="copyright">&copy; <span itemprop="copyrightYear">2018</span> <span class="with-love"><i class="fa fa-user"></i> </span><span class="author" itemprop="copyrightHolder">Hello</span></div><div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div><span class="post-meta-divider">|</span><div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div></div></footer><div class="back-to-top"><i class="fa fa-arrow-up"></i></div></div><script type="text/javascript">"[object Function]"!==Object.prototype.toString.call(window.Promise)&&(window.Promise=null)</script><script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script><script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script><script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script><script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script><script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script></body></html><!-- rebuild by neat -->

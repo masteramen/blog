@@ -1,0 +1,246 @@
+<!-- build time:Sat Oct 27 2018 21:00:20 GMT+0800 (CST) --><!DOCTYPE html><html class="theme-next muse use-motion"><head><meta name="generator" content="Hexo 3.8.0"><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"><meta name="theme-color" content="#222"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"><link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css"><link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css"><link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4"><link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222"><meta name="description" content="service层：@Overridepublic void batchDeletes(List list) {creditDao.batchDeletes(list);}控制层controller:/* 批量删除 batch */ @RequestMapping(value=”/batchDeletes”) @ResponseBody public ListbatchDeletes(HttpSer"><meta name="keywords" content="JAVA,面试"><meta property="og:type" content="article"><meta property="og:title" content="mybatis springmvc批量删除 2最新"><meta property="og:url" content="http://www.jfox.info/2017/mybatisspringmvc批量删除2最新.html"><meta property="og:site_name" content="java面试"><meta property="og:description" content="service层：@Overridepublic void batchDeletes(List list) {creditDao.batchDeletes(list);}控制层controller:/* 批量删除 batch */ @RequestMapping(value=”/batchDeletes”) @ResponseBody public ListbatchDeletes(HttpSer"><meta property="og:locale" content="zh_CN"><meta property="og:updated_time" content="2018-10-27T12:29:39.330Z"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="mybatis springmvc批量删除 2最新"><meta name="twitter:description" content="service层：@Overridepublic void batchDeletes(List list) {creditDao.batchDeletes(list);}控制层controller:/* 批量删除 batch */ @RequestMapping(value=”/batchDeletes”) @ResponseBody public ListbatchDeletes(HttpSer"><script type="text/javascript" id="hexo.configurations">var NexT=window.NexT||{},CONFIG={root:"/",scheme:"Muse",version:"5.1.4",sidebar:{position:"left",display:"post",offset:12,b2t:!1,scrollpercent:!1,onmobile:!1},fancybox:!0,tabs:!0,motion:{enable:!0,async:!1,transition:{post_block:"fadeIn",post_header:"slideDownIn",post_body:"slideDownIn",coll_header:"slideLeftIn",sidebar:"slideUpIn"}},duoshuo:{userId:"0",author:"Author"},algolia:{applicationID:"",apiKey:"",indexName:"",hits:{per_page:10},labels:{input_placeholder:"Search for Posts",hits_empty:"We didn't find any results for the search: ${query}",hits_stats:"${hits} results found in ${time} ms"}}}</script><link rel="canonical" href="http://www.jfox.info/2017/mybatisspringmvc批量删除2最新.html"><title>mybatis springmvc批量删除 2最新 | java面试</title></head><body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN"><div class="container sidebar-position-left page-post-detail"><div class="headband"></div><header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="header-inner"><div class="site-brand-wrapper"><div class="site-meta"><div class="custom-logo-site-title"><a href="/" class="brand" rel="start"><span class="logo-line-before"><i></i></span> <span class="site-title">java面试</span> <span class="logo-line-after"><i></i></span></a></div><p class="site-subtitle"></p></div><div class="site-nav-toggle"><button><span class="btn-bar"></span> <span class="btn-bar"></span> <span class="btn-bar"></span></button></div></div><nav class="site-nav"><ul id="menu" class="menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i><br>Home</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i><br>Archives</a></li></ul></nav></div></header><main id="main" class="main"><div class="main-inner"><div class="content-wrap"><div id="content" class="content"><div id="posts" class="posts-expand"><article class="post post-type-normal" itemscope itemtype="http://schema.org/Article"><div class="post-block"><link itemprop="mainEntityOfPage" href="http://www.jfox.info/2017/mybatisspringmvc批量删除2最新.html"><span hidden itemprop="author" itemscope itemtype="http://schema.org/Person"><meta itemprop="name" content="Hello"><meta itemprop="description" content=""><meta itemprop="image" content="/images/avatar.gif"></span><span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><meta itemprop="name" content="java面试"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">mybatis springmvc批量删除 2最新</h1><div class="post-meta"><span class="post-time"><span class="post-meta-item-icon"><i class="fa fa-calendar-o"></i> </span><span class="post-meta-item-text">Posted on</span> <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-01-01T23:54:34+08:00">2017-01-01</time></span></div></header><div class="post-body" itemprop="articleBody"><p>service层：</p><p>@Override</p><p>public void batchDeletes(List list) {</p><p>creditDao.batchDeletes(list);</p><p>}</p><p>控制层controller:</p><p>/*<em> </em>批量删除 batch */ @RequestMapping(value=”/batchDeletes”) @ResponseBody public List<credit>batchDeletes(HttpServletRequest request,HttpServletResponse response){ String items = request.getParameter(“creditIdbox”); List<string>delList = new ArrayList<string>(); String[] strs = items.split(“,”); for (String str : strs) { delList.add(str); } creditService.batchDeletes(delList); List<credit>list=creditService.queryUserInfo(null); ModelAndView mv = new ModelAndView(); Map&lt;String, Object&gt; model = new HashMap&lt;String, Object&gt;(); model.put(“creditVOList”, list); mv.addAllObjects(model); mv.setViewName(“queryregister”); return list; }</credit></string></string></credit></p><p>mapper.xml:</p><p>&lt;!–批量删除 –&gt;</p><pre><code>&lt;delete id=”batchDeletes” parameterType=”java.util.List”&gt;
+
+        DELETE FROM t_credit where t_credit_id in
+
+    &lt;foreach collection=”list” index=”index” item=”item” open=”(” separator=”,” close=”)”&gt;   
+
+        #{item}   
+
+     &lt;/foreach&gt;
+
+&lt;/delete&gt;
+</code></pre><p>页面：</p><script type="”text/javascript”" src="”../jquery/jquery-2.1.3.js”"></script><script type="”text/javascript”" src="”../easyui/jquery.easyui.min.js”"></script><script type="”text/javascript”" src="”../easyui/locale/easyui-lang-zh_CN.js”"></script><script type="”text/javascript”" src="”../easyui/js/index.js”"></script><p>&lt;link rel=”stylesheet” type=”text/css” href=”../easyui/themes/default/easyui.css” /&gt;</p><p>&lt;link rel=”stylesheet” type=”text/css” href=”../easyui/themes/icon.css” /&gt;</p><script type="”text/javascript”">$(function(){
+
+ $(“#button”).click(function(){
+
+    var form=$(“#registerform”);
+
+    form.prop(“action”,”http://localhost:8080/ssmy2/CreditController/intiqu.do”);
+
+    form.submit(); 
+
+});
+
+ //方式二：
+
+ /*$(function(){
+
+     $(“#button”).click(function(){
+
+     document.registerform.action=”http://localhost:8080/ssmy/CreditController/intiqu.do”;
+
+     document.registerform.submit();
+
+    });**/
+
+ //对查询按钮定死状态
+
+  $(“#status”).val($(“#statushidden”).val());
+
+});
+
+   function selectAll(){
+
+     if ($(“#SelectAll”).is(“:checked”)) {
+
+         $(“:checkbox”).prop(“checked”, true);//所有选择框都选中
+
+     } else {
+
+         $(“:checkbox”).prop(“checked”, false);
+
+     }
+
+ }
+
+   $(function(){
+
+    $(“#deleteuser”).click(function(){
+
+     //判断至少写了一项
+
+           var checkedNum = $(“input[name=’creditIdbox’]:checked”).length;
+
+    console.log(checkedNum);
+
+           if(checkedNum==0){
+
+               alert(“请至少选择一项!”);
+
+               return false;
+
+        }
+
+           if(confirm(“确定删除所选项目?”)){
+
+                var checkedList = new Array();
+
+                $(“input[name=’creditIdbox’]:checked”).each(function(){
+
+                    checkedList.push($(this).val());
+
+                });
+
+                console.log(checkedList[0]);
+
+                $.ajax({
+
+                    type:”POST”,
+
+                    url:”http://localhost:8080/ssmy2/CreditController/batchDeletes.do”,
+
+                    data:{“creditIdbox”:checkedList.toString()},
+
+                    datatype:”json”,
+
+                    success:function(data){
+
+                        $(“[name=’creditIdbox’]:checkbox”).attr(“checked”,false);
+
+                        alert(‘删除成功!’);
+
+                        setTimeout(“location.reload()”,1000);//页面刷新
+
+                    },
+
+                    error:function(data){
+
+                    alert(‘删除失败!’);
+
+                    }
+
+                });
+
+                } 
+
+    /* var form=$(“#registerform”);
+
+    form.prop(“action”,”http://localhost:8080/ssmy/CreditController/deleteuser.do”);
+
+    form.submit();  */
+
+ });
+
+    $(“#exports”).click(function(){
+
+    var form =$(“#registerform”);
+
+    form.prop(“action”,”http://localhost:8080/ssmy2/CreditController/exprotExcel.do”);
+
+    form.submit();
+
+    });
+
+     $(“#delete”).click(function(){
+
+    var form =$(“#registerform”);
+
+    form.prop(“action”,”http://localhost:8080/ssmy2/CreditController/batchDeletes.do?creditIdbox=${credit.creditId}”);
+
+    form.submit();
+
+    }); 
+
+    $(“#uploadFile”).click(function(){
+
+    var form =$(“#registerform”);
+
+    form.prop(“action”,”http://localhost:8080/ssmy2/CreditController/uploadFile.do”);
+
+    form.submit();
+
+    });
+
+  });</script><p></p><body><div id="”head”"><br><br>&lt;form id=”registerform” name =”registerform” action=”” method=”post” enctype=”multipart/form-data”&gt;<br><br><div class="”search-box”" style="”width:100%;height:40px"><br><br><label>登录名:</label><br><br><input type="”text”" name="”loginName”" id="”loginName”"><br><br><label style="”margin-left:10px">身份证:</label><br><br><input type="”text”" name="”IDCard”" id="”IDCard”"><br><br><label style="”margin-left:10px">提交状态:</label><br><br><select id="”status”" name="”status”" style="”width:100px;height:20px"><br><br><option value="””">全部</option><br><br><option value="”0″">已提交</option><br><br><option value="”1″">未提交</option><br><br></select><br><br><input type="”button”" id="”button”" value="”查询”" style="”width:65px;height:22px;margin-left:20px"><br><br><input type="”submit”" id="”exports”" value="”导出”" style="”width:65px;height:22px;margin-left:20px"><br><br></div><pre><code> &lt;input type=”hidden” name=”status” id=”statushidden” value=”${status }” /&gt;
+
+ &lt;input type=”hidden” name=”totalcount” id=”totalcount” value=”${totalcount }” /&gt;
+
+ &lt;table border=”0″ cellpadding=”0″ cellspacing=”0″&gt;
+
+    &lt;tr style=”width:100%; height: 50px;”&gt;
+
+      &lt;td&gt;
+
+      &lt;input type=”checkbox” id=”SelectAll” name=”SelectAll” onclick=”selectAll();” style=”margin-right:5px;”/&gt;全选&lt;/td&gt;
+
+      &lt;td&gt;序列&lt;/td&gt;
+
+      &lt;td &gt;登录名&lt;/td&gt;
+
+      &lt;td &gt;登录密码&lt;/td&gt;
+
+      &lt;td &gt;确认密码&lt;/td&gt;
+
+      &lt;td &gt;身份证号&lt;/td&gt;
+
+      &lt;td &gt;固定电话&lt;/td&gt;
+
+      &lt;td &gt;手机号码&lt;/td&gt;
+
+      &lt;td &gt;邮箱&lt;/td&gt;
+
+      &lt;td &gt;居住地址&lt;/td&gt;
+
+      &lt;td id=”address”&gt;提交状态&lt;/td&gt;
+
+      &lt;td &gt;创建时间&lt;/td&gt;
+
+      &lt;td &gt;操作&lt;/td&gt;
+
+    &lt;/tr&gt;
+
+    &lt;c:forEach var=”credit” items=”${creditVOList}” varStatus=”status”&gt;
+
+    &lt;tr style=”width: 300px;”&gt;
+
+    &lt;td&gt;&lt;input type=”checkbox” name=”creditIdbox” id=”creditIdbox” value=”${credit.creditId }”&gt;&lt;/td&gt;
+
+    &lt;td&gt;${status.index}&lt;/td&gt;
+
+    &lt;td&gt;${credit.loginName}&lt;/td&gt;
+
+    &lt;td&gt;${credit.loginPwd}&lt;/td&gt;
+
+    &lt;td&gt;${credit.againPwd}&lt;/td&gt;
+
+    &lt;td&gt;${credit.IDCard}&lt;/td&gt;
+
+    &lt;td&gt;${credit.fixedTelephoneNumber}&lt;/td&gt;
+
+    &lt;td&gt;${credit.telephoneNumber}&lt;/td&gt;
+
+    &lt;td&gt;${credit.email}&lt;/td&gt;
+
+    &lt;td id=”address”&gt;${credit.address}&lt;/td&gt;
+
+    &lt;td&gt;${credit.status ==0 ? ‘已提交’:’未提交’}&lt;/td&gt;
+
+    &lt;td&gt;${creditVO.createtime}&lt;/td&gt;
+
+    &lt;td&gt;
+
+&lt;!–  &lt;a id=”delete” href=”http://localhost:8080/ssmy/CreditController/deleteuser.do?creditIdbox=${credit.creditId}”&gt;删除&lt;/a&gt;–&gt;
+
+  &lt;a id=”delete” href=”http://localhost:8080/ssmy2/CreditController/deleteuser.do?creditIdbox=${credit.creditId}”&gt;删除&lt;/a&gt;
+
+    &lt;/td&gt;
+
+    &lt;/tr&gt;
+
+    &lt;/c:forEach&gt;
+</code></pre><p></p><pre><code> &lt;c:if test=”${empty creditVOList }”&gt;
+
+ 没有任何员工信息.
+
+&lt;/c:if&gt; &lt;br/&gt;
+
+ &lt;input type=”button” value=”删除” id =”deleteuser” &gt;
+
+ &lt;input type=”text” name=”username”/&gt;
+
+ &lt;input type=”file” name=”uploadFile”/&gt;
+
+ &lt;input type=”submit” id=”uploadFile” name=”开始上传文件” value=”开始上传文件”/&gt;
+
+    &lt;div id=”box” style=”border: 1px solid #ccc;”&gt;&lt;/div      
+</code></pre><p></p><p>service层：@Override public void batchDeletes(List list) { creditDao.batchDeletes(list); } 控制层controller/<strong> <em>批量删除 batch </em>/ @RequestMapping(value=”/batchDeletes”) @ResponseBody public List<credit>batchDeletes(HttpServletRequest request,HttpServletResponse response){ String items = request.getParameter(“creditIdbox”); List<string>delList = new ArrayList<string>(); String[] strs = items.split(“,”); for (String str : strs) { delList.add(str); } creditService.batchDeletes(delList); List<credit>list=creditService.queryUserInfo(null); ModelAndView mv = new ModelAndView(); Map&lt;String, Object&gt; model = new HashMap&lt;String, Object&gt;(); model.put(“creditVOList”, list); mv.addAllObjects(model); mv.setViewName(“queryregister”); return list; } mapper.xml&lt;!–批量删除 –&gt;&lt;deleteid=“batchDeletes“parameterType=“java.util.List“&gt; DELETE FROM t_credit where t_credit_id in&lt;foreachcollection=“list“index=“index“item=“item“open=“(“separator=“,“close=“)“&gt; #{item} 页面：&lt;scripttype=“text/javascript“src=“../jquery/jquery-2.1.3.js“&gt;&lt;scripttype=“text/javascript“src=“../easyui/jquery.easyui.min.js“&gt;&lt;scripttype=“text/javascript“src=“../easyui/locale/easyui-lang-zh_CN.js“&gt;&lt;scripttype=“text/javascript“src=“../easyui/js/index.js“&gt;&lt;linkrel=“stylesheet“type=“text/css“href=“../easyui/themes/default/easyui.css“/&gt;&lt;linkrel=“stylesheet“type=“text/css“href=“../easyui/themes/icon.css“/&gt;&lt;scripttype=“text/javascript“&gt; $(function(){ $(“#button”).click(function(){ var form=$(“#registerform”); form.prop(“action”,”<a href="http://localhost:8080/ssmy2/CreditController/intiqu.do“)" target="_blank" rel="noopener">http://localhost:8080/ssmy2/CreditController/intiqu.do“)</a>; form.submit(); }); //方式二： /*$(function(){ $(“#button”).click(function(){ document.registerform.action=”<a href="http://localhost:8080/ssmy/CreditController/intiqu.do”" target="_blank" rel="noopener">http://localhost:8080/ssmy/CreditController/intiqu.do”</a>; document.registerform.submit(); });</credit></string></string></credit></strong>/ //对查询按钮定死状态 $(“#status”).val($(“#statushidden”).val()); }); function selectAll(){ if ($(“#SelectAll”).is(“:checked”)) { $(“:checkbox”).prop(“checked”, true);//所有选择框都选中 } else { $(“:checkbox”).prop(“checked”, false); } } $(function(){ $(“#deleteuser”).click(function(){ //判断至少写了一项 var checkedNum = $(“input[name=’creditIdbox’]:checked”).length; console.log(checkedNum); if(checkedNum==0){ alert(“请至少选择一项!”); return false; } if(confirm(“确定删除所选项目?”)){ var checkedList = new Array(); $(“input[name=’creditIdbox’]:checked”).each(function(){ checkedList.push($(this).val()); }); console.log(checkedList[0]); $.ajax({ type:”POST”, url:”<a href="http://localhost:8080/ssmy2/CreditController/batchDeletes.do“" target="_blank" rel="noopener">http://localhost:8080/ssmy2/CreditController/batchDeletes.do“</a>, data:{“creditIdbox”:checkedList.toString()}, datatype:”json”, success:function(data){ $(“[name=’creditIdbox’]:checkbox”).attr(“checked”,false); alert(‘删除成功!’); setTimeout(“location.reload()”,1000);//页面刷新 }, error:function(data){ alert(‘删除失败!’); } }); } /<em> var form=$(“#registerform”); form.prop(“action”,”<a href="http://localhost:8080/ssmy/CreditController/deleteuser.do“)" target="_blank" rel="noopener">http://localhost:8080/ssmy/CreditController/deleteuser.do“)</a>; form.submit(); </em>/ }); $(“#exports”).click(function(){ var form =$(“#registerform”); form.prop(“action”,”<a href="http://localhost:8080/ssmy2/CreditController/exprotExcel.do“)" target="_blank" rel="noopener">http://localhost:8080/ssmy2/CreditController/exprotExcel.do“)</a>; form.submit(); }); $(“#delete”).click(function(){ var form =$(“#registerform”); form.prop(“action”,”<a href="http://localhost:8080/ssmy2/CreditController/batchDeletes.do?creditIdbox=${credit.creditId}”)" target="_blank" rel="noopener">http://localhost:8080/ssmy2/CreditController/batchDeletes.do?creditIdbox=${credit.creditId}”)</a>; form.submit(); }); $(“#uploadFile”).click(function(){ var form =$(“#registerform”); form.prop(“action”,”<a href="http://localhost:8080/ssmy2/CreditController/uploadFile.do”)" target="_blank" rel="noopener">http://localhost:8080/ssmy2/CreditController/uploadFile.do”)</a>; form.submit(); }); });</p><body>&lt;divid=“head“&gt;&lt;formid=“registerform“name=“registerform“action=““method=“post“enctype=“multipart/form-data“&gt;&lt;divclass=“search-box“style=“width:100%;height:40px;“&gt;<label>登录名:</label>&lt;inputtype=“text“name=“loginName“id=“loginName“/&gt;&lt;labelstyle=“margin-left:10px;“&gt;身份证:&lt;inputtype=“text“name=“IDCard“id=“IDCard“/&gt;&lt;labelstyle=“margin-left:10px;“&gt; 提交状态:&lt;selectid=“status“name=“status“style=“width:100px;height:20px;“&gt;&lt;optionvalue=““&gt;全部&lt;optionvalue=“0“&gt;已提交&lt;optionvalue=“1“&gt;未提交&lt;inputtype=“button“id=“button“value=“查询“style=“width:65px;height:22px;margin-left:20px;“/&gt;&lt;inputtype=“submit“id=“exports“value=“导出“style=“width:65px;height:22px;margin-left:20px;“/&gt;</body><p></p></div><input type="”hidden”" name="”status”" id="”statushidden”" value="”${status" }”=""> <input type="”hidden”" name="”totalcount”" id="”totalcount”" value="”${totalcount" }”=""><table border="”0″" cellpadding="”0″" cellspacing="”0″"><tr style="”width:100%" height:="" 50px;”=""><td><input type="”checkbox”" id="”SelectAll”" name="”SelectAll”" onclick="”selectAll();”" style="”margin-right:5px">全选</td><td>序列</td><td>登录名</td><td>登录密码</td><td>确认密码</td><td>身份证号</td><td>固定电话</td><td>手机号码</td><td>邮箱</td><td>居住地址</td><td id="”address”">提交状态</td><td>创建时间</td><td>操作</td></tr>&lt;c:forEach var=”credit” items=”${creditVOList}” varStatus=”status”&gt;<tr 300px;”=""><td><input type="”checkbox”" name="”creditIdbox”" id="”creditIdbox”" value="”${credit.creditId" }”=""></td><td>${status.index}</td><td>${credit.loginName}</td><td>${credit.loginPwd}</td><td>${credit.againPwd}</td><td>${credit.IDCard}</td><td>${credit.fixedTelephoneNumber}</td><td>${credit.telephoneNumber}</td><td>${credit.email}</td><td id="”address”">${credit.address}</td><td>${credit.status ==0 ? ‘已提交’:’未提交’}</td><td>${creditVO.createtime}</td><td>&lt;!– &lt;a id=”delete” href=”<a href="http://localhost:8080/ssmy/CreditController/deleteuser.do?creditIdbox=${credit.creditId}”&gt;删除" target="_blank" rel="noopener">http://localhost:8080/ssmy/CreditController/deleteuser.do?creditIdbox=${credit.creditId}”&gt;删除</a>–&gt; &lt;a id=”delete” href=”<a href="http://localhost:8080/ssmy2/CreditController/deleteuser.do?creditIdbox=${credit.creditId}”&gt;删除" target="_blank" rel="noopener">http://localhost:8080/ssmy2/CreditController/deleteuser.do?creditIdbox=${credit.creditId}”&gt;删除</a></td></tr>&lt;/c:forEach&gt;</table>&lt;c:if test=”${empty creditVOList }”&gt; 没有任何员工信息. &lt;/c:if&gt;<br><input type="”button”" value="”删除”" id="”deleteuser”"> <input type="”text”" name="”username”/"> <input type="”file”" name="”uploadFile”/"> <input type="”submit”" id="”uploadFile”" name="”开始上传文件”" value="”开始上传文件”/"><div id="”box”" 1px="" solid="" #ccc;”=""></div><p></p></body></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="4142158067"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="5618891265"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><footer class="post-footer"><div class="post-nav"><div class="post-nav-next post-nav-item"><a href="/2017/netbeans装javaplugin出现somepluginsrequirejdk.html" rel="next" title="NetBeans 装 Java plugin 出现 some plugins require JDK"><i class="fa fa-chevron-left"></i> NetBeans 装 Java plugin 出现 some plugins require JDK</a></div><span class="post-nav-divider"></span><div class="post-nav-prev post-nav-item"><a href="/2017/慕课网细说多线程之threadvsrunnable学习总结.html" rel="prev" title="慕课网_《细说多线程之Thread VS Runnable》学习总结">慕课网_《细说多线程之Thread VS Runnable》学习总结 <i class="fa fa-chevron-right"></i></a></div></div></footer></div></article><div class="post-spread"></div></div></div></div><div class="sidebar-toggle"><div class="sidebar-toggle-line-wrap"><span class="sidebar-toggle-line sidebar-toggle-line-first"></span> <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span> <span class="sidebar-toggle-line sidebar-toggle-line-last"></span></div></div><aside id="sidebar" class="sidebar"><div class="sidebar-inner"><section class="site-overview-wrap sidebar-panel sidebar-panel-active"><div class="site-overview"><div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person"><p class="site-author-name" itemprop="name">Hello</p><p class="site-description motion-element" itemprop="description"></p></div><nav class="site-state motion-element"><div class="site-state-item site-state-posts"><a href="/archives/"><span class="site-state-item-count">1358</span> <span class="site-state-item-name">posts</span></a></div></nav></div></section></div></aside><div class="sfix"><div class="fixedme"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460" data-ad-format="auto"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script></div></div></main><footer id="footer" class="footer"><div class="footer-inner"><div class="copyright">&copy; <span itemprop="copyrightYear">2018</span> <span class="with-love"><i class="fa fa-user"></i> </span><span class="author" itemprop="copyrightHolder">Hello</span></div><div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div><span class="post-meta-divider">|</span><div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div></div></footer><div class="back-to-top"><i class="fa fa-arrow-up"></i></div></div><script type="text/javascript">"[object Function]"!==Object.prototype.toString.call(window.Promise)&&(window.Promise=null)</script><script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script><script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script><script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script><script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script><script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script></body></html><!-- rebuild by neat -->

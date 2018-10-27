@@ -1,0 +1,146 @@
+<!-- build time:Sat Oct 27 2018 21:00:17 GMT+0800 (CST) --><!DOCTYPE html><html class="theme-next muse use-motion"><head><meta name="generator" content="Hexo 3.8.0"><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"><meta name="theme-color" content="#222"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"><link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css"><link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css"><link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4"><link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222"><meta name="description" content="spring事务管理包含两种情况，编程式事务、声明式事务。而声明式事务又包括基于注解@Transactional和tx+aop的方式。那么本文先分析编程式注解事务和基于注解的声明式事务。 编程式事务管理使用TransactionTemplate或者PlatformTransactionManager。对于编程式事务spring推荐使用TransactionTemplate。一、编程式事务 spri"><meta name="keywords" content="JAVA,面试"><meta property="og:type" content="article"><meta property="og:title" content="SpringMVC+MyBatis 事务管理一"><meta property="og:url" content="http://www.jfox.info/2017/springmvcmybatis事务管理一.html"><meta property="og:site_name" content="java面试"><meta property="og:description" content="spring事务管理包含两种情况，编程式事务、声明式事务。而声明式事务又包括基于注解@Transactional和tx+aop的方式。那么本文先分析编程式注解事务和基于注解的声明式事务。 编程式事务管理使用TransactionTemplate或者PlatformTransactionManager。对于编程式事务spring推荐使用TransactionTemplate。一、编程式事务 spri"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="http://www.jfox.info/2017/1446/ccd4885.png"><meta property="og:updated_time" content="2018-10-27T12:29:40.325Z"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="SpringMVC+MyBatis 事务管理一"><meta name="twitter:description" content="spring事务管理包含两种情况，编程式事务、声明式事务。而声明式事务又包括基于注解@Transactional和tx+aop的方式。那么本文先分析编程式注解事务和基于注解的声明式事务。 编程式事务管理使用TransactionTemplate或者PlatformTransactionManager。对于编程式事务spring推荐使用TransactionTemplate。一、编程式事务 spri"><meta name="twitter:image" content="http://www.jfox.info/2017/1446/ccd4885.png"><script type="text/javascript" id="hexo.configurations">var NexT=window.NexT||{},CONFIG={root:"/",scheme:"Muse",version:"5.1.4",sidebar:{position:"left",display:"post",offset:12,b2t:!1,scrollpercent:!1,onmobile:!1},fancybox:!0,tabs:!0,motion:{enable:!0,async:!1,transition:{post_block:"fadeIn",post_header:"slideDownIn",post_body:"slideDownIn",coll_header:"slideLeftIn",sidebar:"slideUpIn"}},duoshuo:{userId:"0",author:"Author"},algolia:{applicationID:"",apiKey:"",indexName:"",hits:{per_page:10},labels:{input_placeholder:"Search for Posts",hits_empty:"We didn't find any results for the search: ${query}",hits_stats:"${hits} results found in ${time} ms"}}}</script><link rel="canonical" href="http://www.jfox.info/2017/springmvcmybatis事务管理一.html"><title>SpringMVC+MyBatis 事务管理一 | java面试</title></head><body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN"><div class="container sidebar-position-left page-post-detail"><div class="headband"></div><header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="header-inner"><div class="site-brand-wrapper"><div class="site-meta"><div class="custom-logo-site-title"><a href="/" class="brand" rel="start"><span class="logo-line-before"><i></i></span> <span class="site-title">java面试</span> <span class="logo-line-after"><i></i></span></a></div><p class="site-subtitle"></p></div><div class="site-nav-toggle"><button><span class="btn-bar"></span> <span class="btn-bar"></span> <span class="btn-bar"></span></button></div></div><nav class="site-nav"><ul id="menu" class="menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i><br>Home</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i><br>Archives</a></li></ul></nav></div></header><main id="main" class="main"><div class="main-inner"><div class="content-wrap"><div id="content" class="content"><div id="posts" class="posts-expand"><article class="post post-type-normal" itemscope itemtype="http://schema.org/Article"><div class="post-block"><link itemprop="mainEntityOfPage" href="http://www.jfox.info/2017/springmvcmybatis事务管理一.html"><span hidden itemprop="author" itemscope itemtype="http://schema.org/Person"><meta itemprop="name" content="Hello"><meta itemprop="description" content=""><meta itemprop="image" content="/images/avatar.gif"></span><span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><meta itemprop="name" content="java面试"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">SpringMVC+MyBatis 事务管理一</h1><div class="post-meta"><span class="post-time"><span class="post-meta-item-icon"><i class="fa fa-calendar-o"></i> </span><span class="post-meta-item-text">Posted on</span> <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-01-01T23:59:06+08:00">2017-01-01</time></span></div></header><div class="post-body" itemprop="articleBody"><p>spring事务管理包含两种情况，编程式事务、声明式事务。而声明式事务又包括基于注解@Transactional和tx+aop的方式。那么本文先分析编程式注解事务和基于注解的声明式事务。 编程式事务管理使用TransactionTemplate或者PlatformTransactionManager。对于编程式事务spring推荐使用TransactionTemplate。</p><h3 id="一、编程式事务"><a href="#一、编程式事务" class="headerlink" title="一、编程式事务"></a>一、编程式事务</h3><pre><code> spring事务特性
+
+ spring中所有的事务策略类都继承自org.springframework.transaction.PlatformTransactionManager接口
+
+publicinterface PlatformTransactionManager {
+
+    TransactionStatus getTransaction(TransactionDefinition definition) throws TransactionException;
+
+    void commit(TransactionStatus status) throws TransactionException;
+
+
+    void rollback(TransactionStatus status) throws TransactionException;
+
+}
+
+  编程式事务TransactionTemplate需要手动在代码中处理事务，一般不推荐使用，也不符合spring的思想，因为它直接耦合代码，但各有利弊。先看下TransactionTemplate的源码。
+
+public class TransactionTemplate extends DefaultTransactionDefinition
+        implements TransactionOperations, InitializingBean {
+
+
+    protected final Log logger = LogFactory.getLog(getClass());
+
+    private PlatformTransactionManager transactionManager;
+
+    public TransactionTemplate() {
+    }
+
+    public TransactionTemplate(PlatformTransactionManager transactionManager) {
+        this.transactionManager = transactionManager;
+    }
+
+
+    public TransactionTemplate(PlatformTransactionManager transactionManager, TransactionDefinition transactionDefinition) {
+        super(transactionDefinition);
+        this.transactionManager = transactionManager;
+    }
+
+    public void setTransactionManager(PlatformTransactionManager transactionManager) {
+        this.transactionManager = transactionManager;
+    }
+
+    public PlatformTransactionManager getTransactionManager() {
+        return this.transactionManager;
+    }
+
+    @Override
+    public void afterPropertiesSet() {
+        if (this.transactionManager == null) {
+            throw new IllegalArgumentException(&quot;Property &apos;transactionManager&apos; is required&quot;);
+        }
+    }
+
+
+    @Override
+    public &lt;T&gt; T execute(TransactionCallback&lt;T&gt; action) throws TransactionException {
+        if (this.transactionManager instanceof CallbackPreferringPlatformTransactionManager) {
+            return ((CallbackPreferringPlatformTransactionManager) this.transactionManager).execute(this, action);
+        }
+        else {
+            TransactionStatus status = this.transactionManager.getTransaction(this);
+            T result;
+            try {
+                result = action.doInTransaction(status);
+            }
+            catch (RuntimeException ex) {
+                // Transactional code threw application exception -&gt; rollback
+                rollbackOnException(status, ex);
+                throw ex;
+            }
+            catch (Error err) {
+                // Transactional code threw error -&gt; rollback
+                rollbackOnException(status, err);
+                throw err;
+            }
+            catch (Throwable ex) {
+                // Transactional code threw unexpected exception -&gt; rollback
+                rollbackOnException(status, ex);
+                throw new UndeclaredThrowableException(ex, &quot;TransactionCallback threw undeclared checked exception&quot;);
+            }
+            this.transactionManager.commit(status);
+            return result;
+        }
+    }
+
+
+    private void rollbackOnException(TransactionStatus status, Throwable ex) throws TransactionException {
+        logger.debug(&quot;Initiating transaction rollback on application exception&quot;, ex);
+        try {
+            this.transactionManager.rollback(status);
+        }
+        catch (TransactionSystemException ex2) {
+            logger.error(&quot;Application exception overridden by rollback exception&quot;, ex);
+            ex2.initApplicationException(ex);
+            throw ex2;
+        }
+        catch (RuntimeException ex2) {
+            logger.error(&quot;Application exception overridden by rollback exception&quot;, ex);
+            throw ex2;
+        }
+        catch (Error err) {
+            logger.error(&quot;Application exception overridden by rollback error&quot;, ex);
+            throw err;
+        }
+    }
+
+}
+</code></pre><p>从上面的代码可以看到核心方法是execute，该方法入参TransactionCallback<t>。查看TransactionCallback源码：</t></p><pre><code>public interface TransactionCallback&lt;T&gt; { 
+    T doInTransaction(TransactionStatus status); 
+}
+</code></pre><p>那么以上两个源码可以确定我们使用编程式事务管理的方式也就是自己需要重写doInTransaction()。OK，那么我们手动使用TransactionTemplate处理下。</p><p>1、先配置transactionmanager</p><pre><code>&lt;!--事务管理器 --&gt;&lt;bean id=&quot;transactionManager&quot; class=&quot;org.springframework.jdbc.datasource.DataSourceTransactionManager&quot;&gt;&lt;property name=&quot;dataSource&quot; ref=&quot;dataSource&quot;/&gt;&lt;/bean&gt;
+</code></pre><p>2、配置transactionTemplate</p><pre><code>&lt;!--编程式事务，推荐使用TransactionTemplate--&gt;&lt;bean id=&quot;transactionTemplate&quot;
+          class=&quot;org.springframework.transaction.support.TransactionTemplate&quot;&gt;&lt;property name=&quot;transactionManager&quot; ref=&quot;transactionManager&quot;/&gt;&lt;/bean&gt;
+</code></pre><p>3、业务代码处理</p><pre><code>@Autowired
+   private TransactionTemplate transactionTemplate;
+
+   publicint insertUser2(final User user) {
+       Integer i= (Integer) this.transactionTemplate.execute(new TransactionCallback() {
+           public Object doInTransaction(TransactionStatus transactionStatus) {
+
+               int i = userMapper.insertUser(user);
+               if (i &gt; 0) {
+                   System.out.println(&quot;success&quot;);
+               }
+               int j = 10 / 0;
+
+               return i;
+
+           }
+       });
+
+       return i;
+   }
+</code></pre><p>业务代码中我们使用by zero的异常故意抛出，你会发现能继续打印success，当你断点debug时，你会发现数据库一直是锁定状态，直到你程序执行完。如下图：</p><p><img src="/2017/1446/ccd4885.png" alt=""></p><p>二、基于Transactional注解的事务管理</p><pre><code>当前应该是使用最清爽的事务管理方式了，也符合spring的理念，非入侵代码的方式。
+</code></pre><p>1、配置</p><pre><code>&lt;!--事务管理器 --&gt;&lt;bean id=&quot;transactionManager&quot; class=&quot;org.springframework.jdbc.datasource.DataSourceTransactionManager&quot;&gt;&lt;property name=&quot;dataSource&quot; ref=&quot;dataSource&quot;/&gt;&lt;/bean&gt;&lt;!-- 使用注解事务，需要添加Transactional注解属性 --&gt;&lt;tx:annotation-driven transaction-manager=&quot;transactionManager&quot;/&gt;&lt;!--启用最新的注解器、映射器--&gt;&lt;mvc:annotation-driven/&gt;
+</code></pre><p>2、配置后只需要在要处理的地方加上Transactional注解，而且Transactional注解的方式可以应用在类上，也可以应用在方法上，当然只针对public方法。</p><p>3、业务代码处理</p><pre><code>@Transactional
+  publicint insertUser(User user) {
+      int i = userMapper.insertUser(user);
+      if (i &gt; 0) {
+          System.out.println(&quot;success&quot;);
+      }
+      int j = 10 / 0;
+
+      return i;
+  }
+</code></pre></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="4142158067"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="5618891265"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><footer class="post-footer"><div class="post-nav"><div class="post-nav-next post-nav-item"><a href="/2017/赢在面试之javaweb篇6.html" rel="next" title="赢在面试之JavaWeb篇（6）"><i class="fa fa-chevron-left"></i> 赢在面试之JavaWeb篇（6）</a></div><span class="post-nav-divider"></span><div class="post-nav-prev post-nav-item"><a href="/2017/阿里消息队列中间件rocketmq源码解析message顺序发送与消费.html" rel="prev" title="阿里消息队列中间件 RocketMQ源码解析：Message顺序发送与消费">阿里消息队列中间件 RocketMQ源码解析：Message顺序发送与消费 <i class="fa fa-chevron-right"></i></a></div></div></footer></div></article><div class="post-spread"></div></div></div></div><div class="sidebar-toggle"><div class="sidebar-toggle-line-wrap"><span class="sidebar-toggle-line sidebar-toggle-line-first"></span> <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span> <span class="sidebar-toggle-line sidebar-toggle-line-last"></span></div></div><aside id="sidebar" class="sidebar"><div class="sidebar-inner"><ul class="sidebar-nav motion-element"><li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">Table of Contents</li><li class="sidebar-nav-overview" data-target="site-overview-wrap">Overview</li></ul><section class="site-overview-wrap sidebar-panel"><div class="site-overview"><div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person"><p class="site-author-name" itemprop="name">Hello</p><p class="site-description motion-element" itemprop="description"></p></div><nav class="site-state motion-element"><div class="site-state-item site-state-posts"><a href="/archives/"><span class="site-state-item-count">1358</span> <span class="site-state-item-name">posts</span></a></div></nav></div></section><section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active"><div class="post-toc"><div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#一、编程式事务"><span class="nav-number">1.</span> <span class="nav-text">一、编程式事务</span></a></li></ol></div></div></section></div></aside><div class="sfix"><div class="fixedme"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460" data-ad-format="auto"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script></div></div></main><footer id="footer" class="footer"><div class="footer-inner"><div class="copyright">&copy; <span itemprop="copyrightYear">2018</span> <span class="with-love"><i class="fa fa-user"></i> </span><span class="author" itemprop="copyrightHolder">Hello</span></div><div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div><span class="post-meta-divider">|</span><div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div></div></footer><div class="back-to-top"><i class="fa fa-arrow-up"></i></div></div><script type="text/javascript">"[object Function]"!==Object.prototype.toString.call(window.Promise)&&(window.Promise=null)</script><script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script><script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script><script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script><script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script><script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script></body></html><!-- rebuild by neat -->

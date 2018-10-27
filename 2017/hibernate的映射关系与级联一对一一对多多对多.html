@@ -1,0 +1,652 @@
+<!-- build time:Sat Oct 27 2018 21:00:18 GMT+0800 (CST) --><!DOCTYPE html><html class="theme-next muse use-motion"><head><meta name="generator" content="Hexo 3.8.0"><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"><meta name="theme-color" content="#222"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"><link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css"><link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css"><link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4"><link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222"><meta name="description" content="长期专业踩坑……怪物猎人要登陆switch了1、外键注意：被引用的列必须是其所在表的主键或者唯一列（此处的department表的dept_name)引用列 和 被引用列应该数据类型一致，并且最好长度一致如果存在数据，那么引用列中 不能 存在 被引用列中没有的数据2、配置注意：一的那边配置了，多的那边不配置，叫单向一对多一的那边配置了，多的那边也配置，叫双向一对多一的那边不配置，多的那边配置了，报"><meta name="keywords" content="JAVA,面试"><meta property="og:type" content="article"><meta property="og:title" content="Hibernate的映射关系与级联（一对一、一对多、多对多）"><meta property="og:url" content="http://www.jfox.info/2017/hibernate的映射关系与级联一对一一对多多对多.html"><meta property="og:site_name" content="java面试"><meta property="og:description" content="长期专业踩坑……怪物猎人要登陆switch了1、外键注意：被引用的列必须是其所在表的主键或者唯一列（此处的department表的dept_name)引用列 和 被引用列应该数据类型一致，并且最好长度一致如果存在数据，那么引用列中 不能 存在 被引用列中没有的数据2、配置注意：一的那边配置了，多的那边不配置，叫单向一对多一的那边配置了，多的那边也配置，叫双向一对多一的那边不配置，多的那边配置了，报"><meta property="og:locale" content="zh_CN"><meta property="og:updated_time" content="2018-10-27T12:29:39.342Z"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="Hibernate的映射关系与级联（一对一、一对多、多对多）"><meta name="twitter:description" content="长期专业踩坑……怪物猎人要登陆switch了1、外键注意：被引用的列必须是其所在表的主键或者唯一列（此处的department表的dept_name)引用列 和 被引用列应该数据类型一致，并且最好长度一致如果存在数据，那么引用列中 不能 存在 被引用列中没有的数据2、配置注意：一的那边配置了，多的那边不配置，叫单向一对多一的那边配置了，多的那边也配置，叫双向一对多一的那边不配置，多的那边配置了，报"><script type="text/javascript" id="hexo.configurations">var NexT=window.NexT||{},CONFIG={root:"/",scheme:"Muse",version:"5.1.4",sidebar:{position:"left",display:"post",offset:12,b2t:!1,scrollpercent:!1,onmobile:!1},fancybox:!0,tabs:!0,motion:{enable:!0,async:!1,transition:{post_block:"fadeIn",post_header:"slideDownIn",post_body:"slideDownIn",coll_header:"slideLeftIn",sidebar:"slideUpIn"}},duoshuo:{userId:"0",author:"Author"},algolia:{applicationID:"",apiKey:"",indexName:"",hits:{per_page:10},labels:{input_placeholder:"Search for Posts",hits_empty:"We didn't find any results for the search: ${query}",hits_stats:"${hits} results found in ${time} ms"}}}</script><link rel="canonical" href="http://www.jfox.info/2017/hibernate的映射关系与级联一对一一对多多对多.html"><title>Hibernate的映射关系与级联（一对一、一对多、多对多） | java面试</title></head><body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN"><div class="container sidebar-position-left page-post-detail"><div class="headband"></div><header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="header-inner"><div class="site-brand-wrapper"><div class="site-meta"><div class="custom-logo-site-title"><a href="/" class="brand" rel="start"><span class="logo-line-before"><i></i></span> <span class="site-title">java面试</span> <span class="logo-line-after"><i></i></span></a></div><p class="site-subtitle"></p></div><div class="site-nav-toggle"><button><span class="btn-bar"></span> <span class="btn-bar"></span> <span class="btn-bar"></span></button></div></div><nav class="site-nav"><ul id="menu" class="menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i><br>Home</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i><br>Archives</a></li></ul></nav></div></header><main id="main" class="main"><div class="main-inner"><div class="content-wrap"><div id="content" class="content"><div id="posts" class="posts-expand"><article class="post post-type-normal" itemscope itemtype="http://schema.org/Article"><div class="post-block"><link itemprop="mainEntityOfPage" href="http://www.jfox.info/2017/hibernate的映射关系与级联一对一一对多多对多.html"><span hidden itemprop="author" itemscope itemtype="http://schema.org/Person"><meta itemprop="name" content="Hello"><meta itemprop="description" content=""><meta itemprop="image" content="/images/avatar.gif"></span><span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><meta itemprop="name" content="java面试"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">Hibernate的映射关系与级联（一对一、一对多、多对多）</h1><div class="post-meta"><span class="post-time"><span class="post-meta-item-icon"><i class="fa fa-calendar-o"></i> </span><span class="post-meta-item-text">Posted on</span> <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-01-01T23:56:48+08:00">2017-01-01</time></span></div></header><div class="post-body" itemprop="articleBody"><p>长期专业踩坑……怪物猎人要登陆switch了</p><h4 id="1、外键注意："><a href="#1、外键注意：" class="headerlink" title="1、外键注意："></a>1、外键注意：</h4><ul><li>被引用的列必须是其所在表的主键或者唯一列（此处的department表的dept_name)</li><li>引用列 和 被引用列应该数据类型一致，并且最好长度一致</li><li>如果存在数据，那么引用列中 不能 存在 被引用列中没有的数据</li></ul><h4 id="2、配置注意："><a href="#2、配置注意：" class="headerlink" title="2、配置注意："></a>2、配置注意：</h4><ul><li>一的那边配置了，多的那边不配置，叫单向一对多</li><li>一的那边配置了，多的那边也配置，叫双向一对多</li><li>一的那边不配置，多的那边配置了，报错</li></ul><h4 id="3、字段重复注意："><a href="#3、字段重复注意：" class="headerlink" title="3、字段重复注意："></a>3、字段重复注意：</h4><ul><li>因为是一给多加字段，所以在多的一边加的字段不要重复，会报错</li></ul><h4 id="4、级联删除注意："><a href="#4、级联删除注意：" class="headerlink" title="4、级联删除注意："></a>4、级联删除注意：</h4><ul><li>在数据库中直接删除级联的表，要先删除子表，再删除主表，一开始就删除主表是不行的，因为他被子表给引用着</li></ul><h4 id="5、级联插入注意"><a href="#5、级联插入注意" class="headerlink" title="5、级联插入注意"></a>5、级联插入注意</h4><ul><li><p>级联之后，从表插不进去，为什么？</p></li><li><p>增加了父亲的话，可以在这个父亲的名下增加相应的孩子</p></li><li>但是你随便增加孩子却不行，孩子必须有父亲，没有父亲的孩子哪里来的？石头蹦？孙悟空？</li><li>这就是级联，都是连在一起的，有父亲才有孩子</li></ul><h4 id="6、测试的时候不要被之前的表数据给阻碍，所以每次测试前请删除相关的表"><a href="#6、测试的时候不要被之前的表数据给阻碍，所以每次测试前请删除相关的表" class="headerlink" title="6、测试的时候不要被之前的表数据给阻碍，所以每次测试前请删除相关的表"></a>6、测试的时候不要被之前的表数据给阻碍，所以每次测试前请删除相关的表</h4><p>如果删除表的时候数据库工具一直在转圈，像死机了一样关闭不行，又不动，操作不了，其实是因为你的Eclipse还在开着刚才运行的代码，每一个都是独立的线程，数据库工具会因为等待其关闭而处于阻塞状态，在Eclipse的Console界面可以看到右上角有红点，表示在运行中，把所有的红点都关掉就可以了</p><pre><code>//删除
+DROP TABLE IF EXISTS `toy_son`;
+DROP TABLE IF EXISTS `son`;
+DROP TABLE IF EXISTS `toy`;
+DROP TABLE IF EXISTS `father`;
+DROP TABLE IF EXISTS `mother`;
+DROP TABLE IF EXISTS `father`;
+
+//查询
+select * from father;
+select * from mother;
+select * from son;
+select * from toy;
+select * from toy_son;
+</code></pre><h4 id="7、其实cascade不是必须的，你使用了cascade就可以只保存主表，从表会跟着保存，你不设置cascade，就需要自己手动保存从表"><a href="#7、其实cascade不是必须的，你使用了cascade就可以只保存主表，从表会跟着保存，你不设置cascade，就需要自己手动保存从表" class="headerlink" title="7、其实cascade不是必须的，你使用了cascade就可以只保存主表，从表会跟着保存，你不设置cascade，就需要自己手动保存从表"></a>7、其实cascade不是必须的，你使用了cascade就可以只保存主表，从表会跟着保存，你不设置cascade，就需要自己手动保存从表</h4><h4 id="8、我在下面要用的表的表关系"><a href="#8、我在下面要用的表的表关系" class="headerlink" title="8、我在下面要用的表的表关系"></a>8、我在下面要用的表的表关系</h4><ul><li><p>一个父亲有多个孩子</p></li><li><p>一个父亲有一个妻子</p></li><li><p>多个孩子有多个玩具</p></li></ul><h4 id="9、先来个总结"><a href="#9、先来个总结" class="headerlink" title="9、先来个总结"></a>9、先来个总结</h4><ul><li><p>1、主键一对多</p></li><li><p>以一的那方主键作为来个表之间的桥梁，所以是将一那方的字段插到多那方</p></li><li><p>2、非主键一对多</p></li><li><p>以一的那方的某个字段作为来个表之间的桥梁，所以是将一那方的字段插到多那方</p></li><li><p>3、主键多对多</p></li><li><p>两个表都给出主键，插到一个第三方表，这样产生关系，在第三方表就可以通过我的主键查到与我相关的你的主键，再通过你的主键去查你表里的数据</p></li><li><p>4、非主键多对多</p></li><li><p>两个表都给出某一个字段，插到一个第三方表，这样产生关系，在第三方表就可以通过我的字段查到与我相关的你的字段，再通过你的字段去查你表里的数据</p></li><li><p>5、主键一对一</p></li><li><p>不需要在对方的表里插字段，因为是一一对应的，所以我的主键的值就是你主键的值</p></li><li><p>6、非主键一对一</p></li><li><p>7、双向</p></li><li><p>你的表里有与我相关的字段可以查到我，我的表里也有你的字段可以查到你对应的数据</p></li><li><p>8、单向</p></li><li><p>你的表里没有与我相关的字段，在你的表里查不到我，但是我的表里有你的字段，可以查到你对应的数据</p></li></ul><h2 id="二、示例"><a href="#二、示例" class="headerlink" title="二、示例"></a>二、示例</h2><ul><li>1、主键一对多示例</li><li>2、非主键一对多示例</li><li>3、主键多对多示例</li><li>4、非主键多对多示例</li><li>5、主键一对一示例</li><li>6、非主键一对一示例</li><li>7、双向示例</li><li>8、单向示例</li></ul><h4 id="下面的xml示例都会省略头部声明，完整的xx-hbm-xml参考如下："><a href="#下面的xml示例都会省略头部声明，完整的xx-hbm-xml参考如下：" class="headerlink" title="下面的xml示例都会省略头部声明，完整的xx.hbm.xml参考如下："></a>下面的xml示例都会省略头部声明，完整的xx.hbm.xml参考如下：</h4><pre><code>&lt;?xml version=&quot;1.0&quot;?&gt;
+&lt;!DOCTYPE hibernate-mapping PUBLIC
+        &quot;-//Hibernate/Hibernate Mapping DTD 3.0//EN&quot;
+        &quot;http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd&quot;&gt;
+
+&lt;hibernate-mapping package=&quot;com.iamzhuwh.more2more&quot;&gt;
+    &lt;class name=&quot;Father&quot; table=&quot;FATHER&quot;&gt;
+         &lt;id name=&quot;f_id&quot; column=&quot;F_ID&quot;&gt;
+             &lt;generator class=&quot;native&quot;/&gt;
+         &lt;/id&gt;
+         &lt;property name=&quot;f_name&quot; type=&quot;string&quot; column=&quot;F_NAME&quot;/&gt;
+    &lt;/class&gt;
+&lt;/hibernate-mapping&gt;
+</code></pre><h2 id="1、主键一对多示例"><a href="#1、主键一对多示例" class="headerlink" title="1、主键一对多示例"></a>1、主键一对多示例</h2><h4 id="儿子与父亲的联系在于父亲的f-id，因为f-id是唯一可以识别父亲的标识，所以将父亲的主键f-id作为外键给儿子，以后凭f-id就可以找到父亲对应的儿子啦"><a href="#儿子与父亲的联系在于父亲的f-id，因为f-id是唯一可以识别父亲的标识，所以将父亲的主键f-id作为外键给儿子，以后凭f-id就可以找到父亲对应的儿子啦" class="headerlink" title="儿子与父亲的联系在于父亲的f_id，因为f_id是唯一可以识别父亲的标识，所以将父亲的主键f_id作为外键给儿子，以后凭f_id就可以找到父亲对应的儿子啦"></a>儿子与父亲的联系在于父亲的f_id，因为f_id是唯一可以识别父亲的标识，所以将父亲的主键f_id作为外键给儿子，以后凭f_id就可以找到父亲对应的儿子啦</h4><pre><code>/** 父亲 */
+public class Father {
+    /** 父亲的id，主键 */
+    private int f_id;
+    /** 父亲的名字 */
+    private String f_name;
+    /** 可能有多个儿子，所以是集合,对应配置文件的&lt;set one-to-many&gt;*/
+    private Set son = new HashSet();
+}
+
+/** 儿子 */
+public class Son {
+    /** 儿子的id，主键 */
+    private int s_id;
+    /** 儿子的名字 */
+    private String s_name;
+    /** 只有一个父亲,对应配置文件的&lt;many-to-one&gt;*/
+    private Father father;
+}
+
+/** 父亲配置文件，Father.hbm.xml */
+&lt;hibernate-mapping package=&quot;com.iamzhuwh.one2more&quot;&gt;
+    &lt;!-- 
+        对应的实体类：com.iamzhuwh.one2more.Father
+        定义class标签，  &lt;class name=&quot;Father&quot; table=&quot;FATHER&quot;&gt;
+            name是实体类名字，
+            table是你要创建的表名
+        包名：package=&quot;com.iamzhuwh.one2more&quot;
+    --&gt;
+    &lt;class name=&quot;Father&quot; table=&quot;FATHER&quot;&gt;
+        &lt;!-- id是主键，自增 --&gt;
+         &lt;id name=&quot;f_id&quot; column=&quot;F_ID&quot;&gt;
+             &lt;!-- 主键配置 --&gt;
+             &lt;generator class=&quot;native&quot;/&gt;
+         &lt;/id&gt;
+         &lt;!-- 其他字段 --&gt;
+         &lt;property name=&quot;f_name&quot; type=&quot;string&quot; column=&quot;F_NAME&quot;/&gt;
+         &lt;set name=&quot;son&quot; inverse=&quot;false&quot; cascade=&quot;all&quot; &gt;
+            &lt;!-- 
+                一的一方的外键column=&quot;f_id&quot; 
+                儿子与父亲的联系在于父亲的f_id，因为主键f_id是唯一可以识别父亲的标识
+            --&gt;
+            &lt;key column=&quot;f_id&quot;&gt;&lt;/key&gt;
+            &lt;one-to-many class=&quot;com.iamzhuwh.one2more.Son&quot;/&gt;
+         &lt;/set&gt;
+    &lt;/class&gt;
+&lt;/hibernate-mapping&gt;
+
+&lt;!-- 儿子配置文件，Son.hbm.xml --&gt;
+&lt;hibernate-mapping package=&quot;com.iamzhuwh.one2more&quot;&gt;
+    &lt;!-- 对应的实体类，name是实体类名字，table是你要创建的表名 --&gt;
+    &lt;class name=&quot;Son&quot; table=&quot;SON&quot;&gt;
+        &lt;!-- id是主键，自增 --&gt;
+         &lt;id name=&quot;s_id&quot; column=&quot;S_ID&quot;&gt;
+             &lt;!-- 主键配置 --&gt;
+             &lt;generator class=&quot;native&quot;/&gt;
+         &lt;/id&gt;
+         &lt;!-- 其他字段 --&gt;
+         &lt;property name=&quot;s_name&quot; type=&quot;string&quot; column=&quot;S_NAME&quot;/&gt;
+         &lt;property name=&quot;s_f_id&quot; type=&quot;int&quot; column=&quot;S_F_ID&quot;/&gt;
+         &lt;!-- 
+            一的一方的外键column=&quot;f_id&quot;
+            儿子与父亲的联系在于父亲的f_id，因为主键f_id是唯一可以识别父亲的标识
+          --&gt;
+         &lt;many-to-one name=&quot;father&quot; column=&quot;f_id&quot; class=&quot;com.iamzhuwh.one2more.Father&quot;&gt;
+         &lt;/many-to-one&gt;
+    &lt;/class&gt;
+&lt;/hibernate-mapping&gt;
+
+/** 测试代码 */
+public class Test {
+    @SuppressWarnings(&quot;unchecked&quot;)
+    public static void main(String[] args) {
+        /** 父亲 */
+        Father father = new Father();
+        father.setF_name(&quot;f1&quot;);
+        /** 儿子 */
+        Son son = new Son();
+        son.setS_name(&quot;s1&quot;);
+        /** 
+            级联  
+            增加了父亲的话，可以在这个父亲的名下增加相应的孩子
+            但是你随便增加孩子却不行，孩子必须有父亲，没有父亲的孩子哪里来的？石头蹦？孙悟空？
+            这就是级联，都是连在一起的
+         */
+        father.getSon().add(son);
+        /** 获取连接 */
+        SessionFactory sessionFactory = new Configuration().configure().buildSessionFactory();
+        Session session = sessionFactory.getCurrentSession();
+        session.beginTransaction();
+        /** 因为是连在一起的，所以保存了父亲，父亲名下的孩子也会被保存 */
+        System.out.println(&quot;Father:&quot;+session.save(father));
+        /** 提交事务 */
+        session.getTransaction().commit();
+    }
+</code></pre><h2 id="2、非主键一对多示例"><a href="#2、非主键一对多示例" class="headerlink" title="2、非主键一对多示例"></a>2、非主键一对多示例</h2><h4 id="以上面的代码为基础，上面提到了父亲的主键f-id作为外键给儿子，以后凭f-id就可以找到父亲对应的儿子，那么如果父亲给的外键不是主键呢？比如f-name，父亲的名字"><a href="#以上面的代码为基础，上面提到了父亲的主键f-id作为外键给儿子，以后凭f-id就可以找到父亲对应的儿子，那么如果父亲给的外键不是主键呢？比如f-name，父亲的名字" class="headerlink" title="以上面的代码为基础，上面提到了父亲的主键f_id作为外键给儿子，以后凭f_id就可以找到父亲对应的儿子，那么如果父亲给的外键不是主键呢？比如f_name，父亲的名字"></a>以上面的代码为基础，上面提到了父亲的主键f_id作为外键给儿子，以后凭f_id就可以找到父亲对应的儿子，那么如果父亲给的外键不是主键呢？比如f_name，父亲的名字</h4><ul><li>使用非主键作为外键，这个外键必须是唯一不可重复的，所以要设置unique=”true”</li><li><p>在一的那边使用属性property-ref，即是</p><p>/*<em> 父亲配置 </em>/<br><hibernate-mapping package="com.iamzhuwh.one2more"></hibernate-mapping></p><pre><code>&lt;!-- 对应的实体类，name是实体类名字，table是你要创建的表名 --&gt;
+&lt;class name=&quot;Father&quot; table=&quot;FATHER&quot;&gt;
+    &lt;!-- id是主键，自增 --&gt;
+     &lt;id name=&quot;f_id&quot; column=&quot;F_ID&quot;&gt;
+         &lt;!-- 主键配置 --&gt;
+         &lt;generator class=&quot;native&quot;/&gt;
+     &lt;/id&gt;
+     &lt;!-- 
+            这里变一下
+            unique=&quot;true&quot;
+     --&gt;
+     &lt;property name=&quot;f_name&quot; type=&quot;string&quot; column=&quot;F_NAME&quot; unique=&quot;true&quot;/&gt;
+     &lt;set name=&quot;son&quot; inverse=&quot;false&quot; cascade=&quot;all&quot; &gt;
+        &lt;!-- 
+            **** 重要 ****
+            这里变一下 property-ref=&quot;f_name&quot;
+            用父亲表的父亲名字f_name作为外键，赋予给儿子
+            key column=&quot;s_f_name&quot;，这句话只是给加在儿子表的那个字段起个名字叫s_f_name而已
+            使用property-ref=&quot;f_name&quot;才是真正将f_name的值赋予给s_f_name
+        --&gt;
+        &lt;key column=&quot;s_f_name&quot; property-ref=&quot;f_name&quot;&gt;&lt;/key&gt;
+        &lt;one-to-many class=&quot;com.iamzhuwh.one2more.Son&quot;/&gt;
+     &lt;/set&gt;
+&lt;/class&gt;
+</code></pre><p></p><p><hibernate-mapping package="com.iamzhuwh.one2more"></hibernate-mapping></p><pre><code>&lt;!-- 对应的实体类，name是实体类名字，table是你要创建的表名 --&gt;
+&lt;class name=&quot;Son&quot; table=&quot;SON&quot;&gt;
+    &lt;!-- id是主键，自增 --&gt;
+     &lt;id name=&quot;s_id&quot; column=&quot;S_ID&quot;&gt;
+         &lt;!-- 主键配置 --&gt;
+         &lt;generator class=&quot;native&quot;/&gt;
+     &lt;/id&gt;
+     &lt;!-- 其他字段 --&gt;
+     &lt;property name=&quot;s_name&quot; type=&quot;string&quot; column=&quot;S_NAME&quot;/&gt;
+     &lt;property name=&quot;s_f_id&quot; type=&quot;int&quot; column=&quot;S_F_ID&quot;/&gt;
+     &lt;!-- 
+            这里变一下，column=&quot;s_f_name&quot;
+      --&gt;
+     &lt;many-to-one name=&quot;father&quot; column=&quot;s_f_name&quot; class=&quot;com.iamzhuwh.one2more.Father&quot;&gt;
+     &lt;/many-to-one&gt;
+&lt;/class&gt;
+</code></pre><p></p></li></ul><h2 id="3、主键多对多示例"><a href="#3、主键多对多示例" class="headerlink" title="3、主键多对多示例"></a>3、主键多对多示例</h2><ul><li><p>多对多的时候，要记住，不是简单给个字段对方而已，要建一个中间表，将双方的外键放上去</p><p>/*<em> 儿子表的实体 </em>/<br>public class Son {</p><pre><code>/** 儿子的id，主键 */
+private int s_id;
+/** 儿子的名字 */
+private String s_name;
+/** 儿子的玩具,一个儿子可以拥有多个玩具 */
+private Set toys = new HashSet();
+</code></pre><p>}</p><p>/*<em> 玩具表的实体 </em>/<br>public class Toy {</p><pre><code>/** 玩具的id，主键 */
+private int t_id;
+/** 玩具的名字 */
+private String t_name;
+/** 每个玩具可以被多个人拥有*/
+private Set sons = new HashSet();
+</code></pre><p>}</p></li></ul><pre><code>&lt;!-- 儿子表的配置 --&gt;
+&lt;hibernate-mapping package=&quot;com.iamzhuwh.more2more&quot;&gt;
+    &lt;!-- SON表 --&gt;
+    &lt;class name=&quot;Son&quot; table=&quot;SON&quot;&gt;
+        &lt;!-- 主键，自增 --&gt;
+         &lt;id name=&quot;s_id&quot; column=&quot;S_ID&quot;&gt;
+             &lt;generator class=&quot;native&quot;/&gt;
+         &lt;/id&gt;
+         &lt;!-- 其他字段 --&gt;
+         &lt;property name=&quot;s_name&quot; type=&quot;string&quot; column=&quot;S_NAME&quot;/&gt;
+        &lt;!-- 
+            儿子可以有多个玩具，所以将儿子的s_id作为外键，&lt;key column=&quot;S_ID&quot;&gt;&lt;/key&gt;
+            玩具可以有多个主人，所以将玩具的t_id作为外键，&lt;many-to-many column=&quot;T_ID&quot;
+            如果让玩具表来处理级联的增删改，需要在玩具的Set标签中配置inverse与cascade
+            **** 重点 ****
+                这个table填的是TOY_SON！！！&lt;set name=&quot;toys&quot; table=&quot;TOY_SON&quot;
+                根据上面一对多的经验，我们是要外键给对方，所以这里填的应该是对方的表名才对吧？
+                但是这里为啥填的是TOY_SON？为啥不是TOY或者SON？
+
+            因为要新建一张第三方叫TOY_SON的表，来存放儿子与玩具的外键
+
+            &lt;set name=&quot;toys&quot;，这里填的是你在Son.java中配置的Set集合的名字：
+            private Set toys = new HashSet();/** 儿子的玩具,一个儿子可以拥有多个玩具*/
+         --&gt;
+        &lt;set name=&quot;toys&quot; table=&quot;TOY_SON&quot; inverse=&quot;true&quot; cascade=&quot;all&quot;&gt;
+            &lt;!-- column=&quot;S_ID&quot;，代表是Son给出的外键是S_ID --&gt;
+            &lt;key column=&quot;S_ID&quot;&gt;&lt;/key&gt;
+            &lt;many-to-many column=&quot;T_ID&quot; class=&quot;com.iamzhuwh.more2more.Toy&quot;&gt;&lt;/many-to-many&gt;
+             &lt;!-- column=&quot;T_ID&quot;，代表是com.iamzhuwh.more2more.Toy给出的外键是T_ID --&gt;
+        &lt;/set&gt;
+    &lt;/class&gt;
+&lt;/hibernate-mapping&gt;
+
+&lt;!-- 玩具表的配置 --&gt;
+&lt;hibernate-mapping package=&quot;com.iamzhuwh.more2more&quot;&gt;
+    &lt;!-- TOY表 --&gt;
+    &lt;class name=&quot;Toy&quot; table=&quot;TOY&quot;&gt;
+        &lt;!-- id是主键，自增 --&gt;
+         &lt;id name=&quot;t_id&quot; column=&quot;T_ID&quot;&gt;
+             &lt;!-- 主键配置 --&gt;
+             &lt;generator class=&quot;native&quot;/&gt;
+         &lt;/id&gt;
+         &lt;!-- 其他字段 --&gt;
+         &lt;property name=&quot;t_name&quot; type=&quot;string&quot; column=&quot;T_NAME&quot;/&gt;
+        &lt;!-- 
+            玩具可以有多个主人，所以将玩具的t_id作为外键，&lt;key column=&quot;T_ID&quot;&gt;&lt;/key&gt;
+            儿子可以有多个玩具，所以将儿子的s_id作为外键，&lt;many-to-many column=&quot;S_ID&quot;
+            **** 注意 ****
+            如果让玩具表来处理级联的增删改，需要在玩具的Set标签中配置inverse与cascade
+            但是上面已经让儿子来处理了，所以在玩具这里不用配置inverse与cascade
+            **** 重点 ****
+                这个table填的是TOY_SON！！！&lt;set name=&quot;sons&quot; table=&quot;TOY_SON&quot;&gt;
+                根据上面一对多的经验，我们是要外键给对方，所以这里填的应该是对方的表名才对吧？
+                但是这里为啥填的是TOY_SON？为啥不是TOY或者SON？
+
+            因为要新建一张第三方叫TOY_SON的表，来存放儿子与玩具的外键
+
+            &lt;set name=&quot;sons&quot;，这里填的是你在Toy.java中配置的Set集合的名字：
+            private Set sons = new HashSet();/** 每个玩具可以被多个人拥有*/
+         --&gt;
+        &lt;set name=&quot;sons&quot; table=&quot;TOY_SON&quot;&gt;
+            &lt;!-- column=&quot;T_ID&quot;，代表Toy给出的外键是T_ID --&gt;
+            &lt;key column=&quot;T_ID&quot;&gt;&lt;/key&gt;
+            &lt;many-to-many column=&quot;S_ID&quot; class=&quot;com.iamzhuwh.more2more.Son&quot;&gt;&lt;/many-to-many&gt;
+             &lt;!-- column=&quot;S_ID&quot;，代表是Son给出的外键是S_ID --&gt;
+        &lt;/set&gt;
+    &lt;/class&gt;
+&lt;/hibernate-mapping&gt;
+
+/** 测试代码 */
+public class Test {
+    @SuppressWarnings(&quot;unchecked&quot;)
+    public static void main(String[] args) {
+        /** 玩具 */
+        Toy toy = new Toy();
+        toy.setT_name(&quot;t1&quot;);
+        /** 儿子 */
+        Son son = new Son();
+        son.setS_name(&quot;s1&quot;);
+        /** 级联  
+            因为在Son配置表中配置了&lt;set name=&quot;toys&quot; table=&quot;TOY_SON&quot; inverse=&quot;true&quot; cascade=&quot;all&quot;&gt;
+            所以级联让Toy来处理，增加了Toy的话，可以把玩具赋给相应的孩子
+         */
+        toy.getSons().add(son);
+        son.getToys().add(toy);
+        /** 获取连接 */
+        SessionFactory sessionFactory = new Configuration().configure().buildSessionFactory();
+        Session session = sessionFactory.getCurrentSession();
+        session.beginTransaction();
+        /** 因为是连在一起的，所以保存了儿子，儿子名下的玩具也会被保存 */
+        System.out.println(&quot;Son:&quot;+session.save(son));
+        /** 提交事务 */
+        session.getTransaction().commit();
+    }
+}
+</code></pre><h2 id="4、非主键多对多示例"><a href="#4、非主键多对多示例" class="headerlink" title="4、非主键多对多示例"></a>4、非主键多对多示例</h2><p>上面是主键多对多示例，所以使用主键id作为外键，这次是非主键作为外键，所以我们使用名字name作为外键</p><pre><code>&lt;hibernate-mapping package=&quot;com.iamzhuwh.more2more&quot;&gt;
+    &lt;class name=&quot;Son&quot; table=&quot;SON&quot;&gt;
+         &lt;id name=&quot;s_id&quot; column=&quot;S_ID&quot;&gt;
+             &lt;generator class=&quot;native&quot;/&gt;
+         &lt;/id&gt;
+         &lt;!-- 
+             这次要用这个s_name作为外键，所以要加一个unique=&quot;true&quot;
+             让其变为唯一可以代表这个儿子的标识
+         --&gt;
+         &lt;property name=&quot;s_name&quot; type=&quot;string&quot; column=&quot;S_NAME&quot; unique=&quot;true&quot;/&gt;
+
+        &lt;!-- 
+            &lt;key column=&quot;S_NAME&quot; property-ref=&quot;s_name&quot;&gt;&lt;/key&gt;
+            解析：
+            column=&quot;S_NAME&quot;：
+                在TOY_SON表中创建一个字段名字叫S_NAME
+            property-ref=&quot;s_name&quot;：
+                这个字段的类型或者值请参考Son配置表的property name=&quot;s_name&quot;
+            ————————————————————————————————————————————————————
+            &lt;many-to-many column=&quot;T_NAME&quot; property-ref=&quot;t_name&quot;
+            解析：
+            column=&quot;T_NAME&quot;：
+                在TOY_SON表中创建一个字段名字叫T_NAME
+            property-ref=&quot;t_name&quot;：
+                这个字段的类型或者值请参考Toy配置表的property name=&quot;t_name&quot;
+         --&gt;
+        &lt;set name=&quot;toys&quot; table=&quot;TOY_SON&quot; inverse=&quot;true&quot; cascade=&quot;all&quot; &gt;
+            &lt;key column=&quot;S_NAME&quot; property-ref=&quot;s_name&quot;&gt;&lt;/key&gt;
+            &lt;many-to-many column=&quot;T_NAME&quot; property-ref=&quot;t_name&quot; class=&quot;com.iamzhuwh.more2more.Toy&quot;&gt;&lt;/many-to-many&gt;
+        &lt;/set&gt;
+    &lt;/class&gt;
+&lt;/hibernate-mapping&gt;
+
+
+&lt;hibernate-mapping package=&quot;com.iamzhuwh.more2more&quot;&gt;
+    &lt;class name=&quot;Toy&quot; table=&quot;TOY&quot;&gt;
+         &lt;id name=&quot;t_id&quot; column=&quot;T_ID&quot;&gt;
+             &lt;generator class=&quot;native&quot;/&gt;
+         &lt;/id&gt;
+         &lt;!-- 
+             这次要用这个t_name作为外键，所以要加一个unique=&quot;true&quot;
+             让其变为唯一可以代表这个玩具的标识
+         --&gt;
+         &lt;property name=&quot;t_name&quot; type=&quot;string&quot; column=&quot;T_NAME&quot; unique=&quot;true&quot;/&gt;
+         &lt;!-- 
+            &lt;key column=&quot;T_NAME&quot; property-ref=&quot;t_name&quot;&gt;&lt;/key&gt;
+            解析：
+            column=&quot;T_NAME&quot;：
+                在TOY_SON表中创建一个字段名字叫T_NAME
+            property-ref=&quot;t_name&quot;：
+                这个字段的类型或者值请参考Toy配置表的property name=&quot;t_name&quot;
+            ————————————————————————————————————————————————————
+            &lt;many-to-many column=&quot;S_NAME&quot; property-ref=&quot;s_name&quot;
+            解析：
+            column=&quot;S_NAME&quot;：
+                在TOY_SON表中创建一个字段名字叫S_NAME
+            property-ref=&quot;s_name&quot;：
+                这个字段的类型或者值请参考Son配置表的property name=&quot;s_name&quot;
+         --&gt;
+        &lt;set name=&quot;sons&quot; table=&quot;TOY_SON&quot;&gt;
+            &lt;key column=&quot;T_NAME&quot; property-ref=&quot;t_name&quot;&gt;&lt;/key&gt;
+            &lt;many-to-many column=&quot;S_NAME&quot; property-ref=&quot;s_name&quot; class=&quot;com.iamzhuwh.more2more.Son&quot;&gt;&lt;/many-to-many&gt;
+        &lt;/set&gt;
+
+    &lt;/class&gt;
+&lt;/hibernate-mapping&gt;
+</code></pre><h2 id="5、主键一对一示例"><a href="#5、主键一对一示例" class="headerlink" title="5、主键一对一示例"></a>5、主键一对一示例</h2><p>这个一对一，你查看数据库表，是没有多出字段的，为什么？因为是一一对应的，比如我用我的id就可以找到你的id，因为是一一对应，所以不需要在你的表里插一个我的id</p><p>对比一堆多，一的那边会在多的那边插入一个字段，比如id，来表示两者之间存在关系，通过这个id我就可以查找到跟我关联的你的表的数据</p><h4 id="使用one-to-one-的方式展示主键一对一示例"><a href="#使用one-to-one-的方式展示主键一对一示例" class="headerlink" title="使用one to one 的方式展示主键一对一示例"></a>使用one to one 的方式展示主键一对一示例</h4><pre><code>/** 孩子他爸 */
+public class Father {
+    /** 丈夫的id，主键 */
+    private int f_id;
+    /** 丈夫的名字 */
+    private String f_name;
+    /** 只有一个妻子*/
+    private Mother mother;
+}
+
+/** 孩子他妈 */
+public class Mother {
+    /** 妻子的id，主键 */
+    private int m_id;
+    /** 妻子的名字 */
+    private String m_name;
+    /** 只有一个丈夫 */
+    private Father father;
+}
+
+&lt;!-- 孩子他爸的配置 --&gt;
+&lt;hibernate-mapping package=&quot;com.iamzhuwh.one2one&quot;&gt;
+    &lt;!-- 对应的实体类，name是实体类名字，table是你要创建的表名 --&gt;
+    &lt;class name=&quot;Father&quot; table=&quot;FATHER&quot;&gt;
+        &lt;!-- id是主键，自增 --&gt;
+         &lt;id name=&quot;f_id&quot; column=&quot;F_ID&quot;&gt;
+             &lt;!-- 主键配置 --&gt;
+             &lt;generator class=&quot;native&quot;/&gt;
+         &lt;/id&gt;
+         &lt;!-- 其他字段 --&gt;
+         &lt;property name=&quot;f_name&quot; type=&quot;string&quot; column=&quot;F_NAME&quot;/&gt;
+         &lt;!-- 
+            父母是一对一的，一个丈夫对应一个妻子,所以在丈夫中引入妻子
+            &lt;one-to-one name=&quot;mother&quot;
+            这里就是配置了妻子的信息
+            name=&quot;mother&quot;代表在Father.java中创建了一个叫mother的变量
+                参考Father.java：
+                /** 只有一个妻子*/
+                private Mother mother;
+            property-ref=&quot;m_id&quot;代表引用Mother中的m_id作为外键
+                参考Mother.hbm.xml：
+                &lt;id name=&quot;m_id&quot; column=&quot;M_ID&quot;&gt;
+         --&gt;
+         &lt;one-to-one name=&quot;mother&quot; property-ref=&quot;m_id&quot; cascade=&quot;all&quot; class=&quot;com.iamzhuwh.one2one.Mother&quot;&gt;&lt;/one-to-one&gt;
+    &lt;/class&gt;
+&lt;/hibernate-mapping&gt;
+
+&lt;!-- 孩子他妈的配置 --&gt;
+&lt;hibernate-mapping package=&quot;com.iamzhuwh.one2one&quot;&gt;
+    &lt;!-- 对应的实体类，name是实体类名字，table是你要创建的表名 --&gt;
+    &lt;class name=&quot;Mother&quot; table=&quot;MOTHER&quot;&gt;
+        &lt;!-- id是主键，自增 --&gt;
+         &lt;id name=&quot;m_id&quot; column=&quot;M_ID&quot;&gt;
+             &lt;!-- 主键配置 --&gt;
+             &lt;generator class=&quot;native&quot;/&gt;
+         &lt;/id&gt;
+         &lt;!-- 其他字段 --&gt;
+         &lt;property name=&quot;m_name&quot; type=&quot;string&quot; column=&quot;M_NAME&quot;/&gt;
+         &lt;!-- 
+            父母是一对一的，一个丈夫对应一个妻子,所以在妻子中引入丈夫
+            &lt;one-to-one name=&quot;father&quot;
+            这里就是配置了丈夫的信息
+            name=&quot;father&quot;代表在Mother.java中创建了一个叫father的变量
+                参考Mother.java：
+                /** 只有一个丈夫 */
+                private Father father;
+           property-ref=&quot;f_id&quot;代表引用Father中的f_id作为外键
+                参考Father.hbm.xml：
+                &lt;id name=&quot;f_id&quot; column=&quot;F_ID&quot;&gt;
+         --&gt;
+         &lt;one-to-one name=&quot;father&quot; property-ref=&quot;f_id&quot; class=&quot;com.iamzhuwh.one2one.Father&quot;&gt;&lt;/one-to-one&gt;
+    &lt;/class&gt;
+&lt;/hibernate-mapping&gt;
+
+/** 测试代码 */
+public class Test {
+    @SuppressWarnings(&quot;unchecked&quot;)
+    public static void main(String[] args) {
+        /** 孩子爸 */
+        Father father = new Father();
+        father.setF_name(&quot;f1&quot;);
+        /** 孩子妈 */
+        Mother mother = new Mother();
+        mother.setM_name(&quot;m1&quot;);
+        /** 级联  
+            增加丈夫，也可以增加妻子
+         */
+        father.setMother(mother);
+        mother.setFather(father);
+        /** 获取连接 */
+        SessionFactory sessionFactory = new Configuration().configure().buildSessionFactory();
+        Session session = sessionFactory.getCurrentSession();
+        session.beginTransaction();
+        /** 
+            因为在孩子他爸的配置表里面配置了cascade=&quot;all&quot;，
+            所以这里只需要保存孩子爸，孩子妈就会因为级联而被保存
+            如果没有cascade，则孩子妈需要手动保存
+        */
+        System.out.println(&quot;Father:&quot;+session.save(father));
+        /** 提交事务 */
+        session.getTransaction().commit();
+    }
+}
+</code></pre><h4 id="使用many-to-one-的方式展示主键一对一示例"><a href="#使用many-to-one-的方式展示主键一对一示例" class="headerlink" title="使用many to one 的方式展示主键一对一示例"></a>使用many to one 的方式展示主键一对一示例</h4><p>还是在上面的基础上改，改父亲配置表里面的孩子妈配置，将one to one改为more to one，给more to one的字段配置唯一约束unique，它的效果就相当于变成one to one了</p><pre><code>&lt;!-- 修改孩子妈配置表 --&gt;
+&lt;many-to-one name=&quot;father&quot; column=&quot;F_ID&quot; class=&quot;com.iamzhuwh.one2one.Father&quot; unique=&quot;true&quot;&gt;&lt;/many-to-one&gt;
+&lt;!-- 孩子爸配置表还是不变 --&gt;
+ &lt;one-to-one name=&quot;mother&quot; cascade=&quot;all&quot; class=&quot;com.iamzhuwh.one2one.Mother&quot;&gt;&lt;/one-to-one&gt;
+</code></pre><h2 id="6、非主键一对一示例"><a href="#6、非主键一对一示例" class="headerlink" title="6、非主键一对一示例"></a>6、非主键一对一示例</h2><p>按上面的经验，在使用one to one的基础上，修改为非主键一对一，以名字作为外键，设置名字唯一的约束unique，其他不变</p><h4 id="使用one-to-one-的方式展示非主键一对一示例"><a href="#使用one-to-one-的方式展示非主键一对一示例" class="headerlink" title="使用one to one 的方式展示非主键一对一示例"></a>使用one to one 的方式展示非主键一对一示例</h4><pre><code>&lt;!-- 孩子爸配置表 --&gt;
+&lt;property name=&quot;f_name&quot; type=&quot;string&quot; column=&quot;F_NAME&quot; unique=&quot;true&quot;/&gt;
+&lt;!--引用孩子妈的名字作为外键， property-ref=&quot;m_name&quot; --&gt;
+&lt;one-to-one name=&quot;mother&quot; property-ref=&quot;m_name&quot; cascade=&quot;all&quot; class=&quot;com.iamzhuwh.one2one.Mother&quot;&gt;&lt;/one-to-one&gt;
+
+&lt;!-- 孩子妈配置表 --&gt;      
+&lt;property name=&quot;m_name&quot; type=&quot;string&quot; column=&quot;M_NAME&quot; unique=&quot;true&quot;/&gt;
+&lt;!--引用孩子爸的名字作为外键， property-ref=&quot;f_name&quot; --&gt;
+&lt;one-to-one name=&quot;father&quot; property-ref=&quot;f_name&quot; class=&quot;com.iamzhuwh.one2one.Father&quot;&gt;&lt;/one-to-one&gt;
+</code></pre><h4 id="使用many-to-one-的方式展示非主键一对一示例"><a href="#使用many-to-one-的方式展示非主键一对一示例" class="headerlink" title="使用many to one 的方式展示非主键一对一示例"></a>使用many to one 的方式展示非主键一对一示例</h4><pre><code>&lt;!-- 在上面的进程上修改孩子妈配置表 &lt;one-to-one变&lt;many-to-one --&gt;   
+&lt;many-to-one name=&quot;father&quot; property-ref=&quot;f_name&quot; class=&quot;com.iamzhuwh.one2one.Father&quot; unique=&quot;true&quot;&gt;&lt;/many-to-one&gt;
+</code></pre><h2 id="7、双向示例"><a href="#7、双向示例" class="headerlink" title="7、双向示例"></a>7、双向示例</h2><p>这个是一对多的双向示例，双向就是说通过我可以查到你，通过你可以查到我</p><pre><code>/** 父亲 */
+public class Father {
+    /** 父亲的id，主键 */
+    private int f_id;
+    /** 父亲的名字 */
+    private String f_name;
+    /** 可能有多个儿子，所以是集合,对应配置文件的&lt;set one-to-many&gt;*/
+    private Set son = new HashSet();
+}
+
+/** 儿子 */
+public class Son {
+    /** 儿子的id，主键 */
+    private int s_id;
+    /** 儿子的名字 */
+    private String s_name;
+    /** 只有一个父亲,对应配置文件的&lt;many-to-one&gt;*/
+    private Father father;
+}
+
+/** 父亲配置文件，Father.hbm.xml */
+&lt;hibernate-mapping package=&quot;com.iamzhuwh.one2more&quot;&gt;
+    &lt;!-- 
+        对应的实体类：com.iamzhuwh.one2more.Father
+        定义class标签，  &lt;class name=&quot;Father&quot; table=&quot;FATHER&quot;&gt;
+            name是实体类名字，
+            table是你要创建的表名
+        包名：package=&quot;com.iamzhuwh.one2more&quot;
+    --&gt;
+    &lt;class name=&quot;Father&quot; table=&quot;FATHER&quot;&gt;
+        &lt;!-- id是主键，自增 --&gt;
+         &lt;id name=&quot;f_id&quot; column=&quot;F_ID&quot;&gt;
+             &lt;!-- 主键配置 --&gt;
+             &lt;generator class=&quot;native&quot;/&gt;
+         &lt;/id&gt;
+         &lt;!-- 其他字段 --&gt;
+         &lt;property name=&quot;f_name&quot; type=&quot;string&quot; column=&quot;F_NAME&quot;/&gt;
+         &lt;set name=&quot;son&quot; inverse=&quot;false&quot; cascade=&quot;all&quot; &gt;
+            &lt;!-- 
+                一的一方的外键column=&quot;f_id&quot; 
+                儿子与父亲的联系在于父亲的f_id，因为主键f_id是唯一可以识别父亲的标识
+            --&gt;
+            &lt;key column=&quot;f_id&quot;&gt;&lt;/key&gt;
+            &lt;one-to-many class=&quot;com.iamzhuwh.one2more.Son&quot;/&gt;
+         &lt;/set&gt;
+    &lt;/class&gt;
+&lt;/hibernate-mapping&gt;
+
+&lt;!-- 儿子配置文件，Son.hbm.xml --&gt;
+&lt;hibernate-mapping package=&quot;com.iamzhuwh.one2more&quot;&gt;
+    &lt;!-- 对应的实体类，name是实体类名字，table是你要创建的表名 --&gt;
+    &lt;class name=&quot;Son&quot; table=&quot;SON&quot;&gt;
+        &lt;!-- id是主键，自增 --&gt;
+         &lt;id name=&quot;s_id&quot; column=&quot;S_ID&quot;&gt;
+             &lt;!-- 主键配置 --&gt;
+             &lt;generator class=&quot;native&quot;/&gt;
+         &lt;/id&gt;
+         &lt;!-- 其他字段 --&gt;
+         &lt;property name=&quot;s_name&quot; type=&quot;string&quot; column=&quot;S_NAME&quot;/&gt;
+         &lt;property name=&quot;s_f_id&quot; type=&quot;int&quot; column=&quot;S_F_ID&quot;/&gt;
+         &lt;!-- 
+            一的一方的外键column=&quot;f_id&quot;
+            儿子与父亲的联系在于父亲的f_id，因为主键f_id是唯一可以识别父亲的标识
+          --&gt;
+         &lt;many-to-one name=&quot;father&quot; column=&quot;f_id&quot; class=&quot;com.iamzhuwh.one2more.Father&quot;&gt;
+         &lt;/many-to-one&gt;
+    &lt;/class&gt;
+&lt;/hibernate-mapping&gt;
+
+/** 测试代码 */
+public class Test {
+    @SuppressWarnings(&quot;unchecked&quot;)
+    public static void main(String[] args) {
+        /** 父亲 */
+        Father father = new Father();
+        father.setF_name(&quot;f1&quot;);
+        /** 儿子 */
+        Son son = new Son();
+        son.setS_name(&quot;s1&quot;);
+        /** 
+            级联  
+            增加了父亲的话，可以在这个父亲的名下增加相应的孩子
+            但是你随便增加孩子却不行，孩子必须有父亲，没有父亲的孩子哪里来的？石头蹦？孙悟空？
+            这就是级联，都是连在一起的
+         */
+        father.getSon().add(son);
+        /** 获取连接 */
+        SessionFactory sessionFactory = new Configuration().configure().buildSessionFactory();
+        Session session = sessionFactory.getCurrentSession();
+        session.beginTransaction();
+        /** 因为是连在一起的，所以保存了父亲，父亲名下的孩子也会被保存 */
+        System.out.println(&quot;Father:&quot;+session.save(father));
+        /** 提交事务 */
+        session.getTransaction().commit();
+    }
+</code></pre><h2 id="8、单向示例"><a href="#8、单向示例" class="headerlink" title="8、单向示例"></a>8、单向示例</h2><p>这个是一对多的单向示例，单向就是说通过我可以查到你，你却查不到我</p><pre><code>/** 父亲 */
+public class Father {
+    /** 父亲的id，主键 */
+    private int f_id;
+    /** 父亲的名字 */
+    private String f_name;
+    /** 可能有多个儿子，所以是集合,对应配置文件的&lt;set one-to-many&gt;*/
+    private Set son = new HashSet();
+}
+
+/** 儿子 */
+public class Son {
+    /** 儿子的id，主键 */
+    private int s_id;
+    /** 儿子的名字 */
+    private String s_name;
+    /** 只有一个父亲,对应配置文件的&lt;many-to-one&gt;*/
+    private Father father;
+}
+
+/** 父亲配置文件，Father.hbm.xml */
+&lt;hibernate-mapping package=&quot;com.iamzhuwh.one2more&quot;&gt;
+    &lt;!-- 
+        对应的实体类：com.iamzhuwh.one2more.Father
+        定义class标签，  &lt;class name=&quot;Father&quot; table=&quot;FATHER&quot;&gt;
+            name是实体类名字，
+            table是你要创建的表名
+        包名：package=&quot;com.iamzhuwh.one2more&quot;
+    --&gt;
+    &lt;class name=&quot;Father&quot; table=&quot;FATHER&quot;&gt;
+        &lt;!-- id是主键，自增 --&gt;
+         &lt;id name=&quot;f_id&quot; column=&quot;F_ID&quot;&gt;
+             &lt;!-- 主键配置 --&gt;
+             &lt;generator class=&quot;native&quot;/&gt;
+         &lt;/id&gt;
+         &lt;!-- 其他字段 --&gt;
+         &lt;property name=&quot;f_name&quot; type=&quot;string&quot; column=&quot;F_NAME&quot;/&gt;
+         &lt;set name=&quot;son&quot; inverse=&quot;false&quot; cascade=&quot;all&quot; &gt;
+            &lt;!-- 
+                一的一方的外键column=&quot;f_id&quot; 
+                儿子与父亲的联系在于父亲的f_id，因为主键f_id是唯一可以识别父亲的标识
+            --&gt;
+            &lt;key column=&quot;f_id&quot;&gt;&lt;/key&gt;
+            &lt;one-to-many class=&quot;com.iamzhuwh.one2more.Son&quot;/&gt;
+         &lt;/set&gt;
+    &lt;/class&gt;
+&lt;/hibernate-mapping&gt;
+
+&lt;!-- 儿子配置文件，Son.hbm.xml --&gt;
+&lt;hibernate-mapping package=&quot;com.iamzhuwh.one2more&quot;&gt;
+    &lt;!-- 对应的实体类，name是实体类名字，table是你要创建的表名 --&gt;
+    &lt;class name=&quot;Son&quot; table=&quot;SON&quot;&gt;
+        &lt;!-- id是主键，自增 --&gt;
+         &lt;id name=&quot;s_id&quot; column=&quot;S_ID&quot;&gt;
+             &lt;!-- 主键配置 --&gt;
+             &lt;generator class=&quot;native&quot;/&gt;
+         &lt;/id&gt;
+         &lt;!-- 其他字段 --&gt;
+         &lt;property name=&quot;s_name&quot; type=&quot;string&quot; column=&quot;S_NAME&quot;/&gt;
+         &lt;!-- 
+                一的一方的外键column=&quot;f_id&quot;
+                儿子与父亲的联系在于父亲的f_id，因为主键f_id是唯一可以识别父亲的标识
+                因为现在是单向，所以直接把这里给去掉，这样在父亲表就找不到儿子的踪影了，但是在儿子表可以找到父亲的id
+                &lt;many-to-one name=&quot;father&quot; column=&quot;f_id&quot; class=&quot;com.iamzhuwh.one2more.Father&quot;&gt;
+                &lt;/many-to-one&gt;
+         --&gt;
+    &lt;/class&gt;
+&lt;/hibernate-mapping&gt;
+
+/** 测试代码 */
+public class Test {
+    @SuppressWarnings(&quot;unchecked&quot;)
+    public static void main(String[] args) {
+        /** 父亲 */
+        Father father = new Father();
+        father.setF_name(&quot;f1&quot;);
+        /** 儿子 */
+        Son son = new Son();
+        son.setS_name(&quot;s1&quot;);
+        /** 
+            级联  
+            增加了父亲的话，可以在这个父亲的名下增加相应的孩子
+            但是你随便增加孩子却不行，孩子必须有父亲，没有父亲的孩子哪里来的？石头蹦？孙悟空？
+            这就是级联，都是连在一起的
+         */
+        father.getSon().add(son);
+        /** 获取连接 */
+        SessionFactory sessionFactory = new Configuration().configure().buildSessionFactory();
+        Session session = sessionFactory.getCurrentSession();
+        session.beginTransaction();
+        /** 因为是连在一起的，所以保存了父亲，父亲名下的孩子也会被保存 */
+        System.out.println(&quot;Father:&quot;+session.save(father));
+        /** 提交事务 */
+        session.getTransaction().commit();
+    }
+</code></pre><h2 id="三、踩坑"><a href="#三、踩坑" class="headerlink" title="三、踩坑"></a>三、踩坑</h2><h4 id="问题1"><a href="#问题1" class="headerlink" title="问题1"></a>问题1</h4><ul><li>Foreign key (FK_9jbtfsoc50vbxnpaladvwbd50:SON [s_id])) must have same number of columns as the referenced primary key (SON [t_id,s_id])</li><li>添加property-ref即可，如：<br><code>&lt;key column=&quot;S_ID&quot; property-ref=&quot;s_id&quot;&gt;&lt;/key&gt;</code></li></ul><h4 id="问题2"><a href="#问题2" class="headerlink" title="问题2"></a>问题2</h4><ul><li><p>Field ‘S_ID’ doesn’t have a default value 或者 Field ‘T_ID’ doesn’t have a default value</p></li><li><p>我的原因是跟inverse相关，也有人说是在数据库给字段加默认值，或者是主键不要native，但是我的主键本来就是非空且自增，不可能是默认值或者native的问题</p></li></ul><h4 id="问题3"><a href="#问题3" class="headerlink" title="问题3"></a>问题3</h4><ul><li>object references an unsaved transient instance – save the transient instance before flushing: com.iamzhuwh.more2more.Son</li><li>son做级联，却保存toy，所以报错，应该是save（son），然后根据级联，son会将里面的toy拿出来保存</li></ul><h4 id="问题4"><a href="#问题4" class="headerlink" title="问题4"></a>问题4</h4><p>注意两个事情：(以下面代码为例)</p><ul><li><p>首先这里定义了一个字段：</p></li><li><p><code>&lt;property name=&quot;t_name&quot; type=&quot;string&quot; column=&quot;T_NAME&quot; unique=&quot;true&quot;/&gt;</code></p></li><li>name=”t_name”是用来在这个配置表中代表这个字段的</li><li><p>column=”T_NAME”是用来代表在数据库中要展示的字段名</p></li><li><p>所以这里要这样引用：</p></li><li><p><code>&lt;key column=&quot;T_NAME&quot; property-ref=&quot;t_name&quot;&gt;&lt;/key&gt;</code></p></li><li>在数据库定义一个字段叫T_NAME</li><li><p>这个字段的值引用在本配置文件中配置的t_name的信息</p><p><class name="Toy" table="TOY"></class></p><pre><code> &lt;id name=&quot;t_id&quot; column=&quot;T_ID&quot;&gt;
+     &lt;generator class=&quot;native&quot;/&gt;
+ &lt;/id&gt;
+ &lt;property name=&quot;t_name&quot; type=&quot;string&quot; column=&quot;T_NAME&quot; unique=&quot;true&quot;/&gt;
+&lt;set name=&quot;sons&quot; table=&quot;TOY_SON&quot;&gt;
+    &lt;key column=&quot;T_NAME&quot; property-ref=&quot;t_name&quot;&gt;&lt;/key&gt;
+    &lt;many-to-many column=&quot;S_NAME&quot; class=&quot;com.iamzhuwh.more2more.Son&quot;&gt;&lt;/many-to-many&gt;
+&lt;/set&gt;
+</code></pre></li></ul><h2 id="四、课外知识"><a href="#四、课外知识" class="headerlink" title="四、课外知识"></a>四、课外知识</h2><h2 id="1、为什么会有怎么多种关系？"><a href="#1、为什么会有怎么多种关系？" class="headerlink" title="1、为什么会有怎么多种关系？"></a>1、为什么会有怎么多种关系？</h2><p>一对多、多对一、单向、双向是针对不同的情况和业务需求已定的，其实本质是一样的，只是操作的方式不同</p><ul><li><p>1、什么是单向与双向？</p></li><li><p>例如：领导叫我查用户与包裹的信息</p></li><li><p>单向一对多：</p></li><li><p>用户A对于多个包裹，领导叫我在用户表查找用户A的地址，我就查呗</p></li><li>其实我查询包裹上的信息也可以查到用户A的地址，但是没必要，因为领导说了，到用户表去查</li><li><p>又或者我没有查询包裹信息的权限，所以只有从用户表查</p></li><li><p>单向多对一：</p></li><li><p>多个包裹对于用户A，领导叫我在包裹信息表里面查用户A的地址，我就查呗</p></li><li>其实我查询用户表上的信息也可以查到用户A的地址，但是没必要，因为领导说了，到包裹信息表去查</li><li><p>又或者我没有查询用户表的权限，所以只有从包裹信息表查</p></li><li><p>双向一对多/双向多对一：</p></li><li><p>领导又来了，叫我查用户A的地址，不管我怎么查，我从用户表可以查到，从包裹信息表也可以查到</p></li><li><p>懂了么？</p></li><li><p>这就是针对不同的业务需求决定使用哪种映射关系，但是本质都是可以查到目标信息</p></li><li><p>2、什么是一对多与多对一？</p></li><li><p>例如：用户与包裹</p></li><li><p>用户A买了一堆的东西，那就是一个用户对应多个包裹，也就是一对多</p></li><li><p>一堆的包裹的收件人都是用户A，那就是多个包裹对应一个用户，也就是多对一</p></li><li><p>3、主键与外键</p></li><li><p>a、什么是主键</p></li><li><p>解释：</p></li><li><p>一张表中的一条数据，可能会包含多个属性，比如姓名、性别</p></li><li>已知一张表有多条数据，用什么来区分每条数据？就是用主键了</li><li>不为空的，不重复的，能代表一条数据的，叫主键</li><li><p>什么东西可以作为主键？</p></li><li><p>一般是XX_id，从1开始自动递增，保证不重复</p></li><li><p>也可以是一组属性，比如姓名、年龄、性别加起来作为一个主键</p></li><li><p>例子：</p></li><li><p>例如一个人，身份证号码可以作为他的唯一标示，也就是主键</p></li><li><p>例如一台电视，品牌、型号、序列号加起来可以作为它的唯一标示，也就是主键</p></li><li><p>b、什么是外键</p></li><li><p>解释：</p></li><li><p>在自己的表中，有一个字段，可以确定另一张表的数据的唯一性，叫外键</p></li><li>这个字段，对另一张表来说，叫主键，对自己的这张表来说，叫外键</li><li><p>a表与b表，a表中的某一个字段可以区分b表的每一条数据，这个字段就是a表的外键，是b表的主键</p></li><li><p>例子：</p></li><li><p>比如一件快递包裹</p></li><li>在天猫商家的系统里，有这个包裹的购买人id、订单号、电话、快递单号等信息，主键是订单号，通过订单号区分每一个订单</li><li>在快递公司的系统里，有这个包裹的快递单号、收件人、电话、地址等信息，主键是快递单号，通过快递单号区分每一个包裹</li><li>对快递公司来说，这个快递单号是主键</li><li>对天猫商家来说，这个快递单号是外键</li><li><p>我通过订单号可以查到所有订单信息，然后从中找到快递单号，然后在快递表里查快递单号，就可以查到包裹的物流信息</p></li><li><p>c、区别</p></li><li><p>主键</p></li><li><p>唯一标识一条记录，不能有重复的，不允许为空</p></li><li>用来保证数据完整性</li><li><p>一张表主键只能有一个</p></li><li><p>外键</p></li><li><p>表的外键是给另一张表使用的，这个外键在另一张表里可以重复,可以是空值。但是在自己表里必须是唯一的，不然你怎么么代表自己表里的一条数据</p></li><li>用来和其他表创建联系用的</li><li><p>一个表可以有多个外键</p></li><li><p>4、一对一</p></li><li><p>a、单向一对一主键关联</p></li><li><p>简单来说，我的主键，就是我的外键，也就是你的主键，一样的值</p></li><li><p>单向的意思就是，只可以我用我的外键查你，你不查我</p></li><li><p>b、双向一对一主键关联</p></li><li><p>简单来说，我的主键，就是我的外键，也就是你的主键，一样的值</p></li><li><p>双向的意思就是，我可以查你，你可以查我</p></li><li><p>c、单向一对一外键关联</p></li><li><p>简单来说，我的主键很宝贵，不给你，那么我的其他字段呢，可以作为我的外键，给你当主键用</p></li><li><p>单向的意思就是，只可以我用我的外键查你，你不查我</p></li><li><p>d、双向一对一外键关联</p></li><li><p>简单来说，我的主键很宝贵，不给你，那么我的其他字段呢，可以作为我的外键，给你当主键用</p></li><li><p>双向的意思就是，我可以查你，你可以查我</p></li><li><p>e、一对一外键关联的注意点</p></li><li><p>因为是一对一，所以是唯一的，所以我的外键也要是唯一的，所以要设置属性unique=true</p></li><li>那为什么一对一主键关联不需要设置这个属性呢，因为两边都是主键啊，主键本来就是唯一且非空的</li></ul><h2 id="2、什么是级联"><a href="#2、什么是级联" class="headerlink" title="2、什么是级联"></a>2、什么是级联</h2><ul><li><p>比如主表改了数据，子表相关的数据也会跟着变化，这就是级联</p></li><li><p>例如用户表里面，用户的地址改了，那么包裹的地址也要跟着变化</p></li><li>用实体类来说，Father就是那个主表，里面有一个set集合的变量，son就是set集合中的一个元素，所以是father.getSon().add(son);</li></ul><h2 id="–-cascade参数"><a href="#–-cascade参数" class="headerlink" title="– cascade参数"></a>– cascade参数</h2><ul><li><p>cascade=”all</p></li><li><p>所有情况下均进行关联操作,包括save、update、delete</p></li><li><p>cascade=”none”</p></li><li><p>cascade=”save-update”</p></li><li><p>仅save、update、saveOrUpdate时进行关联操作</p></li><li><p>cascade=”delete”</p></li><li><p>cascade=”all-delete-orphan”</p></li><li><p>用户对应多个包裹，其中一个包裹，用户不要了，这个包裹就被干掉了</p></li><li>当一个节点在对象图中成为孤儿节点时，删除该节点（摘自百度）</li></ul><h2 id="–-inverse参数"><a href="#–-inverse参数" class="headerlink" title="– inverse参数"></a>– inverse参数</h2><ul><li><p>这个参数决定谁来维护这个关联关系，它只在主表的那个配置文件里面配置</p></li><li><p>什么是关联关系，即是主表更新了，主表要去更新一下子表吗？还是让子表自己更新？</p></li><li><p>inverse=”false”，代表指定Father维护这个关联关系，即主表更新的同时，子表也更新了，然后主表还要更新一下子表</p></li><li><p>比如有Father表，有f_id，Son表，也有f_id，因为两个是关联的嘛，然后更新Father表，Son表也会一起更新，但是这个时候Son表的f_id是空的，因为Father表还没更新完</p></li><li><p>待Father表更新完了，然后Son表也更新完了，Father表会将新增的那个f_id扔给Son表去update一下刚才空的f_id</p></li><li><p>inverse=”true”，代表指定Son维护这个关联关系，即主表更新后，子表再更新更新</p></li><li><p>比如有Father表，有f_id，Son表，也有f_id，因为两个是关联的嘛，然后更新Father表，Son表是不会有动静的，待Father表更新完了，把f_id扔给Son表，然后Son表再默默的更新自己的信息</p></li><li><h2 id="懂了不，再看例子"><a href="#懂了不，再看例子" class="headerlink" title="懂了不，再看例子"></a>懂了不，再看例子</h2></li><li><p>Father表配置 <code>&lt;set name=&quot;son&quot; inverse=&quot;true&quot; cascade=&quot;all&quot; &gt;</code></p><p>Hibernate: insert into FATHER (F_NAME) values (?)</p><p>//inverse=”true”，代表指定Son维护这个关联关系，即主表更新了，子表自己更新</p><p>Hibernate: insert into SON (S_NAME, f_id) values (?, ?)</p></li></ul><ul><li><p>Father表配置 <code>&lt;set name=&quot;son&quot; inverse=&quot;false&quot; cascade=&quot;all&quot; &gt;</code></p><p>Hibernate: insert into FATHER (F_NAME) values (?)<br>Hibernate: insert into SON (S_NAME, f_id) values (?, ?)</p><p>//这里多了一次更新操作，为啥？<br>//因为inverse=”false”，代表指定Father维护这个关联关系，即主表更新了，子表更新了，主表还要去更新一下子表<br>//所以主表更新了自己之后，又去更新了一下子表的F_ID</p><p>Hibernate: update SON set f_id=? where S_ID=?</p></li><li><p>cascade与inverse</p></li><li>这个时候，大家可能又懵逼了，什么鬼啊，cascade=all的时候，不是已经级联了吗，不是主表更新子表也跟着更新了吗？！！</li><li>其实是这样的，主表更新，子表也跟着更新，这个是cascade级联的作用</li><li>粗暴的理解：让主表还是从表去控制子表的更新，这个是inverse的作用。配合上面的例子慢慢体会</li></ul><h2 id="3、主键的类别："><a href="#3、主键的类别：" class="headerlink" title="3、主键的类别："></a>3、主键的类别：</h2><h4 id="Assigned"><a href="#Assigned" class="headerlink" title="Assigned"></a>Assigned</h4><ul><li>由用户生成主键值，并且要在save()之前指定否则会抛出异常</li></ul><h4 id="Hilo"><a href="#Hilo" class="headerlink" title="Hilo"></a>Hilo</h4><ul><li>使用高低位算法生成主键，高低位算法使用一个高位值和一个低位值，然后把算法得到的两个值拼接起来作为数据库中的唯一主键</li></ul><h4 id="Increment"><a href="#Increment" class="headerlink" title="Increment"></a>Increment</h4><ul><li>对主键值采取自动增长的方式生成新的主键值，但要求底层数据库的主键类型为long,int等数值型。主键按数值顺序递增，增量为1。</li><li>主键值由Hibernate本身维护，适用于所有的数据库，不适合多进程并发更新数据库</li></ul><h4 id="Identity"><a href="#Identity" class="headerlink" title="Identity"></a>Identity</h4><ul><li>根据底层数据库，来支持自动增长</li><li>例如MySQl中是auto_increment, SQL Server 中是Identity</li></ul><h4 id="Sequence"><a href="#Sequence" class="headerlink" title="Sequence"></a>Sequence</h4><h4 id="Native"><a href="#Native" class="headerlink" title="Native"></a>Native</h4><ul><li>根据不同的底层数据库自动选择Identity、Sequence、Hilo主键生成方式</li><li>便于程序移植，项目中如果用到多个数据库时，可以使用这种方式。</li></ul><h4 id="UUID"><a href="#UUID" class="headerlink" title="UUID"></a>UUID</h4><ul><li>使用128位UUID算法生成主键，能够保证网络环境下的主键唯一性，也就能够保证在不同数据库及不同服务器下主键的唯一性</li></ul><h4 id="Foreign-GUID"><a href="#Foreign-GUID" class="headerlink" title="Foreign GUID"></a>Foreign GUID</h4><ul><li>用于一对一关系中。GUID主键生成方式使用了一种特殊算法，保证生成主键的唯一性，支持SQL Server和MySQL</li></ul></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="4142158067"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="5618891265"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><footer class="post-footer"><div class="post-nav"><div class="post-nav-next post-nav-item"><a href="/2017/排查spring事务不生效.html" rel="next" title="排查spring事务不生效"><i class="fa fa-chevron-left"></i> 排查spring事务不生效</a></div><span class="post-nav-divider"></span><div class="post-nav-prev post-nav-item"><a href="/2017/mybatis环境的简单搭建.html" rel="prev" title="MyBatis环境的简单搭建">MyBatis环境的简单搭建 <i class="fa fa-chevron-right"></i></a></div></div></footer></div></article><div class="post-spread"></div></div></div></div><div class="sidebar-toggle"><div class="sidebar-toggle-line-wrap"><span class="sidebar-toggle-line sidebar-toggle-line-first"></span> <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span> <span class="sidebar-toggle-line sidebar-toggle-line-last"></span></div></div><aside id="sidebar" class="sidebar"><div class="sidebar-inner"><ul class="sidebar-nav motion-element"><li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">Table of Contents</li><li class="sidebar-nav-overview" data-target="site-overview-wrap">Overview</li></ul><section class="site-overview-wrap sidebar-panel"><div class="site-overview"><div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person"><p class="site-author-name" itemprop="name">Hello</p><p class="site-description motion-element" itemprop="description"></p></div><nav class="site-state motion-element"><div class="site-state-item site-state-posts"><a href="/archives/"><span class="site-state-item-count">1358</span> <span class="site-state-item-name">posts</span></a></div></nav></div></section><section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active"><div class="post-toc"><div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#1、外键注意："><span class="nav-number">1.</span> <span class="nav-text">1、外键注意：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2、配置注意："><span class="nav-number">2.</span> <span class="nav-text">2、配置注意：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3、字段重复注意："><span class="nav-number">3.</span> <span class="nav-text">3、字段重复注意：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4、级联删除注意："><span class="nav-number">4.</span> <span class="nav-text">4、级联删除注意：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5、级联插入注意"><span class="nav-number">5.</span> <span class="nav-text">5、级联插入注意</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#6、测试的时候不要被之前的表数据给阻碍，所以每次测试前请删除相关的表"><span class="nav-number">6.</span> <span class="nav-text">6、测试的时候不要被之前的表数据给阻碍，所以每次测试前请删除相关的表</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#7、其实cascade不是必须的，你使用了cascade就可以只保存主表，从表会跟着保存，你不设置cascade，就需要自己手动保存从表"><span class="nav-number">7.</span> <span class="nav-text">7、其实cascade不是必须的，你使用了cascade就可以只保存主表，从表会跟着保存，你不设置cascade，就需要自己手动保存从表</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#8、我在下面要用的表的表关系"><span class="nav-number">8.</span> <span class="nav-text">8、我在下面要用的表的表关系</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#9、先来个总结"><span class="nav-number">9.</span> <span class="nav-text">9、先来个总结</span></a></li></ol><li class="nav-item nav-level-2"><a class="nav-link" href="#二、示例"><span class="nav-number"></span> <span class="nav-text">二、示例</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#下面的xml示例都会省略头部声明，完整的xx-hbm-xml参考如下："><span class="nav-number">1.</span> <span class="nav-text">下面的xml示例都会省略头部声明，完整的xx.hbm.xml参考如下：</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1、主键一对多示例"><span class="nav-number"></span> <span class="nav-text">1、主键一对多示例</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#儿子与父亲的联系在于父亲的f-id，因为f-id是唯一可以识别父亲的标识，所以将父亲的主键f-id作为外键给儿子，以后凭f-id就可以找到父亲对应的儿子啦"><span class="nav-number">1.</span> <span class="nav-text">儿子与父亲的联系在于父亲的f_id，因为f_id是唯一可以识别父亲的标识，所以将父亲的主键f_id作为外键给儿子，以后凭f_id就可以找到父亲对应的儿子啦</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2、非主键一对多示例"><span class="nav-number"></span> <span class="nav-text">2、非主键一对多示例</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#以上面的代码为基础，上面提到了父亲的主键f-id作为外键给儿子，以后凭f-id就可以找到父亲对应的儿子，那么如果父亲给的外键不是主键呢？比如f-name，父亲的名字"><span class="nav-number">1.</span> <span class="nav-text">以上面的代码为基础，上面提到了父亲的主键f_id作为外键给儿子，以后凭f_id就可以找到父亲对应的儿子，那么如果父亲给的外键不是主键呢？比如f_name，父亲的名字</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3、主键多对多示例"><span class="nav-number"></span> <span class="nav-text">3、主键多对多示例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4、非主键多对多示例"><span class="nav-number"></span> <span class="nav-text">4、非主键多对多示例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5、主键一对一示例"><span class="nav-number"></span> <span class="nav-text">5、主键一对一示例</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#使用one-to-one-的方式展示主键一对一示例"><span class="nav-number">1.</span> <span class="nav-text">使用one to one 的方式展示主键一对一示例</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#使用many-to-one-的方式展示主键一对一示例"><span class="nav-number">2.</span> <span class="nav-text">使用many to one 的方式展示主键一对一示例</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6、非主键一对一示例"><span class="nav-number"></span> <span class="nav-text">6、非主键一对一示例</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#使用one-to-one-的方式展示非主键一对一示例"><span class="nav-number">1.</span> <span class="nav-text">使用one to one 的方式展示非主键一对一示例</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#使用many-to-one-的方式展示非主键一对一示例"><span class="nav-number">2.</span> <span class="nav-text">使用many to one 的方式展示非主键一对一示例</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7、双向示例"><span class="nav-number"></span> <span class="nav-text">7、双向示例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#8、单向示例"><span class="nav-number"></span> <span class="nav-text">8、单向示例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#三、踩坑"><span class="nav-number"></span> <span class="nav-text">三、踩坑</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#问题1"><span class="nav-number">1.</span> <span class="nav-text">问题1</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#问题2"><span class="nav-number">2.</span> <span class="nav-text">问题2</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#问题3"><span class="nav-number">3.</span> <span class="nav-text">问题3</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#问题4"><span class="nav-number">4.</span> <span class="nav-text">问题4</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#四、课外知识"><span class="nav-number"></span> <span class="nav-text">四、课外知识</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1、为什么会有怎么多种关系？"><span class="nav-number"></span> <span class="nav-text">1、为什么会有怎么多种关系？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2、什么是级联"><span class="nav-number"></span> <span class="nav-text">2、什么是级联</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#–-cascade参数"><span class="nav-number"></span> <span class="nav-text">– cascade参数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#–-inverse参数"><span class="nav-number"></span> <span class="nav-text">– inverse参数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#懂了不，再看例子"><span class="nav-number"></span> <span class="nav-text">懂了不，再看例子</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3、主键的类别："><span class="nav-number"></span> <span class="nav-text">3、主键的类别：</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Assigned"><span class="nav-number">1.</span> <span class="nav-text">Assigned</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Hilo"><span class="nav-number">2.</span> <span class="nav-text">Hilo</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Increment"><span class="nav-number">3.</span> <span class="nav-text">Increment</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Identity"><span class="nav-number">4.</span> <span class="nav-text">Identity</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Sequence"><span class="nav-number">5.</span> <span class="nav-text">Sequence</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Native"><span class="nav-number">6.</span> <span class="nav-text">Native</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#UUID"><span class="nav-number">7.</span> <span class="nav-text">UUID</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Foreign-GUID"><span class="nav-number">8.</span> <span class="nav-text">Foreign GUID</span></a></li></ol></li></div></div></section></div></aside><div class="sfix"><div class="fixedme"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460" data-ad-format="auto"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script></div></div></main><footer id="footer" class="footer"><div class="footer-inner"><div class="copyright">&copy; <span itemprop="copyrightYear">2018</span> <span class="with-love"><i class="fa fa-user"></i> </span><span class="author" itemprop="copyrightHolder">Hello</span></div><div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div><span class="post-meta-divider">|</span><div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div></div></footer><div class="back-to-top"><i class="fa fa-arrow-up"></i></div></div><script type="text/javascript">"[object Function]"!==Object.prototype.toString.call(window.Promise)&&(window.Promise=null)</script><script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script><script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script><script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script><script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script><script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script></body></html><!-- rebuild by neat -->

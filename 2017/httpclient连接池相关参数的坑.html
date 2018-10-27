@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="今天早上UIOC，现象是发现调用某个服务的接口总是超时，这个环境昨晚没有发版本无缘无故就出问题很是奇怪。到公司各种查，最终通过问题服务重启前打印的堆栈信息看到几乎所有的线程都在等待连接池释放连接后获取空闲连接。错误如下： “xxxxxxxxxxxxx” prio=10 tid=0x00007f6b7c002800 nid=0x40ff waiting on condition [0x00007f6">
+<meta name="keywords" content="JAVA,面试">
+<meta property="og:type" content="article">
+<meta property="og:title" content="httpclient连接池相关参数的坑">
+<meta property="og:url" content="http://www.jfox.info/2017/httpclient连接池相关参数的坑.html">
+<meta property="og:site_name" content="java面试">
+<meta property="og:description" content="今天早上UIOC，现象是发现调用某个服务的接口总是超时，这个环境昨晚没有发版本无缘无故就出问题很是奇怪。到公司各种查，最终通过问题服务重启前打印的堆栈信息看到几乎所有的线程都在等待连接池释放连接后获取空闲连接。错误如下： “xxxxxxxxxxxxx” prio=10 tid=0x00007f6b7c002800 nid=0x40ff waiting on condition [0x00007f6">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:updated_time" content="2018-10-27T12:29:40.239Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="httpclient连接池相关参数的坑">
+<meta name="twitter:description" content="今天早上UIOC，现象是发现调用某个服务的接口总是超时，这个环境昨晚没有发版本无缘无故就出问题很是奇怪。到公司各种查，最终通过问题服务重启前打印的堆栈信息看到几乎所有的线程都在等待连接池释放连接后获取空闲连接。错误如下： “xxxxxxxxxxxxx” prio=10 tid=0x00007f6b7c002800 nid=0x40ff waiting on condition [0x00007f6">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://www.jfox.info/2017/httpclient连接池相关参数的坑.html">
+
+
+
+
+
+  <title>httpclient连接池相关参数的坑 | java面试</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh_CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">java面试</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.jfox.info/2017/httpclient连接池相关参数的坑.html">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hello">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="java面试">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">httpclient连接池相关参数的坑</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-01-01T23:58:32+08:00">
+                2017-01-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>今天早上UIOC，现象是发现调用某个服务的接口总是超时，这个环境昨晚没有发版本无缘无故就出问题很是奇怪。到公司各种查，最终通过问题服务重启前打印的堆栈信息看到几乎所有的线程都在等待连接池释放连接后获取空闲连接。错误如下：</p>
+<p>“xxxxxxxxxxxxx” prio=10 tid=0x00007f6b7c002800 nid=0x40ff waiting on condition [0x00007f6b37020000]</p>
+<p>java.lang.Thread.State: TIMED_WAITING (parking)</p>
+<p>at sun.misc.Unsafe.park(Native Method)</p>
+<p>– parking to wait for <0x00000000f97918b8> (a java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject)</0x00000000f97918b8></p>
+<p>at java.util.concurrent.locks.LockSupport.parkUntil(LockSupport.java:239)</p>
+<p>at java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.awaitUntil(AbstractQueuedSynchronizer.java:2072)</p>
+<p>at org.apache.http.pool.PoolEntryFuture.await(PoolEntryFuture.java:129)</p>
+<p>at org.apache.http.pool.AbstractConnPool.getPoolEntryBlocking(AbstractConnPool.java:281)</p>
+<p>at org.apache.http.pool.AbstractConnPool.access$000(AbstractConnPool.java:62)</p>
+<p>at org.apache.http.pool.AbstractConnPool$2.getPoolEntry(AbstractConnPool.java:176)</p>
+<p>at org.apache.http.pool.AbstractConnPool$2.getPoolEntry(AbstractConnPool.java:172)</p>
+<p>at org.apache.http.pool.PoolEntryFuture.get(PoolEntryFuture.java:100)</p>
+<p>at org.apache.http.impl.conn.PoolingClientConnectionManager.leaseConnection(PoolingClientConnectionManager.java:212)</p>
+<p>问题已经很明显，因为使用了连接池，但连接不够用，造成大量的等待，后面的请求获取不到连接所以最终超时，并且这种等待都有滚雪球的效应。</p>
+<p>问题原因主要因为我们对httpclient连接池参数设置不合理造成，我们使用的是httpclient4.4.1，除了连接超时和响应超时这两个参数之外，和连接池相关的两个参数如下：</p>
+<p>1、MaxtTotal：整个连接池的大小</p>
+<p>2、DefaultMaxPerRoute：根据连接到的主机对MaxTotal的一个细分</p>
+<p>比如：MaxtTotal=400 DefaultMaxPerRoute=200</p>
+<p>只连接到<a href="http://x.com时，到这个主机的并发最多只有200；而不是400；" target="_blank" rel="noopener">http://x.com时，到这个主机的并发最多只有200；而不是400；</a></p>
+<p>连接到<a href="http://x.com" target="_blank" rel="noopener">http://x.com</a> 和 <a href="http://y.com时，到每个主机的并发最多只有200；即加起来是400（但不能超过400）,所以起作用的设置是DefaultMaxPerRoute。" target="_blank" rel="noopener">http://y.com时，到每个主机的并发最多只有200；即加起来是400（但不能超过400）,所以起作用的设置是DefaultMaxPerRoute。</a></p>
+<p>之前一直对<strong>线程池和连接池</strong>有点混淆，总结一下：</p>
+<p>线程池和连接池（http连接池或db连接池）概念上其实是一样的，反复创建都要消耗系统资源，所以才需要使用池保存起来反复使用。针对使用tomcat容器的场景，tomcat工作线程池中每个运行线程都在处理一个upstream请求，需要访问第三方接口或DB时，都是从对应池中取连接进行<strong>同步请求操作</strong>（一般情况不会另外启动一个线程来异步请求第三方接口或DB）。同步请求操作中（请求发出后），tomcat工作线程会切换到等待状态（WAITING），等请求响应返回后，操作系统再根据调度算法，最终唤醒线程并切换到运行状态（RUNNABLE），如果同步请求操作（访问第三方接口或DB）响应很快，这个线程两次上下文切换（context switch）也是很快的，用jstack几乎是看不到中间状态。</p>
+<p>相关链接：</p>
+<p>使用httpclient必须知道的参数设置及代码写法、存在的风险</p>
+<p><a href="http://jinnianshilongnian.iteye.com/blog/2089792" target="_blank" rel="noopener">http://jinnianshilongnian.iteye.com/blog/2089792</a></p>
+
+      
+    </div>
+    
+    
+    
+    
+    
+    <div style="width:300px;height:250px;float:left;">
+    <!-- 300_250_1 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="4142158067"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<div style="width:300px;height:250px;float:left;">
+    <!-- 300-250-2 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="5618891265"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/谈谈java线程状态.html" rel="next" title="谈谈Java线程状态 » java面试题">
+                <i class="fa fa-chevron-left"></i> 谈谈Java线程状态 » java面试题
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/java开发系统内核防范缓冲区溢出和强杀死循环程序.html" rel="prev" title="java开发系统内核：防范缓冲区溢出和强杀死循环程序">
+                java开发系统内核：防范缓冲区溢出和强杀死循环程序 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Hello</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">1358</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+
+      
+
+    </div>
+  </aside>
+
+      <div class="sfix"><!-- 240x600 -->
+<div class="fixedme">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460" data-ad-format="auto"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+</div>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Hello</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

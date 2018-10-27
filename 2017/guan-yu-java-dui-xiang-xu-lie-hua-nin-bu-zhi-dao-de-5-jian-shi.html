@@ -1,0 +1,235 @@
+<!-- build time:Sat Oct 27 2018 21:00:25 GMT+0800 (CST) --><!DOCTYPE html><html class="theme-next muse use-motion"><head><meta name="generator" content="Hexo 3.8.0"><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"><meta name="theme-color" content="#222"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"><link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css"><link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css"><link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4"><link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222"><meta name="description" content="数年前，当和一个软件团队一起用 Java 语言编写一个应用程序时，我体会到比一般程序员多知道一点关于 Java 对象序列化的知识所带来的好处。大约一年前，一个负责管理应用程序所有用户设置的开发人员，决定将用户设置存储在一个 Hashtable 中，然后将这个 Hashtable 序列化到磁盘，以便持久化。当用户更改设置时，便重新将 Hashtable 写到磁盘。这是一个优雅的、开放式的设置系统，但"><meta name="keywords" content="JAVA,面试"><meta property="og:type" content="article"><meta property="og:title" content="关于 Java 对象序列化您不知道的 5 件事"><meta property="og:url" content="http://www.jfox.info/2017/guan-yu-java-dui-xiang-xu-lie-hua-nin-bu-zhi-dao-de-5-jian-shi.html"><meta property="og:site_name" content="java面试"><meta property="og:description" content="数年前，当和一个软件团队一起用 Java 语言编写一个应用程序时，我体会到比一般程序员多知道一点关于 Java 对象序列化的知识所带来的好处。大约一年前，一个负责管理应用程序所有用户设置的开发人员，决定将用户设置存储在一个 Hashtable 中，然后将这个 Hashtable 序列化到磁盘，以便持久化。当用户更改设置时，便重新将 Hashtable 写到磁盘。这是一个优雅的、开放式的设置系统，但"><meta property="og:locale" content="zh_CN"><meta property="og:updated_time" content="2018-10-27T12:29:37.381Z"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="关于 Java 对象序列化您不知道的 5 件事"><meta name="twitter:description" content="数年前，当和一个软件团队一起用 Java 语言编写一个应用程序时，我体会到比一般程序员多知道一点关于 Java 对象序列化的知识所带来的好处。大约一年前，一个负责管理应用程序所有用户设置的开发人员，决定将用户设置存储在一个 Hashtable 中，然后将这个 Hashtable 序列化到磁盘，以便持久化。当用户更改设置时，便重新将 Hashtable 写到磁盘。这是一个优雅的、开放式的设置系统，但"><script type="text/javascript" id="hexo.configurations">var NexT=window.NexT||{},CONFIG={root:"/",scheme:"Muse",version:"5.1.4",sidebar:{position:"left",display:"post",offset:12,b2t:!1,scrollpercent:!1,onmobile:!1},fancybox:!0,tabs:!0,motion:{enable:!0,async:!1,transition:{post_block:"fadeIn",post_header:"slideDownIn",post_body:"slideDownIn",coll_header:"slideLeftIn",sidebar:"slideUpIn"}},duoshuo:{userId:"0",author:"Author"},algolia:{applicationID:"",apiKey:"",indexName:"",hits:{per_page:10},labels:{input_placeholder:"Search for Posts",hits_empty:"We didn't find any results for the search: ${query}",hits_stats:"${hits} results found in ${time} ms"}}}</script><link rel="canonical" href="http://www.jfox.info/2017/guan-yu-java-dui-xiang-xu-lie-hua-nin-bu-zhi-dao-de-5-jian-shi.html"><title>关于 Java 对象序列化您不知道的 5 件事 | java面试</title></head><body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN"><div class="container sidebar-position-left page-post-detail"><div class="headband"></div><header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="header-inner"><div class="site-brand-wrapper"><div class="site-meta"><div class="custom-logo-site-title"><a href="/" class="brand" rel="start"><span class="logo-line-before"><i></i></span> <span class="site-title">java面试</span> <span class="logo-line-after"><i></i></span></a></div><p class="site-subtitle"></p></div><div class="site-nav-toggle"><button><span class="btn-bar"></span> <span class="btn-bar"></span> <span class="btn-bar"></span></button></div></div><nav class="site-nav"><ul id="menu" class="menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i><br>Home</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i><br>Archives</a></li></ul></nav></div></header><main id="main" class="main"><div class="main-inner"><div class="content-wrap"><div id="content" class="content"><div id="posts" class="posts-expand"><article class="post post-type-normal" itemscope itemtype="http://schema.org/Article"><div class="post-block"><link itemprop="mainEntityOfPage" href="http://www.jfox.info/2017/guan-yu-java-dui-xiang-xu-lie-hua-nin-bu-zhi-dao-de-5-jian-shi.html"><span hidden itemprop="author" itemscope itemtype="http://schema.org/Person"><meta itemprop="name" content="Hello"><meta itemprop="description" content=""><meta itemprop="image" content="/images/avatar.gif"></span><span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><meta itemprop="name" content="java面试"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">关于 Java 对象序列化您不知道的 5 件事</h1><div class="post-meta"><span class="post-time"><span class="post-meta-item-icon"><i class="fa fa-calendar-o"></i> </span><span class="post-meta-item-text">Posted on</span> <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-01-01T23:48:00+08:00">2017-01-01</time></span></div></header><div class="post-body" itemprop="articleBody"><p>数年前，当和一个软件团队一起用 Java 语言编写一个应用程序时，我体会到比一般程序员多知道一点关于 Java 对象序列化的知识所带来的好处。</p><p>大约一年前，一个负责管理应用程序所有用户设置的开发人员，决定将用户设置存储在一个 <code>Hashtable</code> 中，然后将这个 <code>Hashtable</code> 序列化到磁盘，以便持久化。当用户更改设置时，便重新将 <code>Hashtable</code> 写到磁盘。</p><p>这是一个优雅的、开放式的设置系统，但是，当团队决定从 <code>Hashtable</code> 迁移到 Java Collections 库中的 <code>HashMap</code> 时，这个系统便面临崩溃。</p><p><code>Hashtable</code> 和 <code>HashMap</code> 在磁盘上的格式是不相同、不兼容的。除非对每个持久化的用户设置运行某种类型的数据转换实用程序（极其庞大的任务），否则以后似乎只能一直用 <code>Hashtable</code> 作为应用程序的存储格式。</p><p>团队感到陷入僵局，但这只是因为他们不知道关于 Java 序列化的一个重要事实：Java 序列化允许随着时间的推移而改变类型。当我向他们展示如何自动进行序列化替换后，他们终于按计划完成了向 <code>HashMap</code> 的转变。</p><p>将 Java 对象序列化 API 作为开端是一个不错的选择，因为它从一开始就存在于 JDK 1.1 中。本文介绍的关于序列化的 5 件事情将说服您重新审视那些标准 Java API。</p><h2 id="Java-序列化简介"><a href="#Java-序列化简介" class="headerlink" title="Java 序列化简介"></a>Java 序列化简介</h2><p>Java 对象序列化是 JDK 1.1 中引入的一组开创性特性之一，用于作为一种将 Java 对象的状态转换为字节数组，以便存储或传输的机制，以后，仍可以将字节数组转换回 Java 对象原有的状态。</p><p>实际上，序列化的思想是 “冻结” 对象状态，传输对象状态（写到磁盘、通过网络传输等等），然后 “解冻” 状态，重新获得可用的 Java 对象。所有这些事情的发生有点像是魔术，这要归功于 <code>ObjectInputStream</code>/<code>ObjectOutputStream</code> 类、完全保真的元数据以及程序员愿意用 <code>Serializable</code> 标识接口标记他们的类，从而 “参与” 这个过程。</p><p>清单 1 显示一个实现 <code>Serializable</code> 的 <code>Person</code> 类。</p><p>清单 1. Serializable Person</p><pre><code>package com.tedneward;
+
+public class Person
+    implements java.io.Serializable
+{
+    public Person(String fn, String ln, int a)
+    {
+        this.firstName = fn; this.lastName = ln; this.age = a;
+    }
+
+    public String getFirstName() { return firstName; }
+    public String getLastName() { return lastName; }
+    public int getAge() { return age; }
+    public Person getSpouse() { return spouse; }
+
+    public void setFirstName(String value) { firstName = value; }
+    public void setLastName(String value) { lastName = value; }
+    public void setAge(int value) { age = value; }
+    public void setSpouse(Person value) { spouse = value; }
+
+    public String toString()
+    {
+        return &quot;[Person: firstName=&quot; + firstName + 
+            &quot; lastName=&quot; + lastName +
+            &quot; age=&quot; + age +
+            &quot; spouse=&quot; + spouse.getFirstName() +
+            &quot;]&quot;;
+    }    
+
+    private String firstName;
+    private String lastName;
+    private int age;
+    private Person spouse;
+
+}
+</code></pre><p>将 <code>Person</code> 序列化后，很容易将对象状态写到磁盘，然后重新读出它，下面的 JUnit 4 单元测试对此做了演示。</p><p>清单 2. 对 Person 进行反序列化</p><pre><code>public class SerTest
+{
+    @Test public void serializeToDisk()
+    {
+        try
+        {
+            com.tedneward.Person ted = new com.tedneward.Person(&quot;Ted&quot;, &quot;Neward&quot;, 39);
+            com.tedneward.Person charl = new com.tedneward.Person(&quot;Charlotte&quot;,
+                &quot;Neward&quot;, 38);
+
+            ted.setSpouse(charl); charl.setSpouse(ted);
+
+            FileOutputStream fos = new FileOutputStream(&quot;tempdata.ser&quot;);
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+            oos.writeObject(ted);
+            oos.close();
+        }
+        catch (Exception ex)
+        {
+            fail(&quot;Exception thrown during test: &quot; + ex.toString());
+        }
+
+        try
+        {
+            FileInputStream fis = new FileInputStream(&quot;tempdata.ser&quot;);
+            ObjectInputStream ois = new ObjectInputStream(fis);
+            com.tedneward.Person ted = (com.tedneward.Person) ois.readObject();
+            ois.close();
+
+            assertEquals(ted.getFirstName(）， &quot;Ted&quot;);
+            assertEquals(ted.getSpouse().getFirstName(）， &quot;Charlotte&quot;);
+
+            // Clean up the file
+            new File(&quot;tempdata.ser&quot;).delete();
+        }
+        catch (Exception ex)
+        {
+            fail(&quot;Exception thrown during test: &quot; + ex.toString());
+        }
+    }
+}
+</code></pre><p>到现在为止，还没有看到什么新鲜的或令人兴奋的事情，但是这是一个很好的出发点。我们将使用 <code>Person</code> 来发现您可能<em>不</em> 知道的关于 <em>Java 对象序列化</em> 的 5 件事。</p><h2 id="1-序列化允许重构"><a href="#1-序列化允许重构" class="headerlink" title="1. 序列化允许重构"></a>1. 序列化允许重构</h2><p>序列化允许一定数量的类变种，甚至重构之后也是如此，<code>ObjectInputStream</code> 仍可以很好地将其读出来。</p><p><em>Java Object Serialization</em> 规范可以自动管理的关键任务是：</p><ul><li>将新字段添加到类中</li><li>将字段从 static 改为非 static</li><li>将字段从 transient 改为非 transient</li></ul><p>取决于所需的向后兼容程度，转换字段形式（从非 static 转换为 static 或从非 transient 转换为 transient）或者删除字段需要额外的消息传递。</p><h3 id="重构序列化类"><a href="#重构序列化类" class="headerlink" title="重构序列化类"></a>重构序列化类</h3><p>既然已经知道序列化允许重构，我们来看看当把新字段添加到 <code>Person</code> 类中时，会发生什么事情。</p><p>如清单 3 所示，<code>PersonV2</code> 在原先 <code>Person</code> 类的基础上引入一个表示性别的新字段。</p><p>清单 3. 将新字段添加到序列化的 Person 中</p><pre><code>enum Gender
+{
+    MALE, FEMALE
+}
+
+public class Person
+    implements java.io.Serializable
+{
+    public Person(String fn, String ln, int a, Gender g)
+    {
+        this.firstName = fn; this.lastName = ln; this.age = a; this.gender = g;
+    }
+
+    public String getFirstName() { return firstName; }
+    public String getLastName() { return lastName; }
+    public Gender getGender() { return gender; }
+    public int getAge() { return age; }
+    public Person getSpouse() { return spouse; }
+
+    public void setFirstName(String value) { firstName = value; }
+    public void setLastName(String value) { lastName = value; }
+    public void setGender(Gender value) { gender = value; }
+    public void setAge(int value) { age = value; }
+    public void setSpouse(Person value) { spouse = value; }
+
+    public String toString()
+    {
+        return &quot;[Person: firstName=&quot; + firstName + 
+            &quot; lastName=&quot; + lastName +
+            &quot; gender=&quot; + gender +
+            &quot; age=&quot; + age +
+            &quot; spouse=&quot; + spouse.getFirstName() +
+            &quot;]&quot;;
+    }    
+
+    private String firstName;
+    private String lastName;
+    private int age;
+    private Person spouse;
+    private Gender gender;
+}
+</code></pre><p>序列化使用一个 hash，该 hash 是根据给定源文件中几乎所有东西 — 方法名称、字段名称、字段类型、访问修改方法等 — 计算出来的，序列化将该 hash 值与序列化流中的 hash 值相比较。</p><p>为了使 Java 运行时相信两种类型实际上是一样的，第二版和随后版本的 <code>Person</code> 必须与第一版有相同的序列化版本 hash（存储为 private static final <code>serialVersionUID</code> 字段）。因此，我们需要 <code>serialVersionUID</code> 字段，它是通过对原始（或 V1）版本的 <code>Person</code> 类运行 JDK <code>serialver</code> 命令计算出的。</p><p>一旦有了 <code>Person</code> 的 <code>serialVersionUID</code>，不仅可以从原始对象 <code>Person</code> 的序列化数据创建 <code>PersonV2</code> 对象（当出现新字段时，新字段被设为缺省值，最常见的是“null”），还可以反过来做：即从 <code>PersonV2</code> 的数据通过反序列化得到 <code>Person</code>，这毫不奇怪。</p><p>回页首</p><h2 id="2-序列化并不安全"><a href="#2-序列化并不安全" class="headerlink" title="2. 序列化并不安全"></a>2. 序列化并不安全</h2><p>让 Java 开发人员诧异并感到不快的是，序列化二进制格式完全编写在文档中，并且完全可逆。实际上，只需将二进制序列化流的内容转储到控制台，就足以看清类是什么样子，以及它包含什么内容。</p><p>这对于安全性有着不良影响。例如，当通过 RMI 进行远程方法调用时，通过连接发送的对象中的任何 private 字段几乎都是以明文的方式出现在套接字流中，这显然容易招致哪怕最简单的安全问题。</p><p>幸运的是，序列化允许 “hook” 序列化过程，并在序列化之前和反序列化之后保护（或模糊化）字段数据。可以通过在 <code>Serializable</code> 对象上提供一个 <code>writeObject</code> 方法来做到这一点。</p><h3 id="模糊化序列化数据"><a href="#模糊化序列化数据" class="headerlink" title="模糊化序列化数据"></a>模糊化序列化数据</h3><p>假设 <code>Person</code> 类中的敏感数据是 age 字段。毕竟，女士忌谈年龄。 我们可以在序列化之前模糊化该数据，将数位循环左移一位，然后在反序列化之后复位。（您可以开发更安全的算法，当前这个算法只是作为一个例子。）</p><p>为了 “hook” 序列化过程，我们将在 <code>Person</code> 上实现一个 <code>writeObject</code> 方法；为了 “hook” 反序列化过程，我们将在同一个类上实现一个 <code>readObject</code> 方法。重要的是这两个方法的细节要正确 — 如果访问修改方法、参数或名称不同于清单 4 中的内容，那么代码将不被察觉地失败，<code>Person</code> 的 age 将暴露。</p><p>清单 4. 模糊化序列化数据</p><pre><code>public class Person
+    implements java.io.Serializable
+{
+    public Person(String fn, String ln, int a)
+    {
+        this.firstName = fn; this.lastName = ln; this.age = a;
+    }
+
+    public String getFirstName() { return firstName; }
+    public String getLastName() { return lastName; }
+    public int getAge() { return age; }
+    public Person getSpouse() { return spouse; }
+
+    public void setFirstName(String value) { firstName = value; }
+    public void setLastName(String value) { lastName = value; }
+    public void setAge(int value) { age = value; }
+    public void setSpouse(Person value) { spouse = value; }
+
+    private void writeObject(java.io.ObjectOutputStream stream)
+        throws java.io.IOException
+    {
+        // &quot;Encrypt&quot;/obscure the sensitive data
+        age = age &lt;&lt; 2;
+        stream.defaultWriteObject();
+    }
+
+    private void readObject(java.io.ObjectInputStream stream)
+        throws java.io.IOException, ClassNotFoundException
+    {
+        stream.defaultReadObject();
+
+        // &quot;Decrypt&quot;/de-obscure the sensitive data
+        age = age &lt;&lt; 2;
+    }
+
+    public String toString()
+    {
+        return &quot;[Person: firstName=&quot; + firstName + 
+            &quot; lastName=&quot; + lastName +
+            &quot; age=&quot; + age +
+            &quot; spouse=&quot; + (spouse!=null ? spouse.getFirstName() : &quot;[null]&quot;) +
+            &quot;]&quot;;
+    }      
+
+    private String firstName;
+    private String lastName;
+    private int age;
+    private Person spouse;
+}
+</code></pre><p>如果需要查看被模糊化的数据，总是可以查看序列化数据流/文件。而且，由于该格式被完全文档化，即使不能访问类本身，也仍可以读取序列化流中的内容。</p><p>回页首</p><h2 id="3-序列化的数据可以被签名和密封"><a href="#3-序列化的数据可以被签名和密封" class="headerlink" title="3. 序列化的数据可以被签名和密封"></a>3. 序列化的数据可以被签名和密封</h2><p>上一个技巧假设您想模糊化序列化数据，而不是对其加密或者确保它不被修改。当然，通过使用 <code>writeObject</code> 和 <code>readObject</code> 可以实现密码加密和签名管理，但其实还有更好的方式。</p><p>如果需要对整个对象进行加密和签名，最简单的是将它放在一个 <code>javax.crypto.SealedObject</code> 和/或 <code>java.security.SignedObject</code> 包装器中。两者都是可序列化的，所以将对象包装在 <code>SealedObject</code> 中可以围绕原对象创建一种 “包装盒”。必须有对称密钥才能解密，而且密钥必须单独管理。同样，也可以将 <code>SignedObject</code> 用于数据验证，并且对称密钥也必须单独管理。</p><p>结合使用这两种对象，便可以轻松地对序列化数据进行密封和签名，而不必强调关于数字签名验证或加密的细节。很简洁，是吧？</p><p>回页首</p><h2 id="4-序列化允许将代理放在流中"><a href="#4-序列化允许将代理放在流中" class="headerlink" title="4. 序列化允许将代理放在流中"></a>4. 序列化允许将代理放在流中</h2><p>很多情况下，类中包含一个核心数据元素，通过它可以派生或找到类中的其他字段。在此情况下，没有必要序列化整个对象。可以将字段标记为 <em>transient</em>，但是每当有方法访问一个字段时，类仍然必须显式地产生代码来检查它是否被初始化。</p><p>如果首要问题是序列化，那么最好指定一个 flyweight 或代理放在流中。为原始 <code>Person</code> 提供一个 <code>writeReplace</code> 方法，可以序列化不同类型的对象来代替它。类似地，如果反序列化期间发现一个 <code>readResolve</code> 方法，那么将调用该方法，将替代对象提供给调用者。</p><h3 id="打包和解包代理"><a href="#打包和解包代理" class="headerlink" title="打包和解包代理"></a>打包和解包代理</h3><p><code>writeReplace</code> 和 <code>readResolve</code> 方法使 <code>Person</code> 类可以将它的所有数据（或其中的核心数据）打包到一个 <code>PersonProxy</code> 中，将它放入到一个流中，然后在反序列化时再进行解包。</p><p>清单 5. 你完整了我，我代替了你</p><pre><code>class PersonProxy
+    implements java.io.Serializable
+{
+    public PersonProxy(Person orig)
+    {
+        data = orig.getFirstName() + &quot;,&quot; + orig.getLastName() + &quot;,&quot; + orig.getAge();
+        if (orig.getSpouse() != null)
+        {
+            Person spouse = orig.getSpouse();
+            data = data + &quot;,&quot; + spouse.getFirstName() + &quot;,&quot; + spouse.getLastName() + &quot;,&quot;  
+              + spouse.getAge();
+        }
+    }
+
+    public String data;
+    private Object readResolve()
+        throws java.io.ObjectStreamException
+    {
+        String[] pieces = data.split(&quot;,&quot;);
+        Person result = new Person(pieces[0], pieces[1], Integer.parseInt(pieces[2]));
+        if (pieces.length &gt; 3)
+        {
+            result.setSpouse(new Person(pieces[3], pieces[4], Integer.parseInt
+              (pieces[5])));
+            result.getSpouse().setSpouse(result);
+        }
+        return result;
+    }
+}
+
+public class Person
+    implements java.io.Serializable
+{
+    public Person(String fn, String ln, int a)
+    {
+        this.firstName = fn; this.lastName = ln; this.age = a;
+    }
+
+    public String getFirstName() { return firstName; }
+    public String getLastName() { return lastName; }
+    public int getAge() { return age; }
+    public Person getSpouse() { return spouse; }
+
+    private Object writeReplace()
+        throws java.io.ObjectStreamException
+    {
+        return new PersonProxy(this);
+    }
+
+    public void setFirstName(String value) { firstName = value; }
+    public void setLastName(String value) { lastName = value; }
+    public void setAge(int value) { age = value; }
+    public void setSpouse(Person value) { spouse = value; }   
+
+    public String toString()
+    {
+        return &quot;[Person: firstName=&quot; + firstName + 
+            &quot; lastName=&quot; + lastName +
+            &quot; age=&quot; + age +
+            &quot; spouse=&quot; + spouse.getFirstName() +
+            &quot;]&quot;;
+    }    
+
+    private String firstName;
+    private String lastName;
+    private int age;
+    private Person spouse;
+}
+</code></pre><p>注意，<code>PersonProxy</code> 必须跟踪 <code>Person</code> 的所有数据。这通常意味着代理需要是 <code>Person</code> 的一个内部类，以便能访问 private 字段。有时候，代理还需要追踪其他对象引用并手动序列化它们，例如 <code>Person</code> 的 spouse。</p><p>这种技巧是少数几种不需要读/写平衡的技巧之一。例如，一个类被重构成另一种类型后的版本可以提供一个 <code>readResolve</code> 方法，以便静默地将被序列化的对象转换成新类型。类似地，它可以采用 <code>writeReplace</code> 方法将旧类序列化成新版本。</p><p>回页首</p><h2 id="5-信任，但要验证"><a href="#5-信任，但要验证" class="headerlink" title="5. 信任，但要验证"></a>5. 信任，但要验证</h2><p>认为序列化流中的数据总是与最初写到流中的数据一致，这没有问题。但是，正如一位美国前总统所说的，“信任，但要验证”。</p><p>对于序列化的对象，这意味着验证字段，以确保在反序列化之后它们仍具有正确的值，“以防万一”。为此，可以实现 <code>ObjectInputValidation</code> 接口，并覆盖 <code>validateObject()</code> 方法。如果调用该方法时发现某处有错误，则抛出一个 <code>InvalidObjectException</code>。</p><p>回页首</p><h2 id="结束语"><a href="#结束语" class="headerlink" title="结束语"></a>结束语</h2><p>Java 对象序列化比大多数 Java 开发人员想象的更灵活，这使我们有更多的机会解决棘手的情况。</p><p>幸运的是，像这样的编程妙招在 JVM 中随处可见。关键是要知道它们，在遇到难题的时候能用上它们。</p><p><em>5 件事</em> 系列下期预告：Java Collections。在此之前，好好享受按自己的想法调整序列化吧！</p><p>原文出处： <a href="/url.php?_src=&amp;isencode=1&amp;content=dGltZT0xNDM1ODk3Njg0MTYyJnVybD1odHRwJTNBJTJGJTJGd3d3LmlibS5jb20lMkZkZXZlbG9wZXJ3b3JrcyUyRmNuJTJGamF2YSUyRmotNXRoaW5nczElMkY=">IBM-Ted Neward</a></p></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="4142158067"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="5618891265"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><footer class="post-footer"><div class="post-nav"><div class="post-nav-next post-nav-item"><a href="/2017/10-zhong-zi-shi-rang-ni-cheng-wei-yi-ge-niu-bi-cheng-xu-yuan.html" rel="next" title="10种姿势，让你成为一个牛逼程序员"><i class="fa fa-chevron-left"></i> 10种姿势，让你成为一个牛逼程序员</a></div><span class="post-nav-divider"></span><div class="post-nav-prev post-nav-item"><a href="/2017/hao-cheng-xu-yuan-bu-qu-wai-bao-gong-si-de-yuan-yin.html" rel="prev" title="好程序员不去外包公司的原因">好程序员不去外包公司的原因 <i class="fa fa-chevron-right"></i></a></div></div></footer></div></article><div class="post-spread"></div></div></div></div><div class="sidebar-toggle"><div class="sidebar-toggle-line-wrap"><span class="sidebar-toggle-line sidebar-toggle-line-first"></span> <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span> <span class="sidebar-toggle-line sidebar-toggle-line-last"></span></div></div><aside id="sidebar" class="sidebar"><div class="sidebar-inner"><ul class="sidebar-nav motion-element"><li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">Table of Contents</li><li class="sidebar-nav-overview" data-target="site-overview-wrap">Overview</li></ul><section class="site-overview-wrap sidebar-panel"><div class="site-overview"><div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person"><p class="site-author-name" itemprop="name">Hello</p><p class="site-description motion-element" itemprop="description"></p></div><nav class="site-state motion-element"><div class="site-state-item site-state-posts"><a href="/archives/"><span class="site-state-item-count">1358</span> <span class="site-state-item-name">posts</span></a></div></nav></div></section><section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active"><div class="post-toc"><div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Java-序列化简介"><span class="nav-number">1.</span> <span class="nav-text">Java 序列化简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-序列化允许重构"><span class="nav-number">2.</span> <span class="nav-text">1. 序列化允许重构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#重构序列化类"><span class="nav-number">2.1.</span> <span class="nav-text">重构序列化类</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-序列化并不安全"><span class="nav-number">3.</span> <span class="nav-text">2. 序列化并不安全</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#模糊化序列化数据"><span class="nav-number">3.1.</span> <span class="nav-text">模糊化序列化数据</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-序列化的数据可以被签名和密封"><span class="nav-number">4.</span> <span class="nav-text">3. 序列化的数据可以被签名和密封</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-序列化允许将代理放在流中"><span class="nav-number">5.</span> <span class="nav-text">4. 序列化允许将代理放在流中</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#打包和解包代理"><span class="nav-number">5.1.</span> <span class="nav-text">打包和解包代理</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-信任，但要验证"><span class="nav-number">6.</span> <span class="nav-text">5. 信任，但要验证</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#结束语"><span class="nav-number">7.</span> <span class="nav-text">结束语</span></a></li></ol></div></div></section></div></aside><div class="sfix"><div class="fixedme"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460" data-ad-format="auto"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script></div></div></main><footer id="footer" class="footer"><div class="footer-inner"><div class="copyright">&copy; <span itemprop="copyrightYear">2018</span> <span class="with-love"><i class="fa fa-user"></i> </span><span class="author" itemprop="copyrightHolder">Hello</span></div><div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div><span class="post-meta-divider">|</span><div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div></div></footer><div class="back-to-top"><i class="fa fa-arrow-up"></i></div></div><script type="text/javascript">"[object Function]"!==Object.prototype.toString.call(window.Promise)&&(window.Promise=null)</script><script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script><script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script><script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script><script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script><script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script></body></html><!-- rebuild by neat -->

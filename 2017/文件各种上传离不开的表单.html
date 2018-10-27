@@ -1,0 +1,374 @@
+<!-- build time:Sat Oct 27 2018 21:00:17 GMT+0800 (CST) --><!DOCTYPE html><html class="theme-next muse use-motion"><head><meta name="generator" content="Hexo 3.8.0"><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"><meta name="theme-color" content="#222"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"><link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css"><link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css"><link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4"><link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222"><meta name="description" content="文件各种上传，离不开的表单作为程序员的我们，经常会要用到文件的上传和下载功能。到了需要用的时候，各种查资料。有木有..有木有…。为了方便下次使用，这里来做个总结和备忘。利用表单实现文件上传最原始、最简单、最粗暴的文件上传。前端代码：//方式1 &amp;lt;form action=&amp;quot;/Home/SaveFile1&amp;quot; method=&amp;quot;post&amp;quot; enctype=&amp;q"><meta name="keywords" content="JAVA,面试"><meta property="og:type" content="article"><meta property="og:title" content="文件各种上传，离不开的表单"><meta property="og:url" content="http://www.jfox.info/2017/文件各种上传离不开的表单.html"><meta property="og:site_name" content="java面试"><meta property="og:description" content="文件各种上传，离不开的表单作为程序员的我们，经常会要用到文件的上传和下载功能。到了需要用的时候，各种查资料。有木有..有木有…。为了方便下次使用，这里来做个总结和备忘。利用表单实现文件上传最原始、最简单、最粗暴的文件上传。前端代码：//方式1 &amp;lt;form action=&amp;quot;/Home/SaveFile1&amp;quot; method=&amp;quot;post&amp;quot; enctype=&amp;q"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="http://www.jfox.info/2017/1384/cc6d88e.png"><meta property="og:image" content="http://www.jfox.info/2017/1384/2feb2e9.gif"><meta property="og:image" content="http://www.jfox.info/2017/1384/8fae50f.gif"><meta property="og:updated_time" content="2018-10-27T12:29:39.341Z"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="文件各种上传，离不开的表单"><meta name="twitter:description" content="文件各种上传，离不开的表单作为程序员的我们，经常会要用到文件的上传和下载功能。到了需要用的时候，各种查资料。有木有..有木有…。为了方便下次使用，这里来做个总结和备忘。利用表单实现文件上传最原始、最简单、最粗暴的文件上传。前端代码：//方式1 &amp;lt;form action=&amp;quot;/Home/SaveFile1&amp;quot; method=&amp;quot;post&amp;quot; enctype=&amp;q"><meta name="twitter:image" content="http://www.jfox.info/2017/1384/cc6d88e.png"><script type="text/javascript" id="hexo.configurations">var NexT=window.NexT||{},CONFIG={root:"/",scheme:"Muse",version:"5.1.4",sidebar:{position:"left",display:"post",offset:12,b2t:!1,scrollpercent:!1,onmobile:!1},fancybox:!0,tabs:!0,motion:{enable:!0,async:!1,transition:{post_block:"fadeIn",post_header:"slideDownIn",post_body:"slideDownIn",coll_header:"slideLeftIn",sidebar:"slideUpIn"}},duoshuo:{userId:"0",author:"Author"},algolia:{applicationID:"",apiKey:"",indexName:"",hits:{per_page:10},labels:{input_placeholder:"Search for Posts",hits_empty:"We didn't find any results for the search: ${query}",hits_stats:"${hits} results found in ${time} ms"}}}</script><link rel="canonical" href="http://www.jfox.info/2017/文件各种上传离不开的表单.html"><title>文件各种上传，离不开的表单 | java面试</title></head><body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN"><div class="container sidebar-position-left page-post-detail"><div class="headband"></div><header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="header-inner"><div class="site-brand-wrapper"><div class="site-meta"><div class="custom-logo-site-title"><a href="/" class="brand" rel="start"><span class="logo-line-before"><i></i></span> <span class="site-title">java面试</span> <span class="logo-line-after"><i></i></span></a></div><p class="site-subtitle"></p></div><div class="site-nav-toggle"><button><span class="btn-bar"></span> <span class="btn-bar"></span> <span class="btn-bar"></span></button></div></div><nav class="site-nav"><ul id="menu" class="menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i><br>Home</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i><br>Archives</a></li></ul></nav></div></header><main id="main" class="main"><div class="main-inner"><div class="content-wrap"><div id="content" class="content"><div id="posts" class="posts-expand"><article class="post post-type-normal" itemscope itemtype="http://schema.org/Article"><div class="post-block"><link itemprop="mainEntityOfPage" href="http://www.jfox.info/2017/文件各种上传离不开的表单.html"><span hidden itemprop="author" itemscope itemtype="http://schema.org/Person"><meta itemprop="name" content="Hello"><meta itemprop="description" content=""><meta itemprop="image" content="/images/avatar.gif"></span><span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><meta itemprop="name" content="java面试"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">文件各种上传，离不开的表单</h1><div class="post-meta"><span class="post-time"><span class="post-meta-item-icon"><i class="fa fa-calendar-o"></i> </span><span class="post-meta-item-text">Posted on</span> <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-01-01T23:58:04+08:00">2017-01-01</time></span></div></header><div class="post-body" itemprop="articleBody"><h1 id="文件各种上传，离不开的表单"><a href="#文件各种上传，离不开的表单" class="headerlink" title="文件各种上传，离不开的表单"></a>文件各种上传，离不开的表单</h1><p>作为程序员的我们，经常会要用到文件的上传和下载功能。到了需要用的时候，各种查资料。有木有..有木有…。为了方便下次使用，这里来做个总结和备忘。</p><h1 id="利用表单实现文件上传"><a href="#利用表单实现文件上传" class="headerlink" title="利用表单实现文件上传"></a>利用表单实现文件上传</h1><p>最原始、最简单、最粗暴的文件上传。<br>前端代码：</p><pre><code>//方式1
+&lt;form action=&quot;/Home/SaveFile1&quot; method=&quot;post&quot; enctype=&quot;multipart/form-data&quot;&gt;
+     &lt;input type=&quot;file&quot; class=&quot;file1&quot; name=&quot;file1&quot; /&gt;
+     &lt;button type=&quot;submit&quot; class=&quot;but1&quot;&gt;上传&lt;/button&gt;
+&lt;/form&gt;
+</code></pre><p><strong>【注意】</strong></p><ul><li>1、需要post提交</li><li>2、enctype=”multipart/form-data” （传输文件）</li><li>3、需要提交的表单元素需要设置 name 属性</li></ul><p>后台代码：</p><pre><code>public ActionResult SaveFile1()
+{
+    if (Request.Files.Count &gt; 0)
+    {
+        Request.Files[0].SaveAs(Server.MapPath(&quot;~/App_Data/&quot;) + Request.Files[0].FileName);
+        return Content(&quot;保存成功&quot;);
+    }
+    return Content(&quot;没有读到文件&quot;);
+}
+</code></pre><h1 id="表单异步上传（jquery-form插件）"><a href="#表单异步上传（jquery-form插件）" class="headerlink" title="表单异步上传（jquery.form插件）"></a>表单异步上传（jquery.form插件）</h1><p>虽然上面的方式简单粗暴，但是不够友好。页面必然会刷新。难以实现停留在当前页面，并给出文件上传成功的提示。<br>随着时间的流逝，技术日新月异。ajax的出现，使得异步文件提交变得更加容易。<br>下面我们利用jquery.form插件来实现文件的异步上传。<br>首先我们需要导入<code>jquery.js</code>和<code>jquery.form.js</code><br>前端代码：</p><pre><code>&lt;form id=&quot;form2&quot; action=&quot;/Home/SaveFile2&quot; method=&quot;post&quot; enctype=&quot;multipart/form-data&quot;&gt;
+    &lt;input type=&quot;file&quot; class=&quot;file1&quot; name=&quot;file1&quot; /&gt;
+    &lt;button type=&quot;submit&quot; class=&quot;but1&quot;&gt;上传1&lt;/button&gt;
+    &lt;button type=&quot;button&quot; class=&quot;but2&quot;&gt;上传2&lt;/button&gt;
+&lt;/form&gt;
+
+
+//方式2（通过ajaxForm绑定ajax操作）
+$(function () {
+    $(&apos;#form2&apos;).ajaxForm({
+        success: function (responseText) {
+            alert(responseText);
+        }
+    });
+});
+
+//方式3（通过ajaxSubmit直接执行ajax操作）
+$(function () {
+    $(&quot;.but2&quot;).click(function () {
+        $(&apos;#form2&apos;).ajaxSubmit({
+            success: function (responseText) {
+                alert(responseText);
+            }
+        });
+    });
+});
+</code></pre><p>后台代码：</p><pre><code>public string SaveFile2()
+{
+    if (Request.Files.Count &gt; 0)
+    {                
+        Request.Files[0].SaveAs(Server.MapPath(&quot;~/App_Data/&quot;) + Path.GetFileName(Request.Files[0].FileName));
+        return &quot;保存成功&quot;;
+    }
+    return &quot;没有读到文件&quot;;
+}
+</code></pre><p>原理：<br>我们很多时候使用了插件，就不管其他三七二十一呢。<br>如果有点好奇心，想想这个插件是怎么实现的。随便看了看源码一千五百多行。我的妈呀，不就是个异步上传吗，怎么这么复杂。<br>难以看出个什么鬼来，直接断点调试下吧。<br><img src="/2017/1384/cc6d88e.png" alt=""><br>原来插件内部有iframe和FormData不同方式来上传，来适应更多版本浏览器。</p><h1 id="模拟表单数据上传（FormData）"><a href="#模拟表单数据上传（FormData）" class="headerlink" title="模拟表单数据上传（FormData）"></a>模拟表单数据上传（FormData）</h1><p>iframe这东西太恶心。我们看到上面可以利用FormData来上传文件，这个是Html 5 才有的。下面我们自己也来试试把。<br>前端代码：</p><pre><code>&lt;input id=&quot;fileinfo&quot; type=&quot;file&quot; class=&quot;notFormFile&quot; /&gt;
+&lt;button type=&quot;button&quot; class=&quot;btnNotForm&quot;&gt;上传4&lt;/button&gt;
+
+//方式4
+$(&quot;.btnNotForm&quot;).click(function () {
+    var formData = new FormData();//初始化一个FormData对象
+    formData.append(&quot;files&quot;, $(&quot;.notFormFile&quot;)[0].files[0]);//将文件塞入FormData
+    $.ajax({
+        url: &quot;/Home/SaveFile2&quot;,
+        type: &quot;POST&quot;,
+        data: formData,
+        processData: false,  // 告诉jQuery不要去处理发送的数据
+        contentType: false,   // 告诉jQuery不要去设置Content-Type请求头
+        success: function (responseText) {
+            alert(responseText);
+        }
+    });
+});
+</code></pre><p>后的代码：（不变，还是上例代码）</p><pre><code>public string SaveFile2()
+{
+    if (Request.Files.Count &gt; 0)
+    {                
+        Request.Files[0].SaveAs(Server.MapPath(&quot;~/App_Data/&quot;) + Path.GetFileName(Request.Files[0].FileName));
+        return &quot;保存成功&quot;;
+    }
+    return &quot;没有读到文件&quot;;
+}
+</code></pre><p>我们看到，FormData对象也只是在模拟一个原始的表单格式的数据。那有没有可能不利用表单或表单格式来上传文件呢？答案是肯定的。（下面马上揭晓）<br>前端代码：</p><pre><code>&lt;input type=&quot;file&quot;  id=&quot;file5&quot; multiple&gt;
+&lt;button type=&quot;button&quot; class=&quot;btnFile5&quot;&gt;上传5&lt;/button&gt;    
+
+
+//方式5
+$(&quot;.btnFile5&quot;).click(function () {
+    $.ajax({
+        url: &quot;/Home/SaveFile4&quot;,
+        type: &quot;POST&quot;,
+        data: $(&quot;#file5&quot;)[0].files[0],
+        processData: false,  // 告诉jQuery不要去处理发送的数据
+        contentType: false,   // 告诉jQuery不要去设置Content-Type请求头
+        success: function (responseText) {
+            alert(responseText);
+        }
+    });;       
+});       
+</code></pre><p>后台代码：</p><pre><code>public string SaveFile4()
+{
+    //这里发现只能得到一个网络流，没有其他信息了。（比如，文件大小、文件格式、文件名等）
+    Request.SaveAs(Server.MapPath(&quot;~/App_Data/SaveFile4.data&quot;) + &quot;&quot;, false);
+    return &quot;保存成功&quot;;
+}
+</code></pre><p>细心的你发现没有了表单格式，我们除了可以上传文件流数据外，不能再告诉后台其他信息了（如文件格式）。<br>到这里，我似乎明白了以前上传文件为什么非得要用个form包起来，原来这只是和后台约定的一个传输格式而已。<br>其实我们单纯的用jq的ajax传输文本数据的时候，最后也是组装成了form格式的数据，如：</p><pre><code>$.ajax({
+   data: { &quot;userName&quot;: &quot;张三&quot; } 
+</code></pre><h1 id="分片上传"><a href="#分片上传" class="headerlink" title="分片上传"></a>分片上传</h1><p>在知道了上面的各种上传之后，我们是不是就满于现状了呢？no，很多时候我们需要传输大文件，一般服务器都会有一定的大小限制。<br>某天，你发现了一个激情小电影想要分享个大家。无奈，高清文件太大传不了，怎么办？我们可以化整为零，一部分一部分的传嘛，也就是所谓的分片上传。<br>前端代码：</p><pre><code>&lt;input type=&quot;file&quot; id=&quot;file6&quot; multiple&gt;
+&lt;button type=&quot;button&quot; class=&quot;btnFile6&quot;&gt;分片上传6&lt;/button&gt;
+&lt;div class=&quot;result&quot;&gt;&lt;/div&gt;
+
+
+//方式6
+ $(&quot;.btnFile6&quot;).click(function () { 
+     var upload = function (file, skip) {
+         var formData = new FormData();//初始化一个FormData对象
+         var blockSize = 1000000;//每块的大小
+         var nextSize = Math.min((skip + 1) * blockSize, file.size);//读取到结束位置             
+         var fileData = file.slice(skip * blockSize, nextSize);//截取 部分文件 块
+         formData.append(&quot;file&quot;, fileData);//将 部分文件 塞入FormData
+         formData.append(&quot;fileName&quot;, file.name);//保存文件名字
+         $.ajax({
+             url: &quot;/Home/SaveFile6&quot;,
+             type: &quot;POST&quot;,
+             data: formData,
+             processData: false,  // 告诉jQuery不要去处理发送的数据
+             contentType: false,   // 告诉jQuery不要去设置Content-Type请求头
+             success: function (responseText) {
+                 $(&quot;.result&quot;).html(&quot;已经上传了&quot; + (skip + 1) + &quot;块文件&quot;);
+                 if (file.size &lt;= nextSize) {//如果上传完成，则跳出继续上传
+                     alert(&quot;上传完成&quot;);
+                     return;
+                 }
+                 upload(file, ++skip);//递归调用
+             }
+         });
+     };
+
+     var file = $(&quot;#file6&quot;)[0].files[0];
+     upload(file, 0);
+ }); 
+</code></pre><p>后台代码：</p><pre><code>public string SaveFile6()
+{
+    //保存文件到根目录 App_Data + 获取文件名称和格式
+    var filePath = Server.MapPath(&quot;~/App_Data/&quot;) + Request.Form[&quot;fileName&quot;];
+    //创建一个追加（FileMode.Append）方式的文件流
+    using (FileStream fs = new FileStream(filePath, FileMode.Append, FileAccess.Write))
+    {
+        using (BinaryWriter bw = new BinaryWriter(fs))
+        {
+            //读取文件流
+            BinaryReader br = new BinaryReader(Request.Files[0].InputStream);
+            //将文件留转成字节数组
+            byte[] bytes = br.ReadBytes((int)Request.Files[0].InputStream.Length);
+            //将字节数组追加到文件
+            bw.Write(bytes);
+        }
+    }
+    return &quot;保存成功&quot;;
+}
+</code></pre><p>相对而言，代码量多了一点，复杂了一点。不过相对于网上的其他分片上传的代码应该要简单得多（因为这里没有考虑多文件块同时上传、断点续传。那样就需要在后台把文件块排序，然后上传完成按序合并，然后删除原来的临时文件。有兴趣的同学可以自己试试，稍候在分析上传插件webuploader的时候也会实现）。<br>效果图：<br><img src="/2017/1384/2feb2e9.gif" alt=""><br>【说明】：如果我们想要上传多个文件怎么办？其实H5中也提供了非常简单的方式。直接在<code>input</code>里面标记<code>multiple</code>，<code>&lt;input type=&quot;file&quot; id=&quot;file6&quot; multiple&gt;</code>，然后我们后台接收的也是一个数组<code>Request.Files</code>。</p><h1 id="使用HTML5-拖拽、粘贴上传"><a href="#使用HTML5-拖拽、粘贴上传" class="headerlink" title="使用HTML5 拖拽、粘贴上传"></a>使用HTML5 拖拽、粘贴上传</h1><p>只能说H5真是强大啊，权限越来越大，操作越来越牛逼。<br>前端代码（拖拽上传）：</p><pre><code>&lt;textarea class=&quot;divFile7&quot; style=&quot;min-width:800px;height:150px&quot; placeholder=&quot;请将文件拖拽或直接粘贴到这里&quot;&gt;&lt;/textarea&gt;
+
+//方式7
+ $(&quot;.divFile7&quot;)[0].ondrop = function (event) {
+
+     event.preventDefault();//不要执行与事件关联的默认动作
+     var files = event.dataTransfer.files;//获取拖上来的文件
+
+     //以下代码不变
+     var formData = new FormData();//初始化一个FormData对象
+     formData.append(&quot;files&quot;, files[0]);//将文件塞入FormData
+     $.ajax({
+         url: &quot;/Home/SaveFile2&quot;,
+         type: &quot;POST&quot;,
+         data: formData,
+         processData: false,  // 告诉jQuery不要去处理发送的数据
+         contentType: false,   // 告诉jQuery不要去设置Content-Type请求头
+         success: function (responseText) {
+             alert(responseText);
+         }
+     });
+ };
+</code></pre><p>后台代码：<br>略（和之前的SaveFile2一样）</p><p>前端代码（粘贴上传 限图片格式）：</p><pre><code>//方式8
+$(&quot;.divFile7&quot;)[0].onpaste = function (event) {
+    event.preventDefault();//不要执行与事件关联的默认动作
+    var clipboard = event.clipboardData.items[0];//剪贴板数据
+    if (clipboard.kind == &apos;file&apos; || clipboard.type.indexOf(&apos;image&apos;) &gt; -1) {//判断是图片格式
+        var imageFile = clipboard.getAsFile();//获取文件
+
+        //以下代码不变
+        var formData = new FormData;
+        formData.append(&apos;files&apos;, imageFile);
+        formData.append(&apos;fileName&apos;, &quot;temp.png&quot;);//这里给文件命个名（或者直接在后台保存的时候命名）
+        $.ajax({
+            url: &quot;/Home/SaveFile8&quot;,
+            type: &quot;POST&quot;,
+            data: formData,
+            processData: false,  // 告诉jQuery不要去处理发送的数据
+            contentType: false,   // 告诉jQuery不要去设置Content-Type请求头
+            success: function (responseText) {
+                alert(responseText);
+            }
+        });
+    }
+};
+</code></pre><p>后台代码：</p><pre><code>public string SaveFile8()
+{
+    //保存文件到根目录 App_Data + 获取文件名称和格式
+    var filePath = Server.MapPath(&quot;~/App_Data/&quot;) + Request.Form[&quot;fileName&quot;];      
+    if (Request.Files.Count &gt; 0)
+    {
+        Request.Files[0].SaveAs(filePath);
+        return &quot;保存成功&quot;;
+    }
+    return &quot;没有读到文件&quot;;
+}
+</code></pre><p>效果图：<br><img src="/2017/1384/8fae50f.gif" alt=""></p><h1 id="上传插件（WebUploader）"><a href="#上传插件（WebUploader）" class="headerlink" title="上传插件（WebUploader）"></a>上传插件（WebUploader）</h1><p>已经列举分析了多种上传文件的方式，我想总有一种适合你。不过，上传这个功能比较通用，而我们自己写的可能好多情况没有考虑到。接下来简单介绍下百度的WebUploader插件。<br>比起我们自己写的简单上传，它的优势：稳定、兼容性好（有flash切换，所以支持IE）、功能多、并发上传、断点续传（主要还是靠后台配合）。<br>官网：<a href="https://www.jfox.info/go.php?url=http://fex.baidu.com/webuploader/">http://fex.baidu.com/webuploader/</a><br>插件下载：<a href="https://www.jfox.info/go.php?url=https://github.com/fex-team/webuploader/releases/download/0.1.5/webuploader-0.1.5.zip">https://github.com/fex-team/webuploader/releases/download/0.1.5/webuploader-0.1.5.zip</a><br>下面开始对WebUploader的使用<br>第一种，简单粗暴<br>前端代码：</p><pre><code>&lt;div id=&quot;picker&quot;&gt;选择文件&lt;/div&gt;
+&lt;button id=&quot;ctlBtn&quot; class=&quot;btn btn-default&quot;&gt;开始上传&lt;/button&gt;
+
+
+&lt;!--引用webuploader的js和css--&gt;
+&lt;link href=&quot;~/Scripts/webuploader-0.1.5/webuploader.css&quot; rel=&quot;stylesheet&quot; /&gt;
+&lt;script src=&quot;~/Scripts/webuploader-0.1.5/webuploader.js&quot;&gt;&lt;/script&gt;
+&lt;script type=&quot;text/javascript&quot;&gt;
+    var uploader = WebUploader.create({
+
+        // (如果是新浏览器 可以不用 flash)
+        //swf: &apos;/Scripts/webuploader-0.1.5/Uploader.swf&apos;,
+
+        // 文件接收服务端。
+        server: &apos;/Webuploader/SaveFile&apos;,
+
+        // 选择文件的按钮。可选。
+        // 内部根据当前运行是创建，可能是input元素，也可能是flash.
+        pick: &apos;#picker&apos;
+    });
+
+    $(&quot;#ctlBtn&quot;).click(function () {
+        uploader.upload();
+    });
+
+    uploader.on(&apos;uploadSuccess&apos;, function (file) {
+        alert(&quot;上传成功&quot;);
+    });
+
+&lt;/script&gt;
+</code></pre><p>后台代码：</p><pre><code>public string SaveFile()
+{
+    if (Request.Files.Count &gt; 0)
+    {
+        Request.Files[0].SaveAs(Server.MapPath(&quot;~/App_Data/&quot;) + Path.GetFileName(Request.Files[0].FileName));
+        return &quot;保存成功&quot;;
+    }
+    return &quot;没有读到文件&quot;;
+}
+</code></pre><p>第二种，分片上传。和我们之前自己写的效果差不多。<br>前端代码：</p><pre><code>var uploader = WebUploader.create({ 
+    //兼容老版本IE
+    swf: &apos;/Scripts/webuploader-0.1.5/Uploader.swf&apos;, 
+    // 文件接收服务端。
+    server: &apos;/Webuploader/SveFile2&apos;, 
+    // 开起分片上传。
+    chunked: true, 
+    //分片大小
+    chunkSize: 1000000, 
+    //上传并发数
+    threads: 1,
+    // 选择文件的按钮。 
+    pick: &apos;#picker&apos;
+});
+
+// 点击触发上传
+$(&quot;#ctlBtn&quot;).click(function () {
+    uploader.upload();
+});
+
+uploader.on(&apos;uploadSuccess&apos;, function (file) {
+    alert(&quot;上传成功&quot;);
+});
+</code></pre><p>后台代码：</p><pre><code>public string SveFile2()
+{
+    //保存文件到根目录 App_Data + 获取文件名称和格式
+    var filePath = Server.MapPath(&quot;~/App_Data/&quot;) + Path.GetFileName(Request.Files[0].FileName);
+    //创建一个追加（FileMode.Append）方式的文件流
+    using (FileStream fs = new FileStream(filePath, FileMode.Append, FileAccess.Write))
+    {
+        using (BinaryWriter bw = new BinaryWriter(fs))
+        {
+            //读取文件流
+            BinaryReader br = new BinaryReader(Request.Files[0].InputStream);
+            //将文件留转成字节数组
+            byte[] bytes = br.ReadBytes((int)Request.Files[0].InputStream.Length);
+            //将字节数组追加到文件
+            bw.Write(bytes);
+        }
+    }
+    return &quot;保存成功&quot;;
+}
+</code></pre><p>我们看到了有个参数<code>threads: 1</code>上传并发数，如果我们改成大于1会怎样？前端会同时发起多个文件片上传。后台就会报错，多个进程同时操作一个文件。<br>那如果我们想要多线程上传怎么办？改代码吧（主要是后台逻辑）。<br>前端代码：</p><pre><code>//并发上传（多线程上传）
+var uploader = WebUploader.create({
+    //兼容老版本IE
+    swf: &apos;/Scripts/webuploader-0.1.5/Uploader.swf&apos;,
+    // 文件接收服务端。
+    server: &apos;/Webuploader/SveFile3&apos;,
+    // 开起分片上传。
+    chunked: true,
+    //分片大小
+    chunkSize: 1000000,
+    //上传并发数
+    threads: 10,
+    // 选择文件的按钮。
+    pick: &apos;#picker&apos;
+});
+
+// 点击触发上传
+$(&quot;#ctlBtn&quot;).click(function () {
+    uploader.upload();
+});
+
+uploader.on(&apos;uploadSuccess&apos;, function (file) {
+    //上传完成后，给后台发送一个合并文件的命令
+    $.ajax({
+        url: &quot;/Webuploader/FileMerge&quot;,
+        data: { &quot;fileName&quot;: file.name },
+        type: &quot;post&quot;,
+        success: function () {
+            alert(&quot;上传成功&quot;);
+        }
+    });
+});
+</code></pre><p>后台代码：</p><pre><code>public string SveFile3()
+{
+    var chunk = Request.Form[&quot;chunk&quot;];//当前是第多少片 
+
+    var path = Server.MapPath(&quot;~/App_Data/&quot;) + Path.GetFileNameWithoutExtension(Request.Files
+    if (!Directory.Exists(path))//判断是否存在此路径，如果不存在则创建
+    {
+        Directory.CreateDirectory(path);
+    }
+    //保存文件到根目录 App_Data + 获取文件名称和格式
+    var filePath = path + &quot;/&quot; + chunk;
+    //创建一个追加（FileMode.Append）方式的文件流
+    using (FileStream fs = new FileStream(filePath, FileMode.Append, FileAccess.Write))
+    {
+        using (BinaryWriter bw = new BinaryWriter(fs))
+        {
+            //读取文件流
+            BinaryReader br = new BinaryReader(Request.Files[0].InputStream);
+            //将文件留转成字节数组
+            byte[] bytes = br.ReadBytes((int)Request.Files[0].InputStream.Length);
+            //将字节数组追加到文件
+            bw.Write(bytes);
+        }
+    }           
+    return &quot;保存成功&quot;;
+}
+
+/// &lt;summary&gt;
+/// 合并文件
+/// &lt;/summary&gt;
+/// &lt;param name=&quot;path&quot;&gt;&lt;/param&gt;
+/// &lt;returns&gt;&lt;/returns&gt;
+public bool FileMerge()
+{
+    var fileName = Request.Form[&quot;fileName&quot;];
+    var path = Server.MapPath(&quot;~/App_Data/&quot;) + Path.GetFileNameWithoutExtension(fileName);
+
+    //这里排序一定要正确，转成数字后排序（字符串会按1 10 11排序，默认10比2小）
+    foreach (var filePath in Directory.GetFiles(path).OrderBy(t =&gt; int.Parse(Path.GetFileNameWithoutExtension(t))))
+    {
+        using (FileStream fs = new FileStream(Server.MapPath(&quot;~/App_Data/&quot;) + fileName, FileMode.Append, FileAccess.Write))
+        {
+            byte[] bytes = System.IO.File.ReadAllBytes(filePath);//读取文件到字节数组
+            fs.Write(bytes, 0, bytes.Length);//写入文件
+        }
+        System.IO.File.Delete(filePath);
+    }
+    Directory.Delete(path);
+    return true;
+}
+</code></pre><p>到这里你以为就结束了吗？错，还有好多情况没有考虑到。如果多个用户上传的文件名字一样会怎样？如何实现断点续传？还没实现选择多个文件？不过，这里不打算继续贴代码了（再贴下去，代码量越来越多了），自己也来练习练习吧。<br>提供一个思路，上传前先往数据库插入一条数据。数据包含文件要存的路径、文件名（用GUID命名，防止同名文件冲突）、文件MD5（用来识别下次续传和秒传）、临时文件块存放路径、文件是否完整上传成功等信息。<br>然后如果我们断网后再传，首先获取文件MD5值，看数据库里面有没上传完成的文件，如果有就实现秒传。如果没有，看是不是有上传了部分的。如果有接着传，如果没有则重新传一个新的文件。</p><h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>之前我一直很疑惑，为什么上传文件一定要用form包起来，现在算是大概明白了。<br>最开始在javascript还不流行时，我们就可以直接使用submit按钮提交表单数据了。表单里面可以包含文字和文件。然后随着js和ajax的流行，可以利用ajax直接异步提交部分表单数据。这里开始我就纠结了，为什么ajax可以提交自己组装的数据。那为什么不能直接提交文件呢。这里我错了，ajax提交的并不是随意的数据，最后还是组装成了表单格式（因为后台技术对表单格式数据的支持比较普及）。但是现有的技术还不能通过js组装一个文件格式的表单数据。直到H5中的FormData出现，让前端js组装一个包含文件的表单格式数据成为了可能。所以说表单只是为了满足和后台“约定”的数据格式而已。</p><p><strong>相关推荐</strong></p></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="4142158067"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="5618891265"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><footer class="post-footer"><div class="post-nav"><div class="post-nav-next post-nav-item"><a href="/2017/一步步带你构建springbootdocker的单体应用.html" rel="next" title="一步步带你构建Spring Boot + Docker的单体应用"><i class="fa fa-chevron-left"></i> 一步步带你构建Spring Boot + Docker的单体应用</a></div><span class="post-nav-divider"></span><div class="post-nav-prev post-nav-item"><a href="/2017/springboot使用redis缓存.html" rel="prev" title="Spring Boot 使用Redis缓存">Spring Boot 使用Redis缓存 <i class="fa fa-chevron-right"></i></a></div></div></footer></div></article><div class="post-spread"></div></div></div></div><div class="sidebar-toggle"><div class="sidebar-toggle-line-wrap"><span class="sidebar-toggle-line sidebar-toggle-line-first"></span> <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span> <span class="sidebar-toggle-line sidebar-toggle-line-last"></span></div></div><aside id="sidebar" class="sidebar"><div class="sidebar-inner"><ul class="sidebar-nav motion-element"><li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">Table of Contents</li><li class="sidebar-nav-overview" data-target="site-overview-wrap">Overview</li></ul><section class="site-overview-wrap sidebar-panel"><div class="site-overview"><div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person"><p class="site-author-name" itemprop="name">Hello</p><p class="site-description motion-element" itemprop="description"></p></div><nav class="site-state motion-element"><div class="site-state-item site-state-posts"><a href="/archives/"><span class="site-state-item-count">1358</span> <span class="site-state-item-name">posts</span></a></div></nav></div></section><section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active"><div class="post-toc"><div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#文件各种上传，离不开的表单"><span class="nav-number">1.</span> <span class="nav-text">文件各种上传，离不开的表单</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#利用表单实现文件上传"><span class="nav-number">2.</span> <span class="nav-text">利用表单实现文件上传</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#表单异步上传（jquery-form插件）"><span class="nav-number">3.</span> <span class="nav-text">表单异步上传（jquery.form插件）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#模拟表单数据上传（FormData）"><span class="nav-number">4.</span> <span class="nav-text">模拟表单数据上传（FormData）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#分片上传"><span class="nav-number">5.</span> <span class="nav-text">分片上传</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#使用HTML5-拖拽、粘贴上传"><span class="nav-number">6.</span> <span class="nav-text">使用HTML5 拖拽、粘贴上传</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#上传插件（WebUploader）"><span class="nav-number">7.</span> <span class="nav-text">上传插件（WebUploader）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">8.</span> <span class="nav-text">总结</span></a></li></ol></div></div></section></div></aside><div class="sfix"><div class="fixedme"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460" data-ad-format="auto"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script></div></div></main><footer id="footer" class="footer"><div class="footer-inner"><div class="copyright">&copy; <span itemprop="copyrightYear">2018</span> <span class="with-love"><i class="fa fa-user"></i> </span><span class="author" itemprop="copyrightHolder">Hello</span></div><div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div><span class="post-meta-divider">|</span><div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div></div></footer><div class="back-to-top"><i class="fa fa-arrow-up"></i></div></div><script type="text/javascript">"[object Function]"!==Object.prototype.toString.call(window.Promise)&&(window.Promise=null)</script><script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script><script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script><script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script><script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script><script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script></body></html><!-- rebuild by neat -->

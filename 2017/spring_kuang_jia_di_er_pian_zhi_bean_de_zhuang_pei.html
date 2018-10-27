@@ -1,0 +1,141 @@
+<!-- build time:Sat Oct 27 2018 21:00:24 GMT+0800 (CST) --><!DOCTYPE html><html class="theme-next muse use-motion"><head><meta name="generator" content="Hexo 3.8.0"><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"><meta name="theme-color" content="#222"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"><link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css"><link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css"><link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4"><link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222"><meta name="description" content="代码通过getBean();方式从容器中获取指定的Bean实例，容器首先会调用Bean类的无参构造器，创建空值的实例对象。举例：首先我在applicationContext.xml配置文件中配置了一个bean：&amp;lt;?xml version=&amp;quot;1.0&amp;quot; encoding=&amp;quot;UTF-8&amp;quot;?&amp;gt;&amp;lt;beans xmlns=&amp;quot;http://ww"><meta name="keywords" content="JAVA,面试"><meta property="og:type" content="article"><meta property="og:title" content="Spring框架第二篇之Bean的装配"><meta property="og:url" content="http://www.jfox.info/2017/spring_kuang_jia_di_er_pian_zhi_bean_de_zhuang_pei.html"><meta property="og:site_name" content="java面试"><meta property="og:description" content="代码通过getBean();方式从容器中获取指定的Bean实例，容器首先会调用Bean类的无参构造器，创建空值的实例对象。举例：首先我在applicationContext.xml配置文件中配置了一个bean：&amp;lt;?xml version=&amp;quot;1.0&amp;quot; encoding=&amp;quot;UTF-8&amp;quot;?&amp;gt;&amp;lt;beans xmlns=&amp;quot;http://ww"><meta property="og:locale" content="zh_CN"><meta property="og:updated_time" content="2018-10-27T12:29:39.318Z"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="Spring框架第二篇之Bean的装配"><meta name="twitter:description" content="代码通过getBean();方式从容器中获取指定的Bean实例，容器首先会调用Bean类的无参构造器，创建空值的实例对象。举例：首先我在applicationContext.xml配置文件中配置了一个bean：&amp;lt;?xml version=&amp;quot;1.0&amp;quot; encoding=&amp;quot;UTF-8&amp;quot;?&amp;gt;&amp;lt;beans xmlns=&amp;quot;http://ww"><script type="text/javascript" id="hexo.configurations">var NexT=window.NexT||{},CONFIG={root:"/",scheme:"Muse",version:"5.1.4",sidebar:{position:"left",display:"post",offset:12,b2t:!1,scrollpercent:!1,onmobile:!1},fancybox:!0,tabs:!0,motion:{enable:!0,async:!1,transition:{post_block:"fadeIn",post_header:"slideDownIn",post_body:"slideDownIn",coll_header:"slideLeftIn",sidebar:"slideUpIn"}},duoshuo:{userId:"0",author:"Author"},algolia:{applicationID:"",apiKey:"",indexName:"",hits:{per_page:10},labels:{input_placeholder:"Search for Posts",hits_empty:"We didn't find any results for the search: ${query}",hits_stats:"${hits} results found in ${time} ms"}}}</script><link rel="canonical" href="http://www.jfox.info/2017/spring_kuang_jia_di_er_pian_zhi_bean_de_zhuang_pei.html"><title>Spring框架第二篇之Bean的装配 | java面试</title></head><body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN"><div class="container sidebar-position-left page-post-detail"><div class="headband"></div><header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="header-inner"><div class="site-brand-wrapper"><div class="site-meta"><div class="custom-logo-site-title"><a href="/" class="brand" rel="start"><span class="logo-line-before"><i></i></span> <span class="site-title">java面试</span> <span class="logo-line-after"><i></i></span></a></div><p class="site-subtitle"></p></div><div class="site-nav-toggle"><button><span class="btn-bar"></span> <span class="btn-bar"></span> <span class="btn-bar"></span></button></div></div><nav class="site-nav"><ul id="menu" class="menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i><br>Home</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i><br>Archives</a></li></ul></nav></div></header><main id="main" class="main"><div class="main-inner"><div class="content-wrap"><div id="content" class="content"><div id="posts" class="posts-expand"><article class="post post-type-normal" itemscope itemtype="http://schema.org/Article"><div class="post-block"><link itemprop="mainEntityOfPage" href="http://www.jfox.info/2017/spring_kuang_jia_di_er_pian_zhi_bean_de_zhuang_pei.html"><span hidden itemprop="author" itemscope itemtype="http://schema.org/Person"><meta itemprop="name" content="Hello"><meta itemprop="description" content=""><meta itemprop="image" content="/images/avatar.gif"></span><span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><meta itemprop="name" content="java面试"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">Spring框架第二篇之Bean的装配</h1><div class="post-meta"><span class="post-time"><span class="post-meta-item-icon"><i class="fa fa-calendar-o"></i> </span><span class="post-meta-item-text">Posted on</span> <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-01-01T23:49:21+08:00">2017-01-01</time></span></div></header><div class="post-body" itemprop="articleBody"><p>代码通过getBean();方式从容器中获取指定的Bean实例，容器首先会调用Bean类的无参构造器，创建空值的实例对象。</p><p>举例：</p><p>首先我在applicationContext.xml配置文件中配置了一个bean：</p><pre><code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
+    xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+    xsi:schemaLocation=&quot;
+        http://www.springframework.org/schema/beans 
+        http://www.springframework.org/schema/beans/spring-beans.xsd&quot;&gt;&lt;!-- 注册Service 这里相当于容器做了SomeServiceImpl myService = new SomeServiceImpl(); --&gt;&lt;bean id=&quot;myService&quot; class=&quot;com.ietree.spring.basic.ioc.SomeServiceImpl&quot;/&gt;&lt;/beans&gt;
+</code></pre><p>此时程序会报以下的错误：</p><pre><code>org.springframework.beans.factory.BeanCreationException: Error creating bean with name &apos;myService&apos; defined in class path resource [applicationContext.xml]: Instantiation of bean failed; nested exception is org.springframework.beans.BeanInstantiationException: Failed to instantiate [com.ietree.spring.basic.ioc.SomeServiceImpl]: No default constructor found; nested exception is java.lang.NoSuchMethodException: com.ietree.spring.basic.ioc.SomeServiceImpl.&lt;init&gt;()
+    at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.instantiateBean(AbstractAutowireCapableBeanFactory.java:1155)
+    at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1099)
+    at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:513)
+    at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:483)
+    at org.springframework.beans.factory.support.AbstractBeanFactory$1.getObject(AbstractBeanFactory.java:306)
+    at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:230)
+    at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:302)
+    at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:197)
+    at org.springframework.beans.factory.support.DefaultListableBeanFactory.preInstantiateSingletons(DefaultListableBeanFactory.java:761)
+    at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:867)
+    at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:543)
+    at org.springframework.context.support.ClassPathXmlApplicationContext.&lt;init&gt;(ClassPathXmlApplicationContext.java:139)
+    at org.springframework.context.support.ClassPathXmlApplicationContext.&lt;init&gt;(ClassPathXmlApplicationContext.java:83)
+    at com.ietree.spring.basic.test.MyTest.testConstrutor(MyTest.java:67)
+    at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+    at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
+    at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
+    at java.lang.reflect.Method.invoke(Unknown Source)
+    at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:50)
+    at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+    at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47)
+    at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)
+    at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:325)
+    at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:78)
+    at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:57)
+    at org.junit.runners.ParentRunner$3.run(ParentRunner.java:290)
+    at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:71)
+    at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288)
+    at org.junit.runners.ParentRunner.access$000(ParentRunner.java:58)
+    at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:268)
+    at org.junit.runners.ParentRunner.run(ParentRunner.java:363)
+    at org.eclipse.jdt.internal.junit4.runner.JUnit4TestReference.run(JUnit4TestReference.java:86)
+    at org.eclipse.jdt.internal.junit.runner.TestExecution.run(TestExecution.java:38)
+    at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.runTests(RemoteTestRunner.java:459)
+    at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.runTests(RemoteTestRunner.java:678)
+    at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.run(RemoteTestRunner.java:382)
+    at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.main(RemoteTestRunner.java:192)
+Caused by: org.springframework.beans.BeanInstantiationException: Failed to instantiate [com.ietree.spring.basic.ioc.SomeServiceImpl]: No default constructor found; nested exception is java.lang.NoSuchMethodException: com.ietree.spring.basic.ioc.SomeServiceImpl.&lt;init&gt;()
+    at org.springframework.beans.factory.support.SimpleInstantiationStrategy.instantiate(SimpleInstantiationStrategy.java:85)
+    at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.instantiateBean(AbstractAutowireCapableBeanFactory.java:1147)
+    ... 36 more
+Caused by: java.lang.NoSuchMethodException: com.ietree.spring.basic.ioc.SomeServiceImpl.&lt;init&gt;()
+    at java.lang.Class.getConstructor0(Unknown Source)
+    at java.lang.Class.getDeclaredConstructor(Unknown Source)
+    at org.springframework.beans.factory.support.SimpleInstantiationStrategy.instantiate(SimpleInstantiationStrategy.java:80)
+    ... 37 more
+</code></pre><p>解析：这里的错误报的很明显，没有发现默认的构造器。</p><p>修改：为该类加上无参构造器：</p><pre><code>package com.ietree.spring.basic.ioc;
+/**
+ * 实现类
+ * 
+ * @author Root
+ */publicclass SomeServiceImpl implements ISomeService {
+    privateint a;
+    public SomeServiceImpl() {
+        System.out.println(&quot;执行无参构造器，创建SomeServiceImpl对象&quot;);
+    }
+    public SomeServiceImpl(int a) {
+        this.a = a;
+    }
+    @Override
+    publicvoid doSomeThing() {
+        System.out.println(&quot;执行doSomeThing()方法...&quot;);
+    }
+}
+</code></pre><p>此时，再次运行测试用例，会发现运行成功。</p><p>结论：Spring容器实际上是使用了类的反射机制，会首先调用Bean类的无参构造器创建实例对象。</p><h2 id="二、动态工厂Bean"><a href="#二、动态工厂Bean" class="headerlink" title="二、动态工厂Bean"></a>二、动态工厂Bean</h2><p>创建SomeServiceImpl类：</p><pre><code>package com.ietree.spring.basic.ioc;
+/**
+ * 实现类
+ * 
+ * @author Root
+ */publicclass SomeServiceImpl implements ISomeService {
+    public SomeServiceImpl() {
+        System.out.println(&quot;执行无参构造器，创建SomeServiceImpl对象&quot;);
+    }
+    @Override
+    publicvoid doSomeThing() {
+        System.out.println(&quot;执行doSomeThing()方法...&quot;);
+    }
+}
+</code></pre><p>创建工厂类ServiceFactory：</p><pre><code>package com.ietree.spring.basic.ioc;
+/**
+ * 工厂类
+ * 
+ * @author Root
+ */publicclass ServiceFactory {
+    public ISomeService getSomeService() {
+        returnnew SomeServiceImpl();
+    }
+}
+</code></pre><p>使用动态工厂方式获取Bean对象，配置如下：</p><pre><code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
+    xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+    xsi:schemaLocation=&quot;
+        http://www.springframework.org/schema/beans 
+        http://www.springframework.org/schema/beans/spring-beans.xsd&quot;&gt;&lt;!-- 注册动态工厂 --&gt;&lt;bean id=&quot;factory&quot; class=&quot;com.ietree.spring.basic.ioc.ServiceFactory&quot;/&gt;&lt;!-- 注册Service：动态工厂Bean --&gt;&lt;bean id=&quot;myService&quot; factory-bean=&quot;factory&quot; factory-method=&quot;getSomeService&quot;/&gt;&lt;/beans&gt;
+</code></pre><p>在这里并没有注册SomeServiceImpl类，而是通过ServiceFactory工厂的getSomeService方法获取的。</p><p>测试：</p><pre><code>@Test
+publicvoid testFactory1() {
+    ApplicationContext ac = new ClassPathXmlApplicationContext(&quot;applicationContext.xml&quot;);
+    ISomeService service = (ISomeService) ac.getBean(&quot;myService&quot;);
+    service.doSomeThing();
+}
+</code></pre><p>运行成功。</p><h2 id="三、静态工厂Bean"><a href="#三、静态工厂Bean" class="headerlink" title="三、静态工厂Bean"></a>三、静态工厂Bean</h2><p>静态工厂和动态工厂不同的是，静态工厂中使用的是静态方法创建对象，如：</p><pre><code>package com.ietree.spring.basic.ioc;
+/**
+ * 工厂类
+ * 
+ * @author Root
+ */publicclass ServiceFactory {
+    // 使用静态方法创建对象publicstatic ISomeService getSomeService() {
+        returnnew SomeServiceImpl();
+    }
+}
+</code></pre><p>对应的配置文件修改如下：</p><pre><code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
+    xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+    xsi:schemaLocation=&quot;
+        http://www.springframework.org/schema/beans 
+        http://www.springframework.org/schema/beans/spring-beans.xsd&quot;&gt;&lt;!-- 注册Service：静态工厂Bean --&gt;&lt;bean id=&quot;myService&quot; class=&quot;com.ietree.spring.basic.ioc.ServiceFactory&quot; factory-method=&quot;getSomeService&quot;/&gt;&lt;/beans&gt;
+</code></pre><p>测试：</p><pre><code>@Test
+publicvoid testFactory1() {
+    ApplicationContext ac = new ClassPathXmlApplicationContext(&quot;applicationContext.xml&quot;);
+    ISomeService service = (ISomeService) ac.getBean(&quot;myService&quot;);
+    service.doSomeThing();
+}
+</code></pre><p>成功创建SomeServiceImpl对象。</p><h2 id="四、容器中的Bean的作用域"><a href="#四、容器中的Bean的作用域" class="headerlink" title="四、容器中的Bean的作用域"></a>四、容器中的Bean的作用域</h2><p>Bean的作用域（scope）分为四种，分别是singleton、prototype、request、session。</p><p>scope： 　　singleton（默认）：单例模式，其对象的创建时机是在Spring容器初始化时创建，是默认值 　　prototype：原型模式，其对象的创建时机不是在Spring容器初始化时创建，而是在代码中真正访问时才创建，每次使用getBean方法获取的同一个<bean>的实例都是一个新的实例 　　request：对于每次HTTP请求，都将会产生一个不同的Bean实例 　　session：对于每个不同的HTTP session，都将会产生一个不同的Bean实例</bean></p><p>验证：</p><p>首先配置作用域为singleton：</p><pre><code>&lt;bean id=&quot;myService&quot; class=&quot;com.ietree.spring.basic.ioc.SomeServiceImpl&quot; scope=&quot;singleton&quot;/&gt;
+</code></pre><p>测试：</p><pre><code>@Test
+publicvoid test05() {
+    ApplicationContext ac = new ClassPathXmlApplicationContext(&quot;applicationContext.xml&quot;);
+    ISomeService service1 = (ISomeService) ac.getBean(&quot;myService&quot;);
+    ISomeService service2 = (ISomeService) ac.getBean(&quot;myService&quot;);
+    System.out.println(&quot;service1 = service2吗？&quot; + (service1 == service2));
+}
+</code></pre><p>程序输出：</p><pre><code>调用无参构造器
+service1 = service2吗？true
+</code></pre><p>结论：当作用域为singleton单例模式时，只会创建一个对象实例，并且对象是在Spring容器初始化时创建。</p><p>同样，当配置为prototype原型模式时：</p><pre><code>&lt;bean id=&quot;myService&quot; class=&quot;com.ietree.spring.basic.ioc.SomeServiceImpl&quot; scope=&quot;prototype&quot;/&gt;
+</code></pre><p>程序输出：</p><pre><code>调用无参构造器
+调用无参构造器
+service1 = service2吗？false
+</code></pre><p>结论：构造器被调用了两次，说明创建的service1和service2不是同一个对象，并且对象是在被使用到时才创建的。</p><h2 id="五、Bean后处理器"><a href="#五、Bean后处理器" class="headerlink" title="五、Bean后处理器"></a>五、Bean后处理器</h2><h2 id="六、定制Bean的生命周期"><a href="#六、定制Bean的生命周期" class="headerlink" title="六、定制Bean的生命周期"></a>六、定制Bean的生命周期</h2><h2 id="七、标签的id属性与name属性"><a href="#七、标签的id属性与name属性" class="headerlink" title="七、标签的id属性与name属性"></a>七、<bean>标签的id属性与name属性</bean></h2></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="4142158067"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="5618891265"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><footer class="post-footer"><div class="post-nav"><div class="post-nav-next post-nav-item"><a href="/2017/jms_zhi_active_mq_xiao_xi_cun_chu.html" rel="next" title="JMS 之 Active MQ 消息存储"><i class="fa fa-chevron-left"></i> JMS 之 Active MQ 消息存储</a></div><span class="post-nav-divider"></span><div class="post-nav-prev post-nav-item"><a href="/2017/java_util_concurrent_executionexception_org_apache_catalina_lifecycleexcept_wen_ti_jie_jue_fang_an.html" rel="prev" title="java.util.concurrent.ExecutionException: org.apache.catalina.LifecycleExcept问题解决方案">java.util.concurrent.ExecutionException: org.apache.catalina.LifecycleExcept问题解决方案 <i class="fa fa-chevron-right"></i></a></div></div></footer></div></article><div class="post-spread"></div></div></div></div><div class="sidebar-toggle"><div class="sidebar-toggle-line-wrap"><span class="sidebar-toggle-line sidebar-toggle-line-first"></span> <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span> <span class="sidebar-toggle-line sidebar-toggle-line-last"></span></div></div><aside id="sidebar" class="sidebar"><div class="sidebar-inner"><ul class="sidebar-nav motion-element"><li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">Table of Contents</li><li class="sidebar-nav-overview" data-target="site-overview-wrap">Overview</li></ul><section class="site-overview-wrap sidebar-panel"><div class="site-overview"><div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person"><p class="site-author-name" itemprop="name">Hello</p><p class="site-description motion-element" itemprop="description"></p></div><nav class="site-state motion-element"><div class="site-state-item site-state-posts"><a href="/archives/"><span class="site-state-item-count">1358</span> <span class="site-state-item-name">posts</span></a></div></nav></div></section><section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active"><div class="post-toc"><div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#二、动态工厂Bean"><span class="nav-number">1.</span> <span class="nav-text">二、动态工厂Bean</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#三、静态工厂Bean"><span class="nav-number">2.</span> <span class="nav-text">三、静态工厂Bean</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#四、容器中的Bean的作用域"><span class="nav-number">3.</span> <span class="nav-text">四、容器中的Bean的作用域</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#五、Bean后处理器"><span class="nav-number">4.</span> <span class="nav-text">五、Bean后处理器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#六、定制Bean的生命周期"><span class="nav-number">5.</span> <span class="nav-text">六、定制Bean的生命周期</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#七、标签的id属性与name属性"><span class="nav-number">6.</span> <span class="nav-text">七、标签的id属性与name属性</span></a></li></ol></div></div></section></div></aside><div class="sfix"><div class="fixedme"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460" data-ad-format="auto"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script></div></div></main><footer id="footer" class="footer"><div class="footer-inner"><div class="copyright">&copy; <span itemprop="copyrightYear">2018</span> <span class="with-love"><i class="fa fa-user"></i> </span><span class="author" itemprop="copyrightHolder">Hello</span></div><div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div><span class="post-meta-divider">|</span><div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div></div></footer><div class="back-to-top"><i class="fa fa-arrow-up"></i></div></div><script type="text/javascript">"[object Function]"!==Object.prototype.toString.call(window.Promise)&&(window.Promise=null)</script><script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script><script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script><script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script><script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script><script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script></body></html><!-- rebuild by neat -->

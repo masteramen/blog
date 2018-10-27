@@ -1,0 +1,132 @@
+<!-- build time:Sat Oct 27 2018 21:00:16 GMT+0800 (CST) --><!DOCTYPE html><html class="theme-next muse use-motion"><head><meta name="generator" content="Hexo 3.8.0"><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"><meta name="theme-color" content="#222"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"><link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css"><link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css"><link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4"><link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222"><meta name="description" content="dubbo源码分析（二）：超时原理以及应用场景本篇主要记录dubbo中关于超时的常见问题，实现原理，解决的问题以及如何在服务降级中体现作用等。超时问题为了检查对dubbo超时的理解，尝试回答如下几个问题，如果回答不上来或者不确定那么说明此处需要再多研究研究。我只是针对个人的理解提问题，并不代表我理解的就是全面深入的，但我的问题如果也回答不了，那至少说明理解的确是不够细的。超时是针对消费端还是服务端"><meta name="keywords" content="JAVA,面试"><meta property="og:type" content="article"><meta property="og:title" content="dubbo源码分析（二）：超时原理以及应用场景"><meta property="og:url" content="http://www.jfox.info/2017/dubbo源码分析二超时原理以及应用场景.html"><meta property="og:site_name" content="java面试"><meta property="og:description" content="dubbo源码分析（二）：超时原理以及应用场景本篇主要记录dubbo中关于超时的常见问题，实现原理，解决的问题以及如何在服务降级中体现作用等。超时问题为了检查对dubbo超时的理解，尝试回答如下几个问题，如果回答不上来或者不确定那么说明此处需要再多研究研究。我只是针对个人的理解提问题，并不代表我理解的就是全面深入的，但我的问题如果也回答不了，那至少说明理解的确是不够细的。超时是针对消费端还是服务端"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="http://www.jfox.info/2017/1485/e6c6004.png"><meta property="og:image" content="http://www.jfox.info/2017/1485/2cf2f85.jpg"><meta property="og:updated_time" content="2018-10-27T12:29:40.334Z"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="dubbo源码分析（二）：超时原理以及应用场景"><meta name="twitter:description" content="dubbo源码分析（二）：超时原理以及应用场景本篇主要记录dubbo中关于超时的常见问题，实现原理，解决的问题以及如何在服务降级中体现作用等。超时问题为了检查对dubbo超时的理解，尝试回答如下几个问题，如果回答不上来或者不确定那么说明此处需要再多研究研究。我只是针对个人的理解提问题，并不代表我理解的就是全面深入的，但我的问题如果也回答不了，那至少说明理解的确是不够细的。超时是针对消费端还是服务端"><meta name="twitter:image" content="http://www.jfox.info/2017/1485/e6c6004.png"><script type="text/javascript" id="hexo.configurations">var NexT=window.NexT||{},CONFIG={root:"/",scheme:"Muse",version:"5.1.4",sidebar:{position:"left",display:"post",offset:12,b2t:!1,scrollpercent:!1,onmobile:!1},fancybox:!0,tabs:!0,motion:{enable:!0,async:!1,transition:{post_block:"fadeIn",post_header:"slideDownIn",post_body:"slideDownIn",coll_header:"slideLeftIn",sidebar:"slideUpIn"}},duoshuo:{userId:"0",author:"Author"},algolia:{applicationID:"",apiKey:"",indexName:"",hits:{per_page:10},labels:{input_placeholder:"Search for Posts",hits_empty:"We didn't find any results for the search: ${query}",hits_stats:"${hits} results found in ${time} ms"}}}</script><link rel="canonical" href="http://www.jfox.info/2017/dubbo源码分析二超时原理以及应用场景.html"><title>dubbo源码分析（二）：超时原理以及应用场景 | java面试</title></head><body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN"><div class="container sidebar-position-left page-post-detail"><div class="headband"></div><header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="header-inner"><div class="site-brand-wrapper"><div class="site-meta"><div class="custom-logo-site-title"><a href="/" class="brand" rel="start"><span class="logo-line-before"><i></i></span> <span class="site-title">java面试</span> <span class="logo-line-after"><i></i></span></a></div><p class="site-subtitle"></p></div><div class="site-nav-toggle"><button><span class="btn-bar"></span> <span class="btn-bar"></span> <span class="btn-bar"></span></button></div></div><nav class="site-nav"><ul id="menu" class="menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i><br>Home</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i><br>Archives</a></li></ul></nav></div></header><main id="main" class="main"><div class="main-inner"><div class="content-wrap"><div id="content" class="content"><div id="posts" class="posts-expand"><article class="post post-type-normal" itemscope itemtype="http://schema.org/Article"><div class="post-block"><link itemprop="mainEntityOfPage" href="http://www.jfox.info/2017/dubbo源码分析二超时原理以及应用场景.html"><span hidden itemprop="author" itemscope itemtype="http://schema.org/Person"><meta itemprop="name" content="Hello"><meta itemprop="description" content=""><meta itemprop="image" content="/images/avatar.gif"></span><span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><meta itemprop="name" content="java面试"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">dubbo源码分析（二）：超时原理以及应用场景</h1><div class="post-meta"><span class="post-time"><span class="post-meta-item-icon"><i class="fa fa-calendar-o"></i> </span><span class="post-meta-item-text">Posted on</span> <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-01-01T23:59:45+08:00">2017-01-01</time></span></div></header><div class="post-body" itemprop="articleBody"><h1 id="dubbo源码分析（二）：超时原理以及应用场景"><a href="#dubbo源码分析（二）：超时原理以及应用场景" class="headerlink" title="dubbo源码分析（二）：超时原理以及应用场景"></a>dubbo源码分析（二）：超时原理以及应用场景</h1><p>本篇主要记录dubbo中关于超时的常见问题，实现原理，解决的问题以及如何在服务降级中体现作用等。</p><h1 id="超时问题"><a href="#超时问题" class="headerlink" title="超时问题"></a>超时问题</h1><p>为了检查对dubbo超时的理解，尝试回答如下几个问题，如果回答不上来或者不确定那么说明此处需要再多研究研究。</p><p>我只是针对个人的理解提问题，并不代表我理解的就是全面深入的，但我的问题如果也回答不了，那至少说明理解的确是不够细的。</p><ul><li>超时是针对消费端还是服务端？</li><li>超时在哪设置？</li><li>超时设置的优先级是什么？</li><li>超时的实现原理是什么？</li><li>超时解决的是什么问题？</li></ul><h1 id="问题解答"><a href="#问题解答" class="headerlink" title="问题解答"></a>问题解答</h1><h2 id="RPC场景"><a href="#RPC场景" class="headerlink" title="RPC场景"></a>RPC场景</h2><p>本文所有问题均以下图做为业务场景，一个web api做为前端请求，product service是产品服务，其中调用comment service(评论服务)获取产品相关评论，comment service从持久层中加载数据。</p><p><img src="/2017/1485/e6c6004.png" alt=""></p><h2 id="超时是针对消费端还是服务端？"><a href="#超时是针对消费端还是服务端？" class="headerlink" title="超时是针对消费端还是服务端？"></a>超时是针对消费端还是服务端？</h2><ul><li><p>如果是争对消费端，那么当消费端发起一次请求后，如果在规定时间内未得到服务端的响应则直接返回超时异常，但服务端的代码依然在执行。</p></li><li><p>如果是争取服务端，那么当消费端发起一次请求后，一直等待服务端的响应，服务端在方法执行到指定时间后如果未执行完，此时返回一个超时异常给到消费端。</p></li></ul><p>dubbo的超时是争对客户端的，由于是一种NIO模式，消费端发起请求后得到一个ResponseFuture，然后消费端一直轮询这个ResponseFuture直至超时或者收到服务端的返回结果。虽然超时了，但仅仅是消费端不再等待服务端的反馈并不代表此时服务端也停止了执行。</p><p>按上图的业务场景，看看生成的日志：</p><p>product service:报超时错误，因为comment service 加载数据需要5S，但接口只等1S 。</p><pre><code>Caused by: com.alibaba.dubbo.remoting.TimeoutException: Waiting server-side response timeout. start time: 2017-08-05 18:14:52.751, end time: 2017-08-05 18:14:53.764, client elapsed: 6 ms, server elapsed: 1006 ms, timeout: 1000 ms, request: Request [id=0, version=2.0.0, twoway=true, event=false, broken=false, data=RpcInvocation [methodName=getCommentsByProductId, parameterTypes=[class java.lang.Long], arguments=[1], attachments={traceId=6299543007105572864, spanId=6299543007105572864, input=259, path=com.jim.framework.dubbo.core.service.CommentService, interface=com.jim.framework.dubbo.core.service.CommentService, version=0.0.0}]], channel: /192.168.10.222:53204 -&gt; /192.168.10.222:7777
+    at com.alibaba.dubbo.remoting.exchange.support.DefaultFuture.get(DefaultFuture.java:107) ~[dubbo-2.5.3.jar:2.5.3]
+    at com.alibaba.dubbo.remoting.exchange.support.DefaultFuture.get(DefaultFuture.java:84) ~[dubbo-2.5.3.jar:2.5.3]
+    at com.alibaba.dubbo.rpc.protocol.dubbo.DubboInvoker.doInvoke(DubboInvoker.java:96) ~[dubbo-2.5.3.jar:2.5.3]
+    ... 42 common frames omitted
+</code></pre><p>comment service : 并没有异常，而是慢慢悠悠的执行自己的逻辑：</p><pre><code>2017-08-05 18:14:52.760  INFO 846 --- [2:7777-thread-5] c.j.f.d.p.service.CommentServiceImpl     : getComments start:Sat Aug 05 18:14:52 CST 2017
+2017-08-05 18:14:57.760  INFO 846 --- [2:7777-thread-5] c.j.f.d.p.service.CommentServiceImpl     : getComments end:Sat Aug 05 18:14:57 CST 2017
+</code></pre><p>从日志来看，超时影响的是消费端，与服务端没有直接关系。</p><h2 id="超时在哪设置？"><a href="#超时在哪设置？" class="headerlink" title="超时在哪设置？"></a>超时在哪设置？</h2><h3 id="消费端"><a href="#消费端" class="headerlink" title="消费端"></a>消费端</h3><pre><code>&lt;dubbo:consumer timeout=&quot;1000&quot;&gt;&lt;/dubbo:consumer&gt;
+</code></pre><h3 id="服务端"><a href="#服务端" class="headerlink" title="服务端"></a>服务端</h3><pre><code>&lt;dubbo:provider timeout=&quot;1000&quot;&gt;&lt;/dubbo:provider&gt;
+</code></pre><p>可以看到dubbo针对超时做了比较精细化的支持，无论是消费端还是服务端，无论是接口级别还是方法级别都有支持。</p><h2 id="超时设置的优先级是什么？"><a href="#超时设置的优先级是什么？" class="headerlink" title="超时设置的优先级是什么？"></a>超时设置的优先级是什么？</h2><p>上面有提到dubbo支持多种场景下设置超时时间，也说过超时是针对消费端的。那么既然超时是针对消费端，为什么服务端也可以设置超时呢？</p><p>这其实是一种策略，其实服务端的超时配置是消费端的缺省配置，即如果服务端设置了超时，任务消费端可以不设置超时时间，简化了配置。</p><p>另外针对控制的粒度，dubbo支持了接口级别也支持方法级别，可以根据不同的实际情况精确控制每个方法的超时时间。所以最终的优先顺序为：客户端方法级&gt;客户端接口级&gt;客户端全局&gt;服务端方法级&gt;服务端接口级&gt;服务端全局。</p><h2 id="超时的实现原理是什么？"><a href="#超时的实现原理是什么？" class="headerlink" title="超时的实现原理是什么？"></a>超时的实现原理是什么？</h2><p>之前有简单提到过, dubbo默认采用了netty做为网络组件，它属于一种NIO的模式。消费端发起远程请求后，线程不会阻塞等待服务端的返回，而是马上得到一个ResponseFuture，消费端通过不断的轮询机制判断结果是否有返回。因为是通过轮询，轮询有个需要特别注要的就是避免死循环，所以为了解决这个问题就引入了超时机制，只在一定时间范围内做轮询，如果超时时间就返回超时异常。</p><p>源码</p><h3 id="ResponseFuture接口定义"><a href="#ResponseFuture接口定义" class="headerlink" title="ResponseFuture接口定义"></a>ResponseFuture接口定义</h3><pre><code>public interface ResponseFuture {
+
+    /**
+     * get result.
+     * 
+     * @return result.
+     */
+    Object get() throws RemotingException;
+
+    /**
+     * get result with the specified timeout.
+     * 
+     * @param timeoutInMillis timeout.
+     * @return result.
+     */
+    Object get(int timeoutInMillis) throws RemotingException;
+
+    /**
+     * set callback.
+     * 
+     * @param callback
+     */
+    void setCallback(ResponseCallback callback);
+
+    /**
+     * check is done.
+     * 
+     * @return done or not.
+     */
+    boolean isDone();
+
+}
+</code></pre><h3 id="ReponseFuture的实现类：DefaultFuture"><a href="#ReponseFuture的实现类：DefaultFuture" class="headerlink" title="ReponseFuture的实现类：DefaultFuture"></a>ReponseFuture的实现类：DefaultFuture</h3><p>只看它的get方法，可以清楚看到轮询的机制。</p><pre><code>public Object get(int timeout) throws RemotingException {
+       if (timeout &lt;= 0) {
+           timeout = Constants.DEFAULT_TIMEOUT;
+       }
+       if (! isDone()) {
+           long start = System.currentTimeMillis();
+           lock.lock();
+           try {
+               while (! isDone()) {
+                   done.await(timeout, TimeUnit.MILLISECONDS);
+                   if (isDone() || System.currentTimeMillis() - start &gt; timeout) {
+                       break;
+                   }
+               }
+           } catch (InterruptedException e) {
+               throw new RuntimeException(e);
+           } finally {
+               lock.unlock();
+           }
+           if (! isDone()) {
+               throw new TimeoutException(sent &gt; 0, channel, getTimeoutMessage(false));
+           }
+       }
+       return returnFromResponse();
+   }
+</code></pre><h2 id="超时解决的是什么问题？"><a href="#超时解决的是什么问题？" class="headerlink" title="超时解决的是什么问题？"></a>超时解决的是什么问题？</h2><p>设置超时主要是解决什么问题？如果没有超时机制会怎么样？</p><p>回答上面的问题，首先要了解dubbo这类rpc产品的线程模型。下图是我之前个人RPC学习产品的示例图，与dubbo的线程模型大致是相同的，有兴趣的可参考我的笔记：<a href="https://www.jfox.info/go.php?url=http://www.cnblogs.com/ASPNET2008/p/7106820.html">简单RPC框架-业务线程池</a></p><p><img src="/2017/1485/2cf2f85.jpg" alt=""></p><p>我们从dubbo的源码看下这下线程模型是怎么用的：</p><h3 id="netty-boss"><a href="#netty-boss" class="headerlink" title="netty boss"></a>netty boss</h3><p>主要是负责socket连接之类的工作。</p><h3 id="netty-wokers"><a href="#netty-wokers" class="headerlink" title="netty wokers"></a>netty wokers</h3><p>将一个请求分给后端的某个handle去处理，比如心跳handle ,执行业务请求的 handle等。</p><p>Netty Server中可以看到上述两个线程池是如何初始化的：</p><p>首选是open方法，可以看到一个boss一个worker线程池。</p><pre><code>protected void doOpen() throws Throwable {
+        NettyHelper.setNettyLoggerFactory();
+        ExecutorService boss = Executors.newCachedThreadPool(new NamedThreadFactory(&quot;NettyServerBoss&quot;, true));
+        ExecutorService worker = Executors.newCachedThreadPool(new NamedThreadFactory(&quot;NettyServerWorker&quot;, true));
+        ChannelFactory channelFactory = new NioServerSocketChannelFactory(boss, worker, getUrl().getPositiveParameter(Constants.IO_THREADS_KEY, Constants.DEFAULT_IO_THREADS));
+        bootstrap = new ServerBootstrap(channelFactory);
+        // ......
+}
+</code></pre><p>再看ChannelFactory的构造函数：</p><pre><code>public NioServerSocketChannelFactory(Executor bossExecutor, Executor workerExecutor, int workerCount) {
+    this(bossExecutor, 1, workerExecutor, workerCount);
+}
+</code></pre><p>可以看出，boss线程池的大小为1，worker线程池的大小也是可以配置的，默认大小是当前系统的核心数+1，也称为IO线程。</p><h3 id="busines（业务线程池）"><a href="#busines（业务线程池）" class="headerlink" title="busines（业务线程池）"></a>busines（业务线程池）</h3><p>为什么会有业务线程池，这里不多解释，可以参考我上面的文章。</p><p>缺省是采用固定大小的线程池，dubbo提供了三种不同类型的线程池供用户选择。我们看看这个类：AllChannelHandler，它是其中一种handle，处理所有请求，它的一个作用就是调用业务线程池去执行业务代码，其中有获取线程池的方法：</p><pre><code>private ExecutorService getExecutorService() {
+       ExecutorService cexecutor = executor;
+       if (cexecutor == null || cexecutor.isShutdown()) { 
+           cexecutor = SHARED_EXECUTOR;
+       }
+       return cexecutor;
+   }
+</code></pre><p>上面代码中的变量executor来自于AllChannelHandler的父类WrappedChannelHandler，看下它的构造函数：</p><pre><code>public WrappedChannelHandler(ChannelHandler handler, URL url) {
+       //......
+        executor = (ExecutorService) ExtensionLoader.getExtensionLoader(ThreadPool.class).getAdaptiveExtension().getExecutor(url);
+
+        //......
+}
+</code></pre><p>获取线程池来自于SPI技术,从代码中可以看出线程池的缺省配置就是上面提到的固定大小线程池。</p><pre><code>@SPI(&quot;fixed&quot;)
+public interface ThreadPool {
+
+    /**
+     * 线程池
+     * 
+     * @param url 线程参数
+     * @return 线程池
+     */
+    @Adaptive({Constants.THREADPOOL_KEY})
+    Executor getExecutor(URL url);
+
+}
+</code></pre><p>最后看下是如何将请求丢给线程池去执行的，在AllChannelHandler中有这样的方法：</p><pre><code>public void received(Channel channel, Object message) throws RemotingException {
+        ExecutorService cexecutor = getExecutorService();
+        try {
+            cexecutor.execute(new ChannelEventRunnable(channel, handler, ChannelState.RECEIVED, message));
+        } catch (Throwable t) {
+            throw new ExecutionException(message, channel, getClass() + &quot; error when process received event .&quot;, t);
+        }
+    }
+</code></pre><p>典型问题：拒绝服务</p><p>如果上面提到的dubbo线程池模型理解了，那么也就容易理解一个问题，当前端大量请求并发出现时，很有可以将业务线程池中的线程消费完，因为默认缺省的线程池是固定大小（我现在版本缺省线程池大小为200），此时会出现服务无法按预期响应的结果，当然由于是固定大小的线程池，当核心线程滿了后也有队列可排,但默认是不排队的，需要排队需要单独配置，我们可以从线程池的具体实现中看：</p><pre><code>public class FixedThreadPool implements ThreadPool {
+
+    public Executor getExecutor(URL url) {
+        String name = url.getParameter(Constants.THREAD_NAME_KEY, Constants.DEFAULT_THREAD_NAME);
+        int threads = url.getParameter(Constants.THREADS_KEY, Constants.DEFAULT_THREADS);
+        int queues = url.getParameter(Constants.QUEUES_KEY, Constants.DEFAULT_QUEUES);
+        return new ThreadPoolExecutor(threads, threads, 0, TimeUnit.MILLISECONDS, 
+                queues == 0 ? new SynchronousQueue&lt;Runnable&gt;() : 
+                    (queues &lt; 0 ? new LinkedBlockingQueue&lt;Runnable&gt;() 
+                            : new LinkedBlockingQueue&lt;Runnable&gt;(queues)),
+                new NamedThreadFactory(name, true), new AbortPolicyWithReport(name, url));
+    }
+
+}
+</code></pre><p>上面代码的结论是：</p><ul><li>默认线程池大小为200（不同的dubbo版本可能此值不同）</li><li>默认线程池不排队，如果需要排队，需要指定队列的大小</li></ul><p>当业务线程用完后，服务端会报如下的错误：</p><pre><code>Caused by: java.util.concurrent.RejectedExecutionException: Thread pool is EXHAUSTED! Thread Name: DubboServerHandler-192.168.10.222:9999, Pool Size: 1 (active: 1, core: 1, max: 1, largest: 1), Task: 8 (completed: 7), Executor status:(isShutdown:false, isTerminated:false, isTerminating:false), in dubbo://192.168.10.222:9999!
+    at com.alibaba.dubbo.common.threadpool.support.AbortPolicyWithReport.rejectedExecution(AbortPolicyWithReport.java:53) ~[dubbo-2.5.3.jar:2.5.3]
+    at java.util.concurrent.ThreadPoolExecutor.reject(ThreadPoolExecutor.java:823) [na:1.8.0_121]
+    at java.util.concurrent.ThreadPoolExecutor.execute(ThreadPoolExecutor.java:1369) [na:1.8.0_121]
+    at com.alibaba.dubbo.remoting.transport.dispatcher.all.AllChannelHandler.caught(AllChannelHandler.java:65) ~[dubbo-2.5.3.jar:2.5.3]
+    ... 17 common frames omitted
+</code></pre><p>通过上面的分析，对调用的服务设置超时时间，是为了避免因为某种原因导致线程被长时间占用，最终出现线程池用完返回拒绝服务的异常。</p><h1 id="超时与服务降级"><a href="#超时与服务降级" class="headerlink" title="超时与服务降级"></a>超时与服务降级</h1><p>按我们文章之前的场景，web api 请求产品明细时调用product service，为了查询产品评论product service调用comment service。如果此时由于comment service异常，响应时间增大到10S（远大于上游服务设置的超时时间），会发生超时异常，进而导致整个获取产品明细的接口异常，这也就是平常说的强依赖。这类强依赖是超时不能解决的，解决方案一般是两种：</p><ul><li>调用comment service时做异常捕获，返回空值或者返回具体的错误码，消费端根据不同的错误码做不同的处理。</li><li>调用coment service做服务降级，比如发生异常时返回一个mock的数据,dubbo默认支持mock。</li></ul><p>只有通过做异常捕获或者服务降级才能确保某些不重要的依赖出问题时不影响主服务的稳定性。而超时就可以与服务降级结合起来，当消费端发生超时时自动触发服务降级， 这样即使我们的评论服务一直慢，但不影响获取产品明细的主体功能，只不过会牺牲部分体验，用户看到的评论不是真实的，但评论相对是个边缘功能，相比看不到产品信息要轻的多，某种程度上是可以舍弃的。</p></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="4142158067"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="5618891265"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><footer class="post-footer"><div class="post-nav"><div class="post-nav-next post-nav-item"><a href="/2017/java基础servlet一.html" rel="next" title="Java基础——Servlet（一）"><i class="fa fa-chevron-left"></i> Java基础——Servlet（一）</a></div><span class="post-nav-divider"></span><div class="post-nav-prev post-nav-item"><a href="/2017/赢在面试之java框架篇9.html" rel="prev" title="赢在面试之Java框架篇（9）">赢在面试之Java框架篇（9） <i class="fa fa-chevron-right"></i></a></div></div></footer></div></article><div class="post-spread"></div></div></div></div><div class="sidebar-toggle"><div class="sidebar-toggle-line-wrap"><span class="sidebar-toggle-line sidebar-toggle-line-first"></span> <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span> <span class="sidebar-toggle-line sidebar-toggle-line-last"></span></div></div><aside id="sidebar" class="sidebar"><div class="sidebar-inner"><ul class="sidebar-nav motion-element"><li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">Table of Contents</li><li class="sidebar-nav-overview" data-target="site-overview-wrap">Overview</li></ul><section class="site-overview-wrap sidebar-panel"><div class="site-overview"><div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person"><p class="site-author-name" itemprop="name">Hello</p><p class="site-description motion-element" itemprop="description"></p></div><nav class="site-state motion-element"><div class="site-state-item site-state-posts"><a href="/archives/"><span class="site-state-item-count">1358</span> <span class="site-state-item-name">posts</span></a></div></nav></div></section><section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active"><div class="post-toc"><div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#dubbo源码分析（二）：超时原理以及应用场景"><span class="nav-number">1.</span> <span class="nav-text">dubbo源码分析（二）：超时原理以及应用场景</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#超时问题"><span class="nav-number">2.</span> <span class="nav-text">超时问题</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#问题解答"><span class="nav-number">3.</span> <span class="nav-text">问题解答</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#RPC场景"><span class="nav-number">3.1.</span> <span class="nav-text">RPC场景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#超时是针对消费端还是服务端？"><span class="nav-number">3.2.</span> <span class="nav-text">超时是针对消费端还是服务端？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#超时在哪设置？"><span class="nav-number">3.3.</span> <span class="nav-text">超时在哪设置？</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#消费端"><span class="nav-number">3.3.1.</span> <span class="nav-text">消费端</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#服务端"><span class="nav-number">3.3.2.</span> <span class="nav-text">服务端</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#超时设置的优先级是什么？"><span class="nav-number">3.4.</span> <span class="nav-text">超时设置的优先级是什么？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#超时的实现原理是什么？"><span class="nav-number">3.5.</span> <span class="nav-text">超时的实现原理是什么？</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ResponseFuture接口定义"><span class="nav-number">3.5.1.</span> <span class="nav-text">ResponseFuture接口定义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ReponseFuture的实现类：DefaultFuture"><span class="nav-number">3.5.2.</span> <span class="nav-text">ReponseFuture的实现类：DefaultFuture</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#超时解决的是什么问题？"><span class="nav-number">3.6.</span> <span class="nav-text">超时解决的是什么问题？</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#netty-boss"><span class="nav-number">3.6.1.</span> <span class="nav-text">netty boss</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#netty-wokers"><span class="nav-number">3.6.2.</span> <span class="nav-text">netty wokers</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#busines（业务线程池）"><span class="nav-number">3.6.3.</span> <span class="nav-text">busines（业务线程池）</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#超时与服务降级"><span class="nav-number">4.</span> <span class="nav-text">超时与服务降级</span></a></li></ol></div></div></section></div></aside><div class="sfix"><div class="fixedme"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460" data-ad-format="auto"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script></div></div></main><footer id="footer" class="footer"><div class="footer-inner"><div class="copyright">&copy; <span itemprop="copyrightYear">2018</span> <span class="with-love"><i class="fa fa-user"></i> </span><span class="author" itemprop="copyrightHolder">Hello</span></div><div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div><span class="post-meta-divider">|</span><div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div></div></footer><div class="back-to-top"><i class="fa fa-arrow-up"></i></div></div><script type="text/javascript">"[object Function]"!==Object.prototype.toString.call(window.Promise)&&(window.Promise=null)</script><script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script><script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script><script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script><script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script><script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script></body></html><!-- rebuild by neat -->

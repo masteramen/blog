@@ -1,0 +1,153 @@
+<!-- build time:Sat Oct 27 2018 21:00:20 GMT+0800 (CST) --><!DOCTYPE html><html class="theme-next muse use-motion"><head><meta name="generator" content="Hexo 3.8.0"><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"><meta name="theme-color" content="#222"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"><link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css"><link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css"><link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4"><link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222"><meta name="description" content="自制字幕遮挡器（未完成）实际上，如果百度“字幕遮挡器，很可以找到一些结果，但多半是不透明的，不符合我的使用需要，再者自己写这种小工具是很有趣的学习过程。这个学习过程中有一些心得，不得不记录一二。程序用途对字幕进行遮挡（学习英语用）在网页中对一段文字加上底色，提高阅读时的注意力程度（个人需求）两种用途如下图所示功能要求根据程序的用途可以看出，该程序必须实现以下功能：后三个功能实际上都是因为无标题，所"><meta name="keywords" content="JAVA,面试"><meta property="og:type" content="article"><meta property="og:title" content="自制字幕遮挡器（未完成）"><meta property="og:url" content="http://www.jfox.info/2017/自制字幕遮挡器未完成.html"><meta property="og:site_name" content="java面试"><meta property="og:description" content="自制字幕遮挡器（未完成）实际上，如果百度“字幕遮挡器，很可以找到一些结果，但多半是不透明的，不符合我的使用需要，再者自己写这种小工具是很有趣的学习过程。这个学习过程中有一些心得，不得不记录一二。程序用途对字幕进行遮挡（学习英语用）在网页中对一段文字加上底色，提高阅读时的注意力程度（个人需求）两种用途如下图所示功能要求根据程序的用途可以看出，该程序必须实现以下功能：后三个功能实际上都是因为无标题，所"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="http://www.jfox.info/2017/1150/75f30a2.png"><meta property="og:image" content="http://www.jfox.info/2017/1150/9c3ca78.png"><meta property="og:updated_time" content="2018-10-27T12:29:39.352Z"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="自制字幕遮挡器（未完成）"><meta name="twitter:description" content="自制字幕遮挡器（未完成）实际上，如果百度“字幕遮挡器，很可以找到一些结果，但多半是不透明的，不符合我的使用需要，再者自己写这种小工具是很有趣的学习过程。这个学习过程中有一些心得，不得不记录一二。程序用途对字幕进行遮挡（学习英语用）在网页中对一段文字加上底色，提高阅读时的注意力程度（个人需求）两种用途如下图所示功能要求根据程序的用途可以看出，该程序必须实现以下功能：后三个功能实际上都是因为无标题，所"><meta name="twitter:image" content="http://www.jfox.info/2017/1150/75f30a2.png"><script type="text/javascript" id="hexo.configurations">var NexT=window.NexT||{},CONFIG={root:"/",scheme:"Muse",version:"5.1.4",sidebar:{position:"left",display:"post",offset:12,b2t:!1,scrollpercent:!1,onmobile:!1},fancybox:!0,tabs:!0,motion:{enable:!0,async:!1,transition:{post_block:"fadeIn",post_header:"slideDownIn",post_body:"slideDownIn",coll_header:"slideLeftIn",sidebar:"slideUpIn"}},duoshuo:{userId:"0",author:"Author"},algolia:{applicationID:"",apiKey:"",indexName:"",hits:{per_page:10},labels:{input_placeholder:"Search for Posts",hits_empty:"We didn't find any results for the search: ${query}",hits_stats:"${hits} results found in ${time} ms"}}}</script><link rel="canonical" href="http://www.jfox.info/2017/自制字幕遮挡器未完成.html"><title>自制字幕遮挡器（未完成） | java面试</title></head><body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN"><div class="container sidebar-position-left page-post-detail"><div class="headband"></div><header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="header-inner"><div class="site-brand-wrapper"><div class="site-meta"><div class="custom-logo-site-title"><a href="/" class="brand" rel="start"><span class="logo-line-before"><i></i></span> <span class="site-title">java面试</span> <span class="logo-line-after"><i></i></span></a></div><p class="site-subtitle"></p></div><div class="site-nav-toggle"><button><span class="btn-bar"></span> <span class="btn-bar"></span> <span class="btn-bar"></span></button></div></div><nav class="site-nav"><ul id="menu" class="menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i><br>Home</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i><br>Archives</a></li></ul></nav></div></header><main id="main" class="main"><div class="main-inner"><div class="content-wrap"><div id="content" class="content"><div id="posts" class="posts-expand"><article class="post post-type-normal" itemscope itemtype="http://schema.org/Article"><div class="post-block"><link itemprop="mainEntityOfPage" href="http://www.jfox.info/2017/自制字幕遮挡器未完成.html"><span hidden itemprop="author" itemscope itemtype="http://schema.org/Person"><meta itemprop="name" content="Hello"><meta itemprop="description" content=""><meta itemprop="image" content="/images/avatar.gif"></span><span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><meta itemprop="name" content="java面试"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">自制字幕遮挡器（未完成）</h1><div class="post-meta"><span class="post-time"><span class="post-meta-item-icon"><i class="fa fa-calendar-o"></i> </span><span class="post-meta-item-text">Posted on</span> <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-01-01T23:54:10+08:00">2017-01-01</time></span></div></header><div class="post-body" itemprop="articleBody"><h1 id="自制字幕遮挡器（未完成）"><a href="#自制字幕遮挡器（未完成）" class="headerlink" title="自制字幕遮挡器（未完成）"></a>自制字幕遮挡器（未完成）</h1><p>实际上，如果百度“字幕遮挡器，很可以找到一些结果，但多半是不透明的，不符合我的使用需要，再者自己写这种小工具是很有趣的学习过程。这个学习过程中有一些心得，不得不记录一二。</p><h1 id="程序用途"><a href="#程序用途" class="headerlink" title="程序用途"></a>程序用途</h1><ul><li><p>对字幕进行遮挡（学习英语用）</p></li><li><p>在网页中对一段文字加上底色，提高阅读时的注意力程度（个人需求）</p></li></ul><p>两种用途如下图所示<br><img src="/2017/1150/75f30a2.png" alt=""><br><img src="/2017/1150/9c3ca78.png" alt=""></p><h1 id="功能要求"><a href="#功能要求" class="headerlink" title="功能要求"></a>功能要求</h1><p>根据程序的用途可以看出，该程序必须实现以下功能：</p><p>后三个功能实际上都是因为无标题，所以需要自己实现。此外，还有一些锦上添花的功能：</p><ul><li><p>颜色选择（包括不透明度的调节）</p></li><li><p>切换是否总在最前</p></li><li><p>记忆颜色与位置</p></li><li><p>防止窗口缩得过小而无法找到</p></li></ul><p>后来在编程实现的过程中也会按这些功能来描述。</p><h1 id="编程实现"><a href="#编程实现" class="headerlink" title="编程实现"></a>编程实现</h1><p>语言： Java</p><p>程序的功能并不复杂，因此结构上也偷了些懒。一个主类<code>Cover</code>，其中调用起继承自<code>JFrame</code>的<code>CoverFrame</code>。<br>这里都是一些很定式的写法，没什么特别的</p><pre><code>public class Cover {
+    public static void main(String[] args) {
+        EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                CoverFrame frame = new CoverFrame();
+                ...
+            }
+        });
+    }
+}
+
+class CoverFrame extends JFrame {
+    ...
+}
+</code></pre><p>程序的各项主要功能基本上是在<code>CoverFrame</code>中实现的，具体将在后文一一叙述。</p><h2 id="半透明窗体"><a href="#半透明窗体" class="headerlink" title="半透明窗体"></a>半透明窗体</h2><p>半透明窗体的关键是先要去掉窗体的标题和边框，然后给该Frame设置半透明背景色即可。</p><pre><code>class CoverFrame extends JFrame {
+    ...
+    private Color color = new Color(0, 0, 0, 200);  //半透明
+    ...
+
+    public CoverFrame() {
+        ...
+        setUndecorated(true);  //去掉边框
+        ...
+        setBackground(color);
+        ...
+        getContentPane().setBackground(color);
+        }
+}
+</code></pre><p>这部分比较简单，不过值得一说的是，如果窗体将保持半透明，即窗体不会被设置成不透明色的话（因为后面加入了颜色选择，用户完全可能选择完全不透明的颜色），只要对<code>CoverFrame</code>对象<code>setBackground(color)</code>即可。<br>但一旦选择了完全不透明的颜色（Alpha值为255），窗口则会变为默认的灰色。避免这种情况，就需要把Frame的ContentPane也设置成相同颜色<code>getContentPane().setBackground(color)</code>。</p><h2 id="总在最前"><a href="#总在最前" class="headerlink" title="总在最前"></a>总在最前</h2><p>想要窗体总在最前也比较简单，有一个现成的函数<code>setAlwaysOnTop</code>来控制。要让程序能切换是否总在最前，也只要在CoverFrame中设置一个布尔型的state，作为是否总在最前的开关，并添加一个<code>JCheckBoxMenuItem</code>到窗口的<code>JPopupMenu</code>中去。</p><pre><code>class CoverFrame extends JFrame {
+    ...
+    private JPopupMenu popupMenu = new JPopupMenu();   //右键菜单 
+    private Color color = new Color(0, 0, 0, 200);
+    private boolean onTop = true;  //默认总在最前
+    ...
+
+    public CoverFrame() {
+        setAlwaysOnTop(onTop);
+        ...
+        CoverFrame that = this;
+
+
+        // set up popup menus
+        ...
+        JMenuItem topItem = new JCheckBoxMenuItem(&quot;Always On Top&quot;, true);  //带勾选框，默认勾选
+        topItem.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
+                onTop = !onTop; 
+                setAlwaysOnTop(onTop);  //改变当前状态
+            }
+        });
+        popupMenu.add(topItem);
+        ...
+    }
+}
+</code></pre><h2 id="拖动与大小调整"><a href="#拖动与大小调整" class="headerlink" title="拖动与大小调整"></a>拖动与大小调整</h2><p>这两个功能本来应该是一个窗体固有的，但因为把标题与边框都去掉了，现在都需要自己来实现。因为两个功能的代码犬牙交错，所以放在一起来讲了。<br>拖动的原理是，点击时记录点击位置（相对于窗口原点），拖动时获得鼠标在屏幕上的绝对位置，这一位置减去之前记录的相对点击位置，就是新的窗口的位置了，这样就实现了窗口的拖动功能。<br>大小调整的思路则是判断点击位置是处于窗口的边缘位置，如果是，改变鼠标指针。如果位置处于左侧或者上方，拖动里改变宽/高，并改变窗口位置，如果在右侧或者正文，拖动时改变窗口的宽/高。</p><pre><code>class CoverFrame extends JFrame {
+    private Point point = new Point(0, 0); //用于保存点击位置
+    ...
+
+    public CoverFrame() {
+        ...
+        addMouseListener(new MouseAdapter() { //监听鼠标点击
+            public void mousePressed(MouseEvent event) {
+                // record the point where you begin to drag
+                point = event.getPoint();  //记录点击位置
+                popupEvent(event);  //右键菜单
+            }
+            public void mouseReleased(MouseEvent event) {
+                popupEvent(event);
+            }
+
+            private void popupEvent(MouseEvent event) {
+                if (event.isPopupTrigger()) {
+                    popupMenu.show(event.getComponent(), event.getX(),
+                            event.getY()); //在右键位置显示菜单
+                }
+            }
+
+        } );
+
+        addMouseMotionListener(new MouseMotionListener() {
+            // 用来标识点击区域（上下左右）
+            private boolean top = false;
+            private boolean down = false;
+            private boolean left = false;
+            private boolean right = false;
+            final private int GAP = 3;
+
+            public void mouseMoved(MouseEvent event) {
+                //窗体的宽高
+                int width = getWidth();
+                int height = getHeight();
+                //点击位置（相对）
+                int x = event.getX();
+                int y = event.getY();
+
+                top = false;
+                down = false;
+                left = false;
+                right = false;
+                if (Math.abs(y) &lt;= GAP) {
+                    top = true;
+                } else if (Math.abs(y-height) &lt;=GAP) {
+                    down = true;
+                }
+
+                if (Math.abs(x) &lt;= GAP) {
+                    left = true;
+                } else if (Math.abs(x-width) &lt;=GAP) {
+                    right = true;
+                }
+                //如果判断在边缘就改变鼠标指针
+                setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+                if (top || down)
+                    setCursor(Cursor.getPredefinedCursor(Cursor.N_RESIZE_CURSOR));
+                if (left || right)
+                    setCursor(Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR));
+                if ((left &amp;&amp; top) || (right &amp;&amp; down))
+                    setCursor(Cursor.getPredefinedCursor(Cursor.NW_RESIZE_CURSOR));
+                if ((right &amp;&amp; top) || (left &amp;&amp; down))
+                    setCursor(Cursor.getPredefinedCursor(Cursor.NE_RESIZE_CURSOR));
+            }
+
+            public void mouseDragged(MouseEvent event) {
+                bounds = getBounds();
+                if (!(top || down || left || right)) {
+                    // 在中间拖动窗口
+                    Point absPoint = event.getLocationOnScreen();
+                    // set the location of window relate to where you click
+                    absPoint.translate(-(int)point.getX(),
+                            -(int)point.getY());
+                    setLocation(absPoint);
+                } else {
+                    //在四角缩放窗体
+                    if (top) {
+                        bounds.setLocation((int)bounds.getX(), (int)bounds.getY() + event.getY());
+                        bounds.setSize((int)bounds.getWidth(), (int)bounds.getHeight() - event.getY());
+                    }
+                    if (down) {
+                        bounds.setSize((int)bounds.getWidth(), event.getY());
+                    }
+                    if (left) {
+                        bounds.setLocation((int)bounds.getX() + event.getX(), (int)bounds.getY());
+                        bounds.setSize((int)bounds.getWidth() - event.getX(), (int)bounds.getHeight());
+                    }
+                    if (right) {
+                        bounds.setSize(event.getX(),(int)bounds.getHeight());
+                    }
+                    validateBounds();
+                    setBounds(bounds);
+                }
+            }
+        } );
+</code></pre><h2 id="关闭与保存设置"><a href="#关闭与保存设置" class="headerlink" title="关闭与保存设置"></a>关闭与保存设置</h2><p>关闭本来其实是没啥说的，就算是没有标题栏，但是因为把颜色和位置信息记录下来，还是有一些要注意的地方。</p><p>一般通过按键关闭窗口，会调用<code>dispose</code>函数，但是这样的话，并不会触发windowClose的事件。要主动发出这一事件才可以。</p></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="4142158067"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="5618891265"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><footer class="post-footer"><div class="post-nav"><div class="post-nav-next post-nav-item"><a href="/2017/java基础系列calendar类-2.html" rel="next" title="java基础系列–Calendar类"><i class="fa fa-chevron-left"></i> java基础系列–Calendar类</a></div><span class="post-nav-divider"></span><div class="post-nav-prev post-nav-item"><a href="/2017/jdbc02利用jdbc连接数据库使用数据库连接池.html" rel="prev" title="JDBC02 利用JDBC连接数据库【使用数据库连接池】">JDBC02 利用JDBC连接数据库【使用数据库连接池】 <i class="fa fa-chevron-right"></i></a></div></div></footer></div></article><div class="post-spread"></div></div></div></div><div class="sidebar-toggle"><div class="sidebar-toggle-line-wrap"><span class="sidebar-toggle-line sidebar-toggle-line-first"></span> <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span> <span class="sidebar-toggle-line sidebar-toggle-line-last"></span></div></div><aside id="sidebar" class="sidebar"><div class="sidebar-inner"><ul class="sidebar-nav motion-element"><li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">Table of Contents</li><li class="sidebar-nav-overview" data-target="site-overview-wrap">Overview</li></ul><section class="site-overview-wrap sidebar-panel"><div class="site-overview"><div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person"><p class="site-author-name" itemprop="name">Hello</p><p class="site-description motion-element" itemprop="description"></p></div><nav class="site-state motion-element"><div class="site-state-item site-state-posts"><a href="/archives/"><span class="site-state-item-count">1358</span> <span class="site-state-item-name">posts</span></a></div></nav></div></section><section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active"><div class="post-toc"><div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#自制字幕遮挡器（未完成）"><span class="nav-number">1.</span> <span class="nav-text">自制字幕遮挡器（未完成）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#程序用途"><span class="nav-number">2.</span> <span class="nav-text">程序用途</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#功能要求"><span class="nav-number">3.</span> <span class="nav-text">功能要求</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#编程实现"><span class="nav-number">4.</span> <span class="nav-text">编程实现</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#半透明窗体"><span class="nav-number">4.1.</span> <span class="nav-text">半透明窗体</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总在最前"><span class="nav-number">4.2.</span> <span class="nav-text">总在最前</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#拖动与大小调整"><span class="nav-number">4.3.</span> <span class="nav-text">拖动与大小调整</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#关闭与保存设置"><span class="nav-number">4.4.</span> <span class="nav-text">关闭与保存设置</span></a></li></ol></li></ol></div></div></section></div></aside><div class="sfix"><div class="fixedme"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460" data-ad-format="auto"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script></div></div></main><footer id="footer" class="footer"><div class="footer-inner"><div class="copyright">&copy; <span itemprop="copyrightYear">2018</span> <span class="with-love"><i class="fa fa-user"></i> </span><span class="author" itemprop="copyrightHolder">Hello</span></div><div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div><span class="post-meta-divider">|</span><div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div></div></footer><div class="back-to-top"><i class="fa fa-arrow-up"></i></div></div><script type="text/javascript">"[object Function]"!==Object.prototype.toString.call(window.Promise)&&(window.Promise=null)</script><script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script><script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script><script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script><script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script><script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script></body></html><!-- rebuild by neat -->

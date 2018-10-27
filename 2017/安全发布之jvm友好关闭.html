@@ -1,0 +1,93 @@
+<!-- build time:Sat Oct 27 2018 21:00:21 GMT+0800 (CST) --><!DOCTYPE html><html class="theme-next muse use-motion"><head><meta name="generator" content="Hexo 3.8.0"><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"><meta name="theme-color" content="#222"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"><link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css"><link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css"><link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4"><link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222"><meta name="description" content="小伙伴们一定很熟悉kill -9 来杀某个进程了，其实这样做在生产系统中是存在安全隐患的。我们知道线程分为守护线程和用户线程。如果是系统中存在的均是守护线程，那么调用JVM的关闭讲课以关闭否则（存在至少一个用户线程）是无法正常关闭的。因此代码能否响应中断是一个很重要的标志。我们熟悉的Java的GC线程就是一个很典型的守护线程。各位在关闭tomcat时，在使用到线程池时经常会碰到调用tomcat的关"><meta name="keywords" content="JAVA,面试"><meta property="og:type" content="article"><meta property="og:title" content="安全发布之Jvm友好关闭"><meta property="og:url" content="http://www.jfox.info/2017/安全发布之jvm友好关闭.html"><meta property="og:site_name" content="java面试"><meta property="og:description" content="小伙伴们一定很熟悉kill -9 来杀某个进程了，其实这样做在生产系统中是存在安全隐患的。我们知道线程分为守护线程和用户线程。如果是系统中存在的均是守护线程，那么调用JVM的关闭讲课以关闭否则（存在至少一个用户线程）是无法正常关闭的。因此代码能否响应中断是一个很重要的标志。我们熟悉的Java的GC线程就是一个很典型的守护线程。各位在关闭tomcat时，在使用到线程池时经常会碰到调用tomcat的关"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="http://www.jfox.info/2017/1087/bad2e38.png"><meta property="og:updated_time" content="2018-10-27T12:29:37.419Z"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="安全发布之Jvm友好关闭"><meta name="twitter:description" content="小伙伴们一定很熟悉kill -9 来杀某个进程了，其实这样做在生产系统中是存在安全隐患的。我们知道线程分为守护线程和用户线程。如果是系统中存在的均是守护线程，那么调用JVM的关闭讲课以关闭否则（存在至少一个用户线程）是无法正常关闭的。因此代码能否响应中断是一个很重要的标志。我们熟悉的Java的GC线程就是一个很典型的守护线程。各位在关闭tomcat时，在使用到线程池时经常会碰到调用tomcat的关"><meta name="twitter:image" content="http://www.jfox.info/2017/1087/bad2e38.png"><script type="text/javascript" id="hexo.configurations">var NexT=window.NexT||{},CONFIG={root:"/",scheme:"Muse",version:"5.1.4",sidebar:{position:"left",display:"post",offset:12,b2t:!1,scrollpercent:!1,onmobile:!1},fancybox:!0,tabs:!0,motion:{enable:!0,async:!1,transition:{post_block:"fadeIn",post_header:"slideDownIn",post_body:"slideDownIn",coll_header:"slideLeftIn",sidebar:"slideUpIn"}},duoshuo:{userId:"0",author:"Author"},algolia:{applicationID:"",apiKey:"",indexName:"",hits:{per_page:10},labels:{input_placeholder:"Search for Posts",hits_empty:"We didn't find any results for the search: ${query}",hits_stats:"${hits} results found in ${time} ms"}}}</script><link rel="canonical" href="http://www.jfox.info/2017/安全发布之jvm友好关闭.html"><title>安全发布之Jvm友好关闭 | java面试</title></head><body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN"><div class="container sidebar-position-left page-post-detail"><div class="headband"></div><header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="header-inner"><div class="site-brand-wrapper"><div class="site-meta"><div class="custom-logo-site-title"><a href="/" class="brand" rel="start"><span class="logo-line-before"><i></i></span> <span class="site-title">java面试</span> <span class="logo-line-after"><i></i></span></a></div><p class="site-subtitle"></p></div><div class="site-nav-toggle"><button><span class="btn-bar"></span> <span class="btn-bar"></span> <span class="btn-bar"></span></button></div></div><nav class="site-nav"><ul id="menu" class="menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i><br>Home</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i><br>Archives</a></li></ul></nav></div></header><main id="main" class="main"><div class="main-inner"><div class="content-wrap"><div id="content" class="content"><div id="posts" class="posts-expand"><article class="post post-type-normal" itemscope itemtype="http://schema.org/Article"><div class="post-block"><link itemprop="mainEntityOfPage" href="http://www.jfox.info/2017/安全发布之jvm友好关闭.html"><span hidden itemprop="author" itemscope itemtype="http://schema.org/Person"><meta itemprop="name" content="Hello"><meta itemprop="description" content=""><meta itemprop="image" content="/images/avatar.gif"></span><span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><meta itemprop="name" content="java面试"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">安全发布之Jvm友好关闭</h1><div class="post-meta"><span class="post-time"><span class="post-meta-item-icon"><i class="fa fa-calendar-o"></i> </span><span class="post-meta-item-text">Posted on</span> <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-01-01T23:53:07+08:00">2017-01-01</time></span></div></header><div class="post-body" itemprop="articleBody"><p>小伙伴们一定很熟悉kill -9 来杀某个进程了，其实这样做在生产系统中是存在安全隐患的。</p><p>我们知道线程分为守护线程和用户线程。如果是系统中存在的均是守护线程，那么调用JVM的关闭讲课以关闭否则（存在至少一个用户线程）是无法正常关闭的。</p><p>因此代码能否响应中断是一个很重要的标志。</p><p>我们熟悉的Java的GC线程</p><p><img src="/2017/1087/bad2e38.png" alt=""></p><p>就是一个很典型的守护线程。</p><p>各位在关闭tomcat时，在使用到线程池时经常会碰到调用tomcat的关闭脚本无法正常关闭就是因为系统中存在一些非守护线程导致无法正常退出导致。</p><p>那么各位可能想了，我将所有的线程池起的线程都设置为守护线程那么在调用shutdown的时候是否时就会正常关闭呢？</p><pre><code>thread.setDaemon(true);
+</code></pre><p>答案是肯定的，但是带来一个其他的问题===》如果此时代码只执行了一半那么怎么处理呢？比如你消费了一个jms的消息，但是没有消费完成，然后‘砰’所有的线程灰飞烟灭，恰巧这个消息里面是个1000w的大单……</p><pre><code>严重: The web application [] registered the JDBC driver [com.mysql.jdbc.Driver] but failed to unregister it when the web application was stopped. To prevent a memory leak, the JDBC Driver has been forcibly unregistered. 
+2013-1-8 15:02:53 org.apache.catalina.loader.WebappClassLoader clearReferencesThreads 
+严重: The web application [] appears to have started a thread named [Thread-2] but has failed to stop it. This is very likely to create a memory leak. 
+2013-1-8 15:02:53 org.apache.catalina.loader.WebappClassLoader clearReferencesThreads 
+严重: The web application [] appears to have started a thread named [thread-snatch-picture] but has failed to stop it. This is very likely to create a memory leak. 
+2013-1-8 15:02:53 org.apache.catalina.loader.WebappClassLoader clearReferencesThreads 
+严重: The web application [] appears to have started a thread named [Xmemcached-Reactor-0] but has failed to stop it. This is very likely to create a memory leak. 
+2013-1-8 15:02:53 org.apache.catalina.loader.WebappClassLoader clearReferencesThreads 
+严重: The web application [] appears to have started a thread named [Xmemcached-Reactor-1] but has failed to stop it. This is very likely to create a memory leak. 
+2013-1-8 15:02:53 org.apache.catalina.loader.WebappClassLoader clearReferencesThreads 
+严重: The web application [] appears to have started a thread named [Xmemcached-Reactor-2] but has failed to stop it. This is very likely to create a memory leak. 
+2013-1-8 15:02:53 org.apache.catalina.loader.WebappClassLoader clearReferencesThreads 
+严重: The web application [] appears to have started a thread named [Xmemcached-Reactor-3] but has failed to stop it. This is very likely to create a memory leak. 
+</code></pre><p>通常我们调用tomcat关闭脚本如果没有关闭那么log重可能吐出类似下面的日志</p><p>某些小伙伴还可能看到如下的log</p><pre><code>Exception in thread &quot;Xmemcached-Reactor-3&quot; java.lang.NoClassDefFoundError: org/apache/log4j/spi/ThrowableInformation
+ at org.apache.log4j.spi.LoggingEvent.(LoggingEvent.java:159)
+ at org.apache.log4j.Category.forcedLog(Category.java:391)
+ at org.apache.log4j.Category.log(Category.java:856)
+ at org.slf4j.impl.Log4jLoggerAdapter.info(Log4jLoggerAdapter.java:382)
+ at com.captaindebug.longpoll.service.DeferredResultService.run(DeferredResultService.java:75)
+ at java.lang.Thread.run(Thread.java:722)
+Caused by: java.lang.ClassNotFoundException: org.apache.log4j.spi.ThrowableInformation
+ at org.apache.catalina.loader.WebappClassLoader.loadClass(WebappClassLoader.java:1714)
+ at org.apache.catalina.loader.WebappClassLoader.loadClass(WebappClassLoader.java:1559)
+ ... 6 more
+</code></pre><p>上述的原因是由于出现类卸载之后使用了一些已经不存在类加载器的类导致报错</p><p>小伙伴可能觉得太Easy了，怎么能难道有一定经验的开发小伙伴呢？</p><pre><code>kill -9 `ps -ef|grep &lt;tomcat&gt;|awk &apos;{print $2}&apos;`
+</code></pre><p>当然下次启动时没有问题了，但是可能就导致某些消费没有完成。</p><p>本篇重点来了 ShutDownHook 顾名思义这是在Jvm关闭时的钩子函数</p><p>“一个shutdown hook就是一个初始化但没有启动的线程。 当虚拟机开始执行关闭程序时，它会启动所有已注册的shutdown hook（不按先后顺序）并且并发执行。”</p><p>比如我们查看一下tomcat的shutdownhook</p><pre><code>/**
+ * Start a new server instance.
+ */
+public void start() {
+
+    if (getServer() == null) {
+        load();
+    }
+
+    if (getServer() == null) {
+        log.fatal(&quot;Cannot start server. Server instance is not configured.&quot;);
+        return;
+    }
+
+    long t1 = System.nanoTime();
+
+    // Start the new server
+    try {
+        getServer().start();
+    } catch (LifecycleException e) {
+        log.fatal(sm.getString(&quot;catalina.serverStartFail&quot;), e);
+        try {
+            getServer().destroy();
+        } catch (LifecycleException e1) {
+            log.debug(&quot;destroy() failed for failed Server &quot;, e1);
+        }
+        return;
+    }
+
+    long t2 = System.nanoTime();
+    if(log.isInfoEnabled()) {
+        log.info(&quot;Server startup in &quot; + ((t2 - t1) / 1000000) + &quot; ms&quot;);
+    }
+
+    // Register shutdown hook
+    if (useShutdownHook) {
+        if (shutdownHook == null) {
+            shutdownHook = new CatalinaShutdownHook();
+        }
+        Runtime.getRuntime().addShutdownHook(shutdownHook);
+
+        // If JULI is being used, disable JULI&apos;s shutdown hook since
+        // shutdown hooks run in parallel and log messages may be lost
+        // if JULI&apos;s hook completes before the CatalinaShutdownHook()
+        LogManager logManager = LogManager.getLogManager();
+        if (logManager instanceof ClassLoaderLogManager) {
+            ((ClassLoaderLogManager) logManager).setUseShutdownHook(
+                    false);
+        }
+    }
+
+    if (await) {
+        await();
+        stop();
+    }
+}
+</code></pre><p>再比如Dubbo中各个组件中</p><pre><code>static {
+    Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+        public void run() {
+            if (logger.isInfoEnabled()) {
+                logger.info(&quot;Run shutdown hook now.&quot;);
+            }
+            ProtocolConfig.destroyAll();
+        }
+    }, &quot;DubboShutdownHook&quot;));
+}
+</code></pre><p>我们可以在对应使用清理Hook</p></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="4142158067"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="5618891265"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><footer class="post-footer"><div class="post-nav"><div class="post-nav-next post-nav-item"><a href="/2017/tomcat学习笔记13session.html" rel="next" title="【Tomcat学习笔记】13-Session"><i class="fa fa-chevron-left"></i> 【Tomcat学习笔记】13-Session</a></div><span class="post-nav-divider"></span><div class="post-nav-prev post-nav-item"><a href="/2017/当一家公司高薪邀请你去做管理储备工程师时去还.html" rel="prev" title="当一家公司高薪邀请你去做管理储备工程师时，去还是不去？">当一家公司高薪邀请你去做管理储备工程师时，去还是不去？ <i class="fa fa-chevron-right"></i></a></div></div></footer></div></article><div class="post-spread"></div></div></div></div><div class="sidebar-toggle"><div class="sidebar-toggle-line-wrap"><span class="sidebar-toggle-line sidebar-toggle-line-first"></span> <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span> <span class="sidebar-toggle-line sidebar-toggle-line-last"></span></div></div><aside id="sidebar" class="sidebar"><div class="sidebar-inner"><section class="site-overview-wrap sidebar-panel sidebar-panel-active"><div class="site-overview"><div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person"><p class="site-author-name" itemprop="name">Hello</p><p class="site-description motion-element" itemprop="description"></p></div><nav class="site-state motion-element"><div class="site-state-item site-state-posts"><a href="/archives/"><span class="site-state-item-count">1358</span> <span class="site-state-item-name">posts</span></a></div></nav></div></section></div></aside><div class="sfix"><div class="fixedme"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460" data-ad-format="auto"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script></div></div></main><footer id="footer" class="footer"><div class="footer-inner"><div class="copyright">&copy; <span itemprop="copyrightYear">2018</span> <span class="with-love"><i class="fa fa-user"></i> </span><span class="author" itemprop="copyrightHolder">Hello</span></div><div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div><span class="post-meta-divider">|</span><div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div></div></footer><div class="back-to-top"><i class="fa fa-arrow-up"></i></div></div><script type="text/javascript">"[object Function]"!==Object.prototype.toString.call(window.Promise)&&(window.Promise=null)</script><script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script><script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script><script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script><script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script><script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script></body></html><!-- rebuild by neat -->

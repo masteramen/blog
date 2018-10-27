@@ -1,0 +1,104 @@
+<!-- build time:Sat Oct 27 2018 21:00:17 GMT+0800 (CST) --><!DOCTYPE html><html class="theme-next muse use-motion"><head><meta name="generator" content="Hexo 3.8.0"><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"><meta name="theme-color" content="#222"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"><link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css"><link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css"><link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4"><link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222"><meta name="description" content="读研期间主要写的是Java后端，工作之后开始更多地接触Node.js写后端程序，有对比才有伤害，让我深深的感受到了Java的重量级，开发的时候各种配置，部署的时候还有一堆要忙活，相对而言Node.js之类的新兴的后端语言显得格外的清新小巧。如果你觉得既然如此就可以就此放弃Java了，那就太草率了，毕竟Java作为后端主流语言不会就这么自甘堕落，Spring Boot应运而生，虽然很早之前就听过Sp"><meta name="keywords" content="JAVA,面试"><meta property="og:type" content="article"><meta property="og:title" content="Spring Boot那些事(0)-入门篇"><meta property="og:url" content="http://www.jfox.info/2017/springboot那些事0入门篇.html"><meta property="og:site_name" content="java面试"><meta property="og:description" content="读研期间主要写的是Java后端，工作之后开始更多地接触Node.js写后端程序，有对比才有伤害，让我深深的感受到了Java的重量级，开发的时候各种配置，部署的时候还有一堆要忙活，相对而言Node.js之类的新兴的后端语言显得格外的清新小巧。如果你觉得既然如此就可以就此放弃Java了，那就太草率了，毕竟Java作为后端主流语言不会就这么自甘堕落，Spring Boot应运而生，虽然很早之前就听过Sp"><meta property="og:locale" content="zh_CN"><meta property="og:updated_time" content="2018-10-27T12:29:39.000Z"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="Spring Boot那些事(0)-入门篇"><meta name="twitter:description" content="读研期间主要写的是Java后端，工作之后开始更多地接触Node.js写后端程序，有对比才有伤害，让我深深的感受到了Java的重量级，开发的时候各种配置，部署的时候还有一堆要忙活，相对而言Node.js之类的新兴的后端语言显得格外的清新小巧。如果你觉得既然如此就可以就此放弃Java了，那就太草率了，毕竟Java作为后端主流语言不会就这么自甘堕落，Spring Boot应运而生，虽然很早之前就听过Sp"><script type="text/javascript" id="hexo.configurations">var NexT=window.NexT||{},CONFIG={root:"/",scheme:"Muse",version:"5.1.4",sidebar:{position:"left",display:"post",offset:12,b2t:!1,scrollpercent:!1,onmobile:!1},fancybox:!0,tabs:!0,motion:{enable:!0,async:!1,transition:{post_block:"fadeIn",post_header:"slideDownIn",post_body:"slideDownIn",coll_header:"slideLeftIn",sidebar:"slideUpIn"}},duoshuo:{userId:"0",author:"Author"},algolia:{applicationID:"",apiKey:"",indexName:"",hits:{per_page:10},labels:{input_placeholder:"Search for Posts",hits_empty:"We didn't find any results for the search: ${query}",hits_stats:"${hits} results found in ${time} ms"}}}</script><link rel="canonical" href="http://www.jfox.info/2017/springboot那些事0入门篇.html"><title>Spring Boot那些事(0)-入门篇 | java面试</title></head><body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN"><div class="container sidebar-position-left page-post-detail"><div class="headband"></div><header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="header-inner"><div class="site-brand-wrapper"><div class="site-meta"><div class="custom-logo-site-title"><a href="/" class="brand" rel="start"><span class="logo-line-before"><i></i></span> <span class="site-title">java面试</span> <span class="logo-line-after"><i></i></span></a></div><p class="site-subtitle"></p></div><div class="site-nav-toggle"><button><span class="btn-bar"></span> <span class="btn-bar"></span> <span class="btn-bar"></span></button></div></div><nav class="site-nav"><ul id="menu" class="menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i><br>Home</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i><br>Archives</a></li></ul></nav></div></header><main id="main" class="main"><div class="main-inner"><div class="content-wrap"><div id="content" class="content"><div id="posts" class="posts-expand"><article class="post post-type-normal" itemscope itemtype="http://schema.org/Article"><div class="post-block"><link itemprop="mainEntityOfPage" href="http://www.jfox.info/2017/springboot那些事0入门篇.html"><span hidden itemprop="author" itemscope itemtype="http://schema.org/Person"><meta itemprop="name" content="Hello"><meta itemprop="description" content=""><meta itemprop="image" content="/images/avatar.gif"></span><span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><meta itemprop="name" content="java面试"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">Spring Boot那些事(0)-入门篇</h1><div class="post-meta"><span class="post-time"><span class="post-meta-item-icon"><i class="fa fa-calendar-o"></i> </span><span class="post-meta-item-text">Posted on</span> <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-01-01T23:58:58+08:00">2017-01-01</time></span></div></header><div class="post-body" itemprop="articleBody"><p>读研期间主要写的是Java后端，工作之后开始更多地接触Node.js写后端程序，有对比才有伤害，让我深深的感受到了Java的重量级，开发的时候各种配置，部署的时候还有一堆要忙活，相对而言Node.js之类的新兴的后端语言显得格外的清新小巧。如果你觉得既然如此就可以就此放弃Java了，那就太草率了，毕竟Java作为后端主流语言不会就这么自甘堕落，Spring Boot应运而生，虽然很早之前就听过Spring Boot的大名，但是碍于当时论文的压力，一直没有深入地去了解，最近项目需要正好可以搞一搞熟悉一下。</p><p>Spring Boot推崇的是”习惯优于配置“，通俗的说可以这么理解，原来一个即使很简单的项目也需要有一大把的配置，但是后来发现很多时候大部分的配置都是一样的，你也会这么配，我也会这么配，但是如果你不知道你就不会配，你仍然需要去了解茫茫多的配置项才能运行一个其实非常简单的项目，当你陷入这种境地的时候，Spring Boot就给你带来了曙光，你可以摆脱大部分的通用配置，框架内置一套习惯的配置，你只需要对你需要的部分进行定制即可。</p><p>以前Java项目另外一个痛点就是部署，项目无论大小都需要配置一台服务器(Tomcat等)，然后把项目打包部署上去，所以你还要懂一套服务器部署的内容，可是明明有些项目就很简单啊，非要搞这么复杂，Spring Boot则告诉你，原来Java项目开发也可以很简单，框架内置了一个轻量级的Servlet容器(Tomcat或者Jetty等)，让你很容易地创建一个独立运行项目，只需一个命令，你就可以向运行普通Java程序一样运行一个Java后端程序，是不是很爽！</p><h4 id="Spring-Boot主要特点"><a href="#Spring-Boot主要特点" class="headerlink" title="Spring Boot主要特点"></a>Spring Boot主要特点</h4><ol><li><p>能够独立运行</p><p>Spring Boot创建的程序最终会打成一个jar包，因此，只需要 <code>java -jar your-project-name.jar</code> 一句命令就可以运行起来了。</p></li><li><p>内置Servlet容器</p></li></ol><p>Spring Boot项目会内置一个容器，如Tomcat、Jetty等，这样我们就不需要再额外配置服务器去部署了。</p><ol start="3"><li><p>自动装配</p><p>从spring最原始的xml配置bean一路走来，曾几何时觉得 <code>@Autowired</code> 自动装配已经非常好用了，而Spring Boot则可以根据类路径中的jar包、类，为jar包里的类自动装配bean，这样就更进一步地减少了配置的工作量。但是嘛，自动的总会出问题的，它并不能帮你解决任何问题，当你发现它做的不够的时候，还是需要手动地去配置一下，但是相比而言，它也能够应付一部分场景了。</p></li><li><p>摆脱繁杂的XML和代码配置</p></li></ol><p>Spring 4.x里已经可以通过注解来实现配置了，而Spring Boot则把这一特性发挥到了极致，一个项目里你甚至可以不写一行xml，不写一行配置代码，就可以完成。</p><ol start="5"><li><p>简化的Maven配置</p><p>Maven的出现已经可以帮我解决了很多依赖的问题，不用再一个一个jar包去下载导入，但是有没有这么一种感觉，我还是要在pom里面写很多，而且有时候我根本不知道要添加哪个jar包，这一点Spring Boot也想到了，它提供了一系列starter来简化Maven依赖，比如你只需要添加一个 <code>spring-boot-starter-web</code> ，如下，就可添加web开发中常用的依赖包。</p><dependency><br><groupid>org.springframework.boot</groupid><br><artifactid>spring-boot-starter-web</artifactid><br></dependency></li></ol><h4 id="从哪里开始"><a href="#从哪里开始" class="headerlink" title="从哪里开始"></a>从哪里开始</h4><ol><li><a href="https://www.jfox.info/go.php?url=https://start.spring.io/">https://start.spring.io/</a></li></ol><p>说了那么多Spring Boot的好处，怎么开始呢？这一点也充分体现了其简单的特点，非常方便。</p><p>访问 <a href="https://www.jfox.info/go.php?url=https://start.spring.io/">https://start.spring.io/</a> ，就可以看到Spring Boot官方的项目生成页面，你只需要填写项目的信息，选择一下依赖，然后点击 <code>Generate Project</code> 就可以生成项目文件并下载zip包。</p><p>在这里可以选择使用Maven管理还是Gradle管理项目依赖，使用Java、Kotlin还是Groovy，还有Spring Boot的版本，打包方式，Java版本，等等，其他的可以自行查看。当然即使生成项目的时候填错了也没关系，后面还可以改嘛。</p><p>2.手动创建</p><p>求人不如求己，有时候你还是需要知道如何手动的去创建一个项目，说到底，所有的生成工具帮你生成还是一个Maven项目，或者Gradle项目，只不过是帮你填写好了一些信息而已，你完全可以自己手动填写。</p><p>这里以Maven项目为例：</p><ol><li>首先你需要新建一个空的Maven项目，这个就不说了，不会的去面壁；</li><li><p>添加Spring Boot父依赖，提供相关的默认依赖，指定版本号，如下；</p><parent><br><groupid>org.springframework.boot</groupid><br><artifactid>spring-boot-starter-parent</artifactid><br><version>1.5.4.RELEASE</version><br><relativepath><br></relativepath></parent></li></ol><ol start="3"><li>添加相关starter</li></ol><p>比如这里添加了web支持和security支持：</p><pre><code>&lt;dependency&gt;
+  &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+  &lt;artifactId&gt;spring-boot-starter-security&lt;/artifactId&gt;
+&lt;/dependency&gt;
+&lt;dependency&gt;
+  &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+  &lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;
+&lt;/dependency&gt;
+</code></pre><ol start="4"><li><p>添加编译插件</p><build><br><plugins><br><plugin><br><groupid>org.springframework.boot</groupid><br><artifactid>spring-boot-maven-plugin</artifactid><br></plugin><br></plugins><br></build></li></ol><ol start="5"><li>完成</li></ol><p>3.其他方式</p><p>除了这两种方式之外还有其他一些方式，比如Spring Boot CLI、Spring Tool Suite等等，这些就不做介绍了。</p><h4 id="如何开始"><a href="#如何开始" class="headerlink" title="如何开始"></a>如何开始</h4><p>这里采用在 <code>https://start.spring.io</code> 上新建项目后下载，这是下载之后的文件目录：</p><pre><code>.
+├── mvnw
+├── mvnw.cmd
+├── pom.xml
+└── src
+    ├── main
+    │   ├── java
+    │   │   └── site
+    │   │       └── holten
+    │   │           └── springboot0
+    │   │               └── Springboot0Application.java
+    │   └── resources
+    │       └── application.properties
+    └── test
+        └── java
+            └── site
+                └── holten
+                    └── springboot0
+                        └── Springboot0ApplicationTests.java
+
+12 directories, 6 files
+</code></pre><p>我们首先看一下pom.xml，这里只添加了web starter：</p><pre><code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;projectxmlns=&quot;http://maven.apache.org/POM/4.0.0&quot;xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+    xsi:schemaLocation=&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd&quot;&gt;
+    &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
+
+    &lt;groupId&gt;site.holten&lt;/groupId&gt;
+    &lt;artifactId&gt;springboot0&lt;/artifactId&gt;
+    &lt;version&gt;0.0.1-SNAPSHOT&lt;/version&gt;
+    &lt;packaging&gt;jar&lt;/packaging&gt;
+
+    &lt;name&gt;springboot0&lt;/name&gt;
+    &lt;description&gt;Demo project for Spring Boot&lt;/description&gt;
+
+    &lt;parent&gt;
+        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-boot-starter-parent&lt;/artifactId&gt;
+        &lt;version&gt;1.5.4.RELEASE&lt;/version&gt;
+        &lt;relativePath/&gt; &lt;!-- lookup parent from repository --&gt;
+    &lt;/parent&gt;
+
+    &lt;properties&gt;
+        &lt;project.build.sourceEncoding&gt;UTF-8&lt;/project.build.sourceEncoding&gt;
+        &lt;project.reporting.outputEncoding&gt;UTF-8&lt;/project.reporting.outputEncoding&gt;
+        &lt;java.version&gt;1.8&lt;/java.version&gt;
+    &lt;/properties&gt;
+
+    &lt;dependencies&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-boot-starter-test&lt;/artifactId&gt;
+            &lt;scope&gt;test&lt;/scope&gt;
+        &lt;/dependency&gt;
+    &lt;/dependencies&gt;
+
+    &lt;build&gt;
+        &lt;plugins&gt;
+            &lt;plugin&gt;
+                &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+                &lt;artifactId&gt;spring-boot-maven-plugin&lt;/artifactId&gt;
+            &lt;/plugin&gt;
+        &lt;/plugins&gt;
+    &lt;/build&gt;
+&lt;/project&gt;
+</code></pre><p>作为简单示例，我们直接在 <code>Springboot0Application.java</code> 中编写代码：</p><pre><code>package site.holten.springboot0;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@SpringBootApplication
+public class Springboot0Application{
+
+    public static void main(String[] args){
+        SpringApplication.run(Springboot0Application.class, args);
+    }
+
+    @RequestMapping(&quot;/&quot;)
+    publicStringhomepage(){
+        return &quot;this is home page!&quot;;
+    }
+
+    @RequestMapping(&quot;/hello/{name}&quot;)
+    publicStringsayHello(@PathVariable String name){
+        return &quot;hello &quot; + name;
+    }
+}
+</code></pre><p>这里了解这么几点就可以了：</p><ul><li><code>SpringApplication.run(Springboot0Application.class, args)</code> ：main方法中的这句话用来指定程序的入口；</li><li><code>@SpringBootApplication</code> ：这个是最重要的，标识着这是一个Spring Boot项目，开启自动配置；</li><li><code>@RestController</code> ：这个是Spring MVC里面的注解，组合了 <code>@Controller</code> 和 <code>@ResponseBody</code> ；</li><li><code>@RequestMapping</code> ：用来映射请求路径/参数、处理类和方法；</li><li><code>@Controller</code> ：表明这是一个Spring MVC的Controller，Dispatcher Servlet会自动扫描该类，发现其中的 <code>@RequestMapping</code> 注解并映射；</li><li><code>@ResponseBody</code> ：用来支持把返回值放到response体内；</li></ul><p>代码写完了，如何运行呢？</p><ul><li>如果你是用的IDE，那么直接run或者debug就可以了；</li><li>如果没有，可以在命令行里运行 <code>mvn spring-boot:run</code> ，当然，前提是你要安装了maven，并且在项目根目录下；</li><li>然后在地址栏输入 <code>http://localhost:8080/</code> 或者 <code>http://localhost:8080/hello/yourname</code> 就可以看到结果了；</li></ul><p>具体效果就不贴图了，自行体会～～～</p></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="4142158067"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="5618891265"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><footer class="post-footer"><div class="post-nav"><div class="post-nav-next post-nav-item"><a href="/2017/容器化jenkins20第一部分借助sonarqube分析的声明式创建管道.html" rel="next" title="容器化Jenkins 2.0——第一部分：借助SonarQube分析的声明式创建管道"><i class="fa fa-chevron-left"></i> 容器化Jenkins 2.0——第一部分：借助SonarQube分析的声明式创建管道</a></div><span class="post-nav-divider"></span><div class="post-nav-prev post-nav-item"><a href="/2017/优秀的程序员都有哪些习惯.html" rel="prev" title="优秀的程序员都有哪些习惯？">优秀的程序员都有哪些习惯？ <i class="fa fa-chevron-right"></i></a></div></div></footer></div></article><div class="post-spread"></div></div></div></div><div class="sidebar-toggle"><div class="sidebar-toggle-line-wrap"><span class="sidebar-toggle-line sidebar-toggle-line-first"></span> <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span> <span class="sidebar-toggle-line sidebar-toggle-line-last"></span></div></div><aside id="sidebar" class="sidebar"><div class="sidebar-inner"><ul class="sidebar-nav motion-element"><li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">Table of Contents</li><li class="sidebar-nav-overview" data-target="site-overview-wrap">Overview</li></ul><section class="site-overview-wrap sidebar-panel"><div class="site-overview"><div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person"><p class="site-author-name" itemprop="name">Hello</p><p class="site-description motion-element" itemprop="description"></p></div><nav class="site-state motion-element"><div class="site-state-item site-state-posts"><a href="/archives/"><span class="site-state-item-count">1358</span> <span class="site-state-item-name">posts</span></a></div></nav></div></section><section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active"><div class="post-toc"><div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#Spring-Boot主要特点"><span class="nav-number">1.</span> <span class="nav-text">Spring Boot主要特点</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#从哪里开始"><span class="nav-number">2.</span> <span class="nav-text">从哪里开始</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#如何开始"><span class="nav-number">3.</span> <span class="nav-text">如何开始</span></a></li></ol></div></div></section></div></aside><div class="sfix"><div class="fixedme"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460" data-ad-format="auto"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script></div></div></main><footer id="footer" class="footer"><div class="footer-inner"><div class="copyright">&copy; <span itemprop="copyrightYear">2018</span> <span class="with-love"><i class="fa fa-user"></i> </span><span class="author" itemprop="copyrightHolder">Hello</span></div><div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div><span class="post-meta-divider">|</span><div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div></div></footer><div class="back-to-top"><i class="fa fa-arrow-up"></i></div></div><script type="text/javascript">"[object Function]"!==Object.prototype.toString.call(window.Promise)&&(window.Promise=null)</script><script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script><script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script><script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script><script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script><script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script></body></html><!-- rebuild by neat -->

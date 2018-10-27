@@ -1,0 +1,88 @@
+<!-- build time:Sat Oct 27 2018 21:00:19 GMT+0800 (CST) --><!DOCTYPE html><html class="theme-next muse use-motion"><head><meta name="generator" content="Hexo 3.8.0"><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"><meta name="theme-color" content="#222"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"><link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css"><link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css"><link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4"><link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222"><meta name="description" content="近期在维护公司项目的时候遇到一个问题，因为实体类中的 set 方法涉及到了业务逻辑，因此在给对象赋值的过程中不能够使用 set 方法，为了实现功能，所以采用了反射的机制给对象属性赋值，借此机会也了解了反射的一些具体用法和使用场景，分以下两点对反射进行分析：反射的优势和劣势个人理解，反射机制实际上就是上帝模式，如果说方法的调用是 Java 正确的打开方式，那反射机制就是上帝偷偷开的后门，只要存在对应"><meta name="keywords" content="JAVA,面试"><meta property="og:type" content="article"><meta property="og:title" content="Reflection：Java反射机制的应用场景"><meta property="og:url" content="http://www.jfox.info/2017/reflectionjava反射机制的应用场景.html"><meta property="og:site_name" content="java面试"><meta property="og:description" content="近期在维护公司项目的时候遇到一个问题，因为实体类中的 set 方法涉及到了业务逻辑，因此在给对象赋值的过程中不能够使用 set 方法，为了实现功能，所以采用了反射的机制给对象属性赋值，借此机会也了解了反射的一些具体用法和使用场景，分以下两点对反射进行分析：反射的优势和劣势个人理解，反射机制实际上就是上帝模式，如果说方法的调用是 Java 正确的打开方式，那反射机制就是上帝偷偷开的后门，只要存在对应"><meta property="og:locale" content="zh_CN"><meta property="og:updated_time" content="2018-10-27T12:29:37.410Z"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="Reflection：Java反射机制的应用场景"><meta name="twitter:description" content="近期在维护公司项目的时候遇到一个问题，因为实体类中的 set 方法涉及到了业务逻辑，因此在给对象赋值的过程中不能够使用 set 方法，为了实现功能，所以采用了反射的机制给对象属性赋值，借此机会也了解了反射的一些具体用法和使用场景，分以下两点对反射进行分析：反射的优势和劣势个人理解，反射机制实际上就是上帝模式，如果说方法的调用是 Java 正确的打开方式，那反射机制就是上帝偷偷开的后门，只要存在对应"><script type="text/javascript" id="hexo.configurations">var NexT=window.NexT||{},CONFIG={root:"/",scheme:"Muse",version:"5.1.4",sidebar:{position:"left",display:"post",offset:12,b2t:!1,scrollpercent:!1,onmobile:!1},fancybox:!0,tabs:!0,motion:{enable:!0,async:!1,transition:{post_block:"fadeIn",post_header:"slideDownIn",post_body:"slideDownIn",coll_header:"slideLeftIn",sidebar:"slideUpIn"}},duoshuo:{userId:"0",author:"Author"},algolia:{applicationID:"",apiKey:"",indexName:"",hits:{per_page:10},labels:{input_placeholder:"Search for Posts",hits_empty:"We didn't find any results for the search: ${query}",hits_stats:"${hits} results found in ${time} ms"}}}</script><link rel="canonical" href="http://www.jfox.info/2017/reflectionjava反射机制的应用场景.html"><title>Reflection：Java反射机制的应用场景 | java面试</title></head><body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN"><div class="container sidebar-position-left page-post-detail"><div class="headband"></div><header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="header-inner"><div class="site-brand-wrapper"><div class="site-meta"><div class="custom-logo-site-title"><a href="/" class="brand" rel="start"><span class="logo-line-before"><i></i></span> <span class="site-title">java面试</span> <span class="logo-line-after"><i></i></span></a></div><p class="site-subtitle"></p></div><div class="site-nav-toggle"><button><span class="btn-bar"></span> <span class="btn-bar"></span> <span class="btn-bar"></span></button></div></div><nav class="site-nav"><ul id="menu" class="menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i><br>Home</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i><br>Archives</a></li></ul></nav></div></header><main id="main" class="main"><div class="main-inner"><div class="content-wrap"><div id="content" class="content"><div id="posts" class="posts-expand"><article class="post post-type-normal" itemscope itemtype="http://schema.org/Article"><div class="post-block"><link itemprop="mainEntityOfPage" href="http://www.jfox.info/2017/reflectionjava反射机制的应用场景.html"><span hidden itemprop="author" itemscope itemtype="http://schema.org/Person"><meta itemprop="name" content="Hello"><meta itemprop="description" content=""><meta itemprop="image" content="/images/avatar.gif"></span><span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><meta itemprop="name" content="java面试"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">Reflection：Java反射机制的应用场景</h1><div class="post-meta"><span class="post-time"><span class="post-meta-item-icon"><i class="fa fa-calendar-o"></i> </span><span class="post-meta-item-text">Posted on</span> <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-01-01T23:55:47+08:00">2017-01-01</time></span></div></header><div class="post-body" itemprop="articleBody"><p>近期在维护公司项目的时候遇到一个问题，因为实体类中的 set 方法涉及到了业务逻辑，因此在给对象赋值的过程中不能够使用 set 方法，为了实现功能，所以采用了反射的机制给对象属性赋值，借此机会也了解了反射的一些具体用法和使用场景，分以下两点对反射进行分析：</p><h3 id="反射的优势和劣势"><a href="#反射的优势和劣势" class="headerlink" title="反射的优势和劣势"></a>反射的优势和劣势</h3><p>个人理解，反射机制实际上就是上帝模式，如果说方法的调用是 Java 正确的打开方式，那反射机制就是上帝偷偷开的后门，只要存在对应的class，一切都能够被调用。</p><p>那上帝为什么要打开这个后门呢？这涉及到了静态和动态的概念</p><ul><li><p>静态编译：在编译时确定类型，绑定对象</p></li><li><p>动态编译：运行时确定类型，绑定对象</p></li></ul><p>两者的区别在于，动态编译可以最大程度地支持多态，而多态最大的意义在于降低类的耦合性，因此反射的优点就很明显了：解耦以及提高代码的灵活性。</p><p>因此，反射的优势和劣势分别在于：</p><ul><li><p>优势</p></li><li><p>劣势</p></li><li><p>性能瓶颈：反射相当于一系列解释操作，通知 JVM 要做的事情，性能比直接的java代码要慢很多</p></li></ul><h3 id="反射的应用场景"><a href="#反射的应用场景" class="headerlink" title="反射的应用场景"></a>反射的应用场景</h3><p>在我们平时的项目开发过程中，基本上很少会直接使用到反射机制，但这不能说明反射机制没有用，实际上有很多设计、开发都与反射机制有关，例如模块化的开发，通过反射去调用对应的字节码；动态代理设计模式也采用了反射机制，还有我们日常使用的 Spring／Hibernate 等框架，也是利用CGLIB 反射机制才得以实现，下面就举例最常见的两个例子，来说明反射机制的强大之处：</p><p>在JDBC 的操作中，如果要想进行数据库的连接，则必须按照以上的几步完成</p><ol><li><p>通过Class.forName()加载数据库的驱动程序 （通过反射加载，前提是引入相关了Jar包）</p></li><li><p>通过 DriverManager 类进行数据库的连接，连接的时候要输入数据库的连接地址、用户名、密码</p></li><li><p>通过Connection 接口接收连接</p><p>public class ConnectionJDBC {</p><pre><code>/** 
+ * @param args 
+ */  
+//驱动程序就是之前在classpath中配置的JDBC的驱动程序的JAR 包中  
+public static final String DBDRIVER = &quot;com.mysql.jdbc.Driver&quot;;  
+//连接地址是由各个数据库生产商单独提供的，所以需要单独记住  
+public static final String DBURL = &quot;jdbc:mysql://localhost:3306/test&quot;;  
+//连接数据库的用户名  
+public static final String DBUSER = &quot;root&quot;;  
+//连接数据库的密码  
+public static final String DBPASS = &quot;&quot;;  
+</code></pre></li></ol><pre><code>public static void main(String[] args) throws Exception {  
+    Connection con = null; //表示数据库的连接对象  
+    Class.forName(DBDRIVER); //1、使用CLASS 类加载驱动程序 ,反射机制的体现 
+    con = DriverManager.getConnection(DBURL,DBUSER,DBPASS); //2、连接数据库  
+    System.out.println(con);  
+    con.close(); // 3、关闭数据库  
+}  
+</code></pre><p>在 Java的反射机制在做基础框架的时候非常有用，行内有一句这样的老话：反射机制是Java框架的基石。一般应用层面很少用，不过这种东西，现在很多开源框架基本都已经封装好了，自己基本用不着写。典型的除了hibernate之外，还有spring也用到很多反射机制。最经典的就是xml的配置模式。</p><p>Spring 通过 XML 配置模式装载 Bean 的过程：</p><ol><li><p>将程序内所有 XML 或 Properties 配置文件加载入内存中</p></li><li><p>Java类里面解析xml或properties里面的内容，得到对应实体类的字节码字符串以及相关的属性信息</p></li><li><p>使用反射机制，根据这个字符串获得某个类的Class实例</p></li><li><p>动态配置实例的属性</p></li></ol><p>Spring这样做的好处是：</p><ul><li><p>不用每一次都要在代码里面去new或者做其他的事情</p></li><li><p>以后要改的话直接改配置文件，代码维护起来就很方便了</p></li><li><p>有时为了适应某些需求，Java类里面不一定能直接调用另外的方法，可以通过反射机制来实现</p></li></ul><p>模拟 Spring 加载 XML 配置文件：</p><pre><code>public class BeanFactory {
+       private Map&lt;String, Object&gt; beanMap = new HashMap&lt;String, Object&gt;();
+       /**
+       * bean工厂的初始化.
+       * @param xml xml配置文件
+       */
+       public void init(String xml) {
+              try {
+                     //读取指定的配置文件
+                     SAXReader reader = new SAXReader();
+                     ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+                     //从class目录下获取指定的xml文件
+                     InputStream ins = classLoader.getResourceAsStream(xml);
+                     Document doc = reader.read(ins);
+                     Element root = doc.getRootElement();  
+                     Element foo;
+
+                     //遍历bean
+                     for (Iterator i = root.elementIterator(&quot;bean&quot;); i.hasNext();) {  
+                            foo = (Element) i.next();
+                            //获取bean的属性id和class
+                            Attribute id = foo.attribute(&quot;id&quot;);  
+                            Attribute cls = foo.attribute(&quot;class&quot;);
+
+                            //利用Java反射机制，通过class的名称获取Class对象
+                            Class bean = Class.forName(cls.getText());
+
+                            //获取对应class的信息
+                            java.beans.BeanInfo info = java.beans.Introspector.getBeanInfo(bean);
+                            //获取其属性描述
+                            java.beans.PropertyDescriptor pd[] = info.getPropertyDescriptors();
+                            //设置值的方法
+                            Method mSet = null;
+                            //创建一个对象
+                            Object obj = bean.newInstance();
+
+                            //遍历该bean的property属性
+                            for (Iterator ite = foo.elementIterator(&quot;property&quot;); ite.hasNext();) {  
+                                   Element foo2 = (Element) ite.next();
+                                   //获取该property的name属性
+                                   Attribute name = foo2.attribute(&quot;name&quot;);
+                                   String value = null;
+
+                                   //获取该property的子元素value的值
+                                   for(Iterator ite1 = foo2.elementIterator(&quot;value&quot;); ite1.hasNext();) {
+                                          Element node = (Element) ite1.next();
+                                          value = node.getText();
+                                          break;
+                                   }
+
+                                   for (int k = 0; k &lt; pd.length; k++) {
+                                          if (pd[k].getName().equalsIgnoreCase(name.getText())) {
+                                                 mSet = pd[k].getWriteMethod();
+                                                 //利用Java的反射极致调用对象的某个set方法，并将值设置进去
+                                                 mSet.invoke(obj, value);
+                                          }
+                                   }
+                            }
+
+                            //将对象放入beanMap中，其中key为id值，value为对象
+                            beanMap.put(id.getText(), obj);
+                     }
+              } catch (Exception e) {
+                     System.out.println(e.toString());
+              }
+       }
+
+       //other codes
+}
+</code></pre></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="4142158067"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="5618891265"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><footer class="post-footer"><div class="post-nav"><div class="post-nav-next post-nav-item"><a href="/2017/浅入深出之java集合框架中-2.html" rel="next" title="浅入深出之Java集合框架（中）"><i class="fa fa-chevron-left"></i> 浅入深出之Java集合框架（中）</a></div><span class="post-nav-divider"></span><div class="post-nav-prev post-nav-item"><a href="/2017/springbootapi版本权限控制.html" rel="prev" title="Spring Boot API 版本权限控制">Spring Boot API 版本权限控制 <i class="fa fa-chevron-right"></i></a></div></div></footer></div></article><div class="post-spread"></div></div></div></div><div class="sidebar-toggle"><div class="sidebar-toggle-line-wrap"><span class="sidebar-toggle-line sidebar-toggle-line-first"></span> <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span> <span class="sidebar-toggle-line sidebar-toggle-line-last"></span></div></div><aside id="sidebar" class="sidebar"><div class="sidebar-inner"><ul class="sidebar-nav motion-element"><li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">Table of Contents</li><li class="sidebar-nav-overview" data-target="site-overview-wrap">Overview</li></ul><section class="site-overview-wrap sidebar-panel"><div class="site-overview"><div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person"><p class="site-author-name" itemprop="name">Hello</p><p class="site-description motion-element" itemprop="description"></p></div><nav class="site-state motion-element"><div class="site-state-item site-state-posts"><a href="/archives/"><span class="site-state-item-count">1358</span> <span class="site-state-item-name">posts</span></a></div></nav></div></section><section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active"><div class="post-toc"><div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#反射的优势和劣势"><span class="nav-number">1.</span> <span class="nav-text">反射的优势和劣势</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#反射的应用场景"><span class="nav-number">2.</span> <span class="nav-text">反射的应用场景</span></a></li></ol></div></div></section></div></aside><div class="sfix"><div class="fixedme"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460" data-ad-format="auto"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script></div></div></main><footer id="footer" class="footer"><div class="footer-inner"><div class="copyright">&copy; <span itemprop="copyrightYear">2018</span> <span class="with-love"><i class="fa fa-user"></i> </span><span class="author" itemprop="copyrightHolder">Hello</span></div><div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div><span class="post-meta-divider">|</span><div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div></div></footer><div class="back-to-top"><i class="fa fa-arrow-up"></i></div></div><script type="text/javascript">"[object Function]"!==Object.prototype.toString.call(window.Promise)&&(window.Promise=null)</script><script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script><script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script><script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script><script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script><script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script></body></html><!-- rebuild by neat -->

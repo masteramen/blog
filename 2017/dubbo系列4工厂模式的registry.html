@@ -1,0 +1,244 @@
+<!-- build time:Sat Oct 27 2018 21:00:18 GMT+0800 (CST) --><!DOCTYPE html><html class="theme-next muse use-motion"><head><meta name="generator" content="Hexo 3.8.0"><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"><meta name="theme-color" content="#222"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"><link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css"><link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css"><link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4"><link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222"><meta name="description" content="Dubbo系列-4.工厂模式的Registry本想按照服务发布和服务引用来写，但是感觉先理解Registry，后面发布和服务引用里面可以省略掉这里的东西，更方便关注主流程的东西。工厂模式创建RegistryRegistry提供服务的注册，订阅功能，采用工厂模式创建，看图：左边Registry代表产品体系，右边RegistryFactory工厂生成Registry，每个具体factory生成具体的R"><meta name="keywords" content="JAVA,面试"><meta property="og:type" content="article"><meta property="og:title" content="Dubbo系列-4.工厂模式的Registry"><meta property="og:url" content="http://www.jfox.info/2017/dubbo系列4工厂模式的registry.html"><meta property="og:site_name" content="java面试"><meta property="og:description" content="Dubbo系列-4.工厂模式的Registry本想按照服务发布和服务引用来写，但是感觉先理解Registry，后面发布和服务引用里面可以省略掉这里的东西，更方便关注主流程的东西。工厂模式创建RegistryRegistry提供服务的注册，订阅功能，采用工厂模式创建，看图：左边Registry代表产品体系，右边RegistryFactory工厂生成Registry，每个具体factory生成具体的R"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="http://www.jfox.info/2017/1324/439f44b.png"><meta property="og:updated_time" content="2018-10-27T12:29:39.322Z"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="Dubbo系列-4.工厂模式的Registry"><meta name="twitter:description" content="Dubbo系列-4.工厂模式的Registry本想按照服务发布和服务引用来写，但是感觉先理解Registry，后面发布和服务引用里面可以省略掉这里的东西，更方便关注主流程的东西。工厂模式创建RegistryRegistry提供服务的注册，订阅功能，采用工厂模式创建，看图：左边Registry代表产品体系，右边RegistryFactory工厂生成Registry，每个具体factory生成具体的R"><meta name="twitter:image" content="http://www.jfox.info/2017/1324/439f44b.png"><script type="text/javascript" id="hexo.configurations">var NexT=window.NexT||{},CONFIG={root:"/",scheme:"Muse",version:"5.1.4",sidebar:{position:"left",display:"post",offset:12,b2t:!1,scrollpercent:!1,onmobile:!1},fancybox:!0,tabs:!0,motion:{enable:!0,async:!1,transition:{post_block:"fadeIn",post_header:"slideDownIn",post_body:"slideDownIn",coll_header:"slideLeftIn",sidebar:"slideUpIn"}},duoshuo:{userId:"0",author:"Author"},algolia:{applicationID:"",apiKey:"",indexName:"",hits:{per_page:10},labels:{input_placeholder:"Search for Posts",hits_empty:"We didn't find any results for the search: ${query}",hits_stats:"${hits} results found in ${time} ms"}}}</script><link rel="canonical" href="http://www.jfox.info/2017/dubbo系列4工厂模式的registry.html"><title>Dubbo系列-4.工厂模式的Registry | java面试</title></head><body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN"><div class="container sidebar-position-left page-post-detail"><div class="headband"></div><header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="header-inner"><div class="site-brand-wrapper"><div class="site-meta"><div class="custom-logo-site-title"><a href="/" class="brand" rel="start"><span class="logo-line-before"><i></i></span> <span class="site-title">java面试</span> <span class="logo-line-after"><i></i></span></a></div><p class="site-subtitle"></p></div><div class="site-nav-toggle"><button><span class="btn-bar"></span> <span class="btn-bar"></span> <span class="btn-bar"></span></button></div></div><nav class="site-nav"><ul id="menu" class="menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i><br>Home</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i><br>Archives</a></li></ul></nav></div></header><main id="main" class="main"><div class="main-inner"><div class="content-wrap"><div id="content" class="content"><div id="posts" class="posts-expand"><article class="post post-type-normal" itemscope itemtype="http://schema.org/Article"><div class="post-block"><link itemprop="mainEntityOfPage" href="http://www.jfox.info/2017/dubbo系列4工厂模式的registry.html"><span hidden itemprop="author" itemscope itemtype="http://schema.org/Person"><meta itemprop="name" content="Hello"><meta itemprop="description" content=""><meta itemprop="image" content="/images/avatar.gif"></span><span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><meta itemprop="name" content="java面试"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">Dubbo系列-4.工厂模式的Registry</h1><div class="post-meta"><span class="post-time"><span class="post-meta-item-icon"><i class="fa fa-calendar-o"></i> </span><span class="post-meta-item-text">Posted on</span> <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-01-01T23:57:04+08:00">2017-01-01</time></span></div></header><div class="post-body" itemprop="articleBody"><h1 id="Dubbo系列-4-工厂模式的Registry"><a href="#Dubbo系列-4-工厂模式的Registry" class="headerlink" title="Dubbo系列-4.工厂模式的Registry"></a>Dubbo系列-4.工厂模式的Registry</h1><p>本想按照服务发布和服务引用来写，但是感觉先理解Registry，后面发布和服务引用里面可以省略掉这里的东西，更方便关注主流程的东西。</p><h1 id="工厂模式创建Registry"><a href="#工厂模式创建Registry" class="headerlink" title="工厂模式创建Registry"></a>工厂模式创建Registry</h1><p>Registry提供服务的注册，订阅功能，采用工厂模式创建，看图：</p><p><img src="/2017/1324/439f44b.png" alt=""></p><p>左边Registry代表产品体系，右边RegistryFactory工厂生成Registry，每个具体factory生成具体的Registry，分离产品的创建。后期只需要增加具体的工厂生成具体的产品。</p><h1 id="RegistryFactory"><a href="#RegistryFactory" class="headerlink" title="RegistryFactory"></a>RegistryFactory</h1><p>RegistryFactory也是采用dubbo的扩展点机制加载，默认dubbo，我例子用的是zk，后面讲解也以zk为主。</p><pre><code>@SPI(&quot;dubbo&quot;)
+publicinterfaceRegistryFactory {@Adaptive({&quot;protocol&quot;})
+    Registry getRegistry(URL url);
+
+}
+</code></pre><h2 id="AbstractRegistryFactory"><a href="#AbstractRegistryFactory" class="headerlink" title="AbstractRegistryFactory"></a>AbstractRegistryFactory</h2><pre><code>public Registry getRegistry(URL url) {
+    url = url.setPath(RegistryService.class.getName())
+            .addParameter(Constants.INTERFACE_KEY, RegistryService.class.getName())
+            .removeParameters(Constants.EXPORT_KEY, Constants.REFER_KEY);
+    String key = url.toServiceString();
+    // 锁定注册中心获取过程，保证注册中心单一实例
+    LOCK.lock();
+    try {
+        Registry registry = REGISTRIES.get(key);
+        if (registry != null) {
+            return registry;
+        }
+        //模板模式，子类具体实现
+        registry = createRegistry(url);
+        if (registry == null) {
+            thrownew IllegalStateException(&quot;Can not create registry &quot; + url);
+        }
+        REGISTRIES.put(key, registry);
+        return registry;
+    } finally {
+        // 释放锁
+        LOCK.unlock();
+    }
+}
+//模板模式，createRegistry有具体的工厂生成protectedabstract Registry createRegistry(URL url);
+</code></pre><h2 id="ZookeeperRegistryFactory"><a href="#ZookeeperRegistryFactory" class="headerlink" title="　ZookeeperRegistryFactory"></a>　ZookeeperRegistryFactory</h2><pre><code>publicclassZookeeperRegistryFactoryextendsAbstractRegistryFactory {private ZookeeperTransporter zookeeperTransporter;
+
+    //ZookeeperTransporter通过扩展点加载injectExtensionpublicvoidsetZookeeperTransporter(ZookeeperTransporter zookeeperTransporter) {
+        this.zookeeperTransporter = zookeeperTransporter;
+    }
+
+    //创建ZookeeperRegistrypublic Registry createRegistry(URL url) {
+        returnnew ZookeeperRegistry(url, zookeeperTransporter);
+    }
+
+}
+</code></pre><p>这样就生成了具体的产品ZookeeperRegistry。</p><h1 id="Registry"><a href="#Registry" class="headerlink" title="Registry"></a>Registry</h1><h2 id="AbstractRegistry"><a href="#AbstractRegistry" class="headerlink" title="AbstractRegistry"></a>AbstractRegistry</h2><p>RegistryService接口定义了注册的几个接口，包括注册、订阅、取消注册、取消订阅接口和服务lookup查找接口，在其继承体系中AbstractRegistry主要提供服务的本地文件缓存功能，其线程安全通过：</p><ol><li>异步情况下通过线程池的newFixedThreadPool（1），只有一个核心线程处理来保障；</li><li>创建临时文件.lcok，通过FileLock加锁；</li><li>通过version。</li></ol><p>对RegistryService接口的实现，主要是入参的存储，例如</p><pre><code>publicvoidregister(URL url) {
+    if (url == null) {
+        thrownew IllegalArgumentException(&quot;register url == null&quot;);
+    }
+    if (logger.isInfoEnabled()){
+        logger.info(&quot;Register: &quot; + url);
+    }
+    //服务的本地存储
+    registered.add(url);
+}
+
+publicvoidsubscribe(URL url, NotifyListener listener) {
+    if (url == null) {
+        thrownew IllegalArgumentException(&quot;subscribe url == null&quot;);
+    }
+    if (listener == null) {
+        thrownew IllegalArgumentException(&quot;subscribe listener == null&quot;);
+    }
+    if (logger.isInfoEnabled()){
+        logger.info(&quot;Subscribe: &quot; + url);
+    }
+    Set&lt;NotifyListener&gt; listeners = subscribed.get(url);
+    if (listeners == null) {
+        subscribed.putIfAbsent(url, new ConcurrentHashSet&lt;NotifyListener&gt;());
+        listeners = subscribed.get(url);
+    }
+    //监听存储
+    listeners.add(listener);
+}
+</code></pre><p>其他类似。</p><h2 id="FailbackRegistry"><a href="#FailbackRegistry" class="headerlink" title="FailbackRegistry"></a>FailbackRegistry</h2><p>继承体系中FailbackRegistry，主要提供服务注册、订阅失败情况的5秒定时重试机制，并且通过模板模式，定义处理注册订阅流程，具体实现由具体子类实现。</p><p>例如</p><pre><code>@Overridepublicvoidregister(URL url) {
+        super.register(url);
+        failedRegistered.remove(url);
+        failedUnregistered.remove(url);
+        try {
+            // 向服务器端发送注册请求
+            doRegister(url);
+        } catch (Exception e) {
+            Throwable t = e;
+
+            // 如果开启了启动时检测，则直接抛出异常boolean check = getUrl().getParameter(Constants.CHECK_KEY, true)
+                    &amp;&amp; url.getParameter(Constants.CHECK_KEY, true)
+                    &amp;&amp; ! Constants.CONSUMER_PROTOCOL.equals(url.getProtocol());
+            boolean skipFailback = t instanceof SkipFailbackWrapperException;
+            if (check || skipFailback) {
+                if(skipFailback) {
+                    t = t.getCause();
+                }
+                thrownew IllegalStateException(&quot;Failed to register &quot; + url + &quot; to registry &quot; + getUrl().getAddress() + &quot;, cause: &quot; + t.getMessage(), t);
+            } else {
+                logger.error(&quot;Failed to register &quot; + url + &quot;, waiting for retry, cause: &quot; + t.getMessage(), t);
+            }
+
+            // 将失败的注册请求记录到失败列表，定时重试
+            failedRegistered.add(url);
+        }
+    }
+
+// ==== 模板方法 ====protectedabstractvoiddoRegister(URL url);
+</code></pre><p>其他订阅等接口类似处理。</p><h1 id="ZookeeperRegistry"><a href="#ZookeeperRegistry" class="headerlink" title="ZookeeperRegistry"></a>ZookeeperRegistry</h1><p>我配置的注册是zk，所以看下ZookeeperRegistry，主要看下注册和订阅接口的实现。</p><h2 id="构造"><a href="#构造" class="headerlink" title="构造"></a>构造</h2><pre><code>//构造，这里的url是注册中心的地址publicZookeeperRegistry(URL url, ZookeeperTransporter zookeeperTransporter) {
+    super(url);
+    if (url.isAnyHost()) {
+        thrownew IllegalStateException(&quot;registry address == null&quot;);
+    }
+    //group主要用在后面的注册的服务路径里面，如果服务本身没有group使用默认dubbo
+    String group = url.getParameter(Constants.GROUP_KEY, DEFAULT_ROOT);
+    if (! group.startsWith(Constants.PATH_SEPARATOR)) {
+        group = Constants.PATH_SEPARATOR + group;
+    }
+    this.root = group;
+    //取得zk的连接
+    zkClient = zookeeperTransporter.connect(url);
+    //zk的监听，zk状态变换，需要将本地失败的注册和订阅重新注册和订阅
+    zkClient.addStateListener(new StateListener() {
+        publicvoidstateChanged(int state) {
+            if (state == RECONNECTED) {
+                try {
+                    recover();
+                } catch (Exception e) {
+                    logger.error(e.getMessage(), e);
+                }
+            }
+        }
+    });
+}
+</code></pre><h2 id="doRegister"><a href="#doRegister" class="headerlink" title="doRegister"></a>doRegister</h2><pre><code>//注册protectedvoiddoRegister(URL url) {
+    try {
+        //通过zkClient实现，了解zk的应该知道zk类似于目录结构，这里也是创建服务的目录结构//toUrlPath方法转将注册的服务转换为路径，/group(没有就是dubbo)/接口名/provider(默认provider，根据url中category参数决定，现在基本这几种：consumer、routers、configurators)/服务信息（url形式）//第二个主要表示创建的临时节点还是持久化的节点，一般路径都是持久的，只有最后服务信息是临时的
+        zkClient.create(toUrlPath(url), url.getParameter(Constants.DYNAMIC_KEY, true));
+    } catch (Throwable e) {
+        thrownew RpcException(&quot;Failed to register &quot; + url + &quot; to zookeeper &quot; + getUrl() + &quot;, cause: &quot; + e.getMessage(), e);
+    }
+}
+</code></pre><h2 id="doSubscribe"><a href="#doSubscribe" class="headerlink" title="doSubscribe"></a>doSubscribe</h2><pre><code>//订阅服务，类似zk的watch吧，入参NotifyListener为回调接口protectedvoiddoSubscribe(final URL url, final NotifyListener listener) {
+    try {
+        //这个if暂时不关心，最后还是到else那里if (Constants.ANY_VALUE.equals(url.getServiceInterface())) {
+            String root = toRootPath();
+            ConcurrentMap&lt;NotifyListener, ChildListener&gt; listeners = zkListeners.get(url);
+            if (listeners == null) {
+                zkListeners.putIfAbsent(url, new ConcurrentHashMap&lt;NotifyListener, ChildListener&gt;());
+                listeners = zkListeners.get(url);
+            }
+            ChildListener zkListener = listeners.get(listener);
+            if (zkListener == null) {
+                listeners.putIfAbsent(listener, new ChildListener() {
+                    publicvoidchildChanged(String parentPath, List&lt;String&gt; currentChilds) {
+                        for (String child : currentChilds) {
+                            if (! anyServices.contains(child)) {
+                                anyServices.add(child);
+                                subscribe(url.setPath(child).addParameters(Constants.INTERFACE_KEY, child, 
+                                        Constants.CHECK_KEY, String.valueOf(false)), listener);
+                            }
+                        }
+                    }
+                });
+                zkListener = listeners.get(listener);
+            }
+            zkClient.create(root, false);
+            List&lt;String&gt; services = zkClient.addChildListener(root, zkListener);
+            if (services != null &amp;&amp; services.size() &gt; 0) {
+                anyServices.addAll(services);
+                for (String service : services) {
+                    subscribe(url.setPath(service).addParameters(Constants.INTERFACE_KEY, service, 
+                            Constants.CHECK_KEY, String.valueOf(false)), listener);
+                }
+            }
+        } else {
+            List&lt;URL&gt; urls = new ArrayList&lt;URL&gt;();
+            //url中的参数category可以配置多个，相当于watch多个目录，这里for下for (String path : toCategoriesPath(url)) {
+                ConcurrentMap&lt;NotifyListener, ChildListener&gt; listeners = zkListeners.get(url);
+                if (listeners == null) {
+                    zkListeners.putIfAbsent(url, new ConcurrentHashMap&lt;NotifyListener, ChildListener&gt;());
+                    listeners = zkListeners.get(url);
+                }
+                ChildListener zkListener = listeners.get(listener);
+                if (zkListener == null) {
+                    listeners.putIfAbsent(listener, new ChildListener() {
+                        publicvoidchildChanged(String parentPath, List&lt;String&gt; currentChilds) {
+                            ZookeeperRegistry.this.notify(url, listener, toUrlsWithEmpty(url, parentPath, currentChilds));
+                        }
+                    });
+                    zkListener = listeners.get(listener);
+                }
+                //watch的目录不存在就创建
+                zkClient.create(path, false);
+                List&lt;String&gt; children = zkClient.addChildListener(path, zkListener);
+                if (children != null) {
+                    //toUrlsWithEmpty是将watch的路径转换为url，dubbo中服务信息，参数传递很多都是url来处理的
+                    urls.addAll(toUrlsWithEmpty(url, path, children));
+                }
+            }
+            //这里最重要的，回调listen
+            notify(url, listener, urls);
+        }
+    } catch (Throwable e) {
+        thrownew RpcException(&quot;Failed to subscribe &quot; + url + &quot; to zookeeper &quot; + getUrl() + &quot;, cause: &quot; + e.getMessage(), e);
+    }
+}
+</code></pre><p>notify方法最后的处理逻辑在AbstractRegistry里面。</p><pre><code>//AbstractRegistryprotectedvoid notify(URL url, NotifyListener listener, List&lt;URL&gt; urls) {
+    if (url ==null) {
+        throw new IllegalArgumentException(&quot;notify url == null&quot;);
+    }
+    if (listener ==null) {
+        throw new IllegalArgumentException(&quot;notify listener == null&quot;);
+    }
+    if ((urls ==null|| urls.size() ==0) 
+            &amp;&amp;! Constants.ANY_VALUE.equals(url.getServiceInterface())) {
+        logger.warn(&quot;Ignore empty notify urls for subscribe url &quot;+ url);
+        return;
+    }
+    if (logger.isInfoEnabled()) {
+        logger.info(&quot;Notify urls for subscribe url &quot;+ url +&quot;, urls: &quot;+ urls);
+    }
+    Map&lt;String, List&lt;URL&gt;&gt; result =new HashMap&lt;String, List&lt;URL&gt;&gt;();
+    for (URL u : urls) {
+        //isMatch主要做匹配，group，接口，版本，watch目录等是否一致if (UrlUtils.isMatch(url, u)) {
+            String category = u.getParameter(Constants.CATEGORY_KEY, Constants.DEFAULT_CATEGORY);
+            List&lt;URL&gt; categoryList = result.get(category);
+            if (categoryList ==null) {
+                categoryList =new ArrayList&lt;URL&gt;();
+                result.put(category, categoryList);
+            }
+            categoryList.add(u);
+        }
+    }
+    if (result.size() ==0) {
+        return;
+    }
+    Map&lt;String, List&lt;URL&gt;&gt; categoryNotified = notified.get(url);
+    if (categoryNotified ==null) {
+        notified.putIfAbsent(url, new ConcurrentHashMap&lt;String, List&lt;URL&gt;&gt;());
+        categoryNotified = notified.get(url);
+    }
+    for (Map.Entry&lt;String, List&lt;URL&gt;&gt; entry : result.entrySet()) {
+        String category = entry.getKey();
+        List&lt;URL&gt; categoryList = entry.getValue();
+        categoryNotified.put(category, categoryList);
+        //缓存到本地文件
+        saveProperties(url);
+        //回调listen
+        listener.notify(categoryList);
+    }
+}
+</code></pre><p>做本地缓存和listen回调。</p><p>取消注册和取消订阅处理方式差不多，不做解释。</p></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="4142158067"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="5618891265"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><footer class="post-footer"><div class="post-nav"><div class="post-nav-next post-nav-item"><a href="/2017/java生产环境debug.html" rel="next" title="Java 生产环境 debug"><i class="fa fa-chevron-left"></i> Java 生产环境 debug</a></div><span class="post-nav-divider"></span><div class="post-nav-prev post-nav-item"><a href="/2017/springmvc一springmvc框架原理分析和简单入门程序.html" rel="prev" title="springmvc(一) springmvc框架原理分析和简单入门程序">springmvc(一) springmvc框架原理分析和简单入门程序 <i class="fa fa-chevron-right"></i></a></div></div></footer></div></article><div class="post-spread"></div></div></div></div><div class="sidebar-toggle"><div class="sidebar-toggle-line-wrap"><span class="sidebar-toggle-line sidebar-toggle-line-first"></span> <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span> <span class="sidebar-toggle-line sidebar-toggle-line-last"></span></div></div><aside id="sidebar" class="sidebar"><div class="sidebar-inner"><ul class="sidebar-nav motion-element"><li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">Table of Contents</li><li class="sidebar-nav-overview" data-target="site-overview-wrap">Overview</li></ul><section class="site-overview-wrap sidebar-panel"><div class="site-overview"><div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person"><p class="site-author-name" itemprop="name">Hello</p><p class="site-description motion-element" itemprop="description"></p></div><nav class="site-state motion-element"><div class="site-state-item site-state-posts"><a href="/archives/"><span class="site-state-item-count">1358</span> <span class="site-state-item-name">posts</span></a></div></nav></div></section><section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active"><div class="post-toc"><div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Dubbo系列-4-工厂模式的Registry"><span class="nav-number">1.</span> <span class="nav-text">Dubbo系列-4.工厂模式的Registry</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#工厂模式创建Registry"><span class="nav-number">2.</span> <span class="nav-text">工厂模式创建Registry</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#RegistryFactory"><span class="nav-number">3.</span> <span class="nav-text">RegistryFactory</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#AbstractRegistryFactory"><span class="nav-number">3.1.</span> <span class="nav-text">AbstractRegistryFactory</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ZookeeperRegistryFactory"><span class="nav-number">3.2.</span> <span class="nav-text">ZookeeperRegistryFactory</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Registry"><span class="nav-number">4.</span> <span class="nav-text">Registry</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#AbstractRegistry"><span class="nav-number">4.1.</span> <span class="nav-text">AbstractRegistry</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#FailbackRegistry"><span class="nav-number">4.2.</span> <span class="nav-text">FailbackRegistry</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ZookeeperRegistry"><span class="nav-number">5.</span> <span class="nav-text">ZookeeperRegistry</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#构造"><span class="nav-number">5.1.</span> <span class="nav-text">构造</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#doRegister"><span class="nav-number">5.2.</span> <span class="nav-text">doRegister</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#doSubscribe"><span class="nav-number">5.3.</span> <span class="nav-text">doSubscribe</span></a></li></ol></li></ol></div></div></section></div></aside><div class="sfix"><div class="fixedme"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460" data-ad-format="auto"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script></div></div></main><footer id="footer" class="footer"><div class="footer-inner"><div class="copyright">&copy; <span itemprop="copyrightYear">2018</span> <span class="with-love"><i class="fa fa-user"></i> </span><span class="author" itemprop="copyrightHolder">Hello</span></div><div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div><span class="post-meta-divider">|</span><div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div></div></footer><div class="back-to-top"><i class="fa fa-arrow-up"></i></div></div><script type="text/javascript">"[object Function]"!==Object.prototype.toString.call(window.Promise)&&(window.Promise=null)</script><script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script><script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script><script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script><script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script><script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script></body></html><!-- rebuild by neat -->

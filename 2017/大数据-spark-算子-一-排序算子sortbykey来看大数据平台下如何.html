@@ -1,0 +1,279 @@
+<!-- build time:Sat Oct 27 2018 21:00:23 GMT+0800 (CST) --><!DOCTYPE html><html class="theme-next muse use-motion"><head><meta name="generator" content="Hexo 3.8.0"><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"><meta name="theme-color" content="#222"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"><link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css"><link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css"><link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4"><link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222"><meta name="description" content="大数据：Spark 算子（一）排序算子sortByKey来看大数据平台下如何做排序在前面一系列博客中，特别在Shuffle博客系列中，曾描述过在生成ShuffleWrite的文件的时候，对每个partition会先进行排序并spill到文件中，最后合并成ShuffleWrite的文件，也就是每个Partition里的内容已经进行了排序，在最后的action操作的时候需要对每个executor生成的"><meta name="keywords" content="JAVA,面试"><meta property="og:type" content="article"><meta property="og:title" content="大数据：Spark 算子（一）排序算子sortByKey来看大数据平台下如何做排序"><meta property="og:url" content="http://www.jfox.info/2017/大数据-spark-算子-一-排序算子sortbykey来看大数据平台下如何.html"><meta property="og:site_name" content="java面试"><meta property="og:description" content="大数据：Spark 算子（一）排序算子sortByKey来看大数据平台下如何做排序在前面一系列博客中，特别在Shuffle博客系列中，曾描述过在生成ShuffleWrite的文件的时候，对每个partition会先进行排序并spill到文件中，最后合并成ShuffleWrite的文件，也就是每个Partition里的内容已经进行了排序，在最后的action操作的时候需要对每个executor生成的"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="http://www.jfox.info/2017/0951/7e33653.png"><meta property="og:updated_time" content="2018-10-27T12:29:37.420Z"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="大数据：Spark 算子（一）排序算子sortByKey来看大数据平台下如何做排序"><meta name="twitter:description" content="大数据：Spark 算子（一）排序算子sortByKey来看大数据平台下如何做排序在前面一系列博客中，特别在Shuffle博客系列中，曾描述过在生成ShuffleWrite的文件的时候，对每个partition会先进行排序并spill到文件中，最后合并成ShuffleWrite的文件，也就是每个Partition里的内容已经进行了排序，在最后的action操作的时候需要对每个executor生成的"><meta name="twitter:image" content="http://www.jfox.info/2017/0951/7e33653.png"><script type="text/javascript" id="hexo.configurations">var NexT=window.NexT||{},CONFIG={root:"/",scheme:"Muse",version:"5.1.4",sidebar:{position:"left",display:"post",offset:12,b2t:!1,scrollpercent:!1,onmobile:!1},fancybox:!0,tabs:!0,motion:{enable:!0,async:!1,transition:{post_block:"fadeIn",post_header:"slideDownIn",post_body:"slideDownIn",coll_header:"slideLeftIn",sidebar:"slideUpIn"}},duoshuo:{userId:"0",author:"Author"},algolia:{applicationID:"",apiKey:"",indexName:"",hits:{per_page:10},labels:{input_placeholder:"Search for Posts",hits_empty:"We didn't find any results for the search: ${query}",hits_stats:"${hits} results found in ${time} ms"}}}</script><link rel="canonical" href="http://www.jfox.info/2017/大数据-spark-算子-一-排序算子sortbykey来看大数据平台下如何.html"><title>大数据：Spark 算子（一）排序算子sortByKey来看大数据平台下如何做排序 | java面试</title></head><body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN"><div class="container sidebar-position-left page-post-detail"><div class="headband"></div><header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="header-inner"><div class="site-brand-wrapper"><div class="site-meta"><div class="custom-logo-site-title"><a href="/" class="brand" rel="start"><span class="logo-line-before"><i></i></span> <span class="site-title">java面试</span> <span class="logo-line-after"><i></i></span></a></div><p class="site-subtitle"></p></div><div class="site-nav-toggle"><button><span class="btn-bar"></span> <span class="btn-bar"></span> <span class="btn-bar"></span></button></div></div><nav class="site-nav"><ul id="menu" class="menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i><br>Home</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i><br>Archives</a></li></ul></nav></div></header><main id="main" class="main"><div class="main-inner"><div class="content-wrap"><div id="content" class="content"><div id="posts" class="posts-expand"><article class="post post-type-normal" itemscope itemtype="http://schema.org/Article"><div class="post-block"><link itemprop="mainEntityOfPage" href="http://www.jfox.info/2017/大数据-spark-算子-一-排序算子sortbykey来看大数据平台下如何.html"><span hidden itemprop="author" itemscope itemtype="http://schema.org/Person"><meta itemprop="name" content="Hello"><meta itemprop="description" content=""><meta itemprop="image" content="/images/avatar.gif"></span><span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><meta itemprop="name" content="java面试"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">大数据：Spark 算子（一）排序算子sortByKey来看大数据平台下如何做排序</h1><div class="post-meta"><span class="post-time"><span class="post-meta-item-icon"><i class="fa fa-calendar-o"></i> </span><span class="post-meta-item-text">Posted on</span> <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-01-01T23:50:51+08:00">2017-01-01</time></span></div></header><div class="post-body" itemprop="articleBody"><h1 id="大数据：Spark-算子（一）排序算子sortByKey来看大数据平台下如何做排序"><a href="#大数据：Spark-算子（一）排序算子sortByKey来看大数据平台下如何做排序" class="headerlink" title="大数据：Spark 算子（一）排序算子sortByKey来看大数据平台下如何做排序"></a>大数据：Spark 算子（一）排序算子sortByKey来看大数据平台下如何做排序</h1><p>在前面一系列博客中，特别在Shuffle博客系列中，曾描述过在生成ShuffleWrite的文件的时候，对每个partition会先进行排序并spill到文件中，最后合并成ShuffleWrite的文件，也就是每个Partition里的内容已经进行了排序，在最后的action操作的时候需要对每个executor生成的shuffle文件相同的Partition进行合并，完成Action的操作。</p><p><strong>排序算子和常见的reduce算子算法有何区别？</strong></p><p>常见的一些聚合算子，reduce算子，并不需要排序，需要做的是</p><ul><li>将相同的hashcode分配到同一个partition，哪怕是不同的executor</li><li>在做最后的合并的时候，只需要合并不同的executor里相同的partition就可以了</li><li>对每个partition进行排序，考虑的是内存因数，解决的是最后的多文件使用外排序堆相同的key合并的问题</li></ul><h1 id="2-排序"><a href="#2-排序" class="headerlink" title="2 排序"></a>2 排序</h1><p>先给个排序的小例子：</p><pre><code>package spark.sort
+import org.apache.spark.SparkConf
+import org.apache.spark.SparkContext
+object sortsample {
+  def main(args: Array[String]) {
+    val conf = new SparkConf().setAppName(&quot;sortsample&quot;)
+    val sc = new SparkContext(conf)
+    var pairs = sc.parallelize(Array((&quot;a&quot;,0),(&quot;b&quot;,0),(&quot;c&quot;,3),(&quot;d&quot;,6),(&quot;e&quot;,0),(&quot;f&quot;,0),(&quot;g&quot;,3),(&quot;h&quot;,6)), 2);
+    pairs.sortByKey(true, 3).collect().foreach(println);
+  }
+}
+</code></pre><p>核心代码：<br>OrderedRDDFunctions.scala</p><p>会很奇怪么？RDD里面并没有sortByKey的方法？在这里和前面博客里提到的PairRDDFunctions一样，隐式转换：</p><pre><code>implicit def rddToOrderedRDDFunctions[K : Ordering : ClassTag, V: ClassTag](rdd: RDD[(K, V)])
+  : OrderedRDDFunctions[K, V, (K, V)] = {
+  new OrderedRDDFunctions[K, V, (K, V)](rdd)
+}
+</code></pre><p>调用的是OrderedRDDFunctions.scala里的方法</p><pre><code>def sortByKey(ascending: Boolean = true, numPartitions: Int = self.partitions.length)
+     : RDD[(K, V)] = self.withScope
+ {
+   val part = new RangePartitioner(numPartitions, self, ascending)
+   new ShuffledRDD[K, V, V](self, part)
+     .setKeyOrdering(if (ascending) ordering else ordering.reverse)
+ }
+</code></pre><p>对Partition采用了范围分配的策略，为何要使用范围分配的策略？这还是比较容易理解，对其它非排序类型的算子，使用散列算法，只要保证相同的key是分配在相同的partition就可以了，并不会影响相同的key的合并，计算。</p><p>而对排序来说，如果只是保证相同的key在相同的Partition并不足够，最后的排序还是需要合并所有的Partition进行排序合并，如果这发生在Driver端做这件事，将会非常可怕，那么我们该做些策略改变，制定一些Range，将排序上临近的分成同一个Rang，使排序相近的key分配到同一个Range上，在把Range扩大化，一个Partition管理一个Range</p><p><img src="/2017/0951/7e33653.png" alt=""></p><h2 id="2-1-分配Range"><a href="#2-1-分配Range" class="headerlink" title="2.1 分配Range"></a>2.1 分配Range</h2><p>range的非配不合理，会影响数据的不均衡，也就是导致executor在做同Partition排序的时候会不均衡，并行计算的整体性能往往会被单个最糟糕的运行节点所拖累，如果提高运算的速度，需要考虑数据分配的均衡性。</p><h3 id="2-1-1-每个区块采样大小"><a href="#2-1-1-每个区块采样大小" class="headerlink" title="2.1.1 每个区块采样大小"></a>2.1.1 每个区块采样大小</h3><p>获取所有的key，然后在来制定区间，这显然是不明智的，这样会变成一个全量数据的排序，然后在重新划分数据，所需需要采样部分数据进行区间划分</p><p>Partitioner.scala rangeBounds</p><p>代码如下：</p><pre><code>val sampleSize = math.min(20.0 * partitions, 1e6)
+      // Assume the input partitions are roughly balanced and over-sample a little bit.
+      val sampleSizePerPartition = math.ceil(3.0 * sampleSize / rdd.partitions.length).toInt
+      val (numItems, sketched) = RangePartitioner.sketch(rdd.map(_._1), sampleSizePerPartition)
+</code></pre><ul><li><p>partitions: 参数在指定sortByKey的时候设置的区块大小：3</p><p>pairs.sortByKey(true, 3)</p></li><li><p>rdd.partitions: 指的是在数据的分区块大小:2</p><p>sc.parallelize(Array((“a”,0),(“b”,0),(“c”,3),(“d”,6),(“e”,0),(“f”,0),(“g”,3),(“h”,6)), 2)</p></li></ul><p>需要采样的数量是通过几个固定参数来设计的</p><h3 id="2-1-2-Sketch采样-蓄水池采样法"><a href="#2-1-2-Sketch采样-蓄水池采样法" class="headerlink" title="2.1.2 Sketch采样(蓄水池采样法)"></a>2.1.2 Sketch采样(蓄水池采样法)</h3><pre><code>def sketch[K : ClassTag](
+    rdd: RDD[K],
+    sampleSizePerPartition: Int): (Long, Array[(Int, Long, Array[K])]) = {
+  val shift = rdd.id
+  // val classTagK = classTag[K] // to avoid serializing the entire partitioner object
+  val sketched = rdd.mapPartitionsWithIndex { (idx, iter) =&gt;
+    val seed = byteswap32(idx ^ (shift &lt;&lt; 16))
+    val (sample, n) = SamplingUtils.reservoirSampleAndCount(
+      iter, sampleSizePerPartition, seed)
+    Iterator((idx, n, sample))
+  }.collect()
+  val numItems = sketched.map(_._2).sum
+  (numItems, sketched)
+}
+</code></pre><p>mapPartitionsWithIndex, collection 都是需要在提交job进行运算的，也就是采样的过程中，是通过executor执行了一次job</p><pre><code>def reservoirSampleAndCount[T: ClassTag](
+    input: Iterator[T],
+    k: Int,
+    seed: Long = Random.nextLong())
+  : (Array[T], Long) = {
+  val reservoir = new Array[T](k)
+  // Put the first k elements in the reservoir.
+  var i = 0
+  while (i &lt; k &amp;&amp; input.hasNext) {
+    val item = input.next()
+    reservoir(i) = item
+    i += 1
+  }
+  // If we have consumed all the elements, return them. Otherwise do the replacement.
+  if (i &lt; k) {
+    // If input size &lt; k, trim the array to return only an array of input size.
+    val trimReservoir = new Array[T](i)
+    System.arraycopy(reservoir, 0, trimReservoir, 0, i)
+    (trimReservoir, i)
+  } else {
+    // If input size &gt; k, continue the sampling process.
+    var l = i.toLong
+    val rand = new XORShiftRandom(seed)
+    while (input.hasNext) {
+      val item = input.next()
+      l += 1
+      // There are k elements in the reservoir, and the l-th element has been
+      // consumed. It should be chosen with probability k/l. The expression
+      // below is a random long chosen uniformly from [0,l)
+      val replacementIndex = (rand.nextDouble() * l).toLong
+      if (replacementIndex &lt; k) {
+        reservoir(replacementIndex.toInt) = item
+      }
+    }
+    (reservoir, l)
+  }
+}
+</code></pre><p>函数<br>reservoirSampleAndCount采样</p><ul><li>当数据小于要采样的集合的时候，可以使用数据为样本</li><li>当数据集合超过需要采样数目的时候会继续遍历整个数据集合，通过随机数进行位置的随机替换，保证采样数据的随机性</li></ul><p>返回的结果里包含了总数据集，区块编号，区块的数量，每个区块的采样集</p><h3 id="2-1-3-重新采样"><a href="#2-1-3-重新采样" class="headerlink" title="2.1.3 重新采样"></a>2.1.3 重新采样</h3><p>为了避免某些区块的数据量过大，设置了一个阈值：</p><pre><code>val fraction = math.min(sampleSize / math.max(numItems, 1L), 1.0)
+</code></pre><p>阈值＝采样数除于总数据量，当某个区块的数据量＊阈值大于每个区的采样率的时候，认为这个区块的采样率是不足的，需要重新采样</p><pre><code>val imbalanced = new PartitionPruningRDD(rdd.map(_._1), imbalancedPartitions.contains)
+          val seed = byteswap32(-rdd.id - 1)
+          val reSampled = imbalanced.sample(withReplacement = false, fraction, seed).collect()
+          val weight = (1.0 / fraction).toFloat
+          candidates ++= reSampled.map(x =&gt; (x, weight))
+</code></pre><h3 id="2-1-4-采样集key的权重"><a href="#2-1-4-采样集key的权重" class="headerlink" title="2.1.4 采样集key的权重"></a>2.1.4 采样集key的权重</h3><p>上面我们对每个区进行了相同数量的采样，但是每个区的数量有可能是不均衡的，需要对每个区采样的key进行权重设置，尽量分配高权重给数据量多的区</p><p>权重因子：</p><pre><code>val weight = (n.toDouble / sample.length).toFloat
+</code></pre><p>n 是区的数据数量</p><p>sample 是采样的数量</p><p>这里权重的最小值是1，因为采样的数量肯定是小于等于数据</p><p>当数据量大于采样数量的时候，每个区的采样数量是相同的，那么意味着区的数据量越大，该区块的key的权重也就越大</p><h3 id="2-1-5-分配每个区块的range"><a href="#2-1-5-分配每个区块的range" class="headerlink" title="2.1.5 分配每个区块的range"></a>2.1.5 分配每个区块的range</h3><p>样本已经采集好了，现在需要对依据样本进行区块的range进行分配</p><ul><li>先对样本进行排序</li><li>依据每个样本的权重计算每个区块平均所分配的权重</li><li><p>最后通过每个区分配的权重<strong>按照顺序</strong>来决定获取哪些样本用作range，一个区分配一个样本区间</p><pre><code>def determineBounds[K : Ordering : ClassTag](
+    candidates: ArrayBuffer[(K, Float)],
+    partitions: Int): Array[K] = {
+  val ordering = implicitly[Ordering[K]]
+  val ordered = candidates.sortBy(_._1)
+  val numCandidates = ordered.size
+  val sumWeights = ordered.map(_._2.toDouble).sum
+  val step = sumWeights / partitions
+  var cumWeight = 0.0
+  var target = step
+  val bounds = ArrayBuffer.empty[K]
+  var i = 0
+  var j = 0
+  var previousBound = Option.empty[K]
+  while ((i &lt; numCandidates) &amp;&amp; (j &lt; partitions - 1)) {
+    val (key, weight) = ordered(i)
+    cumWeight += weight
+    if (cumWeight &gt;= target) {
+      // Skip duplicate values.
+      if (previousBound.isEmpty || ordering.gt(key, previousBound.get)) {
+        bounds += key
+        target += step
+        j += 1
+        previousBound = Some(key)
+      }
+    }
+    i += 1
+  }
+  bounds.toArray
+}
+</code></pre></li></ul><h2 id="2-2-ShuffleWriter"><a href="#2-2-ShuffleWriter" class="headerlink" title="2.2 ShuffleWriter"></a>2.2 ShuffleWriter</h2><p>在前面的一序列的博客里都是介绍了SortShuffleWrite，在sortByKey的情况下使用了BypassMergeSortShuffleWriter，把焦点聚焦到key如何分配到Partitioner和每个Partition的文件将会如何写入key，value</p><pre><code>while (records.hasNext()) {
+      final Product2&lt;K, V&gt; record = records.next();
+      final K key = record._1();
+      partitionWriters[partitioner.getPartition(key)].write(key, record._2());
+    }
+</code></pre><h3 id="2-2-1-分配key到Partition"><a href="#2-2-1-分配key到Partition" class="headerlink" title="2.2.1 分配key到Partition"></a>2.2.1 分配key到Partition</h3><p>在函数调用了，partitioner.getPartition方法，还是回到RangePartitioner类中</p><pre><code>def getPartition(key: Any): Int = {
+   val k = key.asInstanceOf[K]
+   var partition = 0
+   if (rangeBounds.length &lt;= 128) {
+     // If we have less than 128 partitions naive search
+     while (partition &lt; rangeBounds.length &amp;&amp; ordering.gt(k, rangeBounds(partition))) {
+       partition += 1
+     }
+   } else {
+     // Determine which binary search method to use only once.
+     partition = binarySearch(rangeBounds, k)
+     // binarySearch either returns the match location or -[insertion point]-1
+     if (partition &lt; 0) {
+       partition = -partition-1
+     }
+     if (partition &gt; rangeBounds.length) {
+       partition = rangeBounds.length
+     }
+   }
+   if (ascending) {
+     partition
+   } else {
+     rangeBounds.length - partition
+   }
+ }
+</code></pre><ul><li>当Partition的分配数小于128的时候，轮训的查找每个Partition</li><li>当Partition大于128的时候，使用二分法查找Partition</li></ul><h3 id="2-2-2-生成shuffle文件"><a href="#2-2-2-生成shuffle文件" class="headerlink" title="2.2.2 生成shuffle文件"></a>2.2.2 生成shuffle文件</h3><ul><li>基于前面对key进行排序的partition的分配，写到对应的partition文件中</li><li>合并Partition文件生成index和data文件（shuffle_shuffleid_mapid_0.index）（shuffle_shuffleid_mapid_0.data）因为Partition已经合并了，最后一位reduceID都是为0</li></ul><p><strong>注意：在这里并没有象SortShuffleWrite 对每个Partition进行排序,Spill 文件，最后合并文件，而是直接写到了Partition文件中。</strong></p><h2 id="2-3-Shuffle-Read"><a href="#2-3-Shuffle-Read" class="headerlink" title="2.3 Shuffle Read"></a>2.3 Shuffle Read</h2><p>在<br>BlockStoreShuffleReader的read函数里</p><pre><code>  dep.keyOrdering match {
+      case Some(keyOrd: Ordering[K]) =&gt;
+        // Create an ExternalSorter to sort the data. Note that if spark.shuffle.spill is disabled,
+        // the ExternalSorter won&apos;t spill to disk.
+        val sorter =
+          new ExternalSorter[K, C, C](context, ordering = Some(keyOrd), serializer = dep.serializer)
+        sorter.insertAll(aggregatedIter)
+        context.taskMetrics().incMemoryBytesSpilled(sorter.memoryBytesSpilled)
+        context.taskMetrics().incDiskBytesSpilled(sorter.diskBytesSpilled)
+        context.taskMetrics().incPeakExecutionMemory(sorter.peakMemoryUsedBytes)
+        CompletionIterator[Product2[K, C], Iterator[Product2[K, C]]](sorter.iterator, sorter.stop())
+      case None =&gt;
+        aggregatedIter
+    }
+
+
+
+ExternalSorter.insertAll函数 
+
+
+ while (records.hasNext) {
+        addElementsRead()
+        val kv = records.next()
+        buffer.insert(getPartition(kv._1), kv._1, kv._2.asInstanceOf[C])
+        maybeSpillCollection(usingMap = false)
+      }
+</code></pre><p>ExternalSorter函数，这个函数在前面的<br><a href="https://www.jfox.info/go.php?url=http://blog.csdn.net/raintungli/article/details/70807376">这篇博客</a>里介绍的比较清楚，但这里的结构体和博客介绍的不太一样</p><pre><code>@volatile private var map = new PartitionedAppendOnlyMap[K, C]
+ @volatile private var buffer = new PartitionedPairBuffer[K, C]
+</code></pre><p>在reduceByKey的这些算子，相同的Key是需要合并的，需要使用Map结构处理相同的Key的值的合并问题，但对排序来说，是不需要相同的值合并，使用Array结构就足够了。</p><p>在Spark上实现Map、Array都使用了数组的结构，并没有用链表结构。</p><p>在上图的PartitionPairBuffer结构中，有几个点要注意</p><ol><li>插入KV结构的时候，并没有进行排序，也就是在处理相同的Partition的时候合并Key值并没有进行</li><li>依然会存在当内存不够，Spill到磁盘的情况，关于Spill请具体参考<a href="https://www.jfox.info/go.php?url=http://blog.csdn.net/raintungli/article/details/70807376#t3">博客</a>链接</li></ol><h3 id="2-3-1-排序"><a href="#2-3-1-排序" class="headerlink" title="2.3.1 排序"></a>2.3.1 排序</h3><p>当ExternalSorter.insertAll函数完成后，才会构建一个排序的迭代器</p><pre><code>  def partitionedIterator: Iterator[(Int, Iterator[Product2[K, C]])] = {
+
+
+
+-  val collection: WritablePartitionedPairCollection[K, C] = if (usingMap) map else buffer
+
+    val usingMap = aggregator.isDefined
+    if (spills.isEmpty) {
+      // Special case: if we have only in-memory data, we don&apos;t need to merge streams, and perhaps
+      // we don&apos;t even need to sort by anything other than partition ID
+      if (!ordering.isDefined) {
+        // The user hasn&apos;t requested sorted keys, so only sort by partition ID, not key
+        groupByPartition(destructiveIterator(collection.partitionedDestructiveSortedIterator(None)))
+      } else {
+        // We do need to sort by both partition ID and key
+        groupByPartition(destructiveIterator(
+          collection.partitionedDestructiveSortedIterator(Some(keyComparator))))
+      }
+    } else {
+      // Merge spilled and in-memory data
+      merge(spills, destructiveIterator(
+        collection.partitionedDestructiveSortedIterator(comparator)))
+    }
+  }
+</code></pre><p>这里分成两种情况：</p><ul><li><p>还在内存里没有Spill到文件中去，这时候构建一个内存里的PartitionedDestructiveSortedIterator迭代器，在迭代器中已经排序好了PartitionPairBuffer里的内容</p><pre><code>/** Iterate through the data in a given order. For this class this is not really destructive. */
+override def partitionedDestructiveSortedIterator(keyComparator: Option[Comparator[K]])
+  : Iterator[((Int, K), V)] = {
+  val comparator = keyComparator.map(partitionKeyComparator).getOrElse(partitionComparator)
+  new Sorter(new KVArraySortDataFormat[(Int, K), AnyRef]).sort(data, 0, curSize, comparator)
+  iterator
+}
+</code></pre></li><li><p>Spill到文件里的，文件里的已经排好序了，还需要对内存里的PartitionPairBuffer进行排序（和前面相同的处理），然后对文件和内存进行外排序（外排序可参考<a href="https://www.jfox.info/go.php?url=http://blog.csdn.net/raintungli/article/details/70807376#t5">博客</a>）</p></li></ul><h2 id="2-4-最后的归并"><a href="#2-4-最后的归并" class="headerlink" title="2.4 最后的归并"></a>2.4 最后的归并</h2><p>在Dag-scheduler-event-loop 线程中会处理每个executor返回的结果，也就是刚才的Partition的结果</p><pre><code>  private[scheduler] def handleTaskCompletion(event: CompletionEvent) {
+....
+  case Success =&gt;
+        stage.pendingPartitions -= task.partitionId
+        task match {
+          case rt: ResultTask[_, _] =&gt;
+            // Cast to ResultStage here because it&apos;s part of the ResultTask
+            // TODO Refactor this out to a function that accepts a ResultStage
+            val resultStage = stage.asInstanceOf[ResultStage]
+            resultStage.activeJob match {
+              case Some(job) =&gt;
+                if (!job.finished(rt.outputId)) {
+                  updateAccumulators(event)
+                  job.finished(rt.outputId) = true
+                  job.numFinished += 1
+                  // If the whole job has finished, remove it
+                  if (job.numFinished == job.numPartitions) {
+                    markStageAsFinished(resultStage)
+                    cleanupStateForJobAndIndependentStages(job)
+                    listenerBus.post(
+                      SparkListenerJobEnd(job.jobId, clock.getTimeMillis(), JobSucceeded))
+                  }
+                  // taskSucceeded runs some user code that might throw an exception. Make sure
+                  // we are resilient against that.
+                  try {
+                    job.listener.taskSucceeded(rt.outputId, event.result)
+                  } catch {
+                    case e: Exception =&gt;
+                      // TODO: Perhaps we want to mark the resultStage as failed?
+                      job.listener.jobFailed(new SparkDriverExecutionException(e))
+                  }
+                }
+}
+</code></pre><p>通过方法taskSucceeded的方法进行每个Partition的合并</p><pre><code>job.listener.taskSucceeded(rt.outputId, event.result)
+
+  override def taskSucceeded(index: Int, result: Any): Unit = {
+    // resultHandler call must be synchronized in case resultHandler itself is not thread safe.
+    synchronized {
+      resultHandler(index, result.asInstanceOf[T])
+    }
+    if (finishedTasks.incrementAndGet() == totalTasks) {
+      jobPromise.success(())
+    }
+  }
+</code></pre><p>调用了resultHandler方法，继续看看resultHandler是怎样定义的</p><pre><code>def runJob[T, U: ClassTag](
+    rdd: RDD[T],
+    func: (TaskContext, Iterator[T]) =&gt; U,
+    partitions: Seq[Int]): Array[U] = {
+  val results = new Array[U](partitions.size)
+  runJob[T, U](rdd, func, partitions, (index, res) =&gt; results(index) = res)
+  results
+}
+</code></pre><p>在runJob的方法里</p><pre><code>def runJob[T, U: ClassTag](
+    rdd: RDD[T],
+    func: (TaskContext, Iterator[T]) =&gt; U,
+    partitions: Seq[Int],
+    resultHandler: (Int, U) =&gt; Unit): Unit = {
+  if (stopped.get()) {
+    throw new IllegalStateException(&quot;SparkContext has been shutdown&quot;)
+  }
+  val callSite = getCallSite
+  val cleanedFunc = clean(func)
+  logInfo(&quot;Starting job: &quot; + callSite.shortForm)
+  if (conf.getBoolean(&quot;spark.logLineage&quot;, false)) {
+    logInfo(&quot;RDD&apos;s recursive dependencies:n&quot; + rdd.toDebugString)
+  }
+  dagScheduler.runJob(rdd, cleanedFunc, partitions, callSite, resultHandler, localProperties.get)
+  progressBar.foreach(_.finishAll())
+  rdd.doCheckpoint()
+}
+</code></pre><p>也就是：</p><pre><code>(index, res) =&gt; results(index) = res)
+</code></pre><p>构建了一个数组result，将每个Partition的数值保存到result的数组里</p><p>result[0]=partition[0] =array(tuple,tuple…..)</p><p><strong>什么时候对所有的Partition最后合并呢？</strong></p><p>来看RDD的collect算子</p><pre><code>def collect(): Array[T] = withScope {
+  val results = sc.runJob(this, (iter: Iterator[T]) =&gt; iter.toArray)
+  Array.concat(results: _*)
+}
+</code></pre><p>runJob返回的是result的数组，每个Partition是管理不同的范围，最后的合并只要简单的将不同的Partition合并就可以了</p><h1 id="3-排序完整的流程"><a href="#3-排序完整的流程" class="headerlink" title="3. 排序完整的流程"></a>3. 排序完整的流程</h1><ul><li>Driver 提交一个采样任务，需要Executor对每个Partition进行数据采样，数据采样是一次全数据的扫描</li><li>Driver 获取采样数据，每个Partition的数据量，依据数据量的权重，进行Range的分配</li><li>Driver 开始进行排序，先提交ShuffleMapTask ，Executor对分配到自己的数据基于Range进行Partition的分配，直接写入Shuffle文件中</li><li>Driver 提交ResultTask，Executor读取Shuffle文件中相同的Partition进行合并（相同的key不做值的合并）、排序</li><li>Driver 接收到ResultTask的值后，最后进行不同的Partition数据合并</li></ul></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="4142158067"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="5618891265"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><footer class="post-footer"><div class="post-nav"><div class="post-nav-next post-nav-item"><a href="/2017/利用flume将mysql表数据准实时抽取到hdfs.html" rel="next" title="利用Flume将MySQL表数据准实时抽取到HDFS"><i class="fa fa-chevron-left"></i> 利用Flume将MySQL表数据准实时抽取到HDFS</a></div><span class="post-nav-divider"></span><div class="post-nav-prev post-nav-item"><a href="/2017/springboot-thymeleaf简单实现登陆注册及记账功能.html" rel="prev" title="SpringBoot+thymeleaf简单实现登陆注册及记账功能">SpringBoot+thymeleaf简单实现登陆注册及记账功能 <i class="fa fa-chevron-right"></i></a></div></div></footer></div></article><div class="post-spread"></div></div></div></div><div class="sidebar-toggle"><div class="sidebar-toggle-line-wrap"><span class="sidebar-toggle-line sidebar-toggle-line-first"></span> <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span> <span class="sidebar-toggle-line sidebar-toggle-line-last"></span></div></div><aside id="sidebar" class="sidebar"><div class="sidebar-inner"><ul class="sidebar-nav motion-element"><li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">Table of Contents</li><li class="sidebar-nav-overview" data-target="site-overview-wrap">Overview</li></ul><section class="site-overview-wrap sidebar-panel"><div class="site-overview"><div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person"><p class="site-author-name" itemprop="name">Hello</p><p class="site-description motion-element" itemprop="description"></p></div><nav class="site-state motion-element"><div class="site-state-item site-state-posts"><a href="/archives/"><span class="site-state-item-count">1358</span> <span class="site-state-item-name">posts</span></a></div></nav></div></section><section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active"><div class="post-toc"><div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#大数据：Spark-算子（一）排序算子sortByKey来看大数据平台下如何做排序"><span class="nav-number">1.</span> <span class="nav-text">大数据：Spark 算子（一）排序算子sortByKey来看大数据平台下如何做排序</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-排序"><span class="nav-number">2.</span> <span class="nav-text">2 排序</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-分配Range"><span class="nav-number">2.1.</span> <span class="nav-text">2.1 分配Range</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-1-每个区块采样大小"><span class="nav-number">2.1.1.</span> <span class="nav-text">2.1.1 每个区块采样大小</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-2-Sketch采样-蓄水池采样法"><span class="nav-number">2.1.2.</span> <span class="nav-text">2.1.2 Sketch采样(蓄水池采样法)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-3-重新采样"><span class="nav-number">2.1.3.</span> <span class="nav-text">2.1.3 重新采样</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-4-采样集key的权重"><span class="nav-number">2.1.4.</span> <span class="nav-text">2.1.4 采样集key的权重</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-5-分配每个区块的range"><span class="nav-number">2.1.5.</span> <span class="nav-text">2.1.5 分配每个区块的range</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-ShuffleWriter"><span class="nav-number">2.2.</span> <span class="nav-text">2.2 ShuffleWriter</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-1-分配key到Partition"><span class="nav-number">2.2.1.</span> <span class="nav-text">2.2.1 分配key到Partition</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-2-生成shuffle文件"><span class="nav-number">2.2.2.</span> <span class="nav-text">2.2.2 生成shuffle文件</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-3-Shuffle-Read"><span class="nav-number">2.3.</span> <span class="nav-text">2.3 Shuffle Read</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-1-排序"><span class="nav-number">2.3.1.</span> <span class="nav-text">2.3.1 排序</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-4-最后的归并"><span class="nav-number">2.4.</span> <span class="nav-text">2.4 最后的归并</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-排序完整的流程"><span class="nav-number">3.</span> <span class="nav-text">3. 排序完整的流程</span></a></li></ol></div></div></section></div></aside><div class="sfix"><div class="fixedme"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460" data-ad-format="auto"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script></div></div></main><footer id="footer" class="footer"><div class="footer-inner"><div class="copyright">&copy; <span itemprop="copyrightYear">2018</span> <span class="with-love"><i class="fa fa-user"></i> </span><span class="author" itemprop="copyrightHolder">Hello</span></div><div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div><span class="post-meta-divider">|</span><div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div></div></footer><div class="back-to-top"><i class="fa fa-arrow-up"></i></div></div><script type="text/javascript">"[object Function]"!==Object.prototype.toString.call(window.Promise)&&(window.Promise=null)</script><script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script><script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script><script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script><script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script><script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script></body></html><!-- rebuild by neat -->

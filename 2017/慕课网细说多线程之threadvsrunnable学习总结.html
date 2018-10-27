@@ -1,0 +1,316 @@
+<!-- build time:Sat Oct 27 2018 21:00:20 GMT+0800 (CST) --><!DOCTYPE html><html class="theme-next muse use-motion"><head><meta name="generator" content="Hexo 3.8.0"><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"><meta name="theme-color" content="#222"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"><link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css"><link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css"><link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4"><link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222"><meta name="description" content="慕课网_《细说多线程之Thread VS Runnable》学习总结比较Thread和Runnable这两种线程创建的方式，需要知道Thread和Runnable的基本创建方式。 课程目标和学习内容线程创建的两种方式比较 线程的生命周期 线程的守护神：守护线程 第二章：Thread VS Runnable2-1 回顾线程创建的两种方式方式一：继承Thread类方式二：实现Runnable接口线程创"><meta name="keywords" content="JAVA,面试"><meta property="og:type" content="article"><meta property="og:title" content="慕课网_《细说多线程之Thread VS Runnable》学习总结"><meta property="og:url" content="http://www.jfox.info/2017/慕课网细说多线程之threadvsrunnable学习总结.html"><meta property="og:site_name" content="java面试"><meta property="og:description" content="慕课网_《细说多线程之Thread VS Runnable》学习总结比较Thread和Runnable这两种线程创建的方式，需要知道Thread和Runnable的基本创建方式。 课程目标和学习内容线程创建的两种方式比较 线程的生命周期 线程的守护神：守护线程 第二章：Thread VS Runnable2-1 回顾线程创建的两种方式方式一：继承Thread类方式二：实现Runnable接口线程创"><meta property="og:locale" content="zh_CN"><meta property="og:updated_time" content="2018-10-27T12:29:39.322Z"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="慕课网_《细说多线程之Thread VS Runnable》学习总结"><meta name="twitter:description" content="慕课网_《细说多线程之Thread VS Runnable》学习总结比较Thread和Runnable这两种线程创建的方式，需要知道Thread和Runnable的基本创建方式。 课程目标和学习内容线程创建的两种方式比较 线程的生命周期 线程的守护神：守护线程 第二章：Thread VS Runnable2-1 回顾线程创建的两种方式方式一：继承Thread类方式二：实现Runnable接口线程创"><script type="text/javascript" id="hexo.configurations">var NexT=window.NexT||{},CONFIG={root:"/",scheme:"Muse",version:"5.1.4",sidebar:{position:"left",display:"post",offset:12,b2t:!1,scrollpercent:!1,onmobile:!1},fancybox:!0,tabs:!0,motion:{enable:!0,async:!1,transition:{post_block:"fadeIn",post_header:"slideDownIn",post_body:"slideDownIn",coll_header:"slideLeftIn",sidebar:"slideUpIn"}},duoshuo:{userId:"0",author:"Author"},algolia:{applicationID:"",apiKey:"",indexName:"",hits:{per_page:10},labels:{input_placeholder:"Search for Posts",hits_empty:"We didn't find any results for the search: ${query}",hits_stats:"${hits} results found in ${time} ms"}}}</script><link rel="canonical" href="http://www.jfox.info/2017/慕课网细说多线程之threadvsrunnable学习总结.html"><title>慕课网_《细说多线程之Thread VS Runnable》学习总结 | java面试</title></head><body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN"><div class="container sidebar-position-left page-post-detail"><div class="headband"></div><header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="header-inner"><div class="site-brand-wrapper"><div class="site-meta"><div class="custom-logo-site-title"><a href="/" class="brand" rel="start"><span class="logo-line-before"><i></i></span> <span class="site-title">java面试</span> <span class="logo-line-after"><i></i></span></a></div><p class="site-subtitle"></p></div><div class="site-nav-toggle"><button><span class="btn-bar"></span> <span class="btn-bar"></span> <span class="btn-bar"></span></button></div></div><nav class="site-nav"><ul id="menu" class="menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i><br>Home</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i><br>Archives</a></li></ul></nav></div></header><main id="main" class="main"><div class="main-inner"><div class="content-wrap"><div id="content" class="content"><div id="posts" class="posts-expand"><article class="post post-type-normal" itemscope itemtype="http://schema.org/Article"><div class="post-block"><link itemprop="mainEntityOfPage" href="http://www.jfox.info/2017/慕课网细说多线程之threadvsrunnable学习总结.html"><span hidden itemprop="author" itemscope itemtype="http://schema.org/Person"><meta itemprop="name" content="Hello"><meta itemprop="description" content=""><meta itemprop="image" content="/images/avatar.gif"></span><span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><meta itemprop="name" content="java面试"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">慕课网_《细说多线程之Thread VS Runnable》学习总结</h1><div class="post-meta"><span class="post-time"><span class="post-meta-item-icon"><i class="fa fa-calendar-o"></i> </span><span class="post-meta-item-text">Posted on</span> <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-01-01T23:54:35+08:00">2017-01-01</time></span></div></header><div class="post-body" itemprop="articleBody"><h1 id="慕课网-《细说多线程之Thread-VS-Runnable》学习总结"><a href="#慕课网-《细说多线程之Thread-VS-Runnable》学习总结" class="headerlink" title="慕课网_《细说多线程之Thread VS Runnable》学习总结"></a>慕课网_《细说多线程之Thread VS Runnable》学习总结</h1><pre><code>比较Thread和Runnable这两种线程创建的方式，需要知道Thread和Runnable的基本创建方式。
+</code></pre><p>课程目标和学习内容</p><pre><code>线程创建的两种方式比较
+线程的生命周期
+线程的守护神：守护线程
+</code></pre><h1 id="第二章：Thread-VS-Runnable"><a href="#第二章：Thread-VS-Runnable" class="headerlink" title="第二章：Thread VS Runnable"></a>第二章：Thread VS Runnable</h1><h2 id="2-1-回顾线程创建的两种方式"><a href="#2-1-回顾线程创建的两种方式" class="headerlink" title="2-1 回顾线程创建的两种方式"></a>2-1 回顾线程创建的两种方式</h2><p>方式一：继承Thread类</p><p>方式二：实现Runnable接口</p><p>线程创建的两种方式</p><h2 id="2-2-应用Thread模拟卖票"><a href="#2-2-应用Thread模拟卖票" class="headerlink" title="2-2 应用Thread模拟卖票"></a>2-2 应用Thread模拟卖票</h2><p>两种方式的比较</p><pre><code>Runnable方式可以避免Thread方式由于Java单继承特性带来的缺陷
+Runnable的代码可以被多个线程（Thread实例）共享，适合于多个线程处理同一个资源的情况
+</code></pre><p>案例：模拟买票</p><p>代码演示</p><p>1.编写MyThread类</p><pre><code>package com.myimooc.ticketsthread;
+
+/**
+ * 使用 Thread 创建线程
+ * @author ZhangCheng on 2017-07-08
+ *
+ */
+public class MyThread extends Thread {
+
+    /** 一共有5张火车票 */
+    private int ticketsCont = 5;
+    /** 窗口，也即是线程的名字 */
+    private String name;
+
+    public MyThread(String name){
+        this.name = name;
+    }
+
+    // 写买票逻辑
+    @Override
+    public void run() {
+        while(ticketsCont &gt; 0 ){
+            // 如果还有票，就卖掉一张
+            ticketsCont--;
+            System.out.println(name + &quot;卖了1张票，剩余票数为：&quot;+ticketsCont);
+        }
+    }
+}
+</code></pre><p>2.编写TicketsThread类</p><pre><code>package com.myimooc.ticketsthread;
+
+/**
+ * 主类-启动线程类
+ * @author ZhangCheng on 2017-07-08
+ *
+ */
+public class TicketsThread {
+
+    public static void main(String[] args) {
+
+        // 创建三个线程，模拟三个窗口卖票
+        MyThread mt1 = new MyThread(&quot;窗口1&quot;);
+        MyThread mt2 = new MyThread(&quot;窗口2&quot;);
+        MyThread mt3 = new MyThread(&quot;窗口3&quot;);
+
+        // 启动这三个线程，即窗口开始卖票
+        mt1.start();
+        mt2.start();
+        mt3.start();
+    }
+
+}
+</code></pre><p>运行结果</p><p>总共有5张票，但是三个窗口加在一起卖了15张票。造成有些人买了票，上不了车，这种情况不是我们愿意看到的。具体原因，写完Runnable后，会讲解。</p><h2 id="2-3-应用Runnable模拟卖票"><a href="#2-3-应用Runnable模拟卖票" class="headerlink" title="2-3 应用Runnable模拟卖票"></a>2-3 应用Runnable模拟卖票</h2><p>代码演示</p><p>1.编写MyThread类</p><pre><code>package com.myimooc.ticketsrunnable;
+
+/**
+ * 使用 Runnable 创建线程
+ * @author ZhangCheng on 2017-07-08
+ *
+ */
+public class MyThread implements Runnable {
+
+    /** 一共有5张火车票 */
+    private int ticketsCont = 5;
+
+    // 写买票逻辑
+    @Override
+    public void run() {
+        while(ticketsCont &gt; 0 ){
+            // 如果还有票，就卖掉一张
+            ticketsCont--;
+            System.out.println(Thread.currentThread().getName() + &quot;卖了1张票，剩余票数为：&quot;+ticketsCont);
+        }
+    }
+}
+</code></pre><p>2.编写TicketsRunnable类</p><pre><code>package com.myimooc.ticketsrunnable;
+
+/**
+ * 主类-启动线程类
+ * @author ZhangCheng on 2017-07-08
+ *
+ */
+public class TicketsRunnable {
+
+    public static void main(String[] args) {
+
+        MyThread mt = new MyThread();
+
+        // 创建三个线程，模拟三个窗口卖票
+        Thread th1 = new Thread(mt,&quot;窗口1&quot;);
+        Thread th2 = new Thread(mt,&quot;窗口2&quot;);
+        Thread th3 = new Thread(mt,&quot;窗口3&quot;);
+
+        // 启动这三个线程，即窗口开始卖票
+        th1.start();
+        th2.start();
+        th3.start();
+
+    }
+
+}
+</code></pre><p>运行结果</p><h2 id="2-4-应用揭秘"><a href="#2-4-应用揭秘" class="headerlink" title="2-4 应用揭秘"></a>2-4 应用揭秘</h2><p>两种方式的区别</p><h1 id="第三章：线程的生命周期和守护线程"><a href="#第三章：线程的生命周期和守护线程" class="headerlink" title="第三章：线程的生命周期和守护线程"></a>第三章：线程的生命周期和守护线程</h1><h2 id="3-1-线程的生命周期"><a href="#3-1-线程的生命周期" class="headerlink" title="3-1 线程的生命周期"></a>3-1 线程的生命周期</h2><p>线程的生命周期</p><p>创建</p><pre><code>新建一个线程对象，如Threaf thd = new Thread()
+</code></pre><p>就绪</p><pre><code>创建了线程对象后，调用了线程的start()方法（注意：此时线程只是进入了线程队列，等待获取CPU服务，具备了运行的条件，但并不一定已经开始运行了）
+</code></pre><p>运行</p><pre><code>处于就绪状态的线程，一旦获取了CPU资源，便进入到运行状态，开始执行run()方法里面的逻辑
+</code></pre><p>终止</p><pre><code>线程的run()方法执行完毕，或者线程调用了stop()方法，线程便进入终止状态    
+</code></pre><p>阻塞</p><pre><code>一个正在执行的线程在某些情况下，由于某种原因而暂时让出了CPU资源，暂停了自己的执行，便进入了阻塞状态，如调用了sleep()方法
+</code></pre><p>阻塞状态示意图</p><h2 id="3-2-守护线程理论知识"><a href="#3-2-守护线程理论知识" class="headerlink" title="3-2 守护线程理论知识"></a>3-2 守护线程理论知识</h2><p>Java线程有两类</p><pre><code>用户线程：运行在前台，执行具体的任务
+    程序的主线程、连接网络的子线程等都是用户线程
+守护线程：运行在后台，为其他前台线程服务
+    特点：一旦所有用户线程都结束运行，守护线程会随JVM一起结束工作
+    应用：数据库连接池中的监测线程、JVM虚拟机启动后的监测线程
+    最常见的守护线程：垃圾回收线程
+</code></pre><p>如何设置守护线程</p><pre><code>可以通过调用Thread类的setDaemon(true)方法来设置当前的线程为守护线程
+</code></pre><p>注意事项</p><pre><code>setDaemon(true)必须在start()方法之前调用，否则会抛出IllegalThreadStateException异常
+在守护线程中产生的新线程也是守护线程
+不是所有的任务都可以分配给守护线程来执行，比如读写操作或者计算逻辑
+</code></pre><h2 id="3-3-守护线程代码示例"><a href="#3-3-守护线程代码示例" class="headerlink" title="3-3 守护线程代码示例"></a>3-3 守护线程代码示例</h2><p>模拟场景示意图</p><p>模拟场景说明</p><pre><code>一共有两个线程，一个主线程，一个守护线程。守护线程会在很长的时间内不停的往文件中写数据，主线程会阻塞等待来自键盘的输入。一旦主线程获取到了用户的输入，这时候，阻塞就会解除掉，主线程继续运行，直到结束。而一旦主线程结束，用户线程就没有了。这时候即使数据还没有写完，守护线程也会随虚拟机一起结束运行。
+</code></pre><p>代码演示</p><p>1.编写DaemonThread类</p><pre><code>package com.myimooc.daemonthread;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
+
+/**
+ * 守护线程。使用 Runnable 创建线程
+ * @author ZhangCheng on 2017-07-08
+ *
+ */
+public class DaemonThread implements Runnable {
+
+    @Override
+    public void run() {
+        System.out.println(&quot;进入守护线程&quot; + Thread.currentThread().getName());
+
+        try {
+            writeToFile();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        System.out.println(&quot;退出守护线程&quot; + Thread.currentThread().getName());
+    }
+
+    private void writeToFile() throws Exception{
+
+        File fileName = new File(&quot;d:&quot; + File.separator + &quot;daemon.txt&quot;);
+        // 向文件中追加数据
+        OutputStream os = new FileOutputStream(fileName,true);
+        int count = 0;
+        while(count &lt; 999){
+            os.write((&quot;rnword&quot; + count).getBytes());
+            System.out.println(&quot;守护线程&quot; + Thread.currentThread().getName() 
+                + &quot;向文件中写入了word&quot; + count);
+            count++;
+            // 线程休眠1秒
+            Thread.sleep(1000);
+        }
+        os.close();
+    }
+}
+</code></pre><p>2.编写DaemonThreadDemo类</p><pre><code>package com.myimooc.daemonthread;
+
+import java.util.Scanner;
+
+/**
+ * 主线程
+ * @author ZhangCheng on 2017-07-08
+ *
+ */
+public class DaemonThreadDemo {
+
+    public static void main(String[] args) {
+
+        System.out.println(&quot;进入主线程&quot; + Thread.currentThread().getName());
+
+        DaemonThread daemonThread = new DaemonThread();
+        Thread thread = new Thread(daemonThread);
+        thread.setDaemon(true);
+        thread.start();
+
+        Scanner sc = new Scanner(System.in);
+        sc.next();
+        sc.close();
+
+        System.out.println(&quot;退出主线程&quot; + Thread.currentThread().getName());
+
+    }
+
+}
+</code></pre><h2 id="3-4-使用jstack生成线程快照"><a href="#3-4-使用jstack生成线程快照" class="headerlink" title="3-4 使用jstack生成线程快照"></a>3-4 使用jstack生成线程快照</h2><p>常用查看线程工具</p><p>jstack</p><pre><code>作用：生成JVM当前时刻线程的快照（threaddump，即当前进程中所有线程的信息）
+目的：帮助定位程序问题出现的原因，如长时间停顿、CPU占用率过高等
+</code></pre><p>使用命令</p><pre><code>jstack -l PID
+生成线程快照
+</code></pre><p>快照案例</p><pre><code>2017-07-08 23:49:46
+Full thread dump Java HotSpot(TM) 64-Bit Server VM (25.101-b13 mixed mode):
+
+&quot;Thread-0&quot; #10 daemon prio=5 os_prio=0 tid=0x000000001d209800 nid=0x2e00 waiting on condition [0x000000001dd2f000]
+   java.lang.Thread.State: TIMED_WAITING (sleeping)
+        at java.lang.Thread.sleep(Native Method)
+        at com.myimooc.daemonthread.DaemonThread.writeToFile(DaemonThread.java:39)
+        at com.myimooc.daemonthread.DaemonThread.run(DaemonThread.java:19)
+        at java.lang.Thread.run(Thread.java:745)
+
+   Locked ownable synchronizers:
+        - None
+
+&quot;Service Thread&quot; #9 daemon prio=9 os_prio=0 tid=0x000000001d1b9800 nid=0x2480 runnable [0x0000000000000000]
+   java.lang.Thread.State: RUNNABLE
+
+   Locked ownable synchronizers:
+        - None
+
+&quot;C1 CompilerThread2&quot; #8 daemon prio=9 os_prio=2 tid=0x000000001d13b000 nid=0x2078 waiting on condition [0x0000000000000000]
+   java.lang.Thread.State: RUNNABLE
+
+   Locked ownable synchronizers:
+        - None
+
+&quot;C2 CompilerThread1&quot; #7 daemon prio=9 os_prio=2 tid=0x000000001be2d800 nid=0x24f4 waiting on condition [0x0000000000000000]
+   java.lang.Thread.State: RUNNABLE
+
+   Locked ownable synchronizers:
+        - None
+
+&quot;C2 CompilerThread0&quot; #6 daemon prio=9 os_prio=2 tid=0x000000001bddf000 nid=0x2f64 waiting on condition [0x0000000000000000]
+   java.lang.Thread.State: RUNNABLE
+
+   Locked ownable synchronizers:
+        - None
+
+&quot;Attach Listener&quot; #5 daemon prio=5 os_prio=2 tid=0x000000001bdde000 nid=0x1c1c waiting on condition [0x0000000000000000]
+   java.lang.Thread.State: RUNNABLE
+
+   Locked ownable synchronizers:
+        - None
+
+&quot;Signal Dispatcher&quot; #4 daemon prio=9 os_prio=2 tid=0x000000001bdc8800 nid=0x247c runnable [0x0000000000000000]
+   java.lang.Thread.State: RUNNABLE
+
+   Locked ownable synchronizers:
+        - None
+
+&quot;Finalizer&quot; #3 daemon prio=8 os_prio=1 tid=0x000000001bdba800 nid=0x1f10 in Object.wait() [0x000000001d12f000]
+   java.lang.Thread.State: WAITING (on object monitor)
+        at java.lang.Object.wait(Native Method)
+        - waiting on &lt;0x000000076b108ee0&gt; (a java.lang.ref.ReferenceQueue$Lock)
+        at java.lang.ref.ReferenceQueue.remove(ReferenceQueue.java:143)
+        - locked &lt;0x000000076b108ee0&gt; (a java.lang.ref.ReferenceQueue$Lock)
+        at java.lang.ref.ReferenceQueue.remove(ReferenceQueue.java:164)
+        at java.lang.ref.Finalizer$FinalizerThread.run(Finalizer.java:209)
+
+   Locked ownable synchronizers:
+        - None
+
+&quot;Reference Handler&quot; #2 daemon prio=10 os_prio=2 tid=0x00000000027a2800 nid=0x2214 in Object.wait() [0x000000001d02f000]
+   java.lang.Thread.State: WAITING (on object monitor)
+        at java.lang.Object.wait(Native Method)
+        - waiting on &lt;0x000000076b106b50&gt; (a java.lang.ref.Reference$Lock)
+        at java.lang.Object.wait(Object.java:502)
+        at java.lang.ref.Reference.tryHandlePending(Reference.java:191)
+        - locked &lt;0x000000076b106b50&gt; (a java.lang.ref.Reference$Lock)
+        at java.lang.ref.Reference$ReferenceHandler.run(Reference.java:153)
+
+   Locked ownable synchronizers:
+        - None
+
+&quot;main&quot; #1 prio=5 os_prio=0 tid=0x000000000099d800 nid=0xf2c runnable [0x000000000228e000]
+   java.lang.Thread.State: RUNNABLE
+        at java.io.FileInputStream.readBytes(Native Method)
+        at java.io.FileInputStream.read(FileInputStream.java:255)
+        at java.io.BufferedInputStream.read1(BufferedInputStream.java:284)
+        at java.io.BufferedInputStream.read(BufferedInputStream.java:345)
+        - locked &lt;0x000000076b159560&gt; (a java.io.BufferedInputStream)
+        at sun.nio.cs.StreamDecoder.readBytes(StreamDecoder.java:284)
+        at sun.nio.cs.StreamDecoder.implRead(StreamDecoder.java:326)
+        at sun.nio.cs.StreamDecoder.read(StreamDecoder.java:178)
+        - locked &lt;0x000000076b1b9ce8&gt; (a java.io.InputStreamReader)
+        at java.io.InputStreamReader.read(InputStreamReader.java:184)
+        at java.io.Reader.read(Reader.java:100)
+        at java.util.Scanner.readInput(Scanner.java:804)
+        at java.util.Scanner.next(Scanner.java:1369)
+        at com.myimooc.daemonthread.DaemonThreadDemo.main(DaemonThreadDemo.java:22)
+
+   Locked ownable synchronizers:
+        - None
+
+&quot;VM Thread&quot; os_prio=2 tid=0x000000001bd98000 nid=0x2998 runnable
+
+&quot;GC task thread#0 (ParallelGC)&quot; os_prio=0 tid=0x00000000026c6800 nid=0x11b0 runnable
+
+&quot;GC task thread#1 (ParallelGC)&quot; os_prio=0 tid=0x00000000026c8000 nid=0x26a4 runnable
+
+&quot;GC task thread#2 (ParallelGC)&quot; os_prio=0 tid=0x00000000026c9800 nid=0x2d6c runnable
+
+&quot;GC task thread#3 (ParallelGC)&quot; os_prio=0 tid=0x00000000026cb000 nid=0xab0 runnable
+
+&quot;VM Periodic Task Thread&quot; os_prio=2 tid=0x000000001d1f3000 nid=0x2b08 waiting on condition
+
+JNI global references: 6
+</code></pre><p>总结</p><pre><code>1.如果有daemon标记，则当前线程为守护线程
+2.通过查看线程状态（java.lang.Thread.State: TIMED_WAITING (sleeping)）
+    可以帮助我们定位到导致程序出现死锁，或者是阻塞问题的原因
+3.tid和nid字段可以帮助我们找到CPU占有率很高的线程
+</code></pre><h1 id="第四章：课程总结"><a href="#第四章：课程总结" class="headerlink" title="第四章：课程总结"></a>第四章：课程总结</h1><h2 id="4-1-课程总结"><a href="#4-1-课程总结" class="headerlink" title="4-1 课程总结"></a>4-1 课程总结</h2><p>课程总结</p><pre><code>线程创建的两种方式回顾
+线程创建的两种方式比较
+线程的声明周期
+守护线程
+jsrack生成线程快照
+</code></pre><p>建议</p><pre><code>多使用Runnable这种方式创建线程
+</code></pre><p>补充</p><pre><code>1.程序中的同一资源指的是同一个Runnable对象
+2.安全的卖票程序中需要加入同步（Synchronized）
+</code></pre></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="4142158067"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="5618891265"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><footer class="post-footer"><div class="post-nav"><div class="post-nav-next post-nav-item"><a href="/2017/mybatisspringmvc批量删除2最新.html" rel="next" title="mybatis springmvc批量删除 2最新"><i class="fa fa-chevron-left"></i> mybatis springmvc批量删除 2最新</a></div><span class="post-nav-divider"></span><div class="post-nav-prev post-nav-item"><a href="/2017/lebronsix的专栏.html" rel="prev" title="LeBron_Six的专栏">LeBron_Six的专栏 <i class="fa fa-chevron-right"></i></a></div></div></footer></div></article><div class="post-spread"></div></div></div></div><div class="sidebar-toggle"><div class="sidebar-toggle-line-wrap"><span class="sidebar-toggle-line sidebar-toggle-line-first"></span> <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span> <span class="sidebar-toggle-line sidebar-toggle-line-last"></span></div></div><aside id="sidebar" class="sidebar"><div class="sidebar-inner"><ul class="sidebar-nav motion-element"><li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">Table of Contents</li><li class="sidebar-nav-overview" data-target="site-overview-wrap">Overview</li></ul><section class="site-overview-wrap sidebar-panel"><div class="site-overview"><div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person"><p class="site-author-name" itemprop="name">Hello</p><p class="site-description motion-element" itemprop="description"></p></div><nav class="site-state motion-element"><div class="site-state-item site-state-posts"><a href="/archives/"><span class="site-state-item-count">1358</span> <span class="site-state-item-name">posts</span></a></div></nav></div></section><section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active"><div class="post-toc"><div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#慕课网-《细说多线程之Thread-VS-Runnable》学习总结"><span class="nav-number">1.</span> <span class="nav-text">慕课网_《细说多线程之Thread VS Runnable》学习总结</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#第二章：Thread-VS-Runnable"><span class="nav-number">2.</span> <span class="nav-text">第二章：Thread VS Runnable</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-回顾线程创建的两种方式"><span class="nav-number">2.1.</span> <span class="nav-text">2-1 回顾线程创建的两种方式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-应用Thread模拟卖票"><span class="nav-number">2.2.</span> <span class="nav-text">2-2 应用Thread模拟卖票</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-3-应用Runnable模拟卖票"><span class="nav-number">2.3.</span> <span class="nav-text">2-3 应用Runnable模拟卖票</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-4-应用揭秘"><span class="nav-number">2.4.</span> <span class="nav-text">2-4 应用揭秘</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#第三章：线程的生命周期和守护线程"><span class="nav-number">3.</span> <span class="nav-text">第三章：线程的生命周期和守护线程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-线程的生命周期"><span class="nav-number">3.1.</span> <span class="nav-text">3-1 线程的生命周期</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-守护线程理论知识"><span class="nav-number">3.2.</span> <span class="nav-text">3-2 守护线程理论知识</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-3-守护线程代码示例"><span class="nav-number">3.3.</span> <span class="nav-text">3-3 守护线程代码示例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-4-使用jstack生成线程快照"><span class="nav-number">3.4.</span> <span class="nav-text">3-4 使用jstack生成线程快照</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#第四章：课程总结"><span class="nav-number">4.</span> <span class="nav-text">第四章：课程总结</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#4-1-课程总结"><span class="nav-number">4.1.</span> <span class="nav-text">4-1 课程总结</span></a></li></ol></li></ol></div></div></section></div></aside><div class="sfix"><div class="fixedme"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460" data-ad-format="auto"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script></div></div></main><footer id="footer" class="footer"><div class="footer-inner"><div class="copyright">&copy; <span itemprop="copyrightYear">2018</span> <span class="with-love"><i class="fa fa-user"></i> </span><span class="author" itemprop="copyrightHolder">Hello</span></div><div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div><span class="post-meta-divider">|</span><div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div></div></footer><div class="back-to-top"><i class="fa fa-arrow-up"></i></div></div><script type="text/javascript">"[object Function]"!==Object.prototype.toString.call(window.Promise)&&(window.Promise=null)</script><script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script><script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script><script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script><script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script><script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script></body></html><!-- rebuild by neat -->

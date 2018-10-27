@@ -1,0 +1,272 @@
+<!-- build time:Sat Oct 27 2018 21:00:23 GMT+0800 (CST) --><!DOCTYPE html><html class="theme-next muse use-motion"><head><meta name="generator" content="Hexo 3.8.0"><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"><meta name="theme-color" content="#222"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"><link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css"><link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css"><link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4"><link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222"><meta name="description" content="import java.io.File;import java.io.IOException;import org.apache.lucene.analysis.Analyzer;import org.apache.lucene.document.Document;import org.apache.lucene.document.Field.Store;import org.apache.luc"><meta name="keywords" content="JAVA,面试"><meta property="og:type" content="article"><meta property="og:title" content="Lucenc » java面试题"><meta property="og:url" content="http://www.jfox.info/2017/lucenc.html"><meta property="og:site_name" content="java面试"><meta property="og:description" content="import java.io.File;import java.io.IOException;import org.apache.lucene.analysis.Analyzer;import org.apache.lucene.document.Document;import org.apache.lucene.document.Field.Store;import org.apache.luc"><meta property="og:locale" content="zh_CN"><meta property="og:updated_time" content="2018-10-27T12:29:37.413Z"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="Lucenc » java面试题"><meta name="twitter:description" content="import java.io.File;import java.io.IOException;import org.apache.lucene.analysis.Analyzer;import org.apache.lucene.document.Document;import org.apache.lucene.document.Field.Store;import org.apache.luc"><script type="text/javascript" id="hexo.configurations">var NexT=window.NexT||{},CONFIG={root:"/",scheme:"Muse",version:"5.1.4",sidebar:{position:"left",display:"post",offset:12,b2t:!1,scrollpercent:!1,onmobile:!1},fancybox:!0,tabs:!0,motion:{enable:!0,async:!1,transition:{post_block:"fadeIn",post_header:"slideDownIn",post_body:"slideDownIn",coll_header:"slideLeftIn",sidebar:"slideUpIn"}},duoshuo:{userId:"0",author:"Author"},algolia:{applicationID:"",apiKey:"",indexName:"",hits:{per_page:10},labels:{input_placeholder:"Search for Posts",hits_empty:"We didn't find any results for the search: ${query}",hits_stats:"${hits} results found in ${time} ms"}}}</script><link rel="canonical" href="http://www.jfox.info/2017/lucenc.html"><title>Lucenc » java面试题 | java面试</title></head><body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN"><div class="container sidebar-position-left page-post-detail"><div class="headband"></div><header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="header-inner"><div class="site-brand-wrapper"><div class="site-meta"><div class="custom-logo-site-title"><a href="/" class="brand" rel="start"><span class="logo-line-before"><i></i></span> <span class="site-title">java面试</span> <span class="logo-line-after"><i></i></span></a></div><p class="site-subtitle"></p></div><div class="site-nav-toggle"><button><span class="btn-bar"></span> <span class="btn-bar"></span> <span class="btn-bar"></span></button></div></div><nav class="site-nav"><ul id="menu" class="menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i><br>Home</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i><br>Archives</a></li></ul></nav></div></header><main id="main" class="main"><div class="main-inner"><div class="content-wrap"><div id="content" class="content"><div id="posts" class="posts-expand"><article class="post post-type-normal" itemscope itemtype="http://schema.org/Article"><div class="post-block"><link itemprop="mainEntityOfPage" href="http://www.jfox.info/2017/lucenc.html"><span hidden itemprop="author" itemscope itemtype="http://schema.org/Person"><meta itemprop="name" content="Hello"><meta itemprop="description" content=""><meta itemprop="image" content="/images/avatar.gif"></span><span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><meta itemprop="name" content="java面试"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">Lucenc » java面试题</h1><div class="post-meta"><span class="post-time"><span class="post-meta-item-icon"><i class="fa fa-calendar-o"></i> </span><span class="post-meta-item-text">Posted on</span> <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-01-01T23:50:05+08:00">2017-01-01</time></span></div></header><div class="post-body" itemprop="articleBody"><p>import java.io.File;<br>import java.io.IOException;<br>import org.apache.lucene.analysis.Analyzer;<br>import org.apache.lucene.document.Document;<br>import org.apache.lucene.document.Field.Store;<br>import org.apache.lucene.document.StoredField;<br>import org.apache.lucene.document.StringField;<br>import org.apache.lucene.document.TextField;<br>import org.apache.lucene.index.DirectoryReader;<br>import org.apache.lucene.index.IndexReader;<br>import org.apache.lucene.index.IndexWriter;<br>import org.apache.lucene.index.IndexWriterConfig;<br>import org.apache.lucene.index.IndexableField;<br>import org.apache.lucene.index.Term;<br>import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;<br>import org.apache.lucene.queryparser.classic.QueryParser;<br>import org.apache.lucene.search.BooleanClause.Occur;<br>import org.apache.lucene.search.BooleanQuery;<br>import org.apache.lucene.search.IndexSearcher;<br>import org.apache.lucene.search.NumericRangeQuery;<br>import org.apache.lucene.search.Query;<br>import org.apache.lucene.search.ScoreDoc;<br>import org.apache.lucene.search.TermQuery;<br>import org.apache.lucene.search.TopDocs;<br>import org.apache.lucene.store.Directory;<br>import org.apache.lucene.store.FSDirectory;<br>import org.apache.lucene.util.Version;<br>import org.junit.Test;<br>import org.wltea.analyzer.lucene.IKAnalyzer;<br>publicclass LuceneCRM {<br>/**</p><pre><code>     * 添加
+     * @throws Exception
+     */
+    @Test
+    publicvoid add() throws Exception{
+        //获得文档
+        Document document = new Document();
+        document.add(new StringField(&quot;id&quot;, &quot;6&quot;, Store.YES));
+        document.add(new TextField(&quot;Name&quot;, &quot;柳岩&quot;,Store.YES));
+        document.add(new StoredField(&quot;url&quot;, &quot;www.baidu.com&quot;));
+        //获得分析器
+        Analyzer analyzer = new IKAnalyzer();
+//        5. 创建Directory对象，声明索引库存储位置
+        Directory directory =  FSDirectory.open(new File(&quot;H:temp&quot;));
+//        4. 创建IndexWriterConfig配置信息类
+        IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_4_10_3, analyzer);
+//        6. 创建IndexWriter写入对象
+        IndexWriter indexWriter = new IndexWriter(directory, config);
+        indexWriter.addDocument(document);
+        indexWriter.close();
+     }
+    /**
+     * 修改
+     * 更新索引是先删除再添加，建议对更新需求采用此方法并且要保证对已存在的索引执行更新，
+     * 可以先查询出来，确定更新记录存在执行更新操作
+     * 如果更新索引的目标文档对象不存在，则执行添加。
+     * @throws Exception 
+     */
+    @Test
+    publicvoid update() throws Exception{
+        //获得分析器
+        Analyzer analyzer = new IKAnalyzer();
+        // 创建搜索解析器，第一个参数：默认Field域，第二个参数：分词器
+        QueryParser queryParser = new QueryParser(&quot;name&quot;,analyzer);
+        // 1. 创建Query搜索对象
+        Query query = queryParser.parse(&quot;id:6&quot;);
+//        5. 创建Directory对象，声明索引库存储位置
+        Directory directory =  FSDirectory.open(new File(&quot;H:temp&quot;));
+        // 3. 创建索引读取对象IndexReader
+        IndexReader indexReader = DirectoryReader.open(directory);
+        // 4. 创建索引搜索对象IndexSearcher
+        IndexSearcher searcher = new IndexSearcher(indexReader);
+        // 5. 使用索引搜索对象，执行搜索，返回结果集TopDocs
+        TopDocs topDocs = searcher.search(query, 1);
+        System.out.println(&quot;查询到的数据总条数是：&quot; + topDocs.totalHits);
+        //获得结果集
+        ScoreDoc[] docs = topDocs.scoreDocs;
+        for (ScoreDoc scoreDoc : docs) {
+            //获得文档
+            Document document = searcher.doc(scoreDoc.doc);
+            //如果文档存在就修改if(document!=null){
+//                4. 创建IndexWriterConfig配置信息类
+                IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_4_10_3, analyzer);
+//                6. 创建IndexWriter写入对象
+                IndexWriter indexWriter = new IndexWriter(directory, config);
+                Document document2 = new Document();
+                //修改
+                document2.add(new TextField(&quot;name&quot;, &quot;刘亦菲4&quot;, Store.YES));
+                document2.add(new TextField(&quot;Name&quot;, &quot;柳岩4&quot;,Store.YES));
+                /*document2.add(new StringField(&quot;id&quot;, document.getField(&quot;id&quot;).stringValue(), Store.YES));
+                document2.add(new StoredField(&quot;url&quot;, document.getField(&quot;url&quot;).stringValue()));*/
+                document2.add(document.getField(&quot;id&quot;));
+                document2.add(document.getField(&quot;url&quot;));
+                indexWriter.updateDocument(new Term(&quot;id&quot;, &quot;6&quot;), document2);
+                indexWriter.close();
+            }
+        }
+        indexReader.close();
+    }
+    /**
+     * 这个没有先做查询直接修改的 
+     * 符合的doc文档&gt;&gt;这样这里加几个Field,修改的就是Field  其他的Field就不存在了
+     * (比如原来5个Field)
+     * @throws Exception
+     */
+    @Test
+    publicvoid testIndexUpdate() throws Exception {
+        // 创建分词器
+        Analyzer analyzer = new IKAnalyzer();
+        // 创建Directory流对象
+        Directory directory = FSDirectory.open(new File(&quot;H:temp&quot;));
+        IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_4_10_3, analyzer);
+        // 创建写入对象
+        IndexWriter indexWriter = new IndexWriter(directory, config);
+        // 创建Document
+        Document document = new Document();
+        document.add(new TextField(&quot;id&quot;, &quot;1003&quot;, Store.YES));
+        document.add(new TextField(&quot;Name&quot;, &quot;lucene测试test 004&quot;, Store.YES));
+        /*document.add(new TextField(&quot;desc&quot;, &quot;啊哈哈哈哈哈哈哈&quot;,Store.YES));*///这里修改他会把这条数据给删除了
+        // 执行更新，会把所有符合条件的Document删除，再新增。
+        indexWriter.updateDocument(new Term(&quot;id&quot;, &quot;1002&quot;), document); //找到Field域为Name的中值为柳岩的所有的文档
+        // 释放资源        indexWriter.close();
+    }
+    /**
+     * 删除部分
+     * @throws Exception 
+     */
+    @Test
+    publicvoid delete() throws Exception{
+        //解析器
+        Analyzer analyzer = new IKAnalyzer();
+        //磁盘位置
+        Directory directory = FSDirectory.open(new File(&quot;H:temp&quot;));
+//        4. 创建IndexWriterConfig配置信息类
+        IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_4_10_3, analyzer);
+        //写入对象
+        IndexWriter indexWriter = new IndexWriter(directory,config );
+        indexWriter.deleteDocuments(new Term(&quot;id&quot;,&quot;6&quot;));
+        indexWriter.close();
+    }
+    /**
+     * 查询  第一种方式
+     * @throws Exception 
+     */
+    @Test
+    publicvoid find01() throws Exception{
+        Analyzer analyzer = new IKAnalyzer();
+        QueryParser parser = new QueryParser(&quot;name&quot;, analyzer);
+        //parser.parse()
+        Query query = parser.parse(&quot;Name:柳岩&quot;);
+        Directory directory = FSDirectory.open(new File(&quot;H:temp&quot;));
+        IndexReader reader =  DirectoryReader.open(directory);
+        IndexSearcher indexSearcher = new IndexSearcher(reader);
+        TopDocs topDocs = indexSearcher.search(query, 10);
+        ScoreDoc[] docs = topDocs.scoreDocs;
+        for (ScoreDoc scoreDoc : docs) {
+            Document document = indexSearcher.doc(scoreDoc.doc);
+            System.out.println(document.get(&quot;Name&quot;));
+        }
+        reader.close();
+    }
+    /**
+     * 查询  第二种方式
+     * @throws Exception 
+     */
+    @Test
+    publicvoid find02() throws Exception{
+        Query query = new TermQuery(new Term(&quot;Name&quot;,&quot;柳岩&quot;));
+        Directory directory = FSDirectory.open(new File(&quot;H:temp&quot;));
+        IndexReader indexReader = DirectoryReader.open(directory);
+        IndexSearcher indexSearcher = new IndexSearcher(indexReader);
+        TopDocs topDocs = indexSearcher.search(query, 10);
+        ScoreDoc[] docs = topDocs.scoreDocs;
+        for (ScoreDoc scoreDoc : docs) {
+            Document document = indexSearcher.doc(scoreDoc.doc);
+            System.out.println(document.get(&quot;Name&quot;));
+        }
+        indexReader.close();
+    }
+    /**
+     * 查询 第三种方式
+     * NumericRangeQuery，指定数字范围查询
+     */
+    @Test
+    publicvoid find03() throws Exception{
+        Query query = NumericRangeQuery.newFloatRange(&quot;price&quot;,50f, 70f, false, true);//(50f,70f]
+        Directory directory = FSDirectory.open(new File(&quot;H:temp&quot;));
+        IndexReader indexReader = DirectoryReader.open(directory);
+        IndexSearcher indexSearcher = new IndexSearcher(indexReader);
+        TopDocs topDocs = indexSearcher.search(query, 10);
+        ScoreDoc[] docs = topDocs.scoreDocs;
+        for (ScoreDoc scoreDoc : docs) {
+            Document document = indexSearcher.doc(scoreDoc.doc);
+            System.out.println(document.get(&quot;name&quot;));
+        }
+        indexReader.close();
+    }
+    /**
+     * 查询 第四种方式
+     * BooleanQuery，指定数字范围查询
+     */
+    @Test
+    publicvoid find04() throws Exception{
+        Query query1 = new TermQuery(new Term(&quot;desc&quot;,&quot;java&quot;));
+        Query query2 = NumericRangeQuery.newFloatRange(&quot;price&quot;,50f, 70f, false, true);//(50f,70f]        
+        BooleanQuery booleanQuery  = new BooleanQuery();
+        /**
+         *   1、MUST和MUST表示“与”的关系，即“交集”。 
+             2、MUST和MUST_NOT前者包含后者不包含。 
+             3、MUST_NOT和MUST_NOT没意义 
+             4、SHOULD与MUST表示MUST，SHOULD失去意义； 
+             5、SHOULD与MUST_NOT相当于MUST与MUST_NOT。 
+             6、SHOULD与SHOULD表示“或”的关系，即“并集”。
+         */
+        booleanQuery.add(query1, Occur.MUST);
+        booleanQuery.add(query2, Occur.MUST);
+        Directory directory = FSDirectory.open(new File(&quot;H:temp&quot;));
+        IndexReader indexReader = DirectoryReader.open(directory);
+        IndexSearcher indexSearcher = new IndexSearcher(indexReader);
+        TopDocs topDocs = indexSearcher.search(booleanQuery, 10);
+        ScoreDoc[] docs = topDocs.scoreDocs;
+        for (ScoreDoc scoreDoc : docs) {
+            Document document = indexSearcher.doc(scoreDoc.doc);
+            System.out.println(document.get(&quot;name&quot;));
+        }
+        indexReader.close();
+    }
+    /**
+     * 组合查询
+     */
+    @Test
+    publicvoid find05() throws Exception{
+        Analyzer analyzer = new IKAnalyzer();
+        QueryParser queryParser = new QueryParser(&quot;desc&quot;, analyzer);
+        //QueryParser提供一个Parse方法，此方法可以直接根据查询语法来查询
+        //它支持字符串范围。数字范围搜索建议使用NumericRangeQuery
+        Query query = queryParser.parse(&quot;desc:java AND lucene&quot;);
+        Directory directory = FSDirectory.open(new File(&quot;H:temp&quot;));
+        IndexReader indexReader = DirectoryReader.open(directory);
+        IndexSearcher indexSearcher = new IndexSearcher(indexReader);
+        TopDocs topDocs = indexSearcher.search(query, 10);
+        ScoreDoc[] docs = topDocs.scoreDocs;
+        for (ScoreDoc scoreDoc : docs) {
+            Document document = indexSearcher.doc(scoreDoc.doc);
+            System.out.println(document.get(&quot;name&quot;));
+        }
+        indexReader.close();
+    }
+    /**
+     * 通过MultiFieldQueryParse对多个域查询。
+     */
+    @Test
+    publicvoid find06() throws Exception{
+        Analyzer analyzer = new IKAnalyzer();
+        MultiFieldQueryParser multiFieldQueryParser = new MultiFieldQueryParser(new String[]{&quot;name&quot;,&quot;desc&quot;}, analyzer);
+        //通过MultiFieldQueryParse对多个域查询
+        //搜索这两个域中包含lucene域
+        Query query = multiFieldQueryParser.parse(&quot;lucene&quot;);  //name:lucene desc:lucene
+        Directory directory = FSDirectory.open(new File(&quot;H:temp&quot;));
+        IndexReader indexReader = DirectoryReader.open(directory);
+        IndexSearcher indexSearcher = new IndexSearcher(indexReader);
+        TopDocs topDocs = indexSearcher.search(query, 10);
+        ScoreDoc[] docs = topDocs.scoreDocs;
+        for (ScoreDoc scoreDoc : docs) {
+            Document document = indexSearcher.doc(scoreDoc.doc);
+            System.out.println(document.get(&quot;name&quot;));
+        }
+        indexReader.close();
+    }
+    /**
+     * 相关度排序(boost是一个加权值（默认加权值为1.0f）)
+     * Lucene对查询关键字和索引文档的相关度进行打分，得分高的就排在前边
+     *     1）计算出词（Term）的权重   
+        2）根据词的权重值，计算文档相关度得分。
+            Term Frequency (tf)：
+                指此Term在此文档中出现了多少次。tf 越大说明越重要。 
+                词(Term)在文档中出现的次数越多，说明此词(Term)对该文档越重要，如“Lucene”这个词，
+                在文档中出现的次数很多，说明该文档主要就是讲Lucene技术的。
+            Document Frequency (df)：
+                指有多少文档包含此Term。df 越大说明越不重要。     
+                比如，在一篇英语文档中，this出现的次数更多，就说明越重要吗？
+                不是的，有越多的文档包含此词(Term), 说明此词(Term)太普通，不足以区分这些文档，因而重要性越低。
+     * @throws Exception 
+     */
+    @Test
+    publicvoid addS() throws Exception{
+        Analyzer analyzer = new IKAnalyzer();
+        Directory directory = FSDirectory.open(new File(&quot;H:temp&quot;));
+        IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_4_10_3, analyzer);
+        IndexWriter indexWriter = new IndexWriter(directory, config);
+        Document document = new Document();
+        document.add(new StringField(&quot;id&quot;, &quot;7&quot;, Store.YES));
+        document.add(new TextField(&quot;desc&quot;, &quot;哈哈哈哈哈哈&quot;, Store.YES));
+        document.add(new TextField(&quot;name&quot;, &quot;柳岩&quot;, Store.YES));
+        //添加权重   
+        TextField field = new TextField(&quot;Name&quot;, &quot;柳岩&quot;, Store.YES);  //在做查询柳岩是  这个就排在第一个了  无敌了
+        field.setBoost(100f);  //设置权重        document.add(field);
+        indexWriter.addDocument(document);
+        indexWriter.close();
+    }
+}
+</code></pre><p>说说我对权重的解释,这个经常baidu的人很有感触,一些广告总是出现在最前面,个人觉得就是(你懂得,调整了权重…哈哈)</p></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="4142158067"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="5618891265"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><footer class="post-footer"><div class="post-nav"><div class="post-nav-next post-nav-item"><a href="/2017/spring整合cxf框架.html" rel="next" title="spring整合cxf框架"><i class="fa fa-chevron-left"></i> spring整合cxf框架</a></div><span class="post-nav-divider"></span><div class="post-nav-prev post-nav-item"><a href="/2017/java基础-string类-一.html" rel="prev" title="Java基础——String类（一）">Java基础——String类（一） <i class="fa fa-chevron-right"></i></a></div></div></footer></div></article><div class="post-spread"></div></div></div></div><div class="sidebar-toggle"><div class="sidebar-toggle-line-wrap"><span class="sidebar-toggle-line sidebar-toggle-line-first"></span> <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span> <span class="sidebar-toggle-line sidebar-toggle-line-last"></span></div></div><aside id="sidebar" class="sidebar"><div class="sidebar-inner"><section class="site-overview-wrap sidebar-panel sidebar-panel-active"><div class="site-overview"><div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person"><p class="site-author-name" itemprop="name">Hello</p><p class="site-description motion-element" itemprop="description"></p></div><nav class="site-state motion-element"><div class="site-state-item site-state-posts"><a href="/archives/"><span class="site-state-item-count">1358</span> <span class="site-state-item-name">posts</span></a></div></nav></div></section></div></aside><div class="sfix"><div class="fixedme"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460" data-ad-format="auto"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script></div></div></main><footer id="footer" class="footer"><div class="footer-inner"><div class="copyright">&copy; <span itemprop="copyrightYear">2018</span> <span class="with-love"><i class="fa fa-user"></i> </span><span class="author" itemprop="copyrightHolder">Hello</span></div><div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div><span class="post-meta-divider">|</span><div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div></div></footer><div class="back-to-top"><i class="fa fa-arrow-up"></i></div></div><script type="text/javascript">"[object Function]"!==Object.prototype.toString.call(window.Promise)&&(window.Promise=null)</script><script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script><script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script><script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script><script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script><script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script></body></html><!-- rebuild by neat -->

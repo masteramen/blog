@@ -1,0 +1,208 @@
+<!-- build time:Sat Oct 27 2018 21:00:16 GMT+0800 (CST) --><!DOCTYPE html><html class="theme-next muse use-motion"><head><meta name="generator" content="Hexo 3.8.0"><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"><meta name="theme-color" content="#222"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"><link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css"><link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css"><link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4"><link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222"><meta name="description" content="作者yuweiguo2017.08.06 12:10字数 2666本文介绍了如何自定义Java注解处理器及涉及到的相关知识，看完本文可以很轻松看懂并理解各大开源框架的注解处理器的应用。《游园不值》应怜屐齿印苍苔 ，小扣柴扉久不开 。春色满园关不住 ，一枝红杏出墙来 。-宋，叶绍翁本文首发：http://yuweiguocn.github.io/关于自定义Java注解请查看自定义注解。基本实现实现一"><meta name="keywords" content="JAVA,面试"><meta property="og:type" content="article"><meta property="og:title" content="自定义Java注解处理器"><meta property="og:url" content="http://www.jfox.info/2017/自定义java注解处理器.html"><meta property="og:site_name" content="java面试"><meta property="og:description" content="作者yuweiguo2017.08.06 12:10字数 2666本文介绍了如何自定义Java注解处理器及涉及到的相关知识，看完本文可以很轻松看懂并理解各大开源框架的注解处理器的应用。《游园不值》应怜屐齿印苍苔 ，小扣柴扉久不开 。春色满园关不住 ，一枝红杏出墙来 。-宋，叶绍翁本文首发：http://yuweiguocn.github.io/关于自定义Java注解请查看自定义注解。基本实现实现一"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="http://www.jfox.info/2017/1491/91d443c.png"><meta property="og:image" content="http://www.jfox.info/2017/1491/eda534f.png"><meta property="og:updated_time" content="2018-10-27T12:29:37.423Z"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="自定义Java注解处理器"><meta name="twitter:description" content="作者yuweiguo2017.08.06 12:10字数 2666本文介绍了如何自定义Java注解处理器及涉及到的相关知识，看完本文可以很轻松看懂并理解各大开源框架的注解处理器的应用。《游园不值》应怜屐齿印苍苔 ，小扣柴扉久不开 。春色满园关不住 ，一枝红杏出墙来 。-宋，叶绍翁本文首发：http://yuweiguocn.github.io/关于自定义Java注解请查看自定义注解。基本实现实现一"><meta name="twitter:image" content="http://www.jfox.info/2017/1491/91d443c.png"><script type="text/javascript" id="hexo.configurations">var NexT=window.NexT||{},CONFIG={root:"/",scheme:"Muse",version:"5.1.4",sidebar:{position:"left",display:"post",offset:12,b2t:!1,scrollpercent:!1,onmobile:!1},fancybox:!0,tabs:!0,motion:{enable:!0,async:!1,transition:{post_block:"fadeIn",post_header:"slideDownIn",post_body:"slideDownIn",coll_header:"slideLeftIn",sidebar:"slideUpIn"}},duoshuo:{userId:"0",author:"Author"},algolia:{applicationID:"",apiKey:"",indexName:"",hits:{per_page:10},labels:{input_placeholder:"Search for Posts",hits_empty:"We didn't find any results for the search: ${query}",hits_stats:"${hits} results found in ${time} ms"}}}</script><link rel="canonical" href="http://www.jfox.info/2017/自定义java注解处理器.html"><title>自定义Java注解处理器 | java面试</title></head><body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN"><div class="container sidebar-position-left page-post-detail"><div class="headband"></div><header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="header-inner"><div class="site-brand-wrapper"><div class="site-meta"><div class="custom-logo-site-title"><a href="/" class="brand" rel="start"><span class="logo-line-before"><i></i></span> <span class="site-title">java面试</span> <span class="logo-line-after"><i></i></span></a></div><p class="site-subtitle"></p></div><div class="site-nav-toggle"><button><span class="btn-bar"></span> <span class="btn-bar"></span> <span class="btn-bar"></span></button></div></div><nav class="site-nav"><ul id="menu" class="menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i><br>Home</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i><br>Archives</a></li></ul></nav></div></header><main id="main" class="main"><div class="main-inner"><div class="content-wrap"><div id="content" class="content"><div id="posts" class="posts-expand"><article class="post post-type-normal" itemscope itemtype="http://schema.org/Article"><div class="post-block"><link itemprop="mainEntityOfPage" href="http://www.jfox.info/2017/自定义java注解处理器.html"><span hidden itemprop="author" itemscope itemtype="http://schema.org/Person"><meta itemprop="name" content="Hello"><meta itemprop="description" content=""><meta itemprop="image" content="/images/avatar.gif"></span><span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><meta itemprop="name" content="java面试"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">自定义Java注解处理器</h1><div class="post-meta"><span class="post-time"><span class="post-meta-item-icon"><i class="fa fa-calendar-o"></i> </span><span class="post-meta-item-text">Posted on</span> <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-01-01T23:59:51+08:00">2017-01-01</time></span></div></header><div class="post-body" itemprop="articleBody"><p>作者<a href="/u/4cb0c84627c4">yuweiguo</a>2017.08.06 12:10字数 2666<br>本文介绍了如何自定义Java注解处理器及涉及到的相关知识，看完本文可以很轻松看懂并理解各大开源框架的注解处理器的应用。</p><p>《游园不值》<br>应怜屐齿印苍苔 ，小扣柴扉久不开 。<br>春色满园关不住 ，一枝红杏出墙来 。<br>-宋，叶绍翁</p><p>本文首发：<a href="https://www.jfox.info/go.php?url=http://yuweiguocn.github.io/">http://yuweiguocn.github.io/</a></p><p>关于自定义Java注解请查看<a href="https://www.jfox.info/go.php?url=http://yuweiguocn.github.io/java-annotation/">自定义注解</a>。</p><h2 id="基本实现"><a href="#基本实现" class="headerlink" title="基本实现"></a>基本实现</h2><p>实现一个自定义注解处理器需要有两个步骤，第一是实现Processor接口处理注解，第二是注册注解处理器。</p><h3 id="实现Processor接口"><a href="#实现Processor接口" class="headerlink" title="实现Processor接口"></a>实现Processor接口</h3><p>通过实现Processor接口可以自定义注解处理器，这里我们采用更简单的方法通过继承AbstractProcessor类实现自定义注解处理器。实现抽象方法process处理我们想要的功能。</p><pre><code>public class CustomProcessor extends AbstractProcessor {
+    @Override
+    public boolean process(Set&lt;? extends TypeElement&gt; annotations, RoundEnvironment roundEnvironment) {
+        return false;
+    }
+}
+</code></pre><p>除此之外，我们还需要指定支持的注解类型以及支持的Java版本通过重写getSupportedAnnotationTypes方法和getSupportedSourceVersion方法：</p><pre><code>public class CustomProcessor extends AbstractProcessor {
+    @Override
+    public boolean process(Set&lt;? extends TypeElement&gt; annotations, RoundEnvironment roundEnvironment) {
+        return false;
+    }
+    @Override
+    public Set&lt;String&gt; getSupportedAnnotationTypes() {
+        Set&lt;String&gt; annotataions = new LinkedHashSet&lt;String&gt;();
+        annotataions.add(CustomAnnotation.class.getCanonicalName());
+        return annotataions;
+    }
+
+    @Override
+    public SourceVersion getSupportedSourceVersion() {
+        return SourceVersion.latestSupported();
+    }
+}
+</code></pre><p>对于指定支持的注解类型，我们还可以通过注解的方式进行指定：</p><pre><code>@SupportedAnnotationTypes({&quot;io.github.yuweiguocn.annotation.CustomAnnotation&quot;})
+public class CustomProcessor extends AbstractProcessor {
+    @Override
+    public boolean process(Set&lt;? extends TypeElement&gt; annotations, RoundEnvironment roundEnvironment) {
+        return false;
+    }
+    @Override
+    public SourceVersion getSupportedSourceVersion() {
+        return SourceVersion.latestSupported();
+    }
+}
+</code></pre><p>因为Android平台可能会有兼容问题，建议使用重写getSupportedAnnotationTypes方法指定支持的注解类型。</p><h3 id="注册注解处理器"><a href="#注册注解处理器" class="headerlink" title="注册注解处理器"></a>注册注解处理器</h3><p>最后我们还需要将我们自定义的注解处理器进行注册。新建res文件夹，目录下新建META-INF文件夹，目录下新建services文件夹，目录下新建javax.annotation.processing.Processor文件，然后将我们自定义注解处理器的全类名写到此文件：<br><img src="/2017/1491/91d443c.png" alt=""><br>io.github.yuweiguocn.processor.CustomProcessor</p><p>上面这种注册的方式太麻烦了，谷歌帮我们写了一个注解处理器来生成这个文件。<br>github地址：<a href="https://www.jfox.info/go.php?url=https://github.com/google/auto">https://github.com/google/auto</a><br>添加依赖：</p><pre><code>compile &apos;com.google.auto.service:auto-service:1.0-rc2&apos;
+</code></pre><p>添加注解：</p><pre><code>@AutoService(Processor.class)
+public class CustomProcessor extends AbstractProcessor {
+    ...
+}
+</code></pre><p>搞定，体会到注解处理器的强大木有。后面我们只需关注注解处理器中的处理逻辑即可。</p><p>我们来看一下最终的项目结构：<br><img src="/2017/1491/eda534f.png" alt=""></p><h2 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h2><p>抽象类中还有一个init方法，这是Processor接口中提供的一个方法，当我们编译程序时注解处理器工具会调用此方法并且提供实现ProcessingEnvironment接口的对象作为参数。</p><pre><code>@Override
+public synchronized void init(ProcessingEnvironment processingEnvironment) {
+    super.init(processingEnvironment);
+}
+</code></pre><p>我们可以使用ProcessingEnvironment获取一些实用类以及获取选项参数等：<br>方法说明Elements getElementUtils()返回实现Elements接口的对象，用于操作元素的工具类。Filer getFiler()返回实现Filer接口的对象，用于创建文件、类和辅助文件。Messager getMessager()返回实现Messager接口的对象，用于报告错误信息、警告提醒。Map&lt;String,String&gt; getOptions()返回指定的参数选项。Types getTypeUtils()返回实现Types接口的对象，用于操作类型的工具类。</p><h3 id="元素"><a href="#元素" class="headerlink" title="元素"></a>元素</h3><p>Element元素是一个接口，表示一个程序元素，比如包、类或者方法。以下元素类型接口全部继承自Element接口：<br>类型说明ExecutableElement表示某个类或接口的方法、构造方法或初始化程序（静态或实例），包括注解类型元素。PackageElement表示一个包程序元素。提供对有关包及其成员的信息的访问。TypeElement表示一个类或接口程序元素。提供对有关类型及其成员的信息的访问。注意，枚举类型是一种类，而注解类型是一种接口。TypeParameterElement表示一般类、接口、方法或构造方法元素的形式类型参数。VariableElement表示一个字段、enum 常量、方法或构造方法参数、局部变量或异常参数。<br>如果我们要判断一个元素的类型，应该使用Element.getKind()方法配合ElementKind枚举类进行判断。尽量<strong>避免使用instanceof进行判断</strong>，因为比如TypeElement既表示类又表示一个接口，这样判断的结果可能不是你想要的。例如我们判断一个元素是不是一个类：</p><pre><code>if (element instanceof TypeElement) { //错误，也有可能是一个接口
+}
+
+if (element.getKind() == ElementKind.CLASS) { //正确
+    //doSomething
+}
+</code></pre><p>下表为ElementKind枚举类中的部分常量，详细信息请查看官方文档。<br>类型说明PACKAGE一个包。ENUM一个枚举类型。CLASS没有用更特殊的种类（如 ENUM）描述的类。ANNOTATION_TYPE一个注解类型。INTERFACE没有用更特殊的种类（如 ANNOTATION_TYPE）描述的接口。ENUM_CONSTANT一个枚举常量。FIELD没有用更特殊的种类（如 ENUM_CONSTANT）描述的字段。PARAMETER方法或构造方法的参数。LOCAL_VARIABLE局部变量。METHOD一个方法。CONSTRUCTOR一个构造方法。TYPE_PARAMETER一个类型参数。</p><h3 id="类型"><a href="#类型" class="headerlink" title="类型"></a>类型</h3><p>TypeMirror是一个接口，表示 Java 编程语言中的类型。这些类型包括基本类型、声明类型（类和接口类型）、数组类型、类型变量和 null 类型。还可以表示通配符类型参数、executable 的签名和返回类型，以及对应于包和关键字 void 的伪类型。以下类型接口全部继承自TypeMirror接口：<br>类型说明ArrayType表示一个数组类型。多维数组类型被表示为组件类型也是数组类型的数组类型。DeclaredType表示某一声明类型，是一个类 (class) 类型或接口 (interface) 类型。这包括参数化的类型（比如 java.util.Set<string>）和原始类型。TypeElement 表示一个类或接口元素，而 DeclaredType 表示一个类或接口类型，后者将成为前者的一种使用（或调用）。ErrorType表示无法正常建模的类或接口类型。ExecutableType表示 executable 的类型。executable 是一个方法、构造方法或初始化程序。NoType在实际类型不适合的地方使用的伪类型。NullType表示 null 类型。PrimitiveType表示一个基本类型。这些类型包括 boolean、byte、short、int、long、char、float 和 double。ReferenceType表示一个引用类型。这些类型包括类和接口类型、数组类型、类型变量和 null 类型。TypeVariable表示一个类型变量。WildcardType表示通配符类型参数。<br>同样，如果我们想判断一个TypeMirror的类型，应该使用TypeMirror.getKind()方法配合TypeKind枚举类进行判断。尽量<strong>避免使用instanceof进行判断</strong>，因为比如DeclaredType既表示类 (class) 类型又表示接口 (interface) 类型，这样判断的结果可能不是你想要的。</string></p><p>TypeKind枚举类中的部分常量，详细信息请查看官方文档。<br>类型说明BOOLEAN基本类型 boolean。INT基本类型 int。LONG基本类型 long。FLOAT基本类型 float。DOUBLE基本类型 double。VOID对应于关键字 void 的伪类型。NULLnull 类型。ARRAY数组类型。PACKAGE对应于包元素的伪类型。EXECUTABLE方法、构造方法或初始化程序。</p><h3 id="创建文件"><a href="#创建文件" class="headerlink" title="创建文件"></a>创建文件</h3><p>Filer接口支持通过注解处理器创建新文件。可以创建三种文件类型：源文件、类文件和辅助资源文件。</p><p>1.创建源文件</p><pre><code>JavaFileObject createSourceFile(CharSequence name,
+                                Element... originatingElements)
+                                throws IOException
+</code></pre><p>创建一个新的源文件，并返回一个对象以允许写入它。文件的名称和路径（相对于源文件的根目录输出位置）基于该文件中声明的类型。如果声明的类型不止一个，则应该使用主要顶层类型的名称（例如，声明为 public 的那个）。还可以创建源文件来保存有关某个包的信息，包括包注解。要为指定包创建源文件，可以用 name 作为包名称，后跟 “.package-info”；要为未指定的包创建源文件，可以使用 “package-info”。</p><p>2.创建类文件</p><pre><code>JavaFileObject createClassFile(CharSequence name,
+                               Element... originatingElements)
+                               throws IOException
+</code></pre><p>创建一个新的类文件，并返回一个对象以允许写入它。文件的名称和路径（相对于类文件的根目录输出位置）基于将写入的类型名称。还可以创建类文件来保存有关某个包的信息，包括包注解。要为指定包创建类文件，可以用 name 作为包名称，后跟 “.package-info”；为未指定的包创建类文件不受支持。</p><p>3.创建辅助资源文件</p><pre><code>FileObject createResource(JavaFileManager.Location location,
+                          CharSequence pkg,
+                          CharSequence relativeName,
+                          Element... originatingElements)
+                          throws IOException
+</code></pre><p>创建一个用于写入操作的新辅助资源文件，并为它返回一个文件对象。该文件可以与新创建的源文件、新创建的二进制文件或者其他受支持的位置一起被查找。位置 CLASS_OUTPUT 和 SOURCE_OUTPUT 必须受支持。资源可以是相对于某个包（该包是源文件和类文件）指定的，并通过相对路径名从中取出。从不太严格的角度说，新文件的完全路径名将是 location、 pkg 和 relativeName 的串联。</p><p>对于生成Java文件，还可以使用Square公司的开源类库<a href="https://www.jfox.info/go.php?url=https://github.com/square/javapoet">JavaPoet</a>，感兴趣的同学可以了解下。</p><h3 id="打印错误信息"><a href="#打印错误信息" class="headerlink" title="打印错误信息"></a>打印错误信息</h3><p>Messager接口提供注解处理器用来报告错误消息、警告和其他通知的方式。</p><p>注意：我们应该<strong>对在处理过程中可能发生的异常进行捕获</strong>，通过Messager接口提供的方法通知用户。此外，使用带有Element参数的方法连接到出错的元素，用户可以直接点击错误信息跳到出错源文件的相应行。如果你在process()中抛出一个异常，那么运行注解处理器的JVM将会崩溃（就像其他Java应用一样），这样用户会从javac中得到一个非常难懂出错信息。<br>方法说明void printMessage(Diagnostic.Kind kind, CharSequence msg)打印指定种类的消息。void printMessage(Diagnostic.Kind kind, CharSequence msg, Element e)在元素的位置上打印指定种类的消息。void printMessage(Diagnostic.Kind kind, CharSequence msg, Element e, AnnotationMirror a)在已注解元素的注解镜像位置上打印指定种类的消息。void printMessage(Diagnostic.Kind kind, CharSequence msg, Element e, AnnotationMirror a, AnnotationValue v)在已注解元素的注解镜像内部注解值的位置上打印指定种类的消息。</p><h3 id="配置选项参数"><a href="#配置选项参数" class="headerlink" title="配置选项参数"></a>配置选项参数</h3><p>我们可以通过getOptions()方法获取选项参数，在gradle文件中配置选项参数值。例如我们配置了一个名为yuweiguoCustomAnnotation的参数值。</p><pre><code>android {
+    defaultConfig {
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = [ yuweiguoCustomAnnotation : &apos;io.github.yuweiguocn.customannotation.MyCustomAnnotation&apos; ]
+            }
+        }
+    }
+}
+</code></pre><p>在注解处理器中重写getSupportedOptions方法指定支持的选项参数名称。通过getOptions方法获取选项参数值。</p><pre><code>public static final String CUSTOM_ANNOTATION = &quot;yuweiguoCustomAnnotation&quot;;
+
+@Override
+public boolean process(Set&lt;? extends TypeElement&gt; annotations, RoundEnvironment roundEnv) {
+   try {
+       String resultPath = processingEnv.getOptions().get(CUSTOM_ANNOTATION);
+       if (resultPath == null) {
+           ...
+           return false;
+       }
+       ...
+   } catch (Exception e) {
+       e.printStackTrace();
+       ...
+   }
+   return true;
+}
+
+
+@Override
+public Set&lt;String&gt; getSupportedOptions() {
+   Set&lt;String&gt; options = new LinkedHashSet&lt;String&gt;();
+   options.add(CUSTOM_ANNOTATION);
+   return options;
+}
+</code></pre><h3 id="处理过程"><a href="#处理过程" class="headerlink" title="处理过程"></a>处理过程</h3><p>Java官方文档给出的注解处理过程的定义：注解处理过程是一个有序的循环过程。在每次循环中，一个处理器可能被要求去处理那些在上一次循环中产生的源文件和类文件中的注解。第一次循环的输入是运行此工具的初始输入。这些初始输入，可以看成是虚拟的第0次的循环的输出。这也就是说我们实现的process方法有可能会被调用多次，因为我们生成的文件也有可能会包含相应的注解。例如，我们的源文件为SourceActivity.class，生成的文件为Generated.class，这样就会有三次循环，第一次输入为SourceActivity.class，输出为Generated.class；第二次输入为Generated.class，输出并没有产生新文件；第三次输入为空，输出为空。</p><p>每次循环都会调用process方法，process方法提供了两个参数，第一个是我们请求处理注解类型的集合（也就是我们通过重写getSupportedAnnotationTypes方法所指定的注解类型），第二个是有关当前和上一次 循环的信息的环境。返回值表示这些注解是否由此 Processor 声明，如果返回 true，则这些注解已声明并且不要求后续 Processor 处理它们；如果返回 false，则这些注解未声明并且可能要求后续 Processor 处理它们。</p><pre><code>public abstract boolean process(Set&lt;? extends TypeElement&gt; annotations,
+                                RoundEnvironment roundEnv)
+</code></pre><h3 id="获取注解元素"><a href="#获取注解元素" class="headerlink" title="获取注解元素"></a>获取注解元素</h3><p>我们可以通过RoundEnvironment接口获取注解元素。process方法会提供一个实现RoundEnvironment接口的对象。<br>方法说明Set&lt;? extends Element&gt; getElementsAnnotatedWith(Class&lt;? extends Annotation&gt; a)返回被指定注解类型注解的元素集合。Set&lt;? extends Element&gt; getElementsAnnotatedWith(TypeElement a)返回被指定注解类型注解的元素集合。processingOver()如果循环处理完成返回true，否则返回false。</p><h2 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h2><p>了解完了相关的基本概念，接下来我们来看一个示例，<strong>本示例只为演示无实际意义</strong>。主要功能为自定义一个注解，此注解只能用在public的方法上，我们通过注解处理器拿到类名和方法名存储到List集合中，然后生成通过参数选项指定的文件，通过此文件可以获取List集合。</p><p>自定义注解：</p><pre><code>@Documented
+@Target({ElementType.METHOD})
+@Retention(RetentionPolicy.RUNTIME)
+public @interface CustomAnnotation {
+}
+</code></pre><p>注解处理器中关键代码：</p><pre><code>@Override
+public boolean process(Set&lt;? extends TypeElement&gt; annotations, RoundEnvironment roundEnv) {
+   try {
+       String resultPath = processingEnv.getOptions().get(CUSTOM_ANNOTATION);
+       if (resultPath == null) {
+           messager.printMessage(Diagnostic.Kind.ERROR, &quot;No option &quot; + CUSTOM_ANNOTATION +
+                   &quot; passed to annotation processor&quot;);
+           return false;
+       }
+
+       round++;
+       messager.printMessage(Diagnostic.Kind.NOTE, &quot;round &quot; + round + &quot; process over &quot; + roundEnv.processingOver());
+       Iterator&lt;? extends TypeElement&gt; iterator = annotations.iterator();
+       while (iterator.hasNext()) {
+           messager.printMessage(Diagnostic.Kind.NOTE, &quot;name is &quot; + iterator.next().getSimpleName().toString());
+       }
+
+       if (roundEnv.processingOver()) {
+           if (!annotations.isEmpty()) {
+               messager.printMessage(Diagnostic.Kind.ERROR,
+                       &quot;Unexpected processing state: annotations still available after processing over&quot;);
+               return false;
+           }
+       }
+
+       if (annotations.isEmpty()) {
+           return false;
+       }
+
+       for (Element element : roundEnv.getElementsAnnotatedWith(CustomAnnotation.class)) {
+           if (element.getKind() != ElementKind.METHOD) {
+               messager.printMessage(
+                       Diagnostic.Kind.ERROR,
+                       String.format(&quot;Only methods can be annotated with @%s&quot;, CustomAnnotation.class.getSimpleName()),
+                       element);
+               return true; // 退出处理
+           }
+
+           if (!element.getModifiers().contains(Modifier.PUBLIC)) {
+               messager.printMessage(Diagnostic.Kind.ERROR, &quot;Subscriber method must be public&quot;, element);
+               return true;
+           }
+
+           ExecutableElement execElement = (ExecutableElement) element;
+           TypeElement classElement = (TypeElement) execElement.getEnclosingElement();
+           result.add(classElement.getSimpleName().toString() + &quot;#&quot; + execElement.getSimpleName().toString());
+       }
+       if (!result.isEmpty()) {
+           generateFile(resultPath);
+       } else {
+           messager.printMessage(Diagnostic.Kind.WARNING, &quot;No @CustomAnnotation annotations found&quot;);
+       }
+       result.clear();
+   } catch (Exception e) {
+       e.printStackTrace();
+       messager.printMessage(Diagnostic.Kind.ERROR, &quot;Unexpected error in CustomProcessor: &quot; + e);
+   }
+   return true;
+}
+
+private void generateFile(String path) {
+   BufferedWriter writer = null;
+   try {
+       JavaFileObject sourceFile = filer.createSourceFile(path);
+       int period = path.lastIndexOf(&apos;.&apos;);
+       String myPackage = period &gt; 0 ? path.substring(0, period) : null;
+       String clazz = path.substring(period + 1);
+       writer = new BufferedWriter(sourceFile.openWriter());
+       if (myPackage != null) {
+           writer.write(&quot;package &quot; + myPackage + &quot;;\n\n&quot;);
+       }
+       writer.write(&quot;import java.util.ArrayList;\n&quot;);
+       writer.write(&quot;import java.util.List;\n\n&quot;);
+       writer.write(&quot;/** This class is generated by CustomProcessor, do not edit. */\n&quot;);
+       writer.write(&quot;public class &quot; + clazz + &quot; {\n&quot;);
+       writer.write(&quot;    private static final List&lt;String&gt; ANNOTATIONS;\n\n&quot;);
+       writer.write(&quot;    static {\n&quot;);
+       writer.write(&quot;        ANNOTATIONS = new ArrayList&lt;&gt;();\n\n&quot;);
+       writeMethodLines(writer);
+       writer.write(&quot;    }\n\n&quot;);
+       writer.write(&quot;    public static List&lt;String&gt; getAnnotations() {\n&quot;);
+       writer.write(&quot;        return ANNOTATIONS;\n&quot;);
+       writer.write(&quot;    }\n\n&quot;);
+       writer.write(&quot;}\n&quot;);
+   } catch (IOException e) {
+       throw new RuntimeException(&quot;Could not write source for &quot; + path, e);
+   } finally {
+       if (writer != null) {
+           try {
+               writer.close();
+           } catch (IOException e) {
+               //Silent
+           }
+       }
+   }
+}
+
+private void writeMethodLines(BufferedWriter writer) throws IOException {
+   for (int i = 0; i &lt; result.size(); i++) {
+       writer.write(&quot;        ANNOTATIONS.add(\&quot;&quot; + result.get(i) + &quot;\&quot;);\n&quot;);
+   }
+}
+</code></pre><p>编译输出：</p><pre><code>Note: round 1 process over false
+Note: name is CustomAnnotation
+Note: round 2 process over false
+Note: round 3 process over true
+</code></pre><p>获取完整代码：<a href="https://www.jfox.info/go.php?url=https://github.com/yuweiguocn/CustomAnnotation">https://github.com/yuweiguocn/CustomAnnotation</a></p><p>关于上传自定义注解处理器到jcenter中，请查看<a href="https://www.jfox.info/go.php?url=http://yuweiguocn.github.io/publishing-lib-to-jcenter/">上传类库到jcenter</a>。</p><p>很高兴你能阅读到这里，此时再去看EventBus 3.0中的注解处理器的源码，相信你可以很轻松地理解它的原理。</p><p>注意：如果你clone了工程代码，你可能会发现<strong>注解和注解处理器是单独的module</strong>。有一点可以肯定的是我们的注解处理器只需要在编译的时候使用，并不需要打包到APK中。因此为了用户考虑，我们需要将注解处理器分离为单独的module。</p></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="4142158067"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="5618891265"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><footer class="post-footer"><div class="post-nav"><div class="post-nav-next post-nav-item"><a href="/2017/使用springcloud和docker构建微服务架构.html" rel="next" title="使用Spring Cloud和Docker构建微服务架构"><i class="fa fa-chevron-left"></i> 使用Spring Cloud和Docker构建微服务架构</a></div><span class="post-nav-divider"></span><div class="post-nav-prev post-nav-item"><a href="/2017/hashmap实现原理分析java源码剖析.html" rel="prev" title="HashMap实现原理分析（Java源码剖析）">HashMap实现原理分析（Java源码剖析） <i class="fa fa-chevron-right"></i></a></div></div></footer></div></article><div class="post-spread"></div></div></div></div><div class="sidebar-toggle"><div class="sidebar-toggle-line-wrap"><span class="sidebar-toggle-line sidebar-toggle-line-first"></span> <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span> <span class="sidebar-toggle-line sidebar-toggle-line-last"></span></div></div><aside id="sidebar" class="sidebar"><div class="sidebar-inner"><ul class="sidebar-nav motion-element"><li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">Table of Contents</li><li class="sidebar-nav-overview" data-target="site-overview-wrap">Overview</li></ul><section class="site-overview-wrap sidebar-panel"><div class="site-overview"><div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person"><p class="site-author-name" itemprop="name">Hello</p><p class="site-description motion-element" itemprop="description"></p></div><nav class="site-state motion-element"><div class="site-state-item site-state-posts"><a href="/archives/"><span class="site-state-item-count">1358</span> <span class="site-state-item-name">posts</span></a></div></nav></div></section><section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active"><div class="post-toc"><div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#基本实现"><span class="nav-number">1.</span> <span class="nav-text">基本实现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#实现Processor接口"><span class="nav-number">1.1.</span> <span class="nav-text">实现Processor接口</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#注册注解处理器"><span class="nav-number">1.2.</span> <span class="nav-text">注册注解处理器</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#基本概念"><span class="nav-number">2.</span> <span class="nav-text">基本概念</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#元素"><span class="nav-number">2.1.</span> <span class="nav-text">元素</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#类型"><span class="nav-number">2.2.</span> <span class="nav-text">类型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#创建文件"><span class="nav-number">2.3.</span> <span class="nav-text">创建文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#打印错误信息"><span class="nav-number">2.4.</span> <span class="nav-text">打印错误信息</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#配置选项参数"><span class="nav-number">2.5.</span> <span class="nav-text">配置选项参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#处理过程"><span class="nav-number">2.6.</span> <span class="nav-text">处理过程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#获取注解元素"><span class="nav-number">2.7.</span> <span class="nav-text">获取注解元素</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#示例"><span class="nav-number">3.</span> <span class="nav-text">示例</span></a></li></ol></div></div></section></div></aside><div class="sfix"><div class="fixedme"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460" data-ad-format="auto"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script></div></div></main><footer id="footer" class="footer"><div class="footer-inner"><div class="copyright">&copy; <span itemprop="copyrightYear">2018</span> <span class="with-love"><i class="fa fa-user"></i> </span><span class="author" itemprop="copyrightHolder">Hello</span></div><div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div><span class="post-meta-divider">|</span><div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div></div></footer><div class="back-to-top"><i class="fa fa-arrow-up"></i></div></div><script type="text/javascript">"[object Function]"!==Object.prototype.toString.call(window.Promise)&&(window.Promise=null)</script><script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script><script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script><script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script><script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script><script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script></body></html><!-- rebuild by neat -->

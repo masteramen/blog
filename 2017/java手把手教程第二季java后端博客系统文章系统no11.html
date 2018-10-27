@@ -1,0 +1,390 @@
+<!-- build time:Sat Oct 27 2018 21:00:16 GMT+0800 (CST) --><!DOCTYPE html><html class="theme-next muse use-motion"><head><meta name="generator" content="Hexo 3.8.0"><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"><meta name="theme-color" content="#222"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"><link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css"><link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css"><link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4"><link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222"><meta name="description" content="H2M_LI_HEADER IDE为 idea2017.1.5H2M_LI_HEADER JDK环境为 1.8H2M_LI_HEADER gradle构建，版本：2.14.1H2M_LI_HEADER Mysql版本为 5.5.27H2M_LI_HEADER Tomcat版本为 7.0.52H2M_LI_HEADER 流程图绘制（xmind）H2M_LI_HEADER 建模分析软件 PowerDe"><meta name="keywords" content="JAVA,面试"><meta property="og:type" content="article"><meta property="og:title" content="[java手把手教程][第二季]java后端博客系统文章系统——No11"><meta property="og:url" content="http://www.jfox.info/2017/java手把手教程第二季java后端博客系统文章系统no11.html"><meta property="og:site_name" content="java面试"><meta property="og:description" content="H2M_LI_HEADER IDE为 idea2017.1.5H2M_LI_HEADER JDK环境为 1.8H2M_LI_HEADER gradle构建，版本：2.14.1H2M_LI_HEADER Mysql版本为 5.5.27H2M_LI_HEADER Tomcat版本为 7.0.52H2M_LI_HEADER 流程图绘制（xmind）H2M_LI_HEADER 建模分析软件 PowerDe"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="http://www.jfox.info/2017/1475/be6b9de.png"><meta property="og:updated_time" content="2018-10-27T12:29:37.414Z"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="[java手把手教程][第二季]java后端博客系统文章系统——No11"><meta name="twitter:description" content="H2M_LI_HEADER IDE为 idea2017.1.5H2M_LI_HEADER JDK环境为 1.8H2M_LI_HEADER gradle构建，版本：2.14.1H2M_LI_HEADER Mysql版本为 5.5.27H2M_LI_HEADER Tomcat版本为 7.0.52H2M_LI_HEADER 流程图绘制（xmind）H2M_LI_HEADER 建模分析软件 PowerDe"><meta name="twitter:image" content="http://www.jfox.info/2017/1475/be6b9de.png"><script type="text/javascript" id="hexo.configurations">var NexT=window.NexT||{},CONFIG={root:"/",scheme:"Muse",version:"5.1.4",sidebar:{position:"left",display:"post",offset:12,b2t:!1,scrollpercent:!1,onmobile:!1},fancybox:!0,tabs:!0,motion:{enable:!0,async:!1,transition:{post_block:"fadeIn",post_header:"slideDownIn",post_body:"slideDownIn",coll_header:"slideLeftIn",sidebar:"slideUpIn"}},duoshuo:{userId:"0",author:"Author"},algolia:{applicationID:"",apiKey:"",indexName:"",hits:{per_page:10},labels:{input_placeholder:"Search for Posts",hits_empty:"We didn't find any results for the search: ${query}",hits_stats:"${hits} results found in ${time} ms"}}}</script><link rel="canonical" href="http://www.jfox.info/2017/java手把手教程第二季java后端博客系统文章系统no11.html"><title>[java手把手教程][第二季]java后端博客系统文章系统——No11 | java面试</title></head><body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN"><div class="container sidebar-position-left page-post-detail"><div class="headband"></div><header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="header-inner"><div class="site-brand-wrapper"><div class="site-meta"><div class="custom-logo-site-title"><a href="/" class="brand" rel="start"><span class="logo-line-before"><i></i></span> <span class="site-title">java面试</span> <span class="logo-line-after"><i></i></span></a></div><p class="site-subtitle"></p></div><div class="site-nav-toggle"><button><span class="btn-bar"></span> <span class="btn-bar"></span> <span class="btn-bar"></span></button></div></div><nav class="site-nav"><ul id="menu" class="menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i><br>Home</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i><br>Archives</a></li></ul></nav></div></header><main id="main" class="main"><div class="main-inner"><div class="content-wrap"><div id="content" class="content"><div id="posts" class="posts-expand"><article class="post post-type-normal" itemscope itemtype="http://schema.org/Article"><div class="post-block"><link itemprop="mainEntityOfPage" href="http://www.jfox.info/2017/java手把手教程第二季java后端博客系统文章系统no11.html"><span hidden itemprop="author" itemscope itemtype="http://schema.org/Person"><meta itemprop="name" content="Hello"><meta itemprop="description" content=""><meta itemprop="image" content="/images/avatar.gif"></span><span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><meta itemprop="name" content="java面试"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">[java手把手教程][第二季]java后端博客系统文章系统——No11</h1><div class="post-meta"><span class="post-time"><span class="post-meta-item-icon"><i class="fa fa-calendar-o"></i> </span><span class="post-meta-item-text">Posted on</span> <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-01-01T23:59:35+08:00">2017-01-01</time></span></div></header><div class="post-body" itemprop="articleBody"><p>H2M_LI_HEADER IDE为 <strong>idea2017.1.5</strong><br>H2M_LI_HEADER JDK环境为 <strong>1.8</strong><br>H2M_LI_HEADER gradle构建，版本：2.14.1<br>H2M_LI_HEADER Mysql版本为 <strong>5.5.27</strong><br>H2M_LI_HEADER Tomcat版本为 <strong>7.0.52</strong><br>H2M_LI_HEADER 流程图绘制（xmind）<br>H2M_LI_HEADER 建模分析软件 <strong>PowerDesigner16.5</strong><br>H2M_LI_HEADER 数据库工具MySQLWorkBench，版本：6.3.7build</p><h4 id="本期目标"><a href="#本期目标" class="headerlink" title="本期目标"></a>本期目标</h4><p>完成微信公众号相关接入</p><h4 id="资源引入"><a href="#资源引入" class="headerlink" title="资源引入"></a>资源引入</h4><p>既然我们要开发微信相关的功能，那么我们需要微信相关的资源。首先是打开微信官方的开发者文档。接着我们应该构建微信相关的代码了。？</p><p>事实上并不是这样，我们在开源中国的java项目中可以找到一些跟微信相关的工具，本文中我采用了fastweixin 来快速进行开发。</p><pre><code>compile &apos;com.github.sd4324530:fastweixin:1.3.15&apos;
+</code></pre><h4 id="参照fastweixin说明进行开发"><a href="#参照fastweixin说明进行开发" class="headerlink" title="参照fastweixin说明进行开发"></a>参照fastweixin说明进行开发</h4><p>实现微信互访的Controller</p><p>为什么说要实现这个？</p><ul><li>配置微信相关设置</li><li>根据生成的设置和微信服务器互联</li><li>跟微信服务器交互，绑定微信账号</li><li>获取和微信交互数据的令牌</li></ul><p>所以，我们有一大堆事情要做，但是此时此刻我们采用的fastweixin已经做好一大步，我们按照他的说明编写微信Controller。</p><pre><code>@RestController
+@RequestMapping(&quot;/weixin&quot;)
+public class WeixinController extends WeixinControllerSupport {
+    private static final Logger log = LoggerFactory.getLogger(WeixinController.class);
+    private static final String TOKEN = &quot;weixin&quot;;   //默认Token为weixin
+
+    @Autowired
+    private WeichatServiceImpl weichatService;
+    @Autowired
+    private PostService postService;
+
+    @Override
+    public void bindServer(HttpServletRequest request, HttpServletResponse response) {
+        String signature = request.getParameter(&quot;signature&quot;);
+        String timestamp = request.getParameter(&quot;timestamp&quot;);
+        String nonce = request.getParameter(&quot;nonce&quot;);
+        LogPrintUtil.getInstance(WeixinController.class).logOutLittle(&quot;bindWeiXin:\fsignature = &quot;
+                + signature + &quot;\ntimestamp&quot;
+                + timestamp + &quot;\nnonce&quot; + nonce);
+        super.bindServer(request, response);
+    }
+
+    //设置TOKEN，用于绑定微信服务器
+    @Override
+    protected String getToken() {
+        return weichatService.getWeiConfig().getToken();
+    }
+
+    //使用安全模式时设置：APPID
+    //不再强制重写，有加密需要时自行重写该方法
+    @Override
+    protected String getAppId() {
+        return weichatService.getWeiConfig().getAppid();
+    }
+
+    //使用安全模式时设置：密钥
+    //不再强制重写，有加密需要时自行重写该方法
+    @Override
+    protected String getAESKey() {
+        return null;
+    }
+
+    //重写父类方法，处理对应的微信消息
+    @Override
+    protected BaseMsg handleTextMsg(TextReqMsg msg) {
+        String content = msg.getContent();
+        LogPrintUtil.getInstance(WeixinController.class).logOutLittle(String.format(&quot;用户发送到服务器的内容:{%s}&quot;, content));
+
+        List&lt;Article&gt; articles = new ArrayList&lt;&gt;();
+        List&lt;PostCustom&gt; byKeyword = null;
+        try {
+            byKeyword = postService.findByKeyword(content, null, null);
+            if (null != byKeyword &amp;&amp; byKeyword.size() &gt; 0) {
+                int count = 0;
+                for (PostCustom postCustom : byKeyword) {
+                    if (count &gt;= 5) break;
+                    Article article = new Article();
+                    article.setTitle(postCustom.getPostTitle());
+                    article.setDescription(HtmlUtil.getTextFromHtml(postCustom.getPostContent()));
+                    article.setUrl(&quot;http://acheng1314.cn/front/post/&quot; + postCustom.getId());
+                    articles.add(article);
+                    count++;
+                }
+                return new NewsMsg(articles);
+            }
+        } catch (NotFoundException e) {
+            e.printStackTrace();
+        }
+        return new TextMsg(&quot;暂未找到该信息!&quot;);
+    }
+
+    /*1.1版本新增，重写父类方法，加入自定义微信消息处理器
+     *不是必须的，上面的方法是统一处理所有的文本消息，如果业务觉复杂，上面的会显得比较乱
+     *这个机制就是为了应对这种情况，每个MessageHandle就是一个业务，只处理指定的那部分消息
+     */
+    @Override
+    protected List&lt;MessageHandle&gt; initMessageHandles() {
+        List&lt;MessageHandle&gt; handles = new ArrayList&lt;MessageHandle&gt;();
+//                handles.add(new MyMessageHandle());
+        return handles;
+    }
+
+    //1.1版本新增，重写父类方法，加入自定义微信事件处理器，同上
+    @Override
+    protected List&lt;EventHandle&gt; initEventHandles() {
+        List&lt;EventHandle&gt; handles = new ArrayList&lt;EventHandle&gt;();
+//                handles.add(new MyEventHandle());
+        return handles;
+    }
+
+    /**
+     * 处理图片消息，有需要时子类重写
+     *
+     * @param msg 请求消息对象
+     * @return 响应消息对象
+     */
+    @Override
+    protected BaseMsg handleImageMsg(ImageReqMsg msg) {
+        return super.handleImageMsg(msg);
+    }
+
+    /**
+     * 处理语音消息，有需要时子类重写
+     *
+     * @param msg 请求消息对象
+     * @return 响应消息对象
+     */
+    @Override
+    protected BaseMsg handleVoiceMsg(VoiceReqMsg msg) {
+        return super.handleVoiceMsg(msg);
+    }
+
+    /**
+     * 处理视频消息，有需要时子类重写
+     *
+     * @param msg 请求消息对象
+     * @return 响应消息对象
+     */
+    @Override
+    protected BaseMsg handleVideoMsg(VideoReqMsg msg) {
+        return super.handleVideoMsg(msg);
+    }
+
+    /**
+     * 处理小视频消息，有需要时子类重写
+     *
+     * @param msg 请求消息对象
+     * @return 响应消息对象
+     */
+    @Override
+    protected BaseMsg hadnleShortVideoMsg(VideoReqMsg msg) {
+        return super.hadnleShortVideoMsg(msg);
+    }
+
+    /**
+     * 处理地理位置消息，有需要时子类重写
+     *
+     * @param msg 请求消息对象
+     * @return 响应消息对象
+     */
+    @Override
+    protected BaseMsg handleLocationMsg(LocationReqMsg msg) {
+        return super.handleLocationMsg(msg);
+    }
+
+    /**
+     * 处理链接消息，有需要时子类重写
+     *
+     * @param msg 请求消息对象
+     * @return 响应消息对象
+     */
+    @Override
+    protected BaseMsg handleLinkMsg(LinkReqMsg msg) {
+        return super.handleLinkMsg(msg);
+    }
+
+    /**
+     * 处理扫描二维码事件，有需要时子类重写
+     *
+     * @param event 扫描二维码事件对象
+     * @return 响应消息对象
+     */
+    @Override
+    protected BaseMsg handleQrCodeEvent(QrCodeEvent event) {
+        return super.handleQrCodeEvent(event);
+    }
+
+    /**
+     * 处理地理位置事件，有需要时子类重写
+     *
+     * @param event 地理位置事件对象
+     * @return 响应消息对象
+     */
+    @Override
+    protected BaseMsg handleLocationEvent(LocationEvent event) {
+        return super.handleLocationEvent(event);
+    }
+
+    /**
+     * 处理菜单点击事件，有需要时子类重写
+     *
+     * @param event 菜单点击事件对象
+     * @return 响应消息对象
+     */
+    @Override
+    protected BaseMsg handleMenuClickEvent(MenuEvent event) {
+        LogPrintUtil.getInstance(this.getClass()).logOutLittle(&quot;点击&quot; + event.toString());
+        MyWeChatMenu myWeChatMenu = weichatService.findOneById(StringUtils.toInt(event.getEventKey()));
+        try {
+            List&lt;Article&gt; articles = new ArrayList&lt;&gt;();
+            List&lt;PostCustom&gt; keyword = postService.findByKeyword(myWeChatMenu.getKeyword(), null, null);
+            if (null != keyword &amp;&amp; keyword.size() &gt; 0) {
+                int i = 0;
+                for (PostCustom postCustom : keyword) {
+                    if (i &gt;= 5) break;
+                    Article article = new Article();
+                    article.setTitle(postCustom.getPostTitle());
+                    article.setDescription(HtmlUtil.getTextFromHtml(postCustom.getPostContent()));
+                    article.setUrl(&quot;http://acheng1314.cn/front/post/&quot; + postCustom.getId());
+                    articles.add(article);
+                    i++;
+                }
+                return new NewsMsg(articles);
+            }
+        } catch (NotFoundException e) {
+            e.printStackTrace();
+        }
+        return new TextMsg(&quot;暂未找到该信息!&quot;);
+    }
+
+    /**
+     * 处理菜单跳转事件，有需要时子类重写
+     *
+     * @param event 菜单跳转事件对象
+     * @return 响应消息对象
+     */
+    @Override
+    protected BaseMsg handleMenuViewEvent(MenuEvent event) {
+        LogPrintUtil.getInstance(this.getClass()).logOutLittle(&quot;点击跳转&quot; + event.toString());
+        return super.handleMenuViewEvent(event);
+    }
+
+    /**
+     * 处理菜单扫描推事件，有需要时子类重写
+     *
+     * @param event 菜单扫描推事件对象
+     * @return 响应的消息对象
+     */
+    @Override
+    protected BaseMsg handleScanCodeEvent(ScanCodeEvent event) {
+        return super.handleScanCodeEvent(event);
+    }
+
+    /**
+     * 处理菜单弹出相册事件，有需要时子类重写
+     *
+     * @param event 菜单弹出相册事件
+     * @return 响应的消息对象
+     */
+    @Override
+    protected BaseMsg handlePSendPicsInfoEvent(SendPicsInfoEvent event) {
+        return super.handlePSendPicsInfoEvent(event);
+    }
+
+    /**
+     * 处理模版消息发送事件，有需要时子类重写
+     *
+     * @param event 菜单弹出相册事件
+     * @return 响应的消息对象
+     */
+    @Override
+    protected BaseMsg handleTemplateMsgEvent(TemplateMsgEvent event) {
+        return super.handleTemplateMsgEvent(event);
+    }
+
+    /**
+     * 处理添加关注事件，有需要时子类重写
+     *
+     * @param event 添加关注事件对象
+     * @return 响应消息对象
+     */
+    @Override
+    protected BaseMsg handleSubscribe(BaseEvent event) {
+        return super.handleSubscribe(event);
+    }
+
+    /**
+     * 接收群发消息的回调方法
+     *
+     * @param event 群发回调方法
+     * @return 响应消息对象
+     */
+    @Override
+    protected BaseMsg callBackAllMessage(SendMessageEvent event) {
+        return super.callBackAllMessage(event);
+    }
+
+    /**
+     * 处理取消关注事件，有需要时子类重写
+     *
+     * @param event 取消关注事件对象
+     * @return 响应消息对象
+     */
+    @Override
+    protected BaseMsg handleUnsubscribe(BaseEvent event) {
+        return super.handleUnsubscribe(event);
+    }
+
+}
+</code></pre><p>我们看上面的众多方法都已经打上了javadoc，现在我们需要关注的主要是下面的这三个方法：</p><pre><code>//设置TOKEN，用于绑定微信服务器
+    @Override
+    protected String getToken() {
+        return weichatService.getWeiConfig().getToken();
+    }
+
+    //使用安全模式时设置：APPID
+    //不再强制重写，有加密需要时自行重写该方法
+    @Override
+    protected String getAppId() {
+        return weichatService.getWeiConfig().getAppid();
+    }
+
+    //使用安全模式时设置：密钥
+    //不再强制重写，有加密需要时自行重写该方法
+    @Override
+    protected String getAESKey() {
+        return null;
+    }
+</code></pre><p>同时在微信的开发者设置页面也有对应的设置来控制，测试账号如下：<br><img src="/2017/1475/be6b9de.png" alt=""></p><p>微信测试号设置页面</p><p>按照上面的Controller来讲，URL已经可以设置了，就是我们服务器域名+/weixin。</p><p>当然，这不是重点！但是按照前面我们的开发习惯来讲，微信相关的一些设置能够持久化到服务器那就是最好的了。所以我们还是写到数据库中。（刚开始其实我是写到properties中，但是由于properties的特性，所以数据不刷新。干脆我也就存储到数据库中。）</p><pre><code>/*创建数据库表cc_site_option，用来存储站点基础信息*/
+SET NAMES utf8;
+-- ----------------------------
+--  Table structure for `cc_site_option`
+-- ----------------------------
+DROP TABLE IF EXISTS `cc_site_option`;
+CREATE TABLE `cc_site_option` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT &apos;主键ID&apos;,
+  `option_key` varchar(128) DEFAULT NULL COMMENT &apos;配置KEY&apos;,
+  `option_value` text COMMENT &apos;配置内容&apos;,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8 COMMENT=&apos;配置信息表，用来保存网站的所有配置信息。&apos;;
+</code></pre><p>其实在上面的表中大家细心点可以看到我是采用了类似Map的存储结构，也就是说我们的数据通俗来讲也就是键值对的形式，所以读取数据的时候存储用的List</p><pre><code>&gt;。简要的Dao如下： 
+
+
+
+@Repository(&quot;siteConfigDao&quot;)
+public interface SiteConfigDao extends Dao {
+
+    @Deprecated
+    @Override
+    public int add(Serializable serializable);
+
+    @Deprecated
+    @Override
+    public int del(Serializable serializable);
+
+    @Deprecated
+    @Override
+    public int update(Serializable serializable);
+
+    @Deprecated
+    @Override
+    public Serializable findOneById(Serializable Id);
+
+    @Override
+    List&lt;HashMap&lt;String, String&gt;&gt; findAll();
+
+    Serializable findOneByKey(@Param(&quot;mKey&quot;) Serializable key);
+
+    void updateOneByKey(@Param(&quot;mKey&quot;) Serializable key, @Param(&quot;mValue&quot;) Serializable value);
+
+    //    @Insert(&quot;INSERT INTO `cc_site_option` (`option_key`,`option_value`) VALUES (#{mKey},#{mValue});&quot;)
+    void insertOne(@Param(&quot;mKey&quot;) Serializable key, @Param(&quot;mValue&quot;) Serializable value);
+}
+</code></pre><p>唯一细节一点的就是对应的Service中获取想要的某一些数据。同时，我们的微信菜单也是需要存储的，如下：</p><pre><code>CREATE TABLE `cc_wechat_menu` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` text NOT NULL COMMENT &apos;微信菜单的名字&apos;,
+  `parent_id` int(11) DEFAULT &apos;0&apos; COMMENT &apos;父级菜单的id，最外层菜单的parent_id为0&apos;,
+  `type` varchar(255) DEFAULT NULL COMMENT &apos;微信菜单类型，deleted表示删除，其他的都是微信上面的相同类型,click=点击推事件,view=跳转URL,scancode_push=扫码推事件,scancode_waitmsg=扫码推事件且弹出“消息接收中”提示框,pic_sysphoto=弹出系统拍照发图,pic_photo_or_album=弹出拍照或者相册发图,pic_weixin=弹出微信相册发图器,location_select=弹出地理位置选择器,&apos;,
+  `keyword` text COMMENT &apos;填写的关键字将会触发“自动回复”匹配的内容，访问网页请填写URL地址。&apos;,
+  `position` int(11) DEFAULT &apos;0&apos; COMMENT &apos;排序的数字决定了菜单在什么位置。&apos;,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `cc_wechat_menu_id_uindex` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COMMENT=&apos;微信菜单表&apos;;
+</code></pre><p>当然到这里后，我们需要的是微信的Dao（这次在Dao中采用了注解插入sql的方式，这种方式可以懒得创建mapper文件。）。</p><pre><code>@Repository(&quot;weChatDao&quot;)
+public interface WeChatDao extends Dao&lt;MyWeChatMenu&gt; {
+
+    @Override
+    int add(MyWeChatMenu weChatMenu);
+
+    @Update(&quot;UPDATE `cc_wechat_menu` SET type=&apos;deleted&apos; WHERE id=#{id}&quot;)
+    @Override
+    int del(MyWeChatMenu weChatMenu);
+
+    @Update(&quot;UPDATE `cc_wechat_menu` SET name=#{name},parent_id=#{parentId},type=#{type},keyword=#{keyword},position=#{position} WHERE id=#{id}&quot;)
+    @Override
+    int update(MyWeChatMenu weChatMenu);
+
+    @Select(&quot;SELECT * FROM `cc_wechat_menu` WHERE id=#{id}&quot;)
+    @Override
+    MyWeChatMenu findOneById(Serializable Id);
+
+    @Select(&quot;SELECT * FROM `cc_wechat_menu` WHERE type!=&apos;deleted&apos;&quot;)
+    @Override
+    List&lt;MyWeChatMenu&gt; findAll();
+
+    @Select(&quot;SELECT * FROM `cc_wechat_menu` WHERE type!=&apos;deleted&apos; AND parent_id=0&quot;)
+    List&lt;MyWeChatMenu&gt; getParentWeiMenu();
+}
+</code></pre><p>简单来说上面的注解插入sql语句这样执行，注意一点就是这几个sql的使用。剩下的就是微信的Service，如下：</p></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="4142158067"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="5618891265"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><footer class="post-footer"><div class="post-nav"><div class="post-nav-next post-nav-item"><a href="/2017/赢在面试之java框架篇8.html" rel="next" title="赢在面试之Java框架篇（8）"><i class="fa fa-chevron-left"></i> 赢在面试之Java框架篇（8）</a></div><span class="post-nav-divider"></span><div class="post-nav-prev post-nav-item"><a href="/2017/java架构学习路线图.html" rel="prev" title="Java架构学习路线图">Java架构学习路线图 <i class="fa fa-chevron-right"></i></a></div></div></footer></div></article><div class="post-spread"></div></div></div></div><div class="sidebar-toggle"><div class="sidebar-toggle-line-wrap"><span class="sidebar-toggle-line sidebar-toggle-line-first"></span> <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span> <span class="sidebar-toggle-line sidebar-toggle-line-last"></span></div></div><aside id="sidebar" class="sidebar"><div class="sidebar-inner"><ul class="sidebar-nav motion-element"><li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">Table of Contents</li><li class="sidebar-nav-overview" data-target="site-overview-wrap">Overview</li></ul><section class="site-overview-wrap sidebar-panel"><div class="site-overview"><div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person"><p class="site-author-name" itemprop="name">Hello</p><p class="site-description motion-element" itemprop="description"></p></div><nav class="site-state motion-element"><div class="site-state-item site-state-posts"><a href="/archives/"><span class="site-state-item-count">1358</span> <span class="site-state-item-name">posts</span></a></div></nav></div></section><section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active"><div class="post-toc"><div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#本期目标"><span class="nav-number">1.</span> <span class="nav-text">本期目标</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#资源引入"><span class="nav-number">2.</span> <span class="nav-text">资源引入</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#参照fastweixin说明进行开发"><span class="nav-number">3.</span> <span class="nav-text">参照fastweixin说明进行开发</span></a></li></ol></div></div></section></div></aside><div class="sfix"><div class="fixedme"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460" data-ad-format="auto"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script></div></div></main><footer id="footer" class="footer"><div class="footer-inner"><div class="copyright">&copy; <span itemprop="copyrightYear">2018</span> <span class="with-love"><i class="fa fa-user"></i> </span><span class="author" itemprop="copyrightHolder">Hello</span></div><div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div><span class="post-meta-divider">|</span><div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div></div></footer><div class="back-to-top"><i class="fa fa-arrow-up"></i></div></div><script type="text/javascript">"[object Function]"!==Object.prototype.toString.call(window.Promise)&&(window.Promise=null)</script><script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script><script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script><script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script><script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script><script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script></body></html><!-- rebuild by neat -->

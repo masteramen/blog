@@ -1,0 +1,132 @@
+<!-- build time:Sat Oct 27 2018 21:00:18 GMT+0800 (CST) --><!DOCTYPE html><html class="theme-next muse use-motion"><head><meta name="generator" content="Hexo 3.8.0"><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"><meta name="theme-color" content="#222"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"><link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css"><link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css"><link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4"><link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222"><meta name="description" content="©Copyright 蕃薯耀 2017年7月15日http://fanshuyao.iteye.com/import java.io.IOException; import java.util.HashMap; import java.util.Map;  import javax.servlet.http.Cookie; import javax.servlet.http.HttpServlet"><meta name="keywords" content="JAVA,面试"><meta property="og:type" content="article"><meta property="og:title" content="Java Cookie工具类，Java CookieUtils 工具类，Java如何增加Cookie"><meta property="og:url" content="http://www.jfox.info/2017/javacookie工具类javacookieutils工具类java如何增加cookie.html"><meta property="og:site_name" content="java面试"><meta property="og:description" content="©Copyright 蕃薯耀 2017年7月15日http://fanshuyao.iteye.com/import java.io.IOException; import java.util.HashMap; import java.util.Map;  import javax.servlet.http.Cookie; import javax.servlet.http.HttpServlet"><meta property="og:locale" content="zh_CN"><meta property="og:updated_time" content="2018-10-27T12:29:40.332Z"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="Java Cookie工具类，Java CookieUtils 工具类，Java如何增加Cookie"><meta name="twitter:description" content="©Copyright 蕃薯耀 2017年7月15日http://fanshuyao.iteye.com/import java.io.IOException; import java.util.HashMap; import java.util.Map;  import javax.servlet.http.Cookie; import javax.servlet.http.HttpServlet"><script type="text/javascript" id="hexo.configurations">var NexT=window.NexT||{},CONFIG={root:"/",scheme:"Muse",version:"5.1.4",sidebar:{position:"left",display:"post",offset:12,b2t:!1,scrollpercent:!1,onmobile:!1},fancybox:!0,tabs:!0,motion:{enable:!0,async:!1,transition:{post_block:"fadeIn",post_header:"slideDownIn",post_body:"slideDownIn",coll_header:"slideLeftIn",sidebar:"slideUpIn"}},duoshuo:{userId:"0",author:"Author"},algolia:{applicationID:"",apiKey:"",indexName:"",hits:{per_page:10},labels:{input_placeholder:"Search for Posts",hits_empty:"We didn't find any results for the search: ${query}",hits_stats:"${hits} results found in ${time} ms"}}}</script><link rel="canonical" href="http://www.jfox.info/2017/javacookie工具类javacookieutils工具类java如何增加cookie.html"><title>Java Cookie工具类，Java CookieUtils 工具类，Java如何增加Cookie | java面试</title></head><body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN"><div class="container sidebar-position-left page-post-detail"><div class="headband"></div><header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="header-inner"><div class="site-brand-wrapper"><div class="site-meta"><div class="custom-logo-site-title"><a href="/" class="brand" rel="start"><span class="logo-line-before"><i></i></span> <span class="site-title">java面试</span> <span class="logo-line-after"><i></i></span></a></div><p class="site-subtitle"></p></div><div class="site-nav-toggle"><button><span class="btn-bar"></span> <span class="btn-bar"></span> <span class="btn-bar"></span></button></div></div><nav class="site-nav"><ul id="menu" class="menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i><br>Home</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i><br>Archives</a></li></ul></nav></div></header><main id="main" class="main"><div class="main-inner"><div class="content-wrap"><div id="content" class="content"><div id="posts" class="posts-expand"><article class="post post-type-normal" itemscope itemtype="http://schema.org/Article"><div class="post-block"><link itemprop="mainEntityOfPage" href="http://www.jfox.info/2017/javacookie工具类javacookieutils工具类java如何增加cookie.html"><span hidden itemprop="author" itemscope itemtype="http://schema.org/Person"><meta itemprop="name" content="Hello"><meta itemprop="description" content=""><meta itemprop="image" content="/images/avatar.gif"></span><span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><meta itemprop="name" content="java面试"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">Java Cookie工具类，Java CookieUtils 工具类，Java如何增加Cookie</h1><div class="post-meta"><span class="post-time"><span class="post-meta-item-icon"><i class="fa fa-calendar-o"></i> </span><span class="post-meta-item-text">Posted on</span> <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-01-01T23:56:29+08:00">2017-01-01</time></span></div></header><div class="post-body" itemprop="articleBody"><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote><p>©Copyright 蕃薯耀 2017年7月15日</p><p><a href="http://fanshuyao.iteye.com/" target="_blank" rel="noopener">http://fanshuyao.iteye.com/</a></p><pre><code>import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+public class CookieUtils {
+
+    public static final int COOKIE_MAX_AGE = 7 * 24 * 3600;
+    public static final int COOKIE_HALF_HOUR = 30 * 60;
+
+    /** 
+     * 根据Cookie名称得到Cookie对象，不存在该对象则返回Null 
+     *  
+     * @param request 
+     * @param name 
+     * @return 
+     */  
+    public static Cookie getCookie(HttpServletRequest request, String name) {  
+        Cookie[] cookies = request.getCookies();  
+        if (StrUtils.isEmptyArray(cookies)) {  
+            return null;  
+        }  
+        Cookie cookie = null;  
+        for (Cookie c : cookies) {
+            if (name.equals(c.getName())) {  
+                cookie = c;  
+                break;  
+            }  
+        }  
+        return cookie;  
+    }
+
+    /** 
+     * 根据Cookie名称直接得到Cookie值
+     *  
+     * @param request 
+     * @param name 
+     * @return 
+     */  
+    public static String getCookieValue(HttpServletRequest request, String name) {  
+        Cookie cookie = getCookie(request, name);  
+        if(cookie != null){
+            return cookie.getValue();
+        }
+        return null;  
+    }
+
+    /**
+     * 移除cookie
+     * @param request
+     * @param response
+     * @param name 这个是名称，不是值
+     */
+    public static void removeCookie(HttpServletRequest request,  
+            HttpServletResponse response, String name) {  
+        if (null == name) {  
+            return;  
+        }  
+        Cookie cookie = getCookie(request, name);  
+        if(null != cookie){  
+            cookie.setPath(&quot;/&quot;);  
+            cookie.setValue(&quot;&quot;);  
+            cookie.setMaxAge(0);  
+            response.addCookie(cookie);
+        }  
+    }
+
+    /** 
+     * 添加一条新的Cookie，可以指定过期时间(单位：秒) 
+     *  
+     * @param response 
+     * @param name 
+     * @param value 
+     * @param maxValue 
+     */  
+    public static void setCookie(HttpServletResponse response, String name,  
+            String value, int maxValue) {  
+        if (StrUtils.isBlank(name)) {  
+            return;  
+        }  
+        if (null == value) {  
+            value = &quot;&quot;;  
+        }  
+        Cookie cookie = new Cookie(name, value);  
+        cookie.setPath(&quot;/&quot;);  
+        if (maxValue != 0) {  
+            cookie.setMaxAge(maxValue);  
+        } else {  
+            cookie.setMaxAge(COOKIE_HALF_HOUR);  
+        }  
+        response.addCookie(cookie);
+        try {
+            response.flushBuffer();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    } 
+
+    /** 
+     * 添加一条新的Cookie，默认30分钟过期时间
+     *  
+     * @param response 
+     * @param name 
+     * @param value 
+     */  
+    public static void setCookie(HttpServletResponse response, String name,  
+            String value) {  
+        setCookie(response, name, value, COOKIE_HALF_HOUR);  
+    }  
+
+    /**
+     * 将cookie封装到Map里面
+     * @param request
+     * @return
+     */
+    public static Map&lt;String,Cookie&gt; getCookieMap(HttpServletRequest request){  
+        Map&lt;String,Cookie&gt; cookieMap = new HashMap&lt;String,Cookie&gt;();
+        Cookie[] cookies = request.getCookies();
+        if(!StrUtils.isEmptyArray(cookies)){
+            for(Cookie cookie : cookies){
+                cookieMap.put(cookie.getName(), cookie);
+            }
+        }
+        return cookieMap;
+    }
+
+
+}
+</code></pre><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote><p>©Copyright 蕃薯耀 2017年7月15日</p><p><a href="http://fanshuyao.iteye.com/" target="_blank" rel="noopener">http://fanshuyao.iteye.com/</a></p></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="4142158067"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="5618891265"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><footer class="post-footer"><div class="post-nav"><div class="post-nav-next post-nav-item"><a href="/2017/数据库中间件mycat源码分析跨库两表join.html" rel="next" title="数据库中间件 MyCAT源码分析 —— 跨库两表Join"><i class="fa fa-chevron-left"></i> 数据库中间件 MyCAT源码分析 —— 跨库两表Join</a></div><span class="post-nav-divider"></span><div class="post-nav-prev post-nav-item"><a href="/2017/rxjava使用一.html" rel="prev" title="RxJava使用(一)">RxJava使用(一) <i class="fa fa-chevron-right"></i></a></div></div></footer></div></article><div class="post-spread"></div></div></div></div><div class="sidebar-toggle"><div class="sidebar-toggle-line-wrap"><span class="sidebar-toggle-line sidebar-toggle-line-first"></span> <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span> <span class="sidebar-toggle-line sidebar-toggle-line-last"></span></div></div><aside id="sidebar" class="sidebar"><div class="sidebar-inner"><section class="site-overview-wrap sidebar-panel sidebar-panel-active"><div class="site-overview"><div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person"><p class="site-author-name" itemprop="name">Hello</p><p class="site-description motion-element" itemprop="description"></p></div><nav class="site-state motion-element"><div class="site-state-item site-state-posts"><a href="/archives/"><span class="site-state-item-count">1358</span> <span class="site-state-item-name">posts</span></a></div></nav></div></section></div></aside><div class="sfix"><div class="fixedme"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460" data-ad-format="auto"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script></div></div></main><footer id="footer" class="footer"><div class="footer-inner"><div class="copyright">&copy; <span itemprop="copyrightYear">2018</span> <span class="with-love"><i class="fa fa-user"></i> </span><span class="author" itemprop="copyrightHolder">Hello</span></div><div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div><span class="post-meta-divider">|</span><div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div></div></footer><div class="back-to-top"><i class="fa fa-arrow-up"></i></div></div><script type="text/javascript">"[object Function]"!==Object.prototype.toString.call(window.Promise)&&(window.Promise=null)</script><script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script><script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script><script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script><script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script><script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script></body></html><!-- rebuild by neat -->

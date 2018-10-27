@@ -1,0 +1,162 @@
+<!-- build time:Sat Oct 27 2018 21:00:19 GMT+0800 (CST) --><!DOCTYPE html><html class="theme-next muse use-motion"><head><meta name="generator" content="Hexo 3.8.0"><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"><meta name="theme-color" content="#222"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"><link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css"><link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css"><link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4"><link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222"><meta name="description" content="1.0 Alogic-FrameWork介绍Alogic-FrameWork是一个轻量级的Java服务框架，源代码位于Alogic-Github。具有快速开发服务的特点，在alogic-framework下，一个成熟的Java开发者可以快速的开发出实现自己业务逻辑的Restful服务。在这里我们不谈具体的开发逻辑，而是专注于分析该框架的源码。Alogic-FrameWork的一个HelloWorl"><meta name="keywords" content="JAVA,面试"><meta property="og:type" content="article"><meta property="og:title" content="Alogic-FrameWork源码分析-1.服务开发"><meta property="og:url" content="http://www.jfox.info/2017/alogicframework源码分析1服务开发.html"><meta property="og:site_name" content="java面试"><meta property="og:description" content="1.0 Alogic-FrameWork介绍Alogic-FrameWork是一个轻量级的Java服务框架，源代码位于Alogic-Github。具有快速开发服务的特点，在alogic-framework下，一个成熟的Java开发者可以快速的开发出实现自己业务逻辑的Restful服务。在这里我们不谈具体的开发逻辑，而是专注于分析该框架的源码。Alogic-FrameWork的一个HelloWorl"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="http://www.jfox.info/2017/1242/4f2686b.png"><meta property="og:image" content="http://www.jfox.info/2017/1242/471ecdd.png"><meta property="og:updated_time" content="2018-10-27T12:29:40.332Z"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="Alogic-FrameWork源码分析-1.服务开发"><meta name="twitter:description" content="1.0 Alogic-FrameWork介绍Alogic-FrameWork是一个轻量级的Java服务框架，源代码位于Alogic-Github。具有快速开发服务的特点，在alogic-framework下，一个成熟的Java开发者可以快速的开发出实现自己业务逻辑的Restful服务。在这里我们不谈具体的开发逻辑，而是专注于分析该框架的源码。Alogic-FrameWork的一个HelloWorl"><meta name="twitter:image" content="http://www.jfox.info/2017/1242/4f2686b.png"><script type="text/javascript" id="hexo.configurations">var NexT=window.NexT||{},CONFIG={root:"/",scheme:"Muse",version:"5.1.4",sidebar:{position:"left",display:"post",offset:12,b2t:!1,scrollpercent:!1,onmobile:!1},fancybox:!0,tabs:!0,motion:{enable:!0,async:!1,transition:{post_block:"fadeIn",post_header:"slideDownIn",post_body:"slideDownIn",coll_header:"slideLeftIn",sidebar:"slideUpIn"}},duoshuo:{userId:"0",author:"Author"},algolia:{applicationID:"",apiKey:"",indexName:"",hits:{per_page:10},labels:{input_placeholder:"Search for Posts",hits_empty:"We didn't find any results for the search: ${query}",hits_stats:"${hits} results found in ${time} ms"}}}</script><link rel="canonical" href="http://www.jfox.info/2017/alogicframework源码分析1服务开发.html"><title>Alogic-FrameWork源码分析-1.服务开发 | java面试</title></head><body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN"><div class="container sidebar-position-left page-post-detail"><div class="headband"></div><header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="header-inner"><div class="site-brand-wrapper"><div class="site-meta"><div class="custom-logo-site-title"><a href="/" class="brand" rel="start"><span class="logo-line-before"><i></i></span> <span class="site-title">java面试</span> <span class="logo-line-after"><i></i></span></a></div><p class="site-subtitle"></p></div><div class="site-nav-toggle"><button><span class="btn-bar"></span> <span class="btn-bar"></span> <span class="btn-bar"></span></button></div></div><nav class="site-nav"><ul id="menu" class="menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i><br>Home</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i><br>Archives</a></li></ul></nav></div></header><main id="main" class="main"><div class="main-inner"><div class="content-wrap"><div id="content" class="content"><div id="posts" class="posts-expand"><article class="post post-type-normal" itemscope itemtype="http://schema.org/Article"><div class="post-block"><link itemprop="mainEntityOfPage" href="http://www.jfox.info/2017/alogicframework源码分析1服务开发.html"><span hidden itemprop="author" itemscope itemtype="http://schema.org/Person"><meta itemprop="name" content="Hello"><meta itemprop="description" content=""><meta itemprop="image" content="/images/avatar.gif"></span><span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><meta itemprop="name" content="java面试"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">Alogic-FrameWork源码分析-1.服务开发</h1><div class="post-meta"><span class="post-time"><span class="post-meta-item-icon"><i class="fa fa-calendar-o"></i> </span><span class="post-meta-item-text">Posted on</span> <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-01-01T23:55:42+08:00">2017-01-01</time></span></div></header><div class="post-body" itemprop="articleBody"><h2 id="1-0-Alogic-FrameWork介绍"><a href="#1-0-Alogic-FrameWork介绍" class="headerlink" title="1.0 Alogic-FrameWork介绍"></a>1.0 Alogic-FrameWork介绍</h2><p>Alogic-FrameWork是一个轻量级的Java服务框架，源代码位于<a href="https://www.jfox.info/go.php?url=https://github.com/anylogic/alogic.git">Alogic-Github</a>。具有快速开发服务的特点，在alogic-framework下，一个成熟的Java开发者可以快速的开发出实现自己业务逻辑的Restful服务。在这里我们不谈具体的开发逻辑，而是专注于分析该框架的源码。<br>Alogic-FrameWork的一个HelloWorld级别代码如下：<a href="https://www.jfox.info/go.php?url=https://github.com/anylogic/alogic/blob/master/alogic-doc/alogic-framework/001.md">Alogic的HelloWorld-Github</a><br>其中主要包括以下几个部分：</p><ol><li><p>HelloWorld.java 服务调用的具体内容</p></li><li><p>web.xml web项目构建的配置文件</p></li><li><p>settings.xml Alogic服务目录配置文件</p></li><li><p>servant.xml 服务描述配置文件</p></li></ol><h2 id="1-1-服务初始化入口"><a href="#1-1-服务初始化入口" class="headerlink" title="1.1 服务初始化入口"></a>1.1 服务初始化入口</h2><p>服务由servlet进行拦截，servlet-class对请求进行处理，并返回响应。</p><p>在一个HelloWorld级别的应用中，一个典型的web.xml配置如下：</p><pre><code>&lt;servlet&gt;
+    &lt;display-name&gt;MessageRouter&lt;/display-name&gt;
+    &lt;servlet-name&gt;MessageRouter&lt;/servlet-name&gt;
+    &lt;servlet-class&gt;com.anysoft.webloader.ServletAgent&lt;/servlet-class&gt;
+    &lt;init-param&gt;
+        &lt;param-name&gt;handler&lt;/param-name&gt;
+        &lt;param-value&gt;com.logicbus.backend.server.http.MessageRouterServletHandler&lt;/param-value&gt;
+    &lt;/init-param&gt;
+    &lt;load-on-startup&gt;1&lt;/load-on-startup&gt;
+&lt;/servlet&gt;
+&lt;servlet-mapping&gt;
+    &lt;servlet-name&gt;MessageRouter&lt;/servlet-name&gt;
+    &lt;url-pattern&gt;/services/*&lt;/url-pattern&gt;
+&lt;/servlet-mapping&gt;
+</code></pre><p>服务通过注册ServletAgent类拦截/services/*的全部路由，其中初始化参数handler为MessageRouterServletHandler类。我们来看一下如何进行这个过程：</p><h2 id="1-2-服务上下文的处理"><a href="#1-2-服务上下文的处理" class="headerlink" title="1.2 服务上下文的处理"></a>1.2 服务上下文的处理</h2><p>ServletAgent是一个代理类，继承自HttpServlet，主要代理了Servlet的初始化、执行和销毁，其中重写了init(ServletConfig servletConfig)，它通过ClassLoader类加载器加载实际处理的ServletHandler，并由ServletHandler去执行它的初始化方法。</p><pre><code>public void init(ServletConfig servletConfig) throws ServletException {
+    // 获取handler参数
+    String handlerClass = servletConfig.getInitParameter(&quot;handler&quot;);
+    // 获取当前Servlet的上下文
+    ServletContext sc = servletConfig.getServletContext();
+    // 获取当前web项目类加载器
+    ClassLoader classLoader = (ClassLoader) sc.getAttribute(&quot;classLoader&quot;);
+    if (classLoader != null) {
+        try {
+            //创建Handler实例
+            handler = (ServletHandler) classLoader.loadClass(handlerClass)
+                    .newInstance();
+            //执行Handler的初始化方法
+            handler.init(servletConfig);
+        } catch (Exception e) {
+            logger.error(&quot;Error occurs when creating handler:&quot;
+                    + handlerClass, e);
+        }
+    } else {
+        logger.error(&quot;Can not find classLoader&quot;);
+    }
+}
+</code></pre><p>ServletHandler是一个接口，重新封装了关于Servlet的init、service、destory方法；在web.xml中需要配置它的实现方法，MessageRouterServletHandler是它的具体实现类，在init实现方法中，设置了一些关键属性，如Http的编码、跨域、缓存等属性，以及获取服务id、目录、访问控制等。</p><p>在doService实现方法中，将上述初始化的一些列属性设置，达到重新封装Http请求的目的；service方法初始化Context，并将参数作为输入传入到action方法中。如下：</p><pre><code>// 初始化HttpContext,HttpContext是Context类的一个实现，它是一个封装后的Http请求的上下文。
+HttpContext ctx = new HttpContext(request,response,encoding,interceptMode);
+// 获取当前服务路径的id
+Path id = normalizer.normalize(ctx, request);
+MessageRouter.action(id,ctx,ac);
+</code></pre><p><img src="/2017/1242/4f2686b.png" alt=""></p><h2 id="1-3-服务请求过程"><a href="#1-3-服务请求过程" class="headerlink" title="1.3 服务请求过程"></a>1.3 服务请求过程</h2><p>上文提到过，MessageRouterServletHandler实现了ServletHandler接口，将Http上下文封装起来，同时将doService方法中获取得到的服务id，访问控制给MessageRouter的action方法。MessageRouter是Alogic的消息路由器，是具体负责每一个请求的路由过程。在action方法中，包括以下逻辑：</p><ol><li><p>处理路由追踪</p></li><li><p>获取服务实例池</p></li><li><p>通过访问控制器分配访问优先级</p></li><li><p>从服务实例池获取实例</p></li><li><p>日志记录</p></li></ol><p>首先，MessageRouter根据获取得到的服务id来获取一个服务实例池，通过资源池模式来保证服务实例的不断重复利用。资源池获取代码如下：</p><pre><code>// 获取服务实例池
+ServantFactory factory = servantFactory;
+// 根据服务id获取服务工厂
+pool = factory.getPool(id);        
+if (!pool.isRunning()){
+    throw new ServantException(&quot;core.service_paused&quot;,
+        &quot;The Service is paused:service id:&quot; + id);
+}
+</code></pre><p>而接着，对于已经获得的资源池中根据优先级获得服务实例。在非线程模式下调用execute()方法，在多线程模式下创建服务工作线程。当执行结束后，向服务池归还资源。</p><pre><code>    //从服务实例池中拿服务实例，并执行
+    servant = pool.borrowObject(priority);
+    // 判断是否获取到了服务并输出错误日志
+    if (servant == null){
+        logger.warn(&quot;Can not get a servant from pool in the limited time,check servant.queueTimeout variable.&quot;);
+        ctx.setReturn(&quot;core.time_out&quot;, &quot;Can not get a servant from pool in the limited time,check servant.queueTimeout variable.&quot;);
+    }else{
+           if (!threadMode){
+            //在非线程模式下,不支持服务超时
+            execute(servant,ctx);
+        }else{
+            // 构建CountDownLatch，用于等待服务工作线程创建。
+            CountDownLatch latch = new CountDownLatch(1);
+            //创建服务工作线程
+            ServantWorkerThread thread = new ServantWorkerThread(servant,ctx,latch,tc != null ? tc.newChild() : null);
+            thread.start();
+            // 判断服务工作线程是否在指定的时间内创建完成。如果超时则取消主线程阻塞状态，并
+            if (!latch.await(servant.getTimeOutValue(), TimeUnit.MILLISECONDS)){
+                ctx.setReturn(&quot;core.time_out&quot;,&quot;Time out or interrupted.&quot;);
+            }
+            thread = null;
+        }
+    }
+}catch (ServantException ex){
+    ctx.setReturn(ex.getCode(), ex.getMessage());
+    logger.error(ex.getCode() + &quot;:&quot; + ex.getMessage());
+}catch (Exception ex){
+    ctx.setReturn(&quot;core.fatalerror&quot;,ex.getMessage());
+    logger.error(&quot;core.fatalerror:&quot; + ex.getMessage(),ex);
+}catch (Throwable t){
+    ctx.setReturn(&quot;core.fatalerror&quot;,t.getMessage());
+    logger.error(&quot;core.fatalerror:&quot; + t.getMessage(),t);            
+}
+finally {
+        ctx.setEndTime(System.currentTimeMillis());
+        if (ctx != null){
+            // 完成Context
+            ctx.finish();
+        }
+        if (pool != null){
+            if (servant != null){
+                // 向服务池归还资源
+                pool.returnObject(servant);        
+            }
+            // 服务池访问一次                
+            pool.visited(ctx.getDuration(),ctx.getReturnCode());
+            if (ac != null){
+                ac.accessEnd(sessionId,id, pool.getDescription(), ctx);
+            }                
+        }                        
+        if (bizLogger != null){                
+            //需要记录日志
+            log(id,sessionId,pool == null ? null : pool.getDescription(),ctx);
+        }
+        if (tracerEnable){
+            boolean ok = ctx.getReturnCode().equals(&quot;core.ok&quot;);
+            Tool.end(tc, &quot;ALOGIC&quot;, id.getPath(), ok ?&quot;OK&quot;:&quot;FAILED&quot;, ok ? ctx.getQueryString() : ctx.getReason(), ctx.getContentLength());
+        }
+    }
+</code></pre><p>在非线程模式下的execute方法执行了服务调用的前置方法、执行方法和后置方法。</p><pre><code>protected static int execute(Servant servant,Context ctx) throws Exception {
+    servant.actionBefore(ctx);
+    servant.actionProcess(ctx);
+    servant.actionAfter(ctx);
+    return 0;
+}
+</code></pre><p>在多线程模式下，同样也是在服务线程中执行Servant接口的三种方法。</p><pre><code>public void run(){
+    TraceContext tc = null;
+    if (traceCtx != null){
+        tc = Tool.start(traceCtx.sn(), traceCtx.order());
+    }
+    boolean error = false;
+    try
+    {
+        m_servant.actionBefore(m_ctx);
+        m_servant.actionProcess(m_ctx);
+        m_servant.actionAfter(m_ctx);
+    }
+}
+</code></pre><h2 id="1-4-服务响应"><a href="#1-4-服务响应" class="headerlink" title="1.4 服务响应"></a>1.4 服务响应</h2><p>在MessageRouter的acion方法中，服务调用的最后会调用ctx.finish()，在这个方法中调用了msg的finish方法。</p><pre><code>try {
+        if (!isIgnore()){
+            if (msg == null){
+                if (getReturnCode().equals(&quot;core.ok&quot;)){
+                    response.sendError(404, &quot;No message is found,check servant implemention.&quot;);
+                }else{
+                    response.sendError(404, getReturnCode() + &quot;:&quot; + getReason());
+                }
+            }else{
+                response.setCharacterEncoding(encoding);
+                msg.finish(this,!cometMode());
+            }
+        }
+    }
+</code></pre><p>Message是一个接口，主要代表服务输出的消息实例。在Alogic中，Message可以有XML、JSON等协议的消息实例，如输出为RawMessage时，finish方法如下：</p><pre><code>public void finish(Context ctx,boolean closeStream) {
+    // 设置输出流
+    OutputStream out = null;
+    try {
+        // 设置返回内容格式
+        ctx.setResponseContentType(contentType);
+        out = ctx.getOutputStream();
+        byte [] bytes = buf.toString().getBytes(ctx.getEncoding());
+        contentLength += bytes.length;
+        // 将字符串写到输出流中
+        Context.writeToOutpuStream(out, bytes);
+        // 输出打印
+        out.flush();
+    }catch (Exception ex){
+        logger.error(&quot;Error when writing data to outputstream&quot;,ex);
+    }finally{
+        if (closeStream)
+        IOTools.close(out);
+    }
+}
+</code></pre><p>到此，一个服务的执行逻辑如下：<br><img src="/2017/1242/471ecdd.png" alt=""></p></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="4142158067"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="5618891265"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><footer class="post-footer"><div class="post-nav"><div class="post-nav-next post-nav-item"><a href="/2017/httpserver优雅关闭.html" rel="next" title="HTTPServer 优雅关闭"><i class="fa fa-chevron-left"></i> HTTPServer 优雅关闭</a></div><span class="post-nav-divider"></span><div class="post-nav-prev post-nav-item"><a href="/2017/eclipse中用maven创建javaweb项目.html" rel="prev" title="eclipse中用Maven创建JavaWeb项目">eclipse中用Maven创建JavaWeb项目 <i class="fa fa-chevron-right"></i></a></div></div></footer></div></article><div class="post-spread"></div></div></div></div><div class="sidebar-toggle"><div class="sidebar-toggle-line-wrap"><span class="sidebar-toggle-line sidebar-toggle-line-first"></span> <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span> <span class="sidebar-toggle-line sidebar-toggle-line-last"></span></div></div><aside id="sidebar" class="sidebar"><div class="sidebar-inner"><ul class="sidebar-nav motion-element"><li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">Table of Contents</li><li class="sidebar-nav-overview" data-target="site-overview-wrap">Overview</li></ul><section class="site-overview-wrap sidebar-panel"><div class="site-overview"><div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person"><p class="site-author-name" itemprop="name">Hello</p><p class="site-description motion-element" itemprop="description"></p></div><nav class="site-state motion-element"><div class="site-state-item site-state-posts"><a href="/archives/"><span class="site-state-item-count">1358</span> <span class="site-state-item-name">posts</span></a></div></nav></div></section><section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active"><div class="post-toc"><div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-0-Alogic-FrameWork介绍"><span class="nav-number">1.</span> <span class="nav-text">1.0 Alogic-FrameWork介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-服务初始化入口"><span class="nav-number">2.</span> <span class="nav-text">1.1 服务初始化入口</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-2-服务上下文的处理"><span class="nav-number">3.</span> <span class="nav-text">1.2 服务上下文的处理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-3-服务请求过程"><span class="nav-number">4.</span> <span class="nav-text">1.3 服务请求过程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-4-服务响应"><span class="nav-number">5.</span> <span class="nav-text">1.4 服务响应</span></a></li></ol></div></div></section></div></aside><div class="sfix"><div class="fixedme"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460" data-ad-format="auto"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script></div></div></main><footer id="footer" class="footer"><div class="footer-inner"><div class="copyright">&copy; <span itemprop="copyrightYear">2018</span> <span class="with-love"><i class="fa fa-user"></i> </span><span class="author" itemprop="copyrightHolder">Hello</span></div><div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div><span class="post-meta-divider">|</span><div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div></div></footer><div class="back-to-top"><i class="fa fa-arrow-up"></i></div></div><script type="text/javascript">"[object Function]"!==Object.prototype.toString.call(window.Promise)&&(window.Promise=null)</script><script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script><script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script><script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script><script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script><script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script></body></html><!-- rebuild by neat -->

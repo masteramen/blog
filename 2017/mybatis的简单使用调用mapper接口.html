@@ -1,0 +1,303 @@
+<!-- build time:Sat Oct 27 2018 21:00:17 GMT+0800 (CST) --><!DOCTYPE html><html class="theme-next muse use-motion"><head><meta name="generator" content="Hexo 3.8.0"><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"><meta name="theme-color" content="#222"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"><link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css"><link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css"><link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4"><link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222"><meta name="description" content="mybatis 是apache下的一个面向sql编程的半自动化的ORM持久层的框架。特点：面向sql编程，达到高性能的使用目的。下面是简单使用现导入jar包,只有mybatis和数据库驱动包(这里用的是mysql的驱动包)是必须的,其余是日志需要的包db.properties配置连接池的配置文件1 jdbc.driverClassName=com.mysql.jdbc.Driver 2 jdbc."><meta name="keywords" content="JAVA,面试"><meta property="og:type" content="article"><meta property="og:title" content="mybatis的简单使用调用mapper接口"><meta property="og:url" content="http://www.jfox.info/2017/mybatis的简单使用调用mapper接口.html"><meta property="og:site_name" content="java面试"><meta property="og:description" content="mybatis 是apache下的一个面向sql编程的半自动化的ORM持久层的框架。特点：面向sql编程，达到高性能的使用目的。下面是简单使用现导入jar包,只有mybatis和数据库驱动包(这里用的是mysql的驱动包)是必须的,其余是日志需要的包db.properties配置连接池的配置文件1 jdbc.driverClassName=com.mysql.jdbc.Driver 2 jdbc."><meta property="og:locale" content="zh_CN"><meta property="og:image" content="http://www.jfox.info/2017/1416/8675e99.png"><meta property="og:updated_time" content="2018-10-27T12:29:37.410Z"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="mybatis的简单使用调用mapper接口"><meta name="twitter:description" content="mybatis 是apache下的一个面向sql编程的半自动化的ORM持久层的框架。特点：面向sql编程，达到高性能的使用目的。下面是简单使用现导入jar包,只有mybatis和数据库驱动包(这里用的是mysql的驱动包)是必须的,其余是日志需要的包db.properties配置连接池的配置文件1 jdbc.driverClassName=com.mysql.jdbc.Driver 2 jdbc."><meta name="twitter:image" content="http://www.jfox.info/2017/1416/8675e99.png"><script type="text/javascript" id="hexo.configurations">var NexT=window.NexT||{},CONFIG={root:"/",scheme:"Muse",version:"5.1.4",sidebar:{position:"left",display:"post",offset:12,b2t:!1,scrollpercent:!1,onmobile:!1},fancybox:!0,tabs:!0,motion:{enable:!0,async:!1,transition:{post_block:"fadeIn",post_header:"slideDownIn",post_body:"slideDownIn",coll_header:"slideLeftIn",sidebar:"slideUpIn"}},duoshuo:{userId:"0",author:"Author"},algolia:{applicationID:"",apiKey:"",indexName:"",hits:{per_page:10},labels:{input_placeholder:"Search for Posts",hits_empty:"We didn't find any results for the search: ${query}",hits_stats:"${hits} results found in ${time} ms"}}}</script><link rel="canonical" href="http://www.jfox.info/2017/mybatis的简单使用调用mapper接口.html"><title>mybatis的简单使用调用mapper接口 | java面试</title></head><body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN"><div class="container sidebar-position-left page-post-detail"><div class="headband"></div><header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="header-inner"><div class="site-brand-wrapper"><div class="site-meta"><div class="custom-logo-site-title"><a href="/" class="brand" rel="start"><span class="logo-line-before"><i></i></span> <span class="site-title">java面试</span> <span class="logo-line-after"><i></i></span></a></div><p class="site-subtitle"></p></div><div class="site-nav-toggle"><button><span class="btn-bar"></span> <span class="btn-bar"></span> <span class="btn-bar"></span></button></div></div><nav class="site-nav"><ul id="menu" class="menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i><br>Home</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i><br>Archives</a></li></ul></nav></div></header><main id="main" class="main"><div class="main-inner"><div class="content-wrap"><div id="content" class="content"><div id="posts" class="posts-expand"><article class="post post-type-normal" itemscope itemtype="http://schema.org/Article"><div class="post-block"><link itemprop="mainEntityOfPage" href="http://www.jfox.info/2017/mybatis的简单使用调用mapper接口.html"><span hidden itemprop="author" itemscope itemtype="http://schema.org/Person"><meta itemprop="name" content="Hello"><meta itemprop="description" content=""><meta itemprop="image" content="/images/avatar.gif"></span><span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><meta itemprop="name" content="java面试"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">mybatis的简单使用调用mapper接口</h1><div class="post-meta"><span class="post-time"><span class="post-meta-item-icon"><i class="fa fa-calendar-o"></i> </span><span class="post-meta-item-text">Posted on</span> <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-01-01T23:58:36+08:00">2017-01-01</time></span></div></header><div class="post-body" itemprop="articleBody"><p>mybatis 是apache下的一个面向sql编程的半自动化的ORM持久层的框架。特点：面向sql编程，达到高性能的使用目的。</p><p>下面是简单使用</p><p>现导入jar包,只有mybatis和数据库驱动包(这里用的是mysql的驱动包)是必须的,其余是日志需要的包</p><p><img src="/2017/1416/8675e99.png" alt=""></p><p>db.properties配置连接池的配置文件</p><pre><code>1 jdbc.driverClassName=com.mysql.jdbc.Driver
+2 jdbc.url=jdbc:mysql://localhost:3306/mybatis3 jdbc.username=root
+4 jdbc.password=12
+</code></pre><p>创建一个mybatis数据库,执行下面的生sql语句插入数据</p><pre><code>DROPTABLEIFEXISTS `user`;
+CREATETABLE `user` (
+  `id` int(11) NOTNULL AUTO_INCREMENT,
+  `username` varchar(32) NOTNULL COMMENT &apos;用户名称&apos;,
+  `birthday` date DEFAULTNULL COMMENT &apos;生日&apos;,
+  `sex` char(1) DEFAULTNULL COMMENT &apos;性别&apos;,
+  `address` varchar(256) DEFAULTNULL COMMENT &apos;地址&apos;,
+  PRIMARYKEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=27DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Records of user
+-- ----------------------------INSERTINTO `user` VALUES (&apos;1&apos;, &apos;王五&apos;, null, &apos;2&apos;, null);
+INSERTINTO `user` VALUES (&apos;10&apos;, &apos;张三&apos;, &apos;2014-07-10&apos;, &apos;1&apos;, &apos;北京市&apos;);
+INSERTINTO `user` VALUES (&apos;16&apos;, &apos;张小明&apos;, null, &apos;1&apos;, &apos;河南郑州&apos;);
+INSERTINTO `user` VALUES (&apos;22&apos;, &apos;陈小明&apos;, null, &apos;1&apos;, &apos;河南郑州&apos;);
+INSERTINTO `user` VALUES (&apos;24&apos;, &apos;张三丰&apos;, null, &apos;1&apos;, &apos;河南郑州&apos;);
+INSERTINTO `user` VALUES (&apos;25&apos;, &apos;陈小明&apos;, null, &apos;1&apos;, &apos;河南郑州&apos;);
+INSERTINTO `user` VALUES (&apos;26&apos;, &apos;王五&apos;, null, null, null);
+</code></pre><p>log4j.properties 日志的配置文件</p><pre><code> 1### direct log messages to stdout ###
+ 2 log4j.appender.stdout=org.apache.log4j.ConsoleAppender
+ 3 log4j.appender.stdout.Target=System.err
+ 4 log4j.appender.stdout.layout=org.apache.log4j.PatternLayout
+ 5 log4j.appender.stdout.layout.ConversionPattern=%d{ABSOLUTE} %5p %c{1}:%L - %m%n
+ 6 7### direct messages to file mylog.log ###
+ 8 log4j.appender.file=org.apache.log4j.FileAppender
+ 9 log4j.appender.file.File=d:/mylog.log
+10 log4j.appender.file.layout=org.apache.log4j.PatternLayout
+11 log4j.appender.file.layout.ConversionPattern=%d{ABSOLUTE} %5p %c{1}:%L - %m%n
+1213 ### set log levels - for more verbose logging change &apos;info&apos; to &apos;debug&apos; ###
+1415 log4j.rootLogger=info, stdout
+</code></pre><p>SqlMapConfig.xml 是mybatis全局的配置文件</p><pre><code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;!DOCTYPE configuration
+        PUBLIC &quot;-//mybatis.org//DTD Config 3.0//EN&quot;
+        &quot;http://mybatis.org/dtd/mybatis-3-config.dtd&quot;&gt;
+&lt;configuration&gt;
+        &lt;properties resource=&quot;db.properties&quot;&gt;
+        &lt;/properties&gt;
+        &lt;typeAliases&gt;
+        &lt;!-- 单个别名定义 ,后面就可用直接写user,不用写全路径名--&gt;
+        &lt;!-- &lt;typeAlias type=&quot;com.baoyuan.domain.User&quot; alias=&quot;user&quot;/&gt; --&gt;
+        &lt;!-- 批量别名定义，扫描整个包下的类，别名为类名（大小写不敏感） --&gt;
+        &lt;package name=&quot;com.baoyuan.domain&quot;/&gt;
+        &lt;/typeAliases&gt;
+                            &lt;!--名称随意  --&gt;
+    &lt;environments default=&quot;development&quot;&gt;
+            &lt;!--id必须和上面的一致  --&gt;
+        &lt;environment id=&quot;development&quot;&gt;
+                                &lt;!--固定格式JDBC  --&gt;
+            &lt;transactionManager type=&quot;JDBC&quot;&gt;&lt;/transactionManager&gt;
+            &lt;dataSource type=&quot;POOLED&quot;&gt;
+                &lt;property name=&quot;driver&quot; value=&quot;${jdbc.driverClassName}&quot;/&gt;
+                &lt;property name=&quot;url&quot; value=&quot;${jdbc.url}&quot;/&gt;
+                &lt;property name=&quot;username&quot; value=&quot;${jdbc.username}&quot;/&gt;
+                &lt;property name=&quot;password&quot; value=&quot;${jdbc.password}&quot;/&gt;
+            &lt;/dataSource&gt;
+        &lt;/environment&gt;
+    &lt;/environments&gt;
+
+    &lt;mappers&gt;
+
+
+        &lt;!-- 使用mapper接口类路径 注意：此种方法要求mapper接口名称和mapper映射文件名称相同，且放在同一个目录中--&gt;
+        &lt;!-- &lt;mapper class=&quot;com.baoyuan.mapper.dao.UserMapper&quot;/&gt; --&gt;
+
+    &lt;!-- 注意：此种方法要求mapper接口名称和mapper映射文件名称相同，且放在同一个目录中。 --&gt;
+    &lt;package name=&quot;com.baoyuan.mapper.dao&quot;/&gt;
+    &lt;/mappers&gt;
+&lt;/configuration&gt;
+</code></pre><p>创建一个pojo类User类</p><pre><code>package com.baoyuan.domain;
+
+import java.util.Date;
+
+publicclass User {
+
+    private Integer id;
+    private String username;// 用户姓名private String sex;// 性别private Date birthday;// 生日private String address;// 地址public Integer getId() {
+        return id;
+    }
+    publicvoid setId(Integer id) {
+        this.id = id;
+    }
+    public String getUsername() {
+        return username;
+    }
+    publicvoid setUsername(String username) {
+        this.username = username;
+    }
+    public String getSex() {
+        return sex;
+    }
+    publicvoid setSex(String sex) {
+        this.sex = sex;
+    }
+    public Date getBirthday() {
+        return birthday;
+    }
+    publicvoid setBirthday(Date birthday) {
+        this.birthday = birthday;
+    }
+    public String getAddress() {
+        return address;
+    }
+    publicvoid setAddress(String address) {
+        this.address = address;
+    }
+    @Override
+    public String toString() {
+        return &quot;User [id=&quot; + id + &quot;, username=&quot; + username + &quot;, sex=&quot; + sex + &quot;, birthday=&quot; + birthday + &quot;, address=&quot;
+                + address + &quot;]&quot;;
+    }
+
+
+}
+</code></pre><p>在src目录下建立一个com.baoyuan.mapper.dao的包</p><p>在com.baoyuan.mapper.dao创建一个UserMapper.xml的映射文件</p><p>Mapper接口开发需要遵循以下规范：</p><p>1、 Mapper.xml文件中的namespace与mapper接口的类路径相同。</p><p>2、 Mapper接口方法名和Mapper.xml中定义的每个statement的id相同</p><p>3、 Mapper接口方法的输入参数类型和mapper.xml中定义的每个sql 的parameterType的类型相同</p><p>4、 Mapper接口方法的输出参数类型和mapper.xml中定义的每个sql的resultType的类型相同</p><pre><code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;!DOCTYPE mapper
+PUBLIC &quot;-//mybatis.org//DTD Mapper 3.0//EN&quot;
+&quot;http://mybatis.org/dtd/mybatis-3-mapper.dtd&quot;&gt;
+&lt;mapper namespace=&quot;com.baoyuan.mapper.dao.UserMapper&quot;&gt;
+&lt;!--　Id表示statement的id唯一标识符,resultType表示结果集的类型,parameterType表示形式参数类型　,如果SqlMapConfig.xml中配置了别名,就可以直接谢别名user,不用再写全路径com.baoyuan.domain.User --&gt;
+    &lt;select id=&quot;findUserById&quot; resultType=&quot;com.baoyuan.domain.User&quot;  parameterType=&quot;int&quot; &gt;
+&lt;!--#{}大括号类随意写只是表示一个占位符,相当于statment中的&quot;?&quot;  --&gt;
+        select * from user where id =#{id}
+    &lt;/select&gt;
+&lt;!--这里返回的类型虽然是list,resultType表示list泛型的类型  --&gt;
+    &lt;select id=&quot;findUserByUsername&quot; resultType=&quot;com.baoyuan.domain.User&quot;  parameterType=&quot;java.lang.String&quot; &gt;
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　&lt;!--这里必须写value,${value}表示拼接字符串,如果用其他会报错,用#{}只是表示占位符,可以在调用时传&quot;%条件%的参数&quot;  --&gt;
+        select * from user where username like &apos;%${value}%&apos;
+    &lt;/select&gt;
+    &lt;insert id=&quot;saveUser&quot;  parameterType=&quot;com.baoyuan.domain.User&quot; &gt;
+&lt;!--配置在插入一条数据后返回主键,会自动保存到pojo对象的主键属性中  --&gt;
+&lt;selectKey keyProperty=&quot;id&quot; resultType=&quot;java.lang.Integer&quot; order=&quot;AFTER&quot;&gt; 
+select LAST_INSERT_ID()
+&lt;!--必须是主键自增长 是mysql的函数，返回auto_increment自增列新记录id值 --&gt;
+&lt;/selectKey&gt;
+&lt;!-- &lt;selectKey resultType=&quot;java.lang.String&quot; order=&quot;BEFORE&quot; keyProperty=&quot;id&quot;&gt;
+select uuid()
+需要增加通过select uuid()得到uuid值（前提是用户表中的id必须是字符串类型）
+&lt;/selectKey&gt; --&gt;
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　&lt;!--这里由于 parameterType形式参数的类型是user,所以这里#{}大括号中不能随便写,写的是user的属性 --&gt;
+        insert INTO user(username,birthday,sex,address) VALUES(#{username},#{birthday},#{sex},#{address})
+    &lt;/insert&gt;
+    &lt;delete id=&quot;deleteUserById&quot;  parameterType=&quot;int&quot;&gt;
+        delete from user where id =#{id}
+    &lt;/delete&gt;
+    &lt;update id=&quot;updateUserById&quot; parameterType=&quot;com.baoyuan.domain.User&quot;&gt;
+        update user set username=#{username},birthday=#{birthday},sex=#{sex},address=#{address} where id=#{id}
+    &lt;/update&gt;
+&lt;/mapper&gt;
+</code></pre><p>创建UserMapper的接口</p><pre><code>package com.baoyuan.mapper.dao;
+
+import java.util.List;
+
+import com.baoyuan.domain.User;
+//类名必须和
+publicinterface UserMapper {
+    public User findUserById(Integer id);
+    public List&lt;User&gt; findUserByUsername(String username);
+    publicvoid saveUser(User user);
+    publicvoid deleteUserById(Integer id);
+    publicvoid updateUserById(User user);
+}
+</code></pre><p>测试代码</p><pre><code>package com.baoyuan.test;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Date;
+import java.util.List;
+
+import org.apache.ibatis.io.Resources;
+import org.apache.ibatis.session.SqlSession;
+import org.apache.ibatis.session.SqlSessionFactory;
+import org.apache.ibatis.session.SqlSessionFactoryBuilder;
+import org.junit.Before;
+import org.junit.Test;
+
+import com.baoyuan.domain.User;
+import com.baoyuan.mapper.dao.UserMapper;
+
+publicclass TestUserMapper {
+    private SqlSessionFactory sqlSessionFactory ;
+//表示运行测试代码前执行,给sqlSessionFactory赋值
+    @Before
+    publicvoid InitialContext() throws IOException{
+        SqlSessionFactoryBuilder builder = new SqlSessionFactoryBuilder();
+        InputStream inputStream=Resources.getResourceAsStream(&quot;SqlMapConfig.xml&quot;);
+        SqlSessionFactory sqlSessionFactory = builder.build(inputStream);
+        this.sqlSessionFactory=sqlSessionFactory;
+
+    }
+//通过id查询用户
+    @Test
+    publicvoid findUserById(){
+        //获取sqlsession
+        SqlSession sqlSession=null;
+        try {
+            sqlSession = sqlSessionFactory.openSession();
+            //获取mapper接口代理对象
+            UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
+            User user = userMapper.findUserById(1);
+            System.out.println(user);
+        } catch (Exception e) {
+            // TODO Auto-generated catch block            e.printStackTrace(); 
+        }finally{
+            if(sqlSession!=null){
+                sqlSession.close();
+            }
+        }
+    }
+//通过用户名模糊查询用户
+    @Test
+    publicvoid findUserByUsername(){
+        //获取sqlsession
+        SqlSession sqlSession=null;
+        try {
+            sqlSession = sqlSessionFactory.openSession();
+            //获取mapper接口代理对象
+            UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
+             List&lt;User&gt; list = userMapper.findUserByUsername(&quot;张&quot;); 
+            System.out.println(list);
+        } catch (Exception e) {
+            // TODO Auto-generated catch block            e.printStackTrace(); 
+        }finally{
+            if(sqlSession!=null){
+                sqlSession.close();
+            }
+        }
+    }
+//保存用户
+    @Test
+    publicvoid saveUser(){
+        //获取sqlsession
+        SqlSession sqlSession=null;
+        try {
+            sqlSession = sqlSessionFactory.openSession();
+            //获取mapper接口代理对象
+            UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
+            User user=new User();
+            user.setUsername(&quot;李四&quot;);
+            user.setBirthday(new Date());
+            user.setSex(&quot;1&quot;);
+            user.setAddress(&quot;深圳&quot;);
+System.out.println(user.getId());
+            userMapper.saveUser(user);
+            sqlSession.commit();
+System.out.println(user.getId());
+        } catch (Exception e) {
+            e.printStackTrace(); 
+        }finally{
+            if(sqlSession!=null){
+                sqlSession.close();
+            }
+        }
+    }
+//更新用户
+    @Test
+    publicvoid updateUserById(){
+        //获取sqlsession
+        SqlSession sqlSession=null;
+        try {
+            sqlSession = sqlSessionFactory.openSession();
+            //获取mapper接口代理对象
+            UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
+            User user=new User();
+            user.setId(30);
+            user.setUsername(&quot;李四&quot;);
+            user.setBirthday(new Date());
+            user.setSex(&quot;1&quot;);
+            user.setAddress(&quot;深圳&quot;);
+            userMapper.updateUserById(user);;
+            sqlSession.commit();
+        } catch (Exception e) {
+            e.printStackTrace(); 
+        }finally{
+            if(sqlSession!=null){
+                sqlSession.close();
+            }
+        }
+    }
+//删除用户
+    @Test
+    publicvoid deleteUserById(){
+        //获取sqlsession
+        SqlSession sqlSession=null;
+        try {
+            sqlSession = sqlSessionFactory.openSession();
+            //获取mapper接口代理对象
+            UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
+            userMapper.deleteUserById(30);;
+            sqlSession.commit();
+        } catch (Exception e) {
+            e.printStackTrace(); 
+        }finally{
+            if(sqlSession!=null){
+                sqlSession.close();
+            }
+        }
+    }
+}
+</code></pre></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="4142158067"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="5618891265"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><footer class="post-footer"><div class="post-nav"><div class="post-nav-next post-nav-item"><a href="/2017/注解库之butterknife.html" rel="next" title="注解库之ButterKnife"><i class="fa fa-chevron-left"></i> 注解库之ButterKnife</a></div><span class="post-nav-divider"></span><div class="post-nav-prev post-nav-item"><a href="/2017/java多线程系列四lock的使用.html" rel="prev" title="java多线程系列(四)—Lock的使用">java多线程系列(四)—Lock的使用 <i class="fa fa-chevron-right"></i></a></div></div></footer></div></article><div class="post-spread"></div></div></div></div><div class="sidebar-toggle"><div class="sidebar-toggle-line-wrap"><span class="sidebar-toggle-line sidebar-toggle-line-first"></span> <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span> <span class="sidebar-toggle-line sidebar-toggle-line-last"></span></div></div><aside id="sidebar" class="sidebar"><div class="sidebar-inner"><section class="site-overview-wrap sidebar-panel sidebar-panel-active"><div class="site-overview"><div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person"><p class="site-author-name" itemprop="name">Hello</p><p class="site-description motion-element" itemprop="description"></p></div><nav class="site-state motion-element"><div class="site-state-item site-state-posts"><a href="/archives/"><span class="site-state-item-count">1358</span> <span class="site-state-item-name">posts</span></a></div></nav></div></section></div></aside><div class="sfix"><div class="fixedme"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460" data-ad-format="auto"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script></div></div></main><footer id="footer" class="footer"><div class="footer-inner"><div class="copyright">&copy; <span itemprop="copyrightYear">2018</span> <span class="with-love"><i class="fa fa-user"></i> </span><span class="author" itemprop="copyrightHolder">Hello</span></div><div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div><span class="post-meta-divider">|</span><div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div></div></footer><div class="back-to-top"><i class="fa fa-arrow-up"></i></div></div><script type="text/javascript">"[object Function]"!==Object.prototype.toString.call(window.Promise)&&(window.Promise=null)</script><script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script><script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script><script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script><script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script><script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script></body></html><!-- rebuild by neat -->

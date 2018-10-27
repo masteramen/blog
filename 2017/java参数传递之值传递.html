@@ -1,0 +1,90 @@
+<!-- build time:Sat Oct 27 2018 21:00:18 GMT+0800 (CST) --><!DOCTYPE html><html class="theme-next muse use-motion"><head><meta name="generator" content="Hexo 3.8.0"><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"><meta name="theme-color" content="#222"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"><link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css"><link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css"><link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4"><link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222"><meta name="description" content="一 概述1.什么是参数传递？调用方法时向形参传递数据的过程叫做参数传递。在编程语言中有两种传递方式：值传递与引用传递。必须强调的是，这里提到的两种传递方式不是仅限于Java使用到的传递方式，而是出现在包括Java在内的多种编程语言中的传递方式。2.变量类型在Java中，我们将指向基本类型数据的变量称为原始变量，将指向对象的变量称为引用变量。二 值传递1.什么是值传递？将变量的副本传入方法，方法内外"><meta name="keywords" content="JAVA,面试"><meta property="og:type" content="article"><meta property="og:title" content="Java参数传递之值传递"><meta property="og:url" content="http://www.jfox.info/2017/java参数传递之值传递.html"><meta property="og:site_name" content="java面试"><meta property="og:description" content="一 概述1.什么是参数传递？调用方法时向形参传递数据的过程叫做参数传递。在编程语言中有两种传递方式：值传递与引用传递。必须强调的是，这里提到的两种传递方式不是仅限于Java使用到的传递方式，而是出现在包括Java在内的多种编程语言中的传递方式。2.变量类型在Java中，我们将指向基本类型数据的变量称为原始变量，将指向对象的变量称为引用变量。二 值传递1.什么是值传递？将变量的副本传入方法，方法内外"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="http://www.jfox.info/2017/1342/fc4d161.png"><meta property="og:image" content="http://www.jfox.info/2017/1342/d7990fb.png"><meta property="og:image" content="http://www.jfox.info/2017/1342/741f571.png"><meta property="og:image" content="http://www.jfox.info/2017/1342/b2d3cd1.png"><meta property="og:image" content="http://www.jfox.info/2017/1342/66c7b6b.png"><meta property="og:image" content="http://www.jfox.info/2017/1342/0069be5.png"><meta property="og:image" content="http://www.jfox.info/2017/1342/53da8d6.png"><meta property="og:image" content="http://www.jfox.info/2017/1342/61064b0.png"><meta property="og:updated_time" content="2018-10-27T12:29:37.387Z"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="Java参数传递之值传递"><meta name="twitter:description" content="一 概述1.什么是参数传递？调用方法时向形参传递数据的过程叫做参数传递。在编程语言中有两种传递方式：值传递与引用传递。必须强调的是，这里提到的两种传递方式不是仅限于Java使用到的传递方式，而是出现在包括Java在内的多种编程语言中的传递方式。2.变量类型在Java中，我们将指向基本类型数据的变量称为原始变量，将指向对象的变量称为引用变量。二 值传递1.什么是值传递？将变量的副本传入方法，方法内外"><meta name="twitter:image" content="http://www.jfox.info/2017/1342/fc4d161.png"><script type="text/javascript" id="hexo.configurations">var NexT=window.NexT||{},CONFIG={root:"/",scheme:"Muse",version:"5.1.4",sidebar:{position:"left",display:"post",offset:12,b2t:!1,scrollpercent:!1,onmobile:!1},fancybox:!0,tabs:!0,motion:{enable:!0,async:!1,transition:{post_block:"fadeIn",post_header:"slideDownIn",post_body:"slideDownIn",coll_header:"slideLeftIn",sidebar:"slideUpIn"}},duoshuo:{userId:"0",author:"Author"},algolia:{applicationID:"",apiKey:"",indexName:"",hits:{per_page:10},labels:{input_placeholder:"Search for Posts",hits_empty:"We didn't find any results for the search: ${query}",hits_stats:"${hits} results found in ${time} ms"}}}</script><link rel="canonical" href="http://www.jfox.info/2017/java参数传递之值传递.html"><title>Java参数传递之值传递 | java面试</title></head><body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN"><div class="container sidebar-position-left page-post-detail"><div class="headband"></div><header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="header-inner"><div class="site-brand-wrapper"><div class="site-meta"><div class="custom-logo-site-title"><a href="/" class="brand" rel="start"><span class="logo-line-before"><i></i></span> <span class="site-title">java面试</span> <span class="logo-line-after"><i></i></span></a></div><p class="site-subtitle"></p></div><div class="site-nav-toggle"><button><span class="btn-bar"></span> <span class="btn-bar"></span> <span class="btn-bar"></span></button></div></div><nav class="site-nav"><ul id="menu" class="menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i><br>Home</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i><br>Archives</a></li></ul></nav></div></header><main id="main" class="main"><div class="main-inner"><div class="content-wrap"><div id="content" class="content"><div id="posts" class="posts-expand"><article class="post post-type-normal" itemscope itemtype="http://schema.org/Article"><div class="post-block"><link itemprop="mainEntityOfPage" href="http://www.jfox.info/2017/java参数传递之值传递.html"><span hidden itemprop="author" itemscope itemtype="http://schema.org/Person"><meta itemprop="name" content="Hello"><meta itemprop="description" content=""><meta itemprop="image" content="/images/avatar.gif"></span><span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><meta itemprop="name" content="java面试"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">Java参数传递之值传递</h1><div class="post-meta"><span class="post-time"><span class="post-meta-item-icon"><i class="fa fa-calendar-o"></i> </span><span class="post-meta-item-text">Posted on</span> <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-01-01T23:57:22+08:00">2017-01-01</time></span></div></header><div class="post-body" itemprop="articleBody"><h2 id="一-概述"><a href="#一-概述" class="headerlink" title="一 概述"></a>一 概述</h2><h3 id="1-什么是参数传递？"><a href="#1-什么是参数传递？" class="headerlink" title="1.什么是参数传递？"></a>1.什么是参数传递？</h3><p>调用方法时向形参传递数据的过程叫做参数传递。在编程语言中有两种传递方式：值传递与引用传递。必须强调的是，这里提到的两种传递方式不是仅限于Java使用到的传递方式，而是出现在包括Java在内的多种编程语言中的传递方式。</p><h3 id="2-变量类型"><a href="#2-变量类型" class="headerlink" title="2.变量类型"></a>2.变量类型</h3><p>在Java中，我们将指向基本类型数据的变量称为原始变量，将指向对象的变量称为引用变量。</p><h2 id="二-值传递"><a href="#二-值传递" class="headerlink" title="二 值传递"></a>二 值传递</h2><h3 id="1-什么是值传递？"><a href="#1-什么是值传递？" class="headerlink" title="1.什么是值传递？"></a>1.什么是值传递？</h3><p>将变量的副本传入方法，方法内外操作隔离，在方法内对变量的操作不会反映到方法外的变量中。</p><h3 id="2-原始变量"><a href="#2-原始变量" class="headerlink" title="2.原始变量"></a>2.原始变量</h3><pre><code>public void change(int b) {
+    b = 7;
+}
+
+@Test
+public void testBasic() {
+    int a = 9;
+    change(a);
+    System.out.println(a);
+}
+</code></pre><p>实际输出：9</p><p>在参数传递时，按照值传递的规则，变量b接收一个a的副本，同样指向字面值“9”：</p><p><img src="/2017/1342/fc4d161.png" alt=""></p><p>接下来，在方法内部，为b赋值7，这样b指向7，由于a与b是两个相互独立的变量，两者之间没有引用与被引用的关系，a依然指向9：</p><p><img src="/2017/1342/d7990fb.png" alt=""></p><h3 id="3-String"><a href="#3-String" class="headerlink" title="3.String"></a>3.String</h3><pre><code>public void change(String str01) {
+        str01 = &quot;baidu&quot;;
+    }
+
+    @Test
+    public void testString() {
+        String str = new String(&quot;www.baidu.com&quot;);
+        change(str);
+        System.out.println(str);
+    }
+</code></pre><p>实际输出：<a href="http://www.baidu.com" target="_blank" rel="noopener">www.baidu.com</a></p><p>在参数传递时，str将自身的一个副本传递给str01，这样str01也指向堆中存放“<a href="http://www.baidu.com”的对象：" target="_blank" rel="noopener">www.baidu.com”的对象：</a></p><p><img src="/2017/1342/741f571.png" alt=""></p><p>在方法内部为str01赋值，这样str01就指向方法区字符串常量池中的”baidu”，str依然指向堆中的“<a href="http://www.baidu.com”，str与str01指向不同的对象，相互之间不影响：" target="_blank" rel="noopener">www.baidu.com”，str与str01指向不同的对象，相互之间不影响：</a></p><p><img src="/2017/1342/b2d3cd1.png" alt=""></p><p>这里需要注意一点：java将String设计成不可改变的对象，即一旦String对象包含的字面值发生改变，java就会新建一个对象，并将变量指向新的对象。</p><h3 id="4-StringBuilder"><a href="#4-StringBuilder" class="headerlink" title="4.StringBuilder"></a>4.StringBuilder</h3><pre><code>public void change(StringBuilder builder01) {
+        builder01.append(&quot; World!&quot;);
+    }
+
+    @Test
+    public void testStringBuilder() {
+        StringBuilder builder = new StringBuilder(&quot;Hello&quot;);
+        change(builder);
+        System.out.println(builder);
+    }
+</code></pre><p>实际输出：Hello World!</p><p>在参数传递完成以后，builder01变量获得builder变量的一个副本，副本与原始变量指向堆中同一个对象：</p><p><img src="/2017/1342/66c7b6b.png" alt=""></p><p>在方法内部，变量builder没有指向新的对象，依然与builder指向同一对象，所以当builder访问堆中同一对象时，数据发生改变：</p><p><img src="/2017/1342/0069be5.png" alt=""></p><h3 id="5-自定义类型"><a href="#5-自定义类型" class="headerlink" title="5.自定义类型"></a>5.自定义类型</h3><pre><code>public class MyInner {
+    public int a;
+}
+
+public class Test{
+
+    public void change(MyInner in01) {
+        in01.a = 1;
+    }
+
+    @Test
+    public void testDemain() {
+        MyInner in = new MyInner();
+        in.a = 9;
+        change(in);
+        System.out.println(in.a);
+    }
+
+}
+</code></pre><p>实际输出：1</p><p>执行过程同StringBuilder执行过程相同，这里不再赘述。下面对上面的代码做一点改动，如下：</p><pre><code>public class MyInner {
+    public int a;
+}
+
+public class Test{
+
+    public void change(MyInner in01) {
+        in01=new MyInner();//使in01指向一个新的对象
+        in01.a = 1;
+    }
+
+    @Test
+    public void testDemain() {
+        MyInner in = new MyInner();
+        in.a = 9;
+        change(in);
+        System.out.println(in.a);
+    }
+
+}
+</code></pre><p>实际输出：9</p><p>参数传递完成时，in01与in指向同一个对象，in01对对象的操作等同于in对对象的操作，接着在方法内部执行”in01=new MyInner();”，这样in01就指向了一个新的对象，in01所有的操作都与in无关了：</p><p><img src="/2017/1342/53da8d6.png" alt=""></p><p>综合以上的运行结果与分析，可知java参数传递方式符合值传递。</p><h2 id="三-引用传递"><a href="#三-引用传递" class="headerlink" title="三 引用传递"></a>三 引用传递</h2><h3 id="1-什么是引用传递？"><a href="#1-什么是引用传递？" class="headerlink" title="1.什么是引用传递？"></a>1.什么是引用传递？</h3><p>将变量自身的内存地址传入方法中，方法中的变量指向方法外的变量，在方法中对变量的操作就是对方法外变量 的操作 <em>。</em></p><h3 id="2-自定义类型"><a href="#2-自定义类型" class="headerlink" title="2.自定义类型"></a>2.自定义类型</h3><pre><code>public class MyInner {
+    public int a;
+}
+
+public class Test{
+
+    public void change(MyInner in01) {
+        in01=new MyInner();//使in01指向一个新的对象
+        in01.a = 1;
+    }
+
+    @Test
+    public void testDemain() {
+        MyInner in = new MyInner();
+        in.a = 9;
+        change(in);
+        System.out.println(in.a);
+    }
+
+}
+</code></pre><p>实际输出：9</p><p>如果采用引用传递，传递完成以后，in01指向in，对in01的操作就是对in的操作，in01指向对象2，那么in也指向对象2，输出1，与实际不符，所以 <strong>不是采用引用传递</strong> 。</p><p><img src="/2017/1342/61064b0.png" alt=""></p><p>不再一一分析其他变量类型，分析后可以发现，java在传递参数时采用的<strong>不是引用传递，而是值传递。</strong></p><h4 id="简单讲，值传递时方法内外是两个拥有同一指向的变量，引用传递时方法内外是同一个变量。"><a href="#简单讲，值传递时方法内外是两个拥有同一指向的变量，引用传递时方法内外是同一个变量。" class="headerlink" title="简单讲，值传递时方法内外是两个拥有同一指向的变量，引用传递时方法内外是同一个变量。"></a>简单讲，值传递时方法内外是两个拥有同一指向的变量，引用传递时方法内外是同一个变量。</h4><p><strong>本文永久更新链接地址</strong> ： <a href="https://www.jfox.info/go.php?url=http://www.linuxidc.com/Linux/2017-07/../../Linux/2017-07/145711.htm">http://www.linuxidc.com/Linux/2017-07/145711.htm</a></p></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="4142158067"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="5618891265"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><footer class="post-footer"><div class="post-nav"><div class="post-nav-next post-nav-item"><a href="/2017/使用web前端技术实现的梦幻vr虚拟现实效果.html" rel="next" title="使用Web前端技术实现的梦幻VR虚拟现实效果"><i class="fa fa-chevron-left"></i> 使用Web前端技术实现的梦幻VR虚拟现实效果</a></div><span class="post-nav-divider"></span><div class="post-nav-prev post-nav-item"><a href="/2017/还在为画类word文档报表而发愁吗.html" rel="prev" title="还在为画“类Word文档报表”而发愁吗？">还在为画“类Word文档报表”而发愁吗？ <i class="fa fa-chevron-right"></i></a></div></div></footer></div></article><div class="post-spread"></div></div></div></div><div class="sidebar-toggle"><div class="sidebar-toggle-line-wrap"><span class="sidebar-toggle-line sidebar-toggle-line-first"></span> <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span> <span class="sidebar-toggle-line sidebar-toggle-line-last"></span></div></div><aside id="sidebar" class="sidebar"><div class="sidebar-inner"><ul class="sidebar-nav motion-element"><li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">Table of Contents</li><li class="sidebar-nav-overview" data-target="site-overview-wrap">Overview</li></ul><section class="site-overview-wrap sidebar-panel"><div class="site-overview"><div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person"><p class="site-author-name" itemprop="name">Hello</p><p class="site-description motion-element" itemprop="description"></p></div><nav class="site-state motion-element"><div class="site-state-item site-state-posts"><a href="/archives/"><span class="site-state-item-count">1358</span> <span class="site-state-item-name">posts</span></a></div></nav></div></section><section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active"><div class="post-toc"><div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#一-概述"><span class="nav-number">1.</span> <span class="nav-text">一 概述</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-什么是参数传递？"><span class="nav-number">1.1.</span> <span class="nav-text">1.什么是参数传递？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-变量类型"><span class="nav-number">1.2.</span> <span class="nav-text">2.变量类型</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二-值传递"><span class="nav-number">2.</span> <span class="nav-text">二 值传递</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-什么是值传递？"><span class="nav-number">2.1.</span> <span class="nav-text">1.什么是值传递？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-原始变量"><span class="nav-number">2.2.</span> <span class="nav-text">2.原始变量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-String"><span class="nav-number">2.3.</span> <span class="nav-text">3.String</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-StringBuilder"><span class="nav-number">2.4.</span> <span class="nav-text">4.StringBuilder</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-自定义类型"><span class="nav-number">2.5.</span> <span class="nav-text">5.自定义类型</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#三-引用传递"><span class="nav-number">3.</span> <span class="nav-text">三 引用传递</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-什么是引用传递？"><span class="nav-number">3.1.</span> <span class="nav-text">1.什么是引用传递？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-自定义类型"><span class="nav-number">3.2.</span> <span class="nav-text">2.自定义类型</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#简单讲，值传递时方法内外是两个拥有同一指向的变量，引用传递时方法内外是同一个变量。"><span class="nav-number">3.2.1.</span> <span class="nav-text">简单讲，值传递时方法内外是两个拥有同一指向的变量，引用传递时方法内外是同一个变量。</span></a></li></ol></li></ol></li></ol></div></div></section></div></aside><div class="sfix"><div class="fixedme"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460" data-ad-format="auto"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script></div></div></main><footer id="footer" class="footer"><div class="footer-inner"><div class="copyright">&copy; <span itemprop="copyrightYear">2018</span> <span class="with-love"><i class="fa fa-user"></i> </span><span class="author" itemprop="copyrightHolder">Hello</span></div><div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div><span class="post-meta-divider">|</span><div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div></div></footer><div class="back-to-top"><i class="fa fa-arrow-up"></i></div></div><script type="text/javascript">"[object Function]"!==Object.prototype.toString.call(window.Promise)&&(window.Promise=null)</script><script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script><script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script><script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script><script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script><script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script></body></html><!-- rebuild by neat -->

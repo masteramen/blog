@@ -1,0 +1,177 @@
+<!-- build time:Sat Oct 27 2018 21:00:27 GMT+0800 (CST) --><!DOCTYPE html><html class="theme-next muse use-motion"><head><meta name="generator" content="Hexo 3.8.0"><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"><meta name="theme-color" content="#222"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"><link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css"><link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css"><link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4"><link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222"><meta name="description" content="深入研究java.lang.ThreadLocal类一、概述ThreadLocal是什么呢？其实ThreadLocal并非是一个线程的本地实现版本，它并不是一个Thread，而是threadlocalvariable(线程局部变量)。也许把它命名为ThreadLocalVar更加合适。线程局部变量(ThreadLocal)其实的功用非常简单，就是为每一个使用该变量的线程都提供一个变量值的副本，是J"><meta name="keywords" content="JAVA,面试"><meta property="og:type" content="article"><meta property="og:title" content="深入研究JAVA ThreadLocal类"><meta property="og:url" content="http://www.jfox.info/2017/in-depth-study-java-threadlocal-class.html"><meta property="og:site_name" content="java面试"><meta property="og:description" content="深入研究java.lang.ThreadLocal类一、概述ThreadLocal是什么呢？其实ThreadLocal并非是一个线程的本地实现版本，它并不是一个Thread，而是threadlocalvariable(线程局部变量)。也许把它命名为ThreadLocalVar更加合适。线程局部变量(ThreadLocal)其实的功用非常简单，就是为每一个使用该变量的线程都提供一个变量值的副本，是J"><meta property="og:locale" content="zh_CN"><meta property="og:updated_time" content="2018-10-27T12:29:37.386Z"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="深入研究JAVA ThreadLocal类"><meta name="twitter:description" content="深入研究java.lang.ThreadLocal类一、概述ThreadLocal是什么呢？其实ThreadLocal并非是一个线程的本地实现版本，它并不是一个Thread，而是threadlocalvariable(线程局部变量)。也许把它命名为ThreadLocalVar更加合适。线程局部变量(ThreadLocal)其实的功用非常简单，就是为每一个使用该变量的线程都提供一个变量值的副本，是J"><script type="text/javascript" id="hexo.configurations">var NexT=window.NexT||{},CONFIG={root:"/",scheme:"Muse",version:"5.1.4",sidebar:{position:"left",display:"post",offset:12,b2t:!1,scrollpercent:!1,onmobile:!1},fancybox:!0,tabs:!0,motion:{enable:!0,async:!1,transition:{post_block:"fadeIn",post_header:"slideDownIn",post_body:"slideDownIn",coll_header:"slideLeftIn",sidebar:"slideUpIn"}},duoshuo:{userId:"0",author:"Author"},algolia:{applicationID:"",apiKey:"",indexName:"",hits:{per_page:10},labels:{input_placeholder:"Search for Posts",hits_empty:"We didn't find any results for the search: ${query}",hits_stats:"${hits} results found in ${time} ms"}}}</script><link rel="canonical" href="http://www.jfox.info/2017/in-depth-study-java-threadlocal-class.html"><title>深入研究JAVA ThreadLocal类 | java面试</title></head><body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN"><div class="container sidebar-position-left page-post-detail"><div class="headband"></div><header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="header-inner"><div class="site-brand-wrapper"><div class="site-meta"><div class="custom-logo-site-title"><a href="/" class="brand" rel="start"><span class="logo-line-before"><i></i></span> <span class="site-title">java面试</span> <span class="logo-line-after"><i></i></span></a></div><p class="site-subtitle"></p></div><div class="site-nav-toggle"><button><span class="btn-bar"></span> <span class="btn-bar"></span> <span class="btn-bar"></span></button></div></div><nav class="site-nav"><ul id="menu" class="menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i><br>Home</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i><br>Archives</a></li></ul></nav></div></header><main id="main" class="main"><div class="main-inner"><div class="content-wrap"><div id="content" class="content"><div id="posts" class="posts-expand"><article class="post post-type-normal" itemscope itemtype="http://schema.org/Article"><div class="post-block"><link itemprop="mainEntityOfPage" href="http://www.jfox.info/2017/in-depth-study-java-threadlocal-class.html"><span hidden itemprop="author" itemscope itemtype="http://schema.org/Person"><meta itemprop="name" content="Hello"><meta itemprop="description" content=""><meta itemprop="image" content="/images/avatar.gif"></span><span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><meta itemprop="name" content="java面试"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">深入研究JAVA ThreadLocal类</h1><div class="post-meta"><span class="post-time"><span class="post-meta-item-icon"><i class="fa fa-calendar-o"></i> </span><span class="post-meta-item-text">Posted on</span> <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-01-01T23:45:38+08:00">2017-01-01</time></span></div></header><div class="post-body" itemprop="articleBody"><p>深入研究java.lang.ThreadLocal类</p><p>一、概述</p><p>ThreadLocal是什么呢？其实ThreadLocal并非是一个线程的本地实现版本，它并不是一个Thread，而是threadlocalvariable(线程局部变量)。也许把它命名为ThreadLocalVar更加合适。线程局部变量(ThreadLocal)其实的功用非常简单，就是为每一个使用该变量的线程都提供一个变量值的副本，是Java中一种较为特殊的线程绑定机制，是每一个线程都可以独立地改变自己的副本，而不会和其它线程的副本冲突。</p><p>从线程的角度看，每个线程都保持一个对其线程局部变量副本的隐式引用，只要线程是活动的并且 ThreadLocal 实例是可访问的；在线程消失之后，其线程局部实例的所有副本都会被垃圾回收（除非存在对这些副本的其他引用）。</p><p>通过ThreadLocal存取的数据，总是与当前线程相关，也就是说，JVM 为每个运行的线程，绑定了私有的本地实例存取空间，从而为多线程环境常出现的并发访问问题提供了一种隔离机制。</p><p>ThreadLocal是如何做到为每一个线程维护变量的副本的呢？其实实现的思路很简单，在ThreadLocal类中有一个Map，用于存储每一个线程的变量的副本。</p><p>概括起来说，对于多线程资源共享的问题，同步机制采用了“以时间换空间”的方式，而ThreadLocal采用了“以空间换时间”的方式。前者仅提供一份变量，让不同的线程排队访问，而后者为每一个线程都提供了一份变量，因此可以同时访问而互不影响。</p><p>二、API说明</p><p>ThreadLocal()</p><pre><code>创建一个线程本地变量。
+</code></pre><p>T get()</p><pre><code>返回此线程局部变量的当前线程副本中的值，如果这是线程第一次调用该方法，则创建并初始化此副本。
+</code></pre><p>protected T initialValue()</p><pre><code>返回此线程局部变量的当前线程的初始值。最多在每次访问线程来获得每个线程局部变量时调用此方法一次，即线程第一次使用 get() 方法访问变量的时候。如果线程先于 get 方法调用 set(T) 方法，则不会在线程中再调用 initialValue 方法。
+</code></pre><p>若该实现只返回 null；如果程序员希望将线程局部变量初始化为 null 以外的某个值，则必须为 ThreadLocal 创建子类，并重写此方法。通常，将使用匿名内部类。initialValue 的典型实现将调用一个适当的构造方法，并返回新构造的对象。</p><p>void remove()</p><pre><code>移除此线程局部变量的值。这可能有助于减少线程局部变量的存储需求。如果再次访问此线程局部变量，那么在默认情况下它将拥有其 initialValue。
+</code></pre><p>void set(T value)</p><pre><code>将此线程局部变量的当前线程副本中的值设置为指定值。许多应用程序不需要这项功能，它们只依赖于 initialValue() 方法来设置线程局部变量的值。
+</code></pre><p>在程序中一般都重写initialValue方法，以给定一个特定的初始值。</p><p>三、典型实例</p><p>1、Hiberante的Session 工具类HibernateUtil</p><p>这个类是Hibernate官方文档中HibernateUtil类，用于session管理。</p><p>public class HibernateUtil {</p><pre><code>private static Log log = LogFactory.getLog(HibernateUtil.class);
+
+private static final SessionFactory sessionFactory;     //定义SessionFactory
+
+static {
+
+    try {
+
+        // 通过默认配置文件hibernate.cfg.xml创建SessionFactory
+
+        sessionFactory = new Configuration().configure().buildSessionFactory();
+
+    } catch (Throwable ex) {
+
+        log.error(“初始化SessionFactory失败！”, ex);
+
+        throw new ExceptionInInitializerError(ex);
+
+    }
+
+}
+
+//创建线程局部变量session，用来保存Hibernate的Session
+
+public static final ThreadLocal session = new ThreadLocal();
+
+/**
+
+ * 获取当前线程中的Session
+
+ * @return Session
+
+ * @throws HibernateException
+
+ */
+
+public static Session currentSession() throws HibernateException {
+
+    Session s = (Session) session.get();
+
+    // 如果Session还没有打开，则新开一个Session
+
+    if (s == null) {
+
+        s = sessionFactory.openSession();
+
+        session.set(s);         //将新开的Session保存到线程局部变量中
+
+    }
+
+    return s;
+
+}
+
+public static void closeSession() throws HibernateException {
+
+    //获取线程局部变量，并强制转换为Session类型
+
+    Session s = (Session) session.get();
+
+    session.set(null);
+
+    if (s != null)
+
+        s.close();
+
+}
+</code></pre><p>}</p><p>在这个类中，由于没有重写ThreadLocal的initialValue()方法，则首次创建线程局部变量session其初始值为null，第一次调用currentSession()的时候，线程局部变量的get()方法也为null。因此，对session做了判断，如果为null，则新开一个Session，并保存到线程局部变量session中，这一步非常的关键，这也是“public static final ThreadLocal session = new ThreadLocal()”所创建对象session能强制转换为Hibernate Session对象的原因。</p><p>2、另外一个实例</p><p>创建一个Bean，通过不同的线程对象设置Bean属性，保证各个线程Bean对象的独立性。</p><p>/**</p><ul><li><p>Created by IntelliJ IDEA.</p></li><li><p>User: leizhimin</p></li><li><p>Date: 2007-11-23</p></li><li><p>Time: 10:45:02</p></li><li><p>学生</p><p>*/</p></li></ul><p>public class Student {</p><pre><code>private int age = 0;   //年龄
+
+public int getAge() {
+
+    return this.age;
+
+}
+
+public void setAge(int age) {
+
+    this.age = age;
+
+}
+</code></pre><p>}</p><p>/**</p><ul><li><p>Created by IntelliJ IDEA.</p></li><li><p>User: leizhimin</p></li><li><p>Date: 2007-11-23</p></li><li><p>Time: 10:53:33</p></li><li><p>多线程下测试程序</p><p>*/</p></li></ul><p>public class ThreadLocalDemo implements Runnable {</p><pre><code>//创建线程局部变量studentLocal，在后面你会发现用来保存Student对象
+
+private final static ThreadLocal studentLocal = new ThreadLocal();
+
+public static void main(String[] agrs) {
+
+    ThreadLocalDemo td = new ThreadLocalDemo();
+
+    Thread t1 = new Thread(td, “a”);
+
+    Thread t2 = new Thread(td, “b”);
+
+    t1.start();
+
+    t2.start();
+
+}
+
+public void run() {
+
+    accessStudent();
+
+}
+
+/**
+
+ * 示例业务方法，用来测试
+
+ */
+
+public void accessStudent() {
+
+    //获取当前线程的名字
+
+    String currentThreadName = Thread.currentThread().getName();
+
+    System.out.println(currentThreadName + ” is running!”);
+
+    //产生一个随机数并打印
+
+    Random random = new Random();
+
+    int age = random.nextInt(100);
+
+    System.out.println(“thread ” + currentThreadName + ” set age to:” + age);
+
+    //获取一个Student对象，并将随机数年龄插入到对象属性中
+
+    Student student = getStudent();
+
+    student.setAge(age);
+
+    System.out.println(“thread ” + currentThreadName + ” first read age is:” + student.getAge());
+
+    try {
+
+        Thread.sleep(500);
+
+    }
+
+    catch (InterruptedException ex) {
+
+        ex.printStackTrace();
+
+    }
+
+    System.out.println(“thread ” + currentThreadName + ” second read age is:” + student.getAge());
+
+}
+
+protected Student getStudent() {
+
+    //获取本地线程变量并强制转换为Student类型
+
+    Student student = (Student) studentLocal.get();
+
+    //线程首次执行此方法的时候，studentLocal.get()肯定为null
+
+    if (student == null) {
+
+        //创建一个Student对象，并保存到本地线程变量studentLocal中
+
+        student = new Student();
+
+        studentLocal.set(student);
+
+    }
+
+    return student;
+
+}
+</code></pre><p>}</p><p>运行结果：</p><p>a is running!</p><p>thread a set age to:76</p><p>b is running!</p><p>thread b set age to:27</p><p>thread a first read age is:76</p><p>thread b first read age is:27</p><p>thread a second read age is:76</p><p>thread b second read age is:27</p><p>可以看到a、b两个线程age在不同时刻打印的值是完全相同的。这个程序通过妙用ThreadLocal，既实现多线程并发，游兼顾数据的安全性。</p><p>四、总结</p><p>ThreadLocal使用场合主要解决多线程中数据数据因并发产生不一致问题。ThreadLocal为每个线程的中并发访问的数据提供一个副本，通过访问副本来运行业务，这样的结果是耗费了内存，单大大减少了线程同步所带来性能消耗，也减少了线程并发控制的复杂度。</p><p>ThreadLocal不能使用原子类型，只能使用Object类型。ThreadLocal的使用比synchronized要简单得多。</p><p>ThreadLocal和Synchonized都用于解决多线程并发访问。但是ThreadLocal与synchronized有本质的区别。synchronized是利用锁的机制，使变量或代码块在某一时该只能被一个线程访问。而ThreadLocal为每一个线程都提供了变量的副本，使得每个线程在某一时间访问到的并不是同一个对象，这样就隔离了多个线程对数据的数据共享。而Synchronized却正好相反，它用于在多个线程间通信时能够获得数据共享。</p><p>Synchronized用于线程间的数据共享，而ThreadLocal则用于线程间的数据隔离。</p><p>当然ThreadLocal并不能替代synchronized,它们处理不同的问题域。Synchronized用于实现同步机制，比ThreadLocal更加复杂。</p><p>五、ThreadLocal使用的一般步骤</p><p>1、在多线程的类（如ThreadDemo类）中，创建一个ThreadLocal对象threadXxx，用来保存线程间需要隔离处理的对象xxx。</p><p>2、在ThreadDemo类中，创建一个获取要隔离访问的数据的方法getXxx()，在方法中判断，若ThreadLocal对象为null时候，应该new()一个隔离访问类型的对象，并强制转换为要应用的类型。</p><p>3、在ThreadDemo类的run()方法中，通过getXxx()方法获取要操作的数据，这样可以保证每个线程对应一个数据对象，在任何时刻都操作的是这个对象。</p><p>原文地址:<a href="https://www.jfox.info/go.php?url=http://www.jfox.info/url.php?url=http%3A%2F%2Flavasoft.blog.51cto.com%2F62575%2F51926%2F">http://lavasoft.blog.51cto.com/62575/51926/</a>.</p></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="4142158067"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="5618891265"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><footer class="post-footer"><div class="post-nav"><div class="post-nav-next post-nav-item"><a href="/2017/eclipse-svn-plugin-subclipse-vs-subversive.html" rel="next" title="Eclipse SVN插件比较 Subclipse vs. Subversive"><i class="fa fa-chevron-left"></i> Eclipse SVN插件比较 Subclipse vs. Subversive</a></div><span class="post-nav-divider"></span><div class="post-nav-prev post-nav-item"><a href="/2017/use-java-library-opencsv-read-write-csv-file.html" rel="prev" title="使用java类库opencsv读写csv文件">使用java类库opencsv读写csv文件 <i class="fa fa-chevron-right"></i></a></div></div></footer></div></article><div class="post-spread"></div></div></div></div><div class="sidebar-toggle"><div class="sidebar-toggle-line-wrap"><span class="sidebar-toggle-line sidebar-toggle-line-first"></span> <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span> <span class="sidebar-toggle-line sidebar-toggle-line-last"></span></div></div><aside id="sidebar" class="sidebar"><div class="sidebar-inner"><section class="site-overview-wrap sidebar-panel sidebar-panel-active"><div class="site-overview"><div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person"><p class="site-author-name" itemprop="name">Hello</p><p class="site-description motion-element" itemprop="description"></p></div><nav class="site-state motion-element"><div class="site-state-item site-state-posts"><a href="/archives/"><span class="site-state-item-count">1358</span> <span class="site-state-item-name">posts</span></a></div></nav></div></section></div></aside><div class="sfix"><div class="fixedme"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460" data-ad-format="auto"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script></div></div></main><footer id="footer" class="footer"><div class="footer-inner"><div class="copyright">&copy; <span itemprop="copyrightYear">2018</span> <span class="with-love"><i class="fa fa-user"></i> </span><span class="author" itemprop="copyrightHolder">Hello</span></div><div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div><span class="post-meta-divider">|</span><div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div></div></footer><div class="back-to-top"><i class="fa fa-arrow-up"></i></div></div><script type="text/javascript">"[object Function]"!==Object.prototype.toString.call(window.Promise)&&(window.Promise=null)</script><script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script><script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script><script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script><script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script><script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script></body></html><!-- rebuild by neat -->

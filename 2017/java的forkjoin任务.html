@@ -1,0 +1,86 @@
+<!-- build time:Sat Oct 27 2018 21:00:18 GMT+0800 (CST) --><!DOCTYPE html><html class="theme-next muse use-motion"><head><meta name="generator" content="Hexo 3.8.0"><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"><meta name="theme-color" content="#222"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"><link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css"><link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css"><link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4"><link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222"><meta name="description" content="H2M_LI_HEADERa . Fork/Join为JKD1.7引入，适用于对大量数据进行拆分成多个小任务进行计算的框架，最后把所有小任务的结果汇总合并得到最终的结果H2M_LI_HEADERb . 相关类public abstract class RecursiveTask&amp;lt;V&amp;gt; extends ForkJoinTask&amp;lt;V&amp;gt;; public abstract clas"><meta name="keywords" content="JAVA,面试"><meta property="og:type" content="article"><meta property="og:title" content="Java的Fork&#x2F;Join任务"><meta property="og:url" content="http://www.jfox.info/2017/java的forkjoin任务.html"><meta property="og:site_name" content="java面试"><meta property="og:description" content="H2M_LI_HEADERa . Fork/Join为JKD1.7引入，适用于对大量数据进行拆分成多个小任务进行计算的框架，最后把所有小任务的结果汇总合并得到最终的结果H2M_LI_HEADERb . 相关类public abstract class RecursiveTask&amp;lt;V&amp;gt; extends ForkJoinTask&amp;lt;V&amp;gt;; public abstract clas"><meta property="og:locale" content="zh_CN"><meta property="og:updated_time" content="2018-10-27T12:29:37.385Z"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="Java的Fork&#x2F;Join任务"><meta name="twitter:description" content="H2M_LI_HEADERa . Fork/Join为JKD1.7引入，适用于对大量数据进行拆分成多个小任务进行计算的框架，最后把所有小任务的结果汇总合并得到最终的结果H2M_LI_HEADERb . 相关类public abstract class RecursiveTask&amp;lt;V&amp;gt; extends ForkJoinTask&amp;lt;V&amp;gt;; public abstract clas"><script type="text/javascript" id="hexo.configurations">var NexT=window.NexT||{},CONFIG={root:"/",scheme:"Muse",version:"5.1.4",sidebar:{position:"left",display:"post",offset:12,b2t:!1,scrollpercent:!1,onmobile:!1},fancybox:!0,tabs:!0,motion:{enable:!0,async:!1,transition:{post_block:"fadeIn",post_header:"slideDownIn",post_body:"slideDownIn",coll_header:"slideLeftIn",sidebar:"slideUpIn"}},duoshuo:{userId:"0",author:"Author"},algolia:{applicationID:"",apiKey:"",indexName:"",hits:{per_page:10},labels:{input_placeholder:"Search for Posts",hits_empty:"We didn't find any results for the search: ${query}",hits_stats:"${hits} results found in ${time} ms"}}}</script><link rel="canonical" href="http://www.jfox.info/2017/java的forkjoin任务.html"><title>Java的Fork/Join任务 | java面试</title></head><body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN"><div class="container sidebar-position-left page-post-detail"><div class="headband"></div><header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="header-inner"><div class="site-brand-wrapper"><div class="site-meta"><div class="custom-logo-site-title"><a href="/" class="brand" rel="start"><span class="logo-line-before"><i></i></span> <span class="site-title">java面试</span> <span class="logo-line-after"><i></i></span></a></div><p class="site-subtitle"></p></div><div class="site-nav-toggle"><button><span class="btn-bar"></span> <span class="btn-bar"></span> <span class="btn-bar"></span></button></div></div><nav class="site-nav"><ul id="menu" class="menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i><br>Home</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i><br>Archives</a></li></ul></nav></div></header><main id="main" class="main"><div class="main-inner"><div class="content-wrap"><div id="content" class="content"><div id="posts" class="posts-expand"><article class="post post-type-normal" itemscope itemtype="http://schema.org/Article"><div class="post-block"><link itemprop="mainEntityOfPage" href="http://www.jfox.info/2017/java的forkjoin任务.html"><span hidden itemprop="author" itemscope itemtype="http://schema.org/Person"><meta itemprop="name" content="Hello"><meta itemprop="description" content=""><meta itemprop="image" content="/images/avatar.gif"></span><span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><meta itemprop="name" content="java面试"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">Java的Fork/Join任务</h1><div class="post-meta"><span class="post-time"><span class="post-meta-item-icon"><i class="fa fa-calendar-o"></i> </span><span class="post-meta-item-text">Posted on</span> <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-01-01T23:57:06+08:00">2017-01-01</time></span></div></header><div class="post-body" itemprop="articleBody"><p>H2M_LI_HEADER<br>a . Fork/Join为JKD1.7引入，适用于对大量数据进行拆分成多个小任务进行计算的框架，最后把所有小任务的结果汇总合并得到最终的结果</p><p>H2M_LI_HEADER<br>b . 相关类</p><pre><code>public abstract class RecursiveTask&lt;V&gt; extends ForkJoinTask&lt;V&gt;;
+public abstract class RecursiveAction extends ForkJoinTask&lt;Void&gt;;
+</code></pre><p>H2M_LI_HEADER<br>c . 其中RecursiveTask在执行有返回值的任务时使用，RecursiveAction在执行没有返回值的任务时使用</p><p>H2M_LI_HEADER</p><h2 id="2-示例代码"><a href="#2-示例代码" class="headerlink" title="2 . 示例代码"></a>2 . 示例代码</h2><pre><code>package com.evans;
+
+import com.sun.istack.internal.NotNull;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.*;
+
+/**
+ * Created by Evans
+ */
+public class SumTask extends RecursiveTask &lt;Long&gt; {
+    //默认任务计算限制
+    private int taskSize=100;
+    //局部变量
+    private List&lt;Integer&gt; sumList;
+
+    public SumTask(@NotNull List&lt;Integer&gt; list) {
+        this.sumList=list;
+    }
+
+    public SumTask(@NotNull int taskSize,@NotNull List&lt;Integer&gt; list) {
+        this.taskSize = taskSize;
+        this.sumList=list;
+    }
+
+    @Override
+    protected Long compute() {
+        if(this.sumList.size()&lt;=this.taskSize){
+            //若集合数量小于限制值则直接计算
+            long sum = 0;
+            for(Integer item :this.sumList){
+                sum += item;
+            }
+            System.out.println(String.format(&quot;Sum List[%d] = %d&quot;, this.sumList.size(), sum));
+            return sum;
+        }
+        // 任务大于限制值,则一分为二:
+        int middle = (this.sumList.size()) / 2;
+        System.out.println(String.format(&quot;Split Task List[%d] ==&gt; List[%d], List[%d]&quot;, this.sumList.size(), this.sumList.size()-middle,middle));
+        SumTask subTask1 = new SumTask(this.taskSize,this.sumList.subList(0,middle));
+        SumTask subTask2 = new SumTask(this.taskSize,this.sumList.subList(middle,this.sumList.size()));
+        invokeAll(subTask1, subTask2);
+        Long subResult1 = subTask1.join();
+        Long subResult2 = subTask2.join();
+        Long result = subResult1 + subResult2;
+        System.out.println(&quot;Sum Split Task Result = &quot; + subResult1 + &quot; + &quot; + subResult2 + &quot; ==&gt; &quot; + result);
+        return result;
+    }
+
+    public static void main(String[] args) {
+        //获取当前系统CPU核数
+        int coreNumber = Runtime.getRuntime().availableProcessors();
+        List&lt;Integer&gt; originalList = new ArrayList&lt;&gt;();
+        for(int i=0;i&lt;100;i++){
+            originalList.add(i);
+        }
+        ForkJoinPool forkJoinPool = new ForkJoinPool(coreNumber);
+        ForkJoinTask&lt;Long&gt; task = new SumTask(10, originalList);
+        long startTime = System.currentTimeMillis();
+        Long result = 0L;
+        //等待结果返回
+        result=forkJoinPool.invoke(task);
+        //使用Future 获取结果
+//        Future&lt;Long&gt; future = forkJoinPool.submit(task);
+//        try {
+//            result= future.get();
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        } catch (ExecutionException e) {
+//            e.printStackTrace();
+//        }
+        long endTime = System.currentTimeMillis();
+        System.out.println(&quot;Sum Task Result : &quot; + result + &quot; Cost Time : &quot; + (endTime - startTime) + &quot; ms.&quot;);
+        forkJoinPool.shutdown();
+    }
+}
+</code></pre><p>控制台输出</p><pre><code>Split Task List[100] ==&gt; List[50], List[50]
+Sum List[50] = 3725
+Sum List[50] = 1225
+Sum Split Task Result = 1225 + 3725 ==&gt; 4950
+Sum Task Result : 4950 Cost Time : 18 ms.
+</code></pre><p>H2M_LI_HEADER</p><h2 id="3-备注"><a href="#3-备注" class="headerlink" title="3 . 备注"></a>3 . 备注</h2><ul><li><p>a .在有大量计算任务时，此框架方法可进行并行计算效率高，以上示例，可以根据具体的业务需求更改属性及相关方法用于匹配自己的业务逻辑</p></li><li><p>b .JDK1.8后由于加入Stream流的操作,集合框架可以使用Collection<e>default Stream<e>parallelStream()的方法转换成并行流进行计算，此时效果与Fork/Join任务同效。</e></e></p></li><li><p>c .ForkJoinPool中的多种方法</p><p>public<t>ForkJoinTask<t>submit(ForkJoinTask<t>task);//等待获取结果<br>public void execute(ForkJoinTask&lt;?&gt; task);//异步执行<br>public<t>T invoke(ForkJoinTask<t>task);//执行,获取Future</t></t></t></t></t></p></li><li><p>d .ForkJoinTask在执行的时候可能会抛出异常，但是没办法在主线程里直接捕获异常，所以ForkJoinTask提供了isCompletedAbnormally()方法来检查任务是否已经抛出异常或已经被取消了，并且可以通过ForkJoinTask的getException方法获取异常。getException方法返回Throwable对象，如果任务被取消了则返回CancellationException。如果任务没有完成或者没有抛出异常则返回null。</p><p>if(task.isCompletedAbnormally()) {</p><pre><code>System.out.println(task.getException());
+</code></pre><p>}</p></li></ul></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="4142158067"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="5618891265"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><footer class="post-footer"><div class="post-nav"><div class="post-nav-next post-nav-item"><a href="/2017/springmvc一springmvc框架原理分析和简单入门程序.html" rel="next" title="springmvc(一) springmvc框架原理分析和简单入门程序"><i class="fa fa-chevron-left"></i> springmvc(一) springmvc框架原理分析和简单入门程序</a></div><span class="post-nav-divider"></span><div class="post-nav-prev post-nav-item"><a href="/2017/rxjava1x笔记过滤型操作符.html" rel="prev" title="RxJava 1.x 笔记：过滤型操作符">RxJava 1.x 笔记：过滤型操作符 <i class="fa fa-chevron-right"></i></a></div></div></footer></div></article><div class="post-spread"></div></div></div></div><div class="sidebar-toggle"><div class="sidebar-toggle-line-wrap"><span class="sidebar-toggle-line sidebar-toggle-line-first"></span> <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span> <span class="sidebar-toggle-line sidebar-toggle-line-last"></span></div></div><aside id="sidebar" class="sidebar"><div class="sidebar-inner"><ul class="sidebar-nav motion-element"><li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">Table of Contents</li><li class="sidebar-nav-overview" data-target="site-overview-wrap">Overview</li></ul><section class="site-overview-wrap sidebar-panel"><div class="site-overview"><div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person"><p class="site-author-name" itemprop="name">Hello</p><p class="site-description motion-element" itemprop="description"></p></div><nav class="site-state motion-element"><div class="site-state-item site-state-posts"><a href="/archives/"><span class="site-state-item-count">1358</span> <span class="site-state-item-name">posts</span></a></div></nav></div></section><section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active"><div class="post-toc"><div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-示例代码"><span class="nav-number">1.</span> <span class="nav-text">2 . 示例代码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-备注"><span class="nav-number">2.</span> <span class="nav-text">3 . 备注</span></a></li></ol></div></div></section></div></aside><div class="sfix"><div class="fixedme"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460" data-ad-format="auto"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script></div></div></main><footer id="footer" class="footer"><div class="footer-inner"><div class="copyright">&copy; <span itemprop="copyrightYear">2018</span> <span class="with-love"><i class="fa fa-user"></i> </span><span class="author" itemprop="copyrightHolder">Hello</span></div><div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div><span class="post-meta-divider">|</span><div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div></div></footer><div class="back-to-top"><i class="fa fa-arrow-up"></i></div></div><script type="text/javascript">"[object Function]"!==Object.prototype.toString.call(window.Promise)&&(window.Promise=null)</script><script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script><script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script><script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script><script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script><script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script></body></html><!-- rebuild by neat -->

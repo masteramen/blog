@@ -1,0 +1,157 @@
+<!-- build time:Sat Oct 27 2018 21:00:20 GMT+0800 (CST) --><!DOCTYPE html><html class="theme-next muse use-motion"><head><meta name="generator" content="Hexo 3.8.0"><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"><meta name="theme-color" content="#222"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"><link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css"><link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css"><link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4"><link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222"><meta name="description" content="public class StarIndexPage{public static void main(String[] args) {String url = “http://ku.ent.sina.com.cn/star/search&amp;amp;page_no=1&amp;quot;; //想要爬取的网站的首页地址HttpGetRequest start = new HttpGetRequest(url)"><meta name="keywords" content="JAVA,面试"><meta property="og:type" content="article"><meta property="og:title" content="用JAVA做一个爬虫程序——Gecco"><meta property="og:url" content="http://www.jfox.info/2017/用java做一个爬虫程序gecco.html"><meta property="og:site_name" content="java面试"><meta property="og:description" content="public class StarIndexPage{public static void main(String[] args) {String url = “http://ku.ent.sina.com.cn/star/search&amp;amp;page_no=1&amp;quot;; //想要爬取的网站的首页地址HttpGetRequest start = new HttpGetRequest(url)"><meta property="og:locale" content="zh_CN"><meta property="og:updated_time" content="2018-10-27T12:29:37.385Z"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="用JAVA做一个爬虫程序——Gecco"><meta name="twitter:description" content="public class StarIndexPage{public static void main(String[] args) {String url = “http://ku.ent.sina.com.cn/star/search&amp;amp;page_no=1&amp;quot;; //想要爬取的网站的首页地址HttpGetRequest start = new HttpGetRequest(url)"><script type="text/javascript" id="hexo.configurations">var NexT=window.NexT||{},CONFIG={root:"/",scheme:"Muse",version:"5.1.4",sidebar:{position:"left",display:"post",offset:12,b2t:!1,scrollpercent:!1,onmobile:!1},fancybox:!0,tabs:!0,motion:{enable:!0,async:!1,transition:{post_block:"fadeIn",post_header:"slideDownIn",post_body:"slideDownIn",coll_header:"slideLeftIn",sidebar:"slideUpIn"}},duoshuo:{userId:"0",author:"Author"},algolia:{applicationID:"",apiKey:"",indexName:"",hits:{per_page:10},labels:{input_placeholder:"Search for Posts",hits_empty:"We didn't find any results for the search: ${query}",hits_stats:"${hits} results found in ${time} ms"}}}</script><link rel="canonical" href="http://www.jfox.info/2017/用java做一个爬虫程序gecco.html"><title>用JAVA做一个爬虫程序——Gecco | java面试</title></head><body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN"><div class="container sidebar-position-left page-post-detail"><div class="headband"></div><header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="header-inner"><div class="site-brand-wrapper"><div class="site-meta"><div class="custom-logo-site-title"><a href="/" class="brand" rel="start"><span class="logo-line-before"><i></i></span> <span class="site-title">java面试</span> <span class="logo-line-after"><i></i></span></a></div><p class="site-subtitle"></p></div><div class="site-nav-toggle"><button><span class="btn-bar"></span> <span class="btn-bar"></span> <span class="btn-bar"></span></button></div></div><nav class="site-nav"><ul id="menu" class="menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i><br>Home</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i><br>Archives</a></li></ul></nav></div></header><main id="main" class="main"><div class="main-inner"><div class="content-wrap"><div id="content" class="content"><div id="posts" class="posts-expand"><article class="post post-type-normal" itemscope itemtype="http://schema.org/Article"><div class="post-block"><link itemprop="mainEntityOfPage" href="http://www.jfox.info/2017/用java做一个爬虫程序gecco.html"><span hidden itemprop="author" itemscope itemtype="http://schema.org/Person"><meta itemprop="name" content="Hello"><meta itemprop="description" content=""><meta itemprop="image" content="/images/avatar.gif"></span><span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><meta itemprop="name" content="java面试"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">用JAVA做一个爬虫程序——Gecco</h1><div class="post-meta"><span class="post-time"><span class="post-meta-item-icon"><i class="fa fa-calendar-o"></i> </span><span class="post-meta-item-text">Posted on</span> <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-01-01T23:53:42+08:00">2017-01-01</time></span></div></header><div class="post-body" itemprop="articleBody"><p>public class StarIndexPage{<br>public static void main(String[] args) {<br>String url = “<a href="http://ku.ent.sina.com.cn/star/search&amp;page_no=1&quot;" target="_blank" rel="noopener">http://ku.ent.sina.com.cn/star/search&amp;page_no=1&quot;</a>; //想要爬取的网站的首页地址<br>HttpGetRequest start = new HttpGetRequest(url); //获取网站请求<br>start.setCharset(“UTF-8”);<br>GeccoEngine.create() //创建搜索发动机<br>.classpath(“com.yue.gecco”) //要搜索的包名，会自动搜索该包下，含@Gecco注解的文件。<br>.start(start)<br>.thread(5)//开启多少个线程抓取<br>.interval(2000) //隔多长时间抓取1次<br>.run();<br>}<br>}</p><p>2、HtmlBean部分。Gecco用到的注解部分很多。</p><pre><code>@Gecco(matchUrl = &quot;http://ku.ent.sina.com.cn/star/search&amp;page_no={page}&quot;,pipelines {&quot;consolePipeline&quot;,&quot;starIndexPagePipeline&quot;})
+//matchUrl是爬取相匹配的url路径，然后将获取到的HtmlBean输出到相应的管道（pipelines）进行处理。这里的管道是可以自定义的。
+public class StarIndexPage implements HtmlBean {
+
+private static final long serialVersionUID = 1225018257932399804L;
+
+@Request   
+private HttpRequest request;
+
+//url中的page参数
+@RequestParameter
+private String  page;
+
+
+//首页中的明星板块的集合，li的集合
+@HtmlField(cssPath = &quot;#dataListInner &gt; ul &gt;li&quot;)
+private List&lt;StarDetail&gt; lsStarDetail;
+//@HtmlField(cssPath = &quot;#dataListInner &gt; ul &gt;li&quot;)是用来抓取网页中的相应网页数据，csspath是jQuery的形式。
+//cssPath获取小技巧：用Chrome浏览器打开需要抓取的网页，按F12进入发者模式。然后在浏览器右侧选中该元素，鼠标右键选择Copy–Copy selector，即可获得该元素的cssPath
+
+//当前的页码，如果当前的是有很多页码的话，可以通过获取当前页码还有总页码，为继续抓取下一页做准备
+//@Text是指抓取网页中的文本部分。@Html是指抓取Html代码。@Href是用来抓取元素的连接 @Ajax是指获取Ajax得到的内容。
+@Text
+@HtmlField(cssPath = &quot;#dataListInner &gt; div &gt; ul &gt; li.curr a&quot;)
+private int currPageNum;
+
+    //相应的Getter和Setter方法...省略
+}
+</code></pre><p>StarDetail的HtmlBean部分</p><pre><code>public class StarDetail implements HtmlBean{
+
+    /*//明星的照片
+    @Image(&quot;src&quot;)
+    @HtmlField(cssPath = &quot;a &gt; img&quot;)
+    prie String PhotoString;*/
+
+    //明星的名字
+    @Html
+    @HtmlField(cssPath =&quot;div &gt; div &gt; h4&quot;)
+    private String  starNameHtml;
+
+    //明星的性别
+    @Text
+    @HtmlField(cssPath = &quot;div &gt; p:nth-child(2)&quot;)
+    private  String starSex;
+
+    //明星的职业
+    @Html
+    @HtmlField(cssPath = &quot;div &gt; p:nth-child(3)&quot;)
+    private String professionHtml;
+
+    //明星的国籍
+    @Text
+    @HtmlField(cssPath = &quot; div &gt; p:nth-child(4)&quot;)
+    private String  nationality;
+
+    //明星的出生日期
+    @Text
+    @HtmlField(cssPath = &quot;div &gt; p.special&quot;)
+    private String birthday;
+
+    //明星的星座
+    @Text
+    @HtmlField(cssPath = &quot;div &gt; p:nth-child(6)&gt;a&quot;)
+    private String constellation;
+
+    //明星的身高
+    @Text
+    @HtmlField(cssPath = &quot;div &gt; p:nth-child(7)&quot;)
+    private String height;
+
+...省略相应的set和get方法...
+}
+</code></pre><p>3、相应的pipeline部分。这部分主要是对获取的网页元素进行业务处理。也可以对数据进行持久化。</p><pre><code>@PipelineName(&quot;starIndexPagePipeline&quot;) 
+ //@pipelineName 标签指定了pipline的名字。并且pipeline这个类需要实现Pipleline&lt;T&gt;。
+public class StarIndexPagePipeline implements Pipeline&lt;StarIndexPage&gt; {
+
+    @Override
+    public void process(StarIndexPage starIndexPage) {
+
+        List&lt;StarDetail&gt; lsStarDetail = starIndexPage.getLsStarDetail();
+
+        StringBuilder inputText =  new StringBuilder();
+
+        for (StarDetail starDetail :lsStarDetail){
+           String professionHtml=starDetail.getProfessionHtml();
+           String starNameHtml=starDetail.getStarNameHtml();
+            Document docName=Jsoup.parse(starNameHtml);
+            String starName=docName.getElementsByTag(&quot;a&quot;).attr(&quot;title&quot;).trim();
+
+            String starSex = starDetail.getStarSex().trim();
+            Document doc = Jsoup.parse(professionHtml);
+            String profession=&quot;未知&quot;; //有不含a标签的，不含a标签的都是未知的
+            if(professionHtml.indexOf(&quot;&lt;a&quot;)!= -1){
+                profession = doc.getElementsByTag(&quot;a&quot;).text();
+            }
+            String nationality = starDetail.getNationality().trim();
+            String birthday = starDetail.getBirthday().trim();
+            String constellation = starDetail.getConstellation().trim();
+            String height = starDetail.getHeight().trim();
+            inputText.append(starName + &quot;t&quot; +
+                    starSex + &quot;t&quot; +
+                    profession + &quot;t&quot; +
+                    nationality + &quot;t&quot; +
+                    birthday + &quot;t&quot; +
+                    constellation + &quot;t&quot; +
+                    height + &quot;t&quot; +
+                    System.getProperty(&quot;line.separator&quot;));
+        }
+        //写入文件
+        writeFile(inputText.toString());
+
+        //爬取下一页
+        HttpRequest currRequest = starIndexPage.getRequest();
+        int currPageNum = starIndexPage.getCurrPageNum();
+        System.out.println(&quot;----------已爬取第&quot;+currPageNum+&quot;页----------&quot;);
+        searchNext(currPageNum,currRequest);
+    }
+
+    //写入文档的方法
+    public void writeFile(String inputText){
+        try {
+            if(new File(&quot;D:明星数据.txt&quot;).exists()){
+                FileWriter fw1=new FileWriter(&quot;D:明星数据.txt&quot;,true);
+                PrintWriter pw = new PrintWriter(fw1);
+                pw.print(inputText);
+                pw.flush();
+                pw.close();
+
+            }else{
+                File f1 =new File(&quot;D:明星数据.txt&quot;);
+                FileWriter fw1=new FileWriter(&quot;D:明星数据.txt&quot;,true);
+                PrintWriter pw = new PrintWriter(fw1,true);
+                pw.println(&quot;姓名&quot;+&quot;t&quot;+&quot;性别&quot;+&quot;t&quot;+&quot;职业&quot;+&quot;t&quot;+&quot;国籍&quot;+&quot;t&quot;+&quot;生日&quot;+&quot;t&quot;+&quot;星座&quot;+&quot;t&quot;+&quot;身高&quot;);
+                pw.print(inputText);
+                pw.flush();
+                pw.close();
+            }
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+      }
+
+
+    public void searchNext(int currPageNum,HttpRequest currRequest){
+        if (currPageNum&lt;1799){  //总页数只有1799
+            int nextPageNum=currPageNum + 1;
+            String currUrl = currRequest.getUrl();
+            String nextUrl = StringUtils.replaceOnce(currUrl,&quot;page_no=&quot;+currPageNum,&quot;page_no=&quot;+nextPageNum);
+            SchedulerContext.into(currRequest.subRequest(nextUrl));
+        }
+        else{
+            System.out.println(&quot;---------------爬取完毕------------------&quot;);
+        }
+
+    }
+}
+</code></pre></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="4142158067"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="5618891265"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><footer class="post-footer"><div class="post-nav"><div class="post-nav-next post-nav-item"><a href="/2017/springboot学习笔记一搭建项目之helloworld.html" rel="next" title="spring boot学习笔记：一、搭建项目 之 hello world"><i class="fa fa-chevron-left"></i> spring boot学习笔记：一、搭建项目 之 hello world</a></div><span class="post-nav-divider"></span><div class="post-nav-prev post-nav-item"><a href="/2017/使用stream或者guava实现list到map的转换.html" rel="prev" title="使用Stream或者Guava实现List到Map的转换">使用Stream或者Guava实现List到Map的转换 <i class="fa fa-chevron-right"></i></a></div></div></footer></div></article><div class="post-spread"></div></div></div></div><div class="sidebar-toggle"><div class="sidebar-toggle-line-wrap"><span class="sidebar-toggle-line sidebar-toggle-line-first"></span> <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span> <span class="sidebar-toggle-line sidebar-toggle-line-last"></span></div></div><aside id="sidebar" class="sidebar"><div class="sidebar-inner"><section class="site-overview-wrap sidebar-panel sidebar-panel-active"><div class="site-overview"><div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person"><p class="site-author-name" itemprop="name">Hello</p><p class="site-description motion-element" itemprop="description"></p></div><nav class="site-state motion-element"><div class="site-state-item site-state-posts"><a href="/archives/"><span class="site-state-item-count">1358</span> <span class="site-state-item-name">posts</span></a></div></nav></div></section></div></aside><div class="sfix"><div class="fixedme"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460" data-ad-format="auto"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script></div></div></main><footer id="footer" class="footer"><div class="footer-inner"><div class="copyright">&copy; <span itemprop="copyrightYear">2018</span> <span class="with-love"><i class="fa fa-user"></i> </span><span class="author" itemprop="copyrightHolder">Hello</span></div><div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div><span class="post-meta-divider">|</span><div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div></div></footer><div class="back-to-top"><i class="fa fa-arrow-up"></i></div></div><script type="text/javascript">"[object Function]"!==Object.prototype.toString.call(window.Promise)&&(window.Promise=null)</script><script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script><script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script><script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script><script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script><script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script></body></html><!-- rebuild by neat -->

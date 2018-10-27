@@ -1,0 +1,952 @@
+<!-- build time:Sat Oct 27 2018 21:00:21 GMT+0800 (CST) --><!DOCTYPE html><html class="theme-next muse use-motion"><head><meta name="generator" content="Hexo 3.8.0"><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"><meta name="theme-color" content="#222"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"><link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css"><link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css"><link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4"><link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4"><link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222"><meta name="description" content="©Copyright 蕃薯耀 2017年7月6日http://fanshuyao.iteye.com/很久之前弄的Spring Jdbc持久化层的baseDao，现在做个记录。基本的增、删、查、改、分页、排序都可以用，只是兼容一般，如主键必须是id，并没有深入再封装。封装基于Spring4+Mysqlpackage com.lqy.spring.dao.impl;  import java.io."><meta name="keywords" content="JAVA,面试"><meta property="og:type" content="article"><meta property="og:title" content="Spring baseDao封装，Spring jdbcTemplate封装，springJdbc泛型Dao，SpringJdbc持久层封装"><meta property="og:url" content="http://www.jfox.info/2017/springbasedao封装springjdbctemplate封装springjdbc泛型daospringjdbc持久层封装.html"><meta property="og:site_name" content="java面试"><meta property="og:description" content="©Copyright 蕃薯耀 2017年7月6日http://fanshuyao.iteye.com/很久之前弄的Spring Jdbc持久化层的baseDao，现在做个记录。基本的增、删、查、改、分页、排序都可以用，只是兼容一般，如主键必须是id，并没有深入再封装。封装基于Spring4+Mysqlpackage com.lqy.spring.dao.impl;  import java.io."><meta property="og:locale" content="zh_CN"><meta property="og:image" content="http://www.jfox.info/2017/1093/3e1a479.png"><meta property="og:updated_time" content="2018-10-27T12:29:37.367Z"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="Spring baseDao封装，Spring jdbcTemplate封装，springJdbc泛型Dao，SpringJdbc持久层封装"><meta name="twitter:description" content="©Copyright 蕃薯耀 2017年7月6日http://fanshuyao.iteye.com/很久之前弄的Spring Jdbc持久化层的baseDao，现在做个记录。基本的增、删、查、改、分页、排序都可以用，只是兼容一般，如主键必须是id，并没有深入再封装。封装基于Spring4+Mysqlpackage com.lqy.spring.dao.impl;  import java.io."><meta name="twitter:image" content="http://www.jfox.info/2017/1093/3e1a479.png"><script type="text/javascript" id="hexo.configurations">var NexT=window.NexT||{},CONFIG={root:"/",scheme:"Muse",version:"5.1.4",sidebar:{position:"left",display:"post",offset:12,b2t:!1,scrollpercent:!1,onmobile:!1},fancybox:!0,tabs:!0,motion:{enable:!0,async:!1,transition:{post_block:"fadeIn",post_header:"slideDownIn",post_body:"slideDownIn",coll_header:"slideLeftIn",sidebar:"slideUpIn"}},duoshuo:{userId:"0",author:"Author"},algolia:{applicationID:"",apiKey:"",indexName:"",hits:{per_page:10},labels:{input_placeholder:"Search for Posts",hits_empty:"We didn't find any results for the search: ${query}",hits_stats:"${hits} results found in ${time} ms"}}}</script><link rel="canonical" href="http://www.jfox.info/2017/springbasedao封装springjdbctemplate封装springjdbc泛型daospringjdbc持久层封装.html"><title>Spring baseDao封装，Spring jdbcTemplate封装，springJdbc泛型Dao，SpringJdbc持久层封装 | java面试</title></head><body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN"><div class="container sidebar-position-left page-post-detail"><div class="headband"></div><header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="header-inner"><div class="site-brand-wrapper"><div class="site-meta"><div class="custom-logo-site-title"><a href="/" class="brand" rel="start"><span class="logo-line-before"><i></i></span> <span class="site-title">java面试</span> <span class="logo-line-after"><i></i></span></a></div><p class="site-subtitle"></p></div><div class="site-nav-toggle"><button><span class="btn-bar"></span> <span class="btn-bar"></span> <span class="btn-bar"></span></button></div></div><nav class="site-nav"><ul id="menu" class="menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i><br>Home</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i><br>Archives</a></li></ul></nav></div></header><main id="main" class="main"><div class="main-inner"><div class="content-wrap"><div id="content" class="content"><div id="posts" class="posts-expand"><article class="post post-type-normal" itemscope itemtype="http://schema.org/Article"><div class="post-block"><link itemprop="mainEntityOfPage" href="http://www.jfox.info/2017/springbasedao封装springjdbctemplate封装springjdbc泛型daospringjdbc持久层封装.html"><span hidden itemprop="author" itemscope itemtype="http://schema.org/Person"><meta itemprop="name" content="Hello"><meta itemprop="description" content=""><meta itemprop="image" content="/images/avatar.gif"></span><span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><meta itemprop="name" content="java面试"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">Spring baseDao封装，Spring jdbcTemplate封装，springJdbc泛型Dao，SpringJdbc持久层封装</h1><div class="post-meta"><span class="post-time"><span class="post-meta-item-icon"><i class="fa fa-calendar-o"></i> </span><span class="post-meta-item-text">Posted on</span> <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-01-01T23:53:13+08:00">2017-01-01</time></span></div></header><div class="post-body" itemprop="articleBody"><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote><p>©Copyright 蕃薯耀 2017年7月6日</p><p><a href="http://fanshuyao.iteye.com/" target="_blank" rel="noopener">http://fanshuyao.iteye.com/</a></p><p>很久之前弄的Spring Jdbc持久化层的baseDao，现在做个记录。</p><p>基本的增、删、查、改、分页、排序都可以用，只是兼容一般，如主键必须是id，并没有深入再封装。</p><p><strong>封装基于Spring4+Mysql</strong></p><p><img src="/2017/1093/3e1a479.png" alt=""></p><pre><code>package com.lqy.spring.dao.impl;
+
+import java.io.Serializable;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.JdbcTemplate;
+
+import com.lqy.Utils.EntityUtils;
+import com.lqy.Utils.StrUtils;
+import com.lqy.spring.bean.Page;
+import com.lqy.spring.dao.BaseDao;
+import com.lqy.spring.editor.GenderEditor;
+import com.lqy.spring.entity.SqlEntity;
+import com.lqy.spring.enums.Gender;
+
+@SuppressWarnings({&quot;unchecked&quot;,&quot;rawtypes&quot;})
+public class BaseDaoImpl&lt;T&gt; implements BaseDao&lt;T&gt; {
+
+
+    @Autowired
+    JdbcTemplate jdbcTemplate;
+
+    //entityClass.getSimpleName()=Person
+    //entityClass.getName()=com.lqy.spring.c3p0.beans.Person
+    protected Class&lt;T&gt; entityClass = (Class&lt;T&gt;) EntityUtils.getEntityClass(this.getClass());
+
+    //private  RowMapper&lt;T&gt; rowMapper = new BeanPropertyRowMapper&lt;T&gt;(entityClass);
+
+    private BeanPropertyRowMapper&lt;T&gt; rowMapper = new BeanPropertyRowMapper&lt;T&gt;(entityClass){
+        @Override
+        protected void initBeanWrapper(BeanWrapper bw) {
+            bw.registerCustomEditor(Gender.class, new GenderEditor());
+            super.initBeanWrapper(bw);
+        }
+    };
+
+    /**
+     * 获取实体
+     * @param id 对象的id(Serializable)
+     * @return T 对象
+     * @author lqy
+     * @since 2015-10-18
+     */
+    @Override
+    public T get(Serializable id) {
+        String sql = getSql() + &quot;and id=? &quot;;
+        return (T)jdbcTemplate.queryForObject(sql, rowMapper, id);
+    }
+
+    /**
+     * 查询
+     * @return List&lt;T&gt;
+     * @author lqy
+     * @since 2015-10-18
+     */
+    @Override
+    public List&lt;T&gt; query() {
+        return (List&lt;T&gt;) jdbcTemplate.query(getSql(), rowMapper);
+    }
+
+    /**
+     * 查询
+     * @param page 分页参数
+     * @param whereSql 查询条件（例:o.name=?）
+     * @param params 查询条件对应的参数(List&lt;Object&gt;)
+     * @return List&lt;T&gt;
+     * @author lqy
+     * @since 2015-10-18
+     */
+    @Override
+    public List&lt;T&gt; query(Page page, String whereSql, List&lt;Object&gt; params) {
+        List&lt;Object&gt; paramList = new ArrayList&lt;Object&gt;();
+        if(!StrUtils.isEmpty(whereSql) &amp;&amp; !StrUtils.isEmpty(params)){
+            for (Object object : params) {
+                if(object instanceof Enum){
+                    paramList.add(((Enum)object).ordinal());
+                }else{
+                    paramList.add(object);
+                }
+            }
+        }
+        String sql = getSql(page, whereSql, null);
+        dealPage(page, sql, paramList);
+
+        if(!StrUtils.isEmpty(page)){
+            paramList.add(page.getOffSize());
+            paramList.add(page.getCurrentSize());
+        }
+        return (List&lt;T&gt;)jdbcTemplate.query(sql, rowMapper, paramList.toArray());
+    }
+
+    /**
+     * 查询
+     * @param page 分页参数
+     * @param orderby 排序条件（LinkedHashMap&lt;String, String&gt;）
+     * @return List&lt;T&gt;
+     * @author lqy
+     * @since 2015-10-18
+     */
+    @Override
+    public List&lt;T&gt; query(Page page, LinkedHashMap&lt;String, String&gt; orderby) {
+        List&lt;Object&gt; paramsList = new ArrayList&lt;Object&gt;();
+
+        String sql = getSql(page, null, orderby);
+        dealPage(page, sql, paramsList);
+
+        if(!StrUtils.isEmpty(page)){
+            paramsList.add(page.getOffSize());
+            paramsList.add(page.getCurrentSize());
+        }
+        return (List&lt;T&gt;)jdbcTemplate.query(sql, rowMapper, paramsList.toArray());
+    }
+
+    /**
+     * 查询
+     * @param page 分页参数
+     * @param whereSql 查询条件（例:o.name=?）
+     * @param params 查询条件对应的参数(List&lt;Object&gt;)
+     * @param orderby 排序条件（LinkedHashMap&lt;String, String&gt;）
+     * @return List&lt;T&gt;
+     * @author lqy
+     * @since 2015-10-18
+     */
+    @Override
+    public List&lt;T&gt; query(Page page, String whereSql, List&lt;Object&gt; params, LinkedHashMap&lt;String, String&gt; orderby) {
+        List&lt;Object&gt; paramsList = new ArrayList&lt;Object&gt;();
+        if(!StrUtils.isEmpty(whereSql) &amp;&amp; !StrUtils.isEmpty(params)){
+            for (Object object : params) {
+                if(object instanceof Enum){
+                    paramsList.add(((Enum)object).ordinal());
+                }else{
+                    paramsList.add(object);
+                }
+            }
+        }
+
+        String sql = getSql(page, whereSql, orderby);
+        //System.out.println(&quot;sql =&quot;+sql);
+        dealPage(page, sql, paramsList);
+
+        if(!StrUtils.isEmpty(page)){
+            paramsList.add(page.getOffSize());
+            paramsList.add(page.getCurrentSize());
+        }
+
+        return (List&lt;T&gt;)jdbcTemplate.query(sql, rowMapper, paramsList.toArray());
+    }
+
+    /**
+     * 更新
+     * @param sql 自定义更新sql
+     * @param params 查询条件对应的参数(List&lt;Object&gt;)
+     * @return int 更新的数量
+     * @author lqy
+     * @since 2015-10-18
+     */
+    @Override
+    public int update(String sql, List&lt;Object&gt; params) {
+        //String sql=&quot;update person set name=? where id=?&quot;;
+        return jdbcTemplate.update(sql, params.toArray());
+    }
+
+    /**
+     * 更新（先从数据库取出来再更新）
+     * @param t 更新的对象
+     * @return int 更新的数量
+     * @author lqy
+     * @since 2015-10-18
+     */
+    @Override
+    public int update(T t) throws Exception{
+        SqlEntity sqlEntity = getUpdateSql(t);
+        //System.out.println(&quot;=====sqlEntity.getSql()=&quot;+sqlEntity.getSql());
+        return jdbcTemplate.update(sqlEntity.getSql(), sqlEntity.getParams().toArray());
+    }
+
+    /**
+     * 更新（通过模板更新，把符合template条件的数据都更新为value对象中的值）
+     * @param t 更新的对象
+     * @return int 更新的数量
+     * @author lqy
+     * @since 2015-10-18
+     */
+    @Override
+    public int update(T value,T template) throws Exception{
+        SqlEntity sqlEntity = getUpdateSql(value,template);
+        //System.out.println(&quot;=====update(T value,T template) sqlEntity.getSql()=&quot;+sqlEntity.getSql());
+        return jdbcTemplate.update(sqlEntity.getSql(), sqlEntity.getParams().toArray());
+    }
+
+    /**
+     * 保存
+     * @param t 保存的对象
+     * @return int 保存的数量
+     * @author lqy
+     * @since 2015-10-18
+     */
+    @Override
+    public int save(T t) throws Exception{
+        SqlEntity sqlEntity = getSaveSql(t);
+        return jdbcTemplate.update(sqlEntity.getSql(), sqlEntity.getParams().toArray());
+    };
+
+    /**
+     * 保存
+     * @param sql 自定义保存sql
+     * @param params 查询条件对应的参数(List&lt;Object&gt;)
+     * @return int 保存的数量
+     * @author lqy
+     * @since 2015-10-18
+     */
+    @Override
+    public int save(String sql, List&lt;Object&gt; params) {
+        //String sql=&quot;INSERT INTO person (`name`,age,create_time) VALUES(?,?,?);&quot;;
+        return jdbcTemplate.update(sql, params.toArray());
+    }
+
+    /**
+     * 删除
+     * @param id 对象的id(Serializable)
+     * @return int 删除的数量
+     * @author lqy
+     * @since 2015-10-18
+     */
+    @Override
+    public int delete(Serializable id) {
+        String sql=&quot;delete from &quot; + StrUtils.changeName(this.entityClass.getSimpleName()) + &quot; where id=?&quot;;
+        return jdbcTemplate.update(sql, id);
+    }
+
+    @SuppressWarnings(&quot;deprecation&quot;)
+    @Override
+    public int getCount(String whereSql, Object[] objects){
+        String entityName = this.entityClass.getSimpleName();
+        StringBuffer sql = new StringBuffer(&quot;select count(*) from &quot;);
+        sql.append(StrUtils.changeName(entityName));
+        sql.append(&quot; o &quot;).append(whereSql);
+        //System.out.println(&quot;getCount sql.toString()=&quot;+sql.toString());
+        //return jdbcTemplate.queryForInt(sql.toString(), entityClass);
+        return jdbcTemplate.queryForInt(sql.toString(), objects);
+
+    }
+
+    protected String getSql(){
+        String entityName = this.entityClass.getSimpleName();
+        StringBuffer sql = new StringBuffer(&quot;select * from &quot;);
+        sql.append(StrUtils.changeName(entityName));
+        sql.append(&quot; o where 1=1 &quot;);
+        return sql.toString();
+    }
+
+    protected String getSql(String whereSql){
+        String entityName = this.entityClass.getSimpleName();
+        StringBuffer sql = new StringBuffer(&quot;select * from &quot;);
+        sql.append(StrUtils.changeName(entityName));
+        sql.append(&quot; o where 1=1 &quot;);
+        if(!StrUtils.isEmpty(whereSql)){
+            sql.append(&quot; &quot;).append(whereSql);
+        }
+        return sql.toString();
+    }
+
+    /**
+     * 获取sql
+     * @param page 分页参数，如果为空，则不在sql增加limit ?,? 
+     * @param orderby 排序参数，如果为空，则不在sql增加ORDER BY
+     * @param whereSql 查询条件参数，如果为空，则不在sql增加 and name=?
+     * @return sql
+     */
+    protected String getSql(Page page, String whereSql, Map&lt;String,String&gt; orderby){
+        String entityName = this.entityClass.getSimpleName();
+        StringBuffer sql = new StringBuffer(&quot;select * from &quot;);
+        sql.append(StrUtils.changeName(entityName));
+        sql.append(&quot; o where 1=1 &quot;);
+        if(!StrUtils.isEmpty(whereSql)){
+            sql.append(&quot; &quot;).append(whereSql);
+        }
+        if(!StrUtils.isEmpty(orderby)){
+            sql.append(&quot; ORDER BY &quot;);
+            for (String string : orderby.keySet()) {
+                String value = orderby.get(string);
+                if(StrUtils.isEmpty(value)){
+                    value = &quot;ASC&quot;;
+                }
+                sql.append(&quot;o.&quot;).append(string).append(&quot; &quot;).append(value.toUpperCase()).append(&quot;,&quot;);
+            }
+            if(sql.indexOf(&quot;,&quot;) &gt; -1){
+                sql.deleteCharAt(sql.length()-1);
+            }
+        }
+        if(!StrUtils.isEmpty(page)){
+            sql.append(&quot; limit ?,? &quot;);
+        }
+        //System.out.println(&quot;------sql.toString()=&quot;+sql.toString());
+        return sql.toString();
+    }
+
+    private SqlEntity getUpdateSql(T t) throws Exception{
+        SqlEntity sqlEntity = new SqlEntity();
+        sqlEntity.setParams(new ArrayList&lt;Object&gt;());
+        Field[] fields = entityClass.getDeclaredFields();
+        StringBuffer sql = new StringBuffer(&quot;&quot;);
+        sql.append(&quot;update &quot;).append(StrUtils.changeName(entityClass.getSimpleName())).append(&quot; o set &quot;);
+        for (Field field : fields) {
+            StringBuffer methodName = new StringBuffer(&quot;&quot;);
+            //System.out.println(&quot;===field.getType()=&quot;+field.getType());
+            if(field.getType() == boolean.class){
+                if(field.getName().contains(&quot;is&quot;)){
+                    methodName.append(field.getName());
+                }else{
+                    methodName.append(&quot;is&quot;).append(StrUtils.firstCodeToUpperCase(field.getName()));
+                }
+            }else{
+                methodName.append(&quot;get&quot;).append(StrUtils.firstCodeToUpperCase(field.getName()));
+            }
+            if(!&quot;id&quot;.equals(field.getName())){
+                Method method = entityClass.getMethod(methodName.toString(), new Class[]{});
+                Object objectValue = method.invoke(t, new Object[]{});
+                if(objectValue instanceof Enum){
+                    sqlEntity.getParams().add(((Enum)objectValue).ordinal());
+                }else{
+                    sqlEntity.getParams().add(objectValue);
+                }
+                sql.append(&quot; o.&quot;).append(StrUtils.changeName(field.getName())).append(&quot;= ?,&quot;);
+            }
+        }
+        if(sql.indexOf(&quot;,&quot;) &gt; -1){
+            sql.deleteCharAt(sql.length() - 1);
+        }
+        sql.append(&quot; where o.id=?&quot;);
+        Method idMethod = entityClass.getMethod(&quot;getId&quot;, new Class[]{});
+        sqlEntity.getParams().add(idMethod.invoke(t, new Object[]{}));
+        sqlEntity.setSql(sql.toString());
+        return sqlEntity;
+    }
+
+    private SqlEntity getUpdateSql(T value, T template) throws Exception{
+
+        SqlEntity sqlEntity = new SqlEntity();
+        sqlEntity.setParams(new ArrayList&lt;Object&gt;());
+        Field[] fields = entityClass.getDeclaredFields();
+        StringBuffer sql = new StringBuffer(&quot;&quot;);
+        sql.append(&quot;update &quot;).append(StrUtils.changeName(entityClass.getSimpleName())).append(&quot; o set &quot;);
+        StringBuffer whereSql = new StringBuffer(&quot; where &quot;);
+        for (Field field : fields) {
+            StringBuffer methodName = new StringBuffer(&quot;&quot;);
+            //System.out.println(&quot;===field.getType()=&quot;+field.getType());
+            if(field.getType() == boolean.class){
+                if(field.getName().contains(&quot;is&quot;)){
+                    methodName.append(field.getName());
+                }else{
+                    methodName.append(&quot;is&quot;).append(StrUtils.firstCodeToUpperCase(field.getName()));
+                }
+            }else{
+                methodName.append(&quot;get&quot;).append(StrUtils.firstCodeToUpperCase(field.getName()));
+            }
+            if(!&quot;id&quot;.equals(field.getName())){
+                Method method = entityClass.getMethod(methodName.toString(), new Class[]{});
+                Object objectValue = method.invoke(value, new Object[]{});
+                if(!StrUtils.isEmpty(objectValue)){
+                    if(objectValue instanceof Enum){
+                        sqlEntity.getParams().add(((Enum)objectValue).ordinal());
+                    }else{
+                        sqlEntity.getParams().add(objectValue);
+                    }
+                    //sqlEntity.getParams().add(objectValue);
+                    sql.append(&quot; o.&quot;).append(StrUtils.changeName(field.getName())).append(&quot;= ?,&quot;);
+                }
+            }
+        }
+
+        for (Field field : fields) {
+            StringBuffer methodName = new StringBuffer(&quot;&quot;);
+            if(field.getType() == boolean.class){
+                if(field.getName().contains(&quot;is&quot;)){
+                    methodName.append(field.getName());
+                }else{
+                    methodName.append(&quot;is&quot;).append(StrUtils.firstCodeToUpperCase(field.getName()));
+                }
+            }else{
+                methodName.append(&quot;get&quot;).append(StrUtils.firstCodeToUpperCase(field.getName()));
+            }
+            Method method = entityClass.getMethod(methodName.toString(), new Class[]{});
+            Object objectValue = method.invoke(template, new Object[]{});
+            if(!StrUtils.isEmpty(objectValue)){
+                sqlEntity.getParams().add(objectValue);
+                whereSql.append(&quot; o.&quot;).append(StrUtils.changeName(field.getName())).append(&quot;= ? and&quot;);
+            }
+        }
+        if(sql.indexOf(&quot;,&quot;) &gt; -1){
+            sql.deleteCharAt(sql.length() - 1);
+        }
+        if(whereSql.indexOf(&quot;and&quot;) &gt; -1){
+            sql.append(whereSql.substring(0, whereSql.length()-3));
+            whereSql = new StringBuffer();
+        }else{
+            sql.append(whereSql);
+        }
+        sqlEntity.setSql(sql.toString());
+        return sqlEntity;
+    }
+
+    private SqlEntity getSaveSql(T t) throws Exception{
+        SqlEntity sqlEntity = new SqlEntity();
+        sqlEntity.setParams(new ArrayList&lt;Object&gt;());
+        Field[] fields = entityClass.getDeclaredFields();
+        StringBuffer sql = new StringBuffer(&quot;&quot;);
+        sql.append(&quot;insert into &quot;).append(StrUtils.changeName(entityClass.getSimpleName())).append(&quot; ( &quot;);
+        int paramLength = 0;
+        for (Field field : fields) {
+            StringBuffer methodName = new StringBuffer(&quot;&quot;);
+            if(field.getType() == boolean.class){
+                if(field.getName().contains(&quot;is&quot;)){
+                    methodName.append(field.getName());
+                }else{
+                    methodName.append(&quot;is&quot;).append(StrUtils.firstCodeToUpperCase(field.getName()));
+                }
+            }else{
+                methodName.append(&quot;get&quot;).append(StrUtils.firstCodeToUpperCase(field.getName()));
+            }
+            Method method = entityClass.getMethod(methodName.toString(), new Class[]{});
+            Object value = method.invoke(t, new Object[]{});
+            if(!StrUtils.isEmpty(value)){
+                if(value instanceof Enum){
+                    sqlEntity.getParams().add(((Enum) value).ordinal());
+                }else{
+                    sqlEntity.getParams().add(value);
+                }
+                sql.append(&quot;`&quot;).append(StrUtils.changeName(field.getName())).append(&quot;`&quot;).append(&quot;,&quot;);
+                paramLength ++;
+            }
+        }
+        if(sql.indexOf(&quot;,&quot;) &gt; -1){
+            sql.deleteCharAt(sql.length() - 1);
+        }
+        sql.append(&quot;) values(&quot;);
+        for (int i=0;i&lt;paramLength;i++) {
+            sql.append(&quot;?,&quot;);
+        }
+        if(sql.indexOf(&quot;,&quot;) &gt; -1){
+            sql.deleteCharAt(sql.length() - 1);
+        }
+        sql.append(&quot;)&quot;);
+        //System.out.println(&quot;sql.toString()=&quot;+sql.toString());
+        sqlEntity.setSql(sql.toString());
+        return sqlEntity;
+    }
+
+    private void dealPage(Page page, String sql, List&lt;Object&gt; params){
+        String whereSql = &quot;&quot;;
+        if(sql != null &amp;&amp; !sql.trim().equals(&quot;&quot;)){
+            int whereIndex = sql.toLowerCase().indexOf(&quot;where&quot;);
+            int orderIndex = sql.toLowerCase().indexOf(&quot;order&quot;);
+            int limitIndex = sql.toLowerCase().indexOf(&quot;limit&quot;);
+            if(whereIndex &gt; -1){
+                whereSql = sql.substring(whereIndex, sql.length());
+                orderIndex = whereSql.toLowerCase().indexOf(&quot;order&quot;);
+            }
+            if(whereIndex &gt; -1 &amp;&amp; orderIndex &gt; -1){
+                whereSql = whereSql.substring(0, orderIndex - 1);
+                limitIndex = whereSql.toLowerCase().indexOf(&quot;limit&quot;);
+            }
+            if(whereIndex &gt; -1 &amp;&amp; limitIndex &gt; -1){
+                whereSql = whereSql.substring(0, limitIndex - 1);
+            }
+        }
+        if(page.getTotalSizeNew()){
+            page.setTotalSize(getCount(whereSql, params.toArray()));
+        }
+        setPage(page);
+    }
+
+    private void setPage(Page page){
+        page.setTotalPages(page.getTotalSize()%page.getCurrentSize()==0?page.getTotalSize()/page.getCurrentSize():(page.getTotalSize()/page.getCurrentSize()+1));
+        page.setCurrentPage(page.getOffSize()/page.getCurrentSize()+1);
+    }
+}
+
+
+package com.lqy.spring.dao;
+
+import java.io.Serializable;
+import java.util.LinkedHashMap;
+import java.util.List;
+
+import com.lqy.spring.bean.Page;
+
+
+public interface BaseDao&lt;T&gt; {
+
+    public T get(Serializable id);
+
+    public List&lt;T&gt; query();
+
+    public List&lt;T&gt; query(Page page, String whereSql, List&lt;Object&gt; params);
+
+    public List&lt;T&gt; query(Page page, LinkedHashMap&lt;String, String&gt; orderby);
+
+    public List&lt;T&gt; query(Page page, String whereSql, List&lt;Object&gt; params, LinkedHashMap&lt;String, String&gt; orderby);
+
+    public int update(String sql, List&lt;Object&gt; params);
+
+    public int update(T t) throws Exception;
+
+    public int update(T value,T template) throws Exception;
+
+    public int save(T t) throws Exception;
+
+    public int save(String sql, List&lt;Object&gt; params);
+
+    public int delete(Serializable id);
+
+    public int getCount(String whereSql, Object[] objects);
+}
+
+
+package com.lqy.spring.service.impl;
+
+import java.io.Serializable;
+import java.util.LinkedHashMap;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.lqy.spring.bean.Page;
+import com.lqy.spring.dao.BaseDao;
+import com.lqy.spring.service.BaseService;
+
+@Transactional
+public class BaseServiceImpl&lt;T&gt; implements BaseService&lt;T&gt; {
+
+    @Autowired
+    BaseDao&lt;T&gt; baseDao;
+
+    /**
+     * 获取实体
+     * @param id 对象的id(Serializable)
+     * @return T 对象
+     * @author lqy
+     * @since 2015-10-18
+     */
+    @Transactional(isolation=Isolation.READ_COMMITTED,
+            readOnly=true)
+    @Override
+    public T get(Serializable id) {
+        return baseDao.get(id);
+    }
+
+    /**
+     * 查询
+     * @return List&lt;T&gt;
+     * @author lqy
+     * @since 2015-10-18
+     */
+    @Transactional(isolation=Isolation.READ_COMMITTED,readOnly=true)
+    @Override
+    public List&lt;T&gt; query() {
+        return baseDao.query();
+    }
+
+    /**
+     * 查询
+     * @param page 分页参数
+     * @param whereSql 查询条件（例:o.name=?）
+     * @param params 查询条件对应的参数(List&lt;Object&gt;)
+     * @return List&lt;T&gt;
+     * @author lqy
+     * @since 2015-10-18
+     */
+    @Transactional(isolation=Isolation.READ_COMMITTED,
+            readOnly=true)
+    @Override
+    public List&lt;T&gt; query(Page page, String whereSql, List&lt;Object&gt; params) {
+        return baseDao.query(page, whereSql, params);
+    }
+
+    /**
+     * 查询
+     * @param page 分页参数
+     * @param orderby 排序条件（LinkedHashMap&lt;String, String&gt;）
+     * @return List&lt;T&gt;
+     * @author lqy
+     * @since 2015-10-18
+     */
+    @Transactional(isolation=Isolation.READ_COMMITTED,
+            readOnly=true)
+    @Override
+    public List&lt;T&gt; query(Page page, LinkedHashMap&lt;String, String&gt; orderby) {
+        return baseDao.query(page, orderby);
+    }
+
+    /**
+     * 查询
+     * @param page 分页参数
+     * @param whereSql 查询条件（例:o.name=?）
+     * @param params 查询条件对应的参数(List&lt;Object&gt;)
+     * @param orderby 排序条件（LinkedHashMap&lt;String, String&gt;）
+     * @return List&lt;T&gt;
+     * @author lqy
+     * @since 2015-10-18
+     */
+    @Transactional(isolation=Isolation.READ_COMMITTED,
+            readOnly=true)
+    @Override
+    public List&lt;T&gt; query(Page page, String whereSql, List&lt;Object&gt; params,
+            LinkedHashMap&lt;String, String&gt; orderby) {
+        return baseDao.query(page, whereSql, params, orderby);
+    }
+
+    /**
+     * 更新
+     * @param sql 自定义更新sql
+     * @param params 查询条件对应的参数(List&lt;Object&gt;)
+     * @return int 更新的数量
+     * @author lqy
+     * @since 2015-10-18
+     */
+    @Override
+    public int update(String sql, List&lt;Object&gt; params) {
+        return baseDao.update(sql, params);
+    }
+
+    /**
+     * 更新（先从数据库取出来再更新）
+     * @param t 更新的对象
+     * @return int 更新的数量
+     * @author lqy
+     * @since 2015-10-18
+     */
+    @Override
+    public int update(T t) throws Exception {
+        return baseDao.update(t);
+    }
+
+    /**
+     * 更新（通过模板更新，把符合template条件的数据都更新为value对象中的值）
+     * @param t 更新的对象
+     * @return int 更新的数量
+     * @author lqy
+     * @since 2015-10-18
+     */
+    @Override
+    public int update(T value,T template) throws Exception{
+        return baseDao.update(value,template);
+    }
+
+    /**
+     * 保存
+     * @param t 保存的对象
+     * @return int 保存的数量
+     * @author lqy
+     * @since 2015-10-18
+     */
+    @Override
+    public int save(T t) throws Exception {
+        return baseDao.save(t);
+    }
+
+    /**
+     * 保存
+     * @param sql 自定义保存sql
+     * @param params 查询条件对应的参数(List&lt;Object&gt;)
+     * @return int 保存的数量
+     * @author lqy
+     * @since 2015-10-18
+     */
+    @Override
+    public int save(String sql, List&lt;Object&gt; params) {
+        return baseDao.save(sql, params);
+    }
+
+    /**
+     * 删除
+     * @param id 对象的id(Serializable)
+     * @return int 删除的数量
+     * @author lqy
+     * @since 2015-10-18
+     */
+    @Override
+    public int delete(Serializable id) {
+        return baseDao.delete(id);
+    }
+
+}
+
+
+package com.lqy.spring.service;
+
+import java.io.Serializable;
+import java.util.LinkedHashMap;
+import java.util.List;
+
+import com.lqy.spring.bean.Page;
+
+
+public interface BaseService&lt;T&gt; {
+
+    public T get(Serializable id);
+
+    public List&lt;T&gt; query();
+
+    public List&lt;T&gt; query(Page page, String whereSql, List&lt;Object&gt; params);
+
+    public List&lt;T&gt; query(Page page, LinkedHashMap&lt;String, String&gt; orderby);
+
+    public List&lt;T&gt; query(Page page, String whereSql, List&lt;Object&gt; params, LinkedHashMap&lt;String, String&gt; orderby);
+
+    public int update(String sql, List&lt;Object&gt; params);
+
+    public int update(T t) throws Exception;
+
+    public int update(T value,T template) throws Exception;
+
+    public int save(T t) throws Exception;
+
+    public int save(String sql, List&lt;Object&gt; params);
+
+    public int delete(Serializable id);
+}
+
+
+package com.lqy.spring.bean;
+
+public class Page {
+
+    private int currentSize;
+    private int offSize;
+    private int totalSize;
+    private int totalPages;
+    private int currentPage;
+    private Boolean totalSizeNew;
+
+    /**
+     * 分页构造函数
+     * @author lqy
+     * @since 2015-10-22
+     */
+    public Page() {
+        super();
+    }
+
+
+    /**
+     * 分页构造函数
+     * @param currentSize
+     * @param offSize
+     * @author lqy
+     * @since 2015-10-22
+     */
+    public Page(int currentSize, int offSize) {
+        super();
+        this.currentSize = currentSize;
+        this.offSize = offSize;
+    }
+
+    /**
+     * 分页构造函数
+     * @param currentSize
+     * @param offSize
+     * @param totalSizeNew
+     * @author lqy
+     * @since 2015-10-22
+     */
+    public Page(int currentSize, int offSize, boolean totalSizeNew) {
+        super();
+        this.currentSize = currentSize;
+        this.offSize = offSize;
+        this.totalSizeNew = totalSizeNew;
+    }
+
+    /**
+     * 分页构造函数
+     * @param currentSize
+     * @param offSize
+     * @param totalSize
+     * @param totalPages
+     * @param currentPage
+     * @param totalSizeNew
+     * @author lqy
+     * @since 2015-10-22
+     */
+    public Page(int currentSize, int offSize, int totalSize, int totalPages,
+            int currentPage, boolean totalSizeNew) {
+        super();
+        this.currentSize = currentSize;
+        this.offSize = offSize;
+        this.totalSize = totalSize;
+        this.totalPages = totalPages;
+        this.currentPage = currentPage;
+        this.totalSizeNew = totalSizeNew;
+    }
+
+    public int getCurrentSize() {
+        return currentSize;
+    }
+
+    public void setCurrentSize(int currentSize) {
+        this.currentSize = currentSize;
+    }
+
+    public int getOffSize() {
+        return offSize;
+    }
+
+    public void setOffSize(int offSize) {
+        this.offSize = offSize;
+    }
+
+    public int getTotalSize() {
+        return totalSize;
+    }
+
+    public void setTotalSize(int totalSize) {
+        this.totalSize = totalSize;
+    }
+
+    public int getTotalPages() {
+        return totalPages;
+    }
+
+    public void setTotalPages(int totalPages) {
+        this.totalPages = totalPages;
+    }
+
+    public int getCurrentPage() {
+        return currentPage;
+    }
+
+    public void setCurrentPage(int currentPage) {
+        this.currentPage = currentPage;
+    }
+
+    public Boolean getTotalSizeNew() {
+        return totalSizeNew;
+    }
+
+    public void setTotalSizeNew(Boolean totalSizeNew) {
+        this.totalSizeNew = totalSizeNew;
+    }
+
+    @Override
+    public String toString() {
+        return &quot;Page [currentSize=&quot; + currentSize + &quot;, offSize=&quot; + offSize
+                + &quot;, totalSize=&quot; + totalSize + &quot;, totalPages=&quot; + totalPages
+                + &quot;, currentPage=&quot; + currentPage + &quot;, totalSizeNew=&quot;
+                + totalSizeNew + &quot;]&quot;;
+    }
+
+
+
+
+
+}
+</code></pre><p><strong>使用的一个例子：</strong></p><pre><code>package com.lqy.spring.service.impl;
+
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.lqy.Utils.StrUtils;
+import com.lqy.exception.PersonMoneyNotEnoughException;
+import com.lqy.spring.bean.Page;
+import com.lqy.spring.bean.Person;
+import com.lqy.spring.dao.PersonDao;
+import com.lqy.spring.service.BookService;
+import com.lqy.spring.service.PersonService;
+
+
+@Service
+public class PersonServiceImpl extends BaseServiceImpl&lt;Person&gt; implements PersonService {
+
+    @Autowired
+    PersonDao personDao;
+    @Autowired
+    BookService bookService;
+
+    @Override
+    public List&lt;Person&gt; getPersons(Page page, String name, Integer age, Integer statusType){
+        StringBuffer whereSql = new StringBuffer();
+        List&lt;Object&gt; params = new ArrayList&lt;Object&gt;();
+        LinkedHashMap&lt;String, String&gt; orderby = new LinkedHashMap&lt;String, String&gt;();
+
+        if(!StrUtils.isEmpty(name)){
+            whereSql.append(&quot; and o.name like ?&quot;);
+            params.add(&quot;%&quot;+name+&quot;%&quot;);
+        }
+        if(!StrUtils.isEmpty(age)){
+            whereSql.append(&quot; and o.age = ?&quot;);
+            params.add(age);
+        }
+        if(!StrUtils.isEmpty(statusType)){
+            whereSql.append(&quot; and o.statusType = ?&quot;);
+            params.add(statusType);
+        }
+        orderby.put(&quot;create_time&quot;, &quot;desc&quot;);
+        orderby.put(&quot;id&quot;, &quot;desc&quot;);
+
+        return personDao.query(page, whereSql.toString(), params, orderby);
+    }
+
+    @Transactional
+    public int buyBook(Integer personId, Double price) throws Exception{
+        int result = -1;
+        Person person = personDao.get(personId);
+        if(!StrUtils.isEmpty(person)){
+            Double leftMoney = person.getMoney() - price;
+            if(leftMoney &gt;= 0){
+                person.setMoney(leftMoney);
+                result = personDao.update(person);
+            }else{
+                throw new PersonMoneyNotEnoughException();
+            }
+        }
+        return result;
+    }
+
+    @Transactional
+    @Override
+    public int buyBook(Integer personId, Integer bookId, Integer amount) throws Exception{
+        int result = -1;
+        Person person = personDao.get(personId);
+        if(!StrUtils.isEmpty(person)){
+            Double price = bookService.getBooksPrices(bookId, amount);
+            Double leftMoney = person.getMoney() - price;
+            if(leftMoney &gt;= 0){
+                person.setMoney(leftMoney);
+                personDao.update(person);
+                bookService.sellBooks(bookId, amount);
+                result = 1;
+            }else{
+                throw new PersonMoneyNotEnoughException();
+            }
+        }
+        return result;
+    }
+
+}
+</code></pre><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote><p>©Copyright 蕃薯耀 2017年7月6日</p><p><a href="http://fanshuyao.iteye.com/" target="_blank" rel="noopener">http://fanshuyao.iteye.com/</a></p></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="4142158067"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><div style="width:300px;height:250px;float:left"><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-9477174171188196" data-ad-slot="5618891265"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><footer class="post-footer"><div class="post-nav"><div class="post-nav-next post-nav-item"><a href="/2017/collectioniteratorforeach.html" rel="next" title="Collection-Iterator-foreach"><i class="fa fa-chevron-left"></i> Collection-Iterator-foreach</a></div><span class="post-nav-divider"></span><div class="post-nav-prev post-nav-item"><a href="/2017/理解数据仓库中星型模型和雪花模型.html" rel="prev" title="理解数据仓库中星型模型和雪花模型">理解数据仓库中星型模型和雪花模型 <i class="fa fa-chevron-right"></i></a></div></div></footer></div></article><div class="post-spread"></div></div></div></div><div class="sidebar-toggle"><div class="sidebar-toggle-line-wrap"><span class="sidebar-toggle-line sidebar-toggle-line-first"></span> <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span> <span class="sidebar-toggle-line sidebar-toggle-line-last"></span></div></div><aside id="sidebar" class="sidebar"><div class="sidebar-inner"><section class="site-overview-wrap sidebar-panel sidebar-panel-active"><div class="site-overview"><div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person"><p class="site-author-name" itemprop="name">Hello</p><p class="site-description motion-element" itemprop="description"></p></div><nav class="site-state motion-element"><div class="site-state-item site-state-posts"><a href="/archives/"><span class="site-state-item-count">1358</span> <span class="site-state-item-name">posts</span></a></div></nav></div></section></div></aside><div class="sfix"><div class="fixedme"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9477174171188196" data-ad-slot="9597600460" data-ad-format="auto"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script></div></div></main><footer id="footer" class="footer"><div class="footer-inner"><div class="copyright">&copy; <span itemprop="copyrightYear">2018</span> <span class="with-love"><i class="fa fa-user"></i> </span><span class="author" itemprop="copyrightHolder">Hello</span></div><div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div><span class="post-meta-divider">|</span><div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div></div></footer><div class="back-to-top"><i class="fa fa-arrow-up"></i></div></div><script type="text/javascript">"[object Function]"!==Object.prototype.toString.call(window.Promise)&&(window.Promise=null)</script><script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script><script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script><script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script><script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script><script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script><script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script><script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script></body></html><!-- rebuild by neat -->
